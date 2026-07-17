@@ -1,0 +1,30 @@
+{
+    "heading": "Bize Ulaştığınız İçin Teşekkürler!",
+    "message": "Mesajınızı aldık ve ekibimiz kısa süre içinde inceleyecek. Belirttiğiniz adrese bir onay e-postası alacaksınız.",
+
+    "what_next_title": "Sırada Ne Var?",
+
+    "step_review_title": "Mesajınızı İnceliyoruz",
+    "step_review_desc": "Ekibimiz sorgunuzu dikkatlice inceleyecek",
+
+    "step_response_title": "24-48 Saat İçinde Yanıt",
+    "step_response_desc": "Genellikle 1-2 iş günü içinde yanıt veriyoruz",
+
+    "step_reply_title": "Size Geri Döneceğiz",
+    "step_reply_desc": "Yanıtımızı e-posta yoluyla alacaksınız",
+
+    "step_urgent_title": "Acil Yardıma mı İhtiyacınız Var?",
+    "step_urgent_desc": "Bizi arayın",
+
+    "contact_title": "Acil Yardıma mı İhtiyacınız Var?",
+    "contact_desc": "Konunuz acilse, lütfen doğrudan bizimle iletişime geçmekten çekinmeyin:",
+
+    "email_label": "E-posta",
+    "phone_label": "Telefon",
+
+    "office_hours": "Çalışma Saatleri",
+    "office_time": "Pazartesi - Cuma, 09:30 - 18:00",
+
+    "btn_home": "Ana Sayfaya Dön",
+    "btn_contact": "Başka Mesaj Gönder"
+  }

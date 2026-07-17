@@ -1,0 +1,22 @@
+{
+    "where": "地点",
+    "search_destinations": "搜索目的地",
+    "when": "时间",
+    "tour_type": "旅游类型",
+    "all_tour": "所有旅游",
+    "travelers": "旅客",
+    "adult": "成人",
+    "child": "儿童",
+    "apply": "应用",
+    "search_tours": "搜索旅游",
+    "select_destination": "请选择目的地",
+    "select_dates": "请选择日期",
+    "type_3_characters": "输入至少3个字符进行搜索...",
+    "searching": "搜索中...",
+    "no_destinations_found": "未找到目的地",
+    "error_loading": "加载目的地时出错",
+    "loading_tour_types": "正在加载旅游类型...",
+    "error_loading_types": "加载旅游类型时出错",
+    "years_12_plus": "(12岁以上)",
+    "years_2_11": "(2-11岁)"
+}

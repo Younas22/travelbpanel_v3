@@ -1,0 +1,31 @@
+{
+    "heading": "Vielen Dank für Ihre Kontaktaufnahme!",
+    "message": "Wir haben Ihre Nachricht erhalten und unser Team wird sie in Kürze prüfen. Sie sollten eine Bestätigungs-E-Mail an die von Ihnen angegebene Adresse erhalten.",
+
+    "what_next_title": "Wie geht es weiter?",
+
+    "step_review_title": "Wir prüfen Ihre Nachricht",
+    "step_review_desc": "Unser Team wird Ihre Anfrage sorgfältig prüfen",
+
+    "step_response_title": "Antwort innerhalb von 24-48 Stunden",
+    "step_response_desc": "Wir antworten in der Regel innerhalb von 1-2 Werktagen",
+
+    "step_reply_title": "Wir melden uns bei Ihnen",
+    "step_reply_desc": "Sie erhalten unsere Antwort per E-Mail",
+
+    "step_urgent_title": "Benötigen Sie dringende Hilfe?",
+    "step_urgent_desc": "Rufen Sie uns an unter",
+
+    "contact_title": "Benötigen Sie sofortige Unterstützung?",
+    "contact_desc": "Wenn Ihr Anliegen dringend ist, zögern Sie bitte nicht, uns direkt zu kontaktieren:",
+
+    "email_label": "E-Mail",
+    "phone_label": "Telefon",
+
+    "office_hours": "Öffnungszeiten",
+    "office_time": "Montag - Freitag, 09:30 - 18:00 Uhr",
+
+    "btn_home": "Zurück zur Startseite",
+    "btn_contact": "Weitere Nachricht senden"
+  }
+

@@ -1,0 +1,49 @@
+{
+    "contact_us": "Contáctanos",
+    "contact_us_desc": "¿Tienes preguntas o necesitas ayuda con tu reserva? ¡Nuestro equipo estará encantado de ayudarte!",
+
+    "contact_information": "Información de Contacto",
+    "address": "Dirección",
+    "phone": "Teléfono",
+    "alternate_phone": "Teléfono Alternativo",
+    "email": "Correo Electrónico",
+
+    "office_hours": "Horario de Oficina",
+    "monday_friday": "Lunes - Viernes",
+    "saturday": "Sábado",
+    "sunday": "Domingo",
+    "closed": "Cerrado",
+
+    "send_message": "Envíanos un Mensaje",
+
+    "first_name": "Nombre",
+    "first_name_placeholder": "Ingresa tu nombre",
+
+    "last_name": "Apellido",
+    "last_name_placeholder": "Ingresa tu apellido",
+
+    "phone_optional": "Teléfono (Opcional)",
+    "phone_placeholder": "Ingresa tu número de teléfono",
+
+    "email_placeholder": "Ingresa tu correo electrónico",
+
+    "subject": "Asunto",
+    "select_subject": "Selecciona un Asunto",
+
+    "booking_reference_optional": "Referencia de Reserva (Opcional)",
+    "booking_reference_placeholder": "Ingresa la referencia de reserva si corresponde",
+
+    "message": "Mensaje",
+    "message_placeholder": "Cuéntanos cómo podemos ayudarte...",
+
+    "privacy_agreement": "Acepto la política de privacidad y los términos de servicio",
+
+    "send_message_btn": "Enviar Mensaje",
+
+    "flight_ticket_booking": "Reserva de Boleto de Vuelo",
+    "hotel_booking": "Reserva de Hotel",
+    "existing_booking": "Reserva Existente",
+    "price_quote": "Cotización de Precio",
+    "complaint": "Queja",
+    "general_question": "Pregunta General"
+}

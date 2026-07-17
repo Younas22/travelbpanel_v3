@@ -1,0 +1,18 @@
+{
+  "filters": "Filtros",
+  "stops": "Escalas",
+  "all_flights": "Todos los Vuelos",
+  "stop": "Escala",
+  "price": "Precio",
+  "preferred_airlines": "Aerolíneas Preferidas",
+  "flights_found": "Vuelos encontrados",
+  "total_fare": "Tarifa total",
+  "book": "Reservar",
+  "outbound": "Ida",
+  "pc": "PC",
+  "nonstop": "Directo",
+  "direct": "Directo",
+  "no_flights_found": "No se Encontraron Vuelos",
+  "no_flights_message": "No pudimos encontrar vuelos que coincidan con sus criterios de búsqueda. Intente ajustar su destino, fechas o detalles de pasajeros.",
+  "search_again": "Buscar de Nuevo"
+}

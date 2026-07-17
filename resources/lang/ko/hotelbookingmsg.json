@@ -1,0 +1,21 @@
+{
+    "page_title": "데모 계정",
+    "header_title": "데모 계정",
+    "header_subtitle": "테스트 목적으로 데모 계정을 사용 중입니다",
+    "demo_mode": "데모 모드",
+    "booking_not_available": "예약 불가",
+    "demo_description": "이것은 데모 계정입니다. 모든 기능을 탐색하고 플랫폼을 테스트할 수 있지만, 실제 예약은 완료할 수 없습니다.",
+    "start_travel_portal": "여행 포털 시작하기",
+    "upgrade_description": "자신만의 여행 예약 플랫폼을 출시하고 싶으신가요? 가격과 기능을 확인해 보세요.",
+    "view_pricing": "가격 세부정보 보기",
+    "what_you_can_do": "할 수 있는 것:",
+    "browse_flights_hotels": "항공편 및 호텔 검색",
+    "view_detailed_info": "상세 정보 보기",
+    "test_booking_flow": "예약 흐름 테스트",
+    "view_invoices": "청구서 및 확인서 보기",
+    "test_ui_features": "모든 UI 기능 테스트",
+    "booking_restricted": "예약 제한됨",
+    "booking_restricted_text": "데모 계정에서는 결제 처리 및 최종 예약이 비활성화되어 있습니다. 실제 요금은 청구되지 않습니다.",
+    "go_home": "홈으로 이동",
+    "explore_more": "더 많은 기능 탐색"
+}

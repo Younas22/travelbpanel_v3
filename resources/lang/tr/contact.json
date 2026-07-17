@@ -1,0 +1,49 @@
+{
+    "contact_us": "Bize Ulaşın",
+    "contact_us_desc": "Sorularınız mı var veya rezervasyonunuzla ilgili yardıma mı ihtiyacınız var? Ekibimiz size yardımcı olmaktan mutluluk duyar!",
+
+    "contact_information": "İletişim Bilgileri",
+    "address": "Adres",
+    "phone": "Telefon",
+    "alternate_phone": "Alternatif Telefon",
+    "email": "E-posta",
+
+    "office_hours": "Çalışma Saatleri",
+    "monday_friday": "Pazartesi - Cuma",
+    "saturday": "Cumartesi",
+    "sunday": "Pazar",
+    "closed": "Kapalı",
+
+    "send_message": "Bize Mesaj Gönderin",
+
+    "first_name": "Ad",
+    "first_name_placeholder": "Adınızı girin",
+
+    "last_name": "Soyad",
+    "last_name_placeholder": "Soyadınızı girin",
+
+    "phone_optional": "Telefon (İsteğe Bağlı)",
+    "phone_placeholder": "Telefon numaranızı girin",
+
+    "email_placeholder": "E-posta adresinizi girin",
+
+    "subject": "Konu",
+    "select_subject": "Konu Seçin",
+
+    "booking_reference_optional": "Rezervasyon Referansı (İsteğe Bağlı)",
+    "booking_reference_placeholder": "Varsa rezervasyon referansını girin",
+
+    "message": "Mesaj",
+    "message_placeholder": "Size nasıl yardımcı olabileceğimizi söyleyin...",
+
+    "privacy_agreement": "Gizlilik politikasını ve hizmet şartlarını kabul ediyorum",
+
+    "send_message_btn": "Mesaj Gönder",
+
+    "flight_ticket_booking": "Uçak Bileti Rezervasyonu",
+    "hotel_booking": "Otel Rezervasyonu",
+    "existing_booking": "Mevcut Rezervasyon",
+    "price_quote": "Fiyat Teklifi",
+    "complaint": "Şikayet",
+    "general_question": "Genel Soru"
+}

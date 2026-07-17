@@ -1,0 +1,14 @@
+{
+    "heading": "Booking Status Update",
+    "dear_customer": "Dear Customer,",
+    "booking_text": "Your <strong>:type</strong> booking with reference <strong>:reference</strong> has been <strong>:status</strong>.",
+    "view_details": "View Details",
+    "thank_you": "Thank you for choosing :business.",
+    "Confirmed": "confirmed",
+    "Pending": "pending",
+    "Cancelled": "cancelled",
+    "flight": "flight",
+    "hotel": "hotel"
+    
+  }
+

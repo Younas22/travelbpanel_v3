@@ -1,0 +1,22 @@
+{
+    "where": "Куда",
+    "search_destinations": "Поиск направлений",
+    "when": "Когда",
+    "tour_type": "Тип тура",
+    "all_tour": "Все туры",
+    "travelers": "Путешественники",
+    "adult": "Взрослый",
+    "child": "Ребенок",
+    "apply": "Применить",
+    "search_tours": "Найти туры",
+    "select_destination": "Пожалуйста, выберите направление",
+    "select_dates": "Пожалуйста, выберите даты",
+    "type_3_characters": "Введите минимум 3 символа для поиска...",
+    "searching": "Поиск...",
+    "no_destinations_found": "Направления не найдены",
+    "error_loading": "Ошибка загрузки направлений",
+    "loading_tour_types": "Загрузка типов туров...",
+    "error_loading_types": "Ошибка загрузки типов туров",
+    "years_12_plus": "(12+ лет)",
+    "years_2_11": "(2-11 лет)"
+}

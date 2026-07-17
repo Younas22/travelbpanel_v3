@@ -1,0 +1,18 @@
+{
+  "filters": "フィルター",
+  "stops": "経由",
+  "all_flights": "すべてのフライト",
+  "stop": "経由",
+  "price": "価格",
+  "preferred_airlines": "優先航空会社",
+  "flights_found": "見つかったフライト",
+  "total_fare": "合計運賃",
+  "book": "予約",
+  "outbound": "往路",
+  "pc": "PC",
+  "nonstop": "直行便",
+  "direct": "直行",
+  "no_flights_found": "フライトが見つかりません",
+  "no_flights_message": "検索条件に一致するフライトが見つかりませんでした。目的地、日付、または乗客の詳細を調整してお試しください。",
+  "search_again": "再検索"
+}

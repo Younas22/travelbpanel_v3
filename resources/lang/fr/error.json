@@ -1,0 +1,22 @@
+{
+    "page_title": "Page non trouvée",
+    "error_code": "404",
+    "error_title": "Oups! Cette page a décollé",
+    "error_description": "La page que vous recherchez n'existe pas ou a été déplacée vers une nouvelle destination.",
+    "go_home": "Aller à la page d'accueil",
+    "view_pricing": "Voir les plans tarifaires",
+    "limited_offer": "Offre à durée limitée",
+    "promo_title": "Lancez votre entreprise de voyage en ligne",
+    "promo_description": "Lancez avec style — <span class=\"font-semibold text-gray-800\">Hôtel, Vol, Tour, Visa et Umrah</span> réservations tout sur une plateforme",
+    "white_label": "Solution en marque blanche",
+    "setup_time": "Configuration en 15 minutes",
+    "hotels": "Hôtels",
+    "flights": "Vols",
+    "tours": "Tours",
+    "visa": "Visa",
+    "umrah": "Umrah",
+    "starting_from": "À partir de seulement",
+    "solution_desc": "Solution complète d'entreprise de voyage en marque blanche",
+    "get_started": "Commencer maintenant",
+    "powered_by": "Propulsé par"
+}

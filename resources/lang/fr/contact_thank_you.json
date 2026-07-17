@@ -1,0 +1,31 @@
+{
+    "heading": "Merci de Nous Avoir Contactés !",
+    "message": "Nous avons reçu votre message et notre équipe l'examinera sous peu. Vous devriez recevoir un email de confirmation à l'adresse que vous avez fournie.",
+
+    "what_next_title": "Que Se Passe-t-il Ensuite ?",
+
+    "step_review_title": "Nous Examinons Votre Message",
+    "step_review_desc": "Notre équipe examinera attentivement votre demande",
+
+    "step_response_title": "Réponse Sous 24-48 Heures",
+    "step_response_desc": "Nous répondons généralement sous 1-2 jours ouvrables",
+
+    "step_reply_title": "Nous Vous Recontacterons",
+    "step_reply_desc": "Vous recevrez notre réponse par email",
+
+    "step_urgent_title": "Besoin d'Aide Urgente ?",
+    "step_urgent_desc": "Appelez-nous au",
+
+    "contact_title": "Besoin d'Assistance Immédiate ?",
+    "contact_desc": "Si votre question est urgente, n'hésitez pas à nous contacter directement :",
+
+    "email_label": "Email",
+    "phone_label": "Téléphone",
+
+    "office_hours": "Heures d'Ouverture",
+    "office_time": "Lundi - Vendredi, 09h30 - 18h00",
+
+    "btn_home": "Retour à l'Accueil",
+    "btn_contact": "Envoyer un Autre Message"
+  }
+

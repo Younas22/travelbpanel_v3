@@ -1,0 +1,13 @@
+{
+    "heading": "Rezervasyon Durumu Güncellemesi",
+    "dear_customer": "Değerli Müşterimiz,",
+    "booking_text": "<strong>:reference</strong> referans numaralı <strong>:type</strong> rezervasyonunuz <strong>:status</strong>.",
+    "view_details": "Detayları Görüntüle",
+    "thank_you": ":business'i seçtiğiniz için teşekkür ederiz.",
+    "Confirmed": "onaylandı",
+    "Pending": "beklemede",
+    "Cancelled": "iptal edildi",
+    "flight": "uçuş",
+    "hotel": "otel"
+
+  }

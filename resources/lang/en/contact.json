@@ -1,0 +1,49 @@
+{
+    "contact_us": "Contact us",
+    "contact_us_desc": "Do you have questions or need help with your booking? Our team is happy to help!",
+
+    "contact_information": "Contact Information",
+    "address": "Address",
+    "phone": "Phone",
+    "alternate_phone": "Alternate Phone",
+    "email": "Email",
+
+    "office_hours": "Office Hours",
+    "monday_friday": "Monday - Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "closed": "Closed",
+
+    "send_message": "Send us a Message",
+
+    "first_name": "First Name",
+    "first_name_placeholder": "Enter first name",
+
+    "last_name": "Last Name",
+    "last_name_placeholder": "Enter last name",
+
+    "phone_optional": "Phone (Optional)",
+    "phone_placeholder": "Enter your phone number",
+
+    "email_placeholder": "Enter your email",
+
+    "subject": "Subject",
+    "select_subject": "Select Subject",
+
+    "booking_reference_optional": "Booking Reference (Optional)",
+    "booking_reference_placeholder": "Enter booking reference if applicable",
+
+    "message": "Message",
+    "message_placeholder": "Tell us how we can help...",
+
+    "privacy_agreement": "I agree to the privacy policy and terms of service",
+
+    "send_message_btn": "Send Message",
+
+    "flight_ticket_booking": "Flight Ticket Booking",
+    "hotel_booking": "Hotel Booking",
+    "existing_booking": "Existing Booking",
+    "price_quote": "Price Quote",
+    "complaint": "Complaint",
+    "general_question": "General Question"
+}

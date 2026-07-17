@@ -1,0 +1,18 @@
+{
+  "filters": "Filters",
+  "stops": "Stops",
+  "all_flights": "All Flights",
+  "stop": "Stop",
+  "price": "Price",
+  "preferred_airlines": "Preferred Airlines",
+  "flights_found": "Flights found",
+  "total_fare": "Total fare",
+  "book": "Book",
+  "outbound": "Outbound",
+  "pc": "PC",
+  "nonstop": "Non Stop",
+  "direct": "Directe",
+  "no_flights_found": "No Flights Found",
+  "no_flights_message": "We couldn’t find any flights matching your search criteria. Try adjusting your destination, dates, or passenger details.",
+  "search_again": "Search Again"
+}

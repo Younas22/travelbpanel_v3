@@ -1,0 +1,14 @@
+{
+    "heading": "Buchungsstatus-Update",
+    "dear_customer": "Sehr geehrter Kunde,",
+    "booking_text": "Ihre <strong>:type</strong>-Buchung mit der Referenz <strong>:reference</strong> wurde <strong>:status</strong>.",
+    "view_details": "Details anzeigen",
+    "thank_you": "Vielen Dank, dass Sie sich für :business entschieden haben.",
+    "Confirmed": "bestätigt",
+    "Pending": "ausstehend",
+    "Cancelled": "storniert",
+    "flight": "Flug",
+    "hotel": "Hotel"
+
+  }
+

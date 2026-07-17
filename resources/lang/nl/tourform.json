@@ -1,0 +1,22 @@
+{
+    "where": "Waar",
+    "search_destinations": "Zoek bestemmingen",
+    "when": "Wanneer",
+    "tour_type": "Tourtype",
+    "all_tour": "Alle tours",
+    "travelers": "Reizigers",
+    "adult": "Volwassene",
+    "child": "Kind",
+    "apply": "Toepassen",
+    "search_tours": "Zoek Tours",
+    "select_destination": "Selecteer een bestemming",
+    "select_dates": "Selecteer datums",
+    "type_3_characters": "Typ minimaal 3 tekens om te zoeken...",
+    "searching": "Zoeken...",
+    "no_destinations_found": "Geen bestemmingen gevonden",
+    "error_loading": "Fout bij laden van bestemmingen",
+    "loading_tour_types": "Tourtypes laden...",
+    "error_loading_types": "Fout bij laden van tourtypes",
+    "years_12_plus": "(12+ jr)",
+    "years_2_11": "(2-11 jr)"
+}

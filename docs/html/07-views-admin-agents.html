@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 7: Admin Agent Views — TravelPanel v2 Docs</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        .sidebar { width: 260px; min-height: 100vh; background: #1e293b; position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 100; }
+        .sidebar-brand { display: block; padding: 20px; color: #f8fafc; font-size: 14px; font-weight: 600; border-bottom: 1px solid #334155; text-decoration: none; }
+        .sidebar-brand strong { color: #60a5fa; }
+        .sidebar .nav-link { color: #94a3b8; padding: 8px 20px; font-size: 13px; display: flex; align-items: center; gap: 8px; text-decoration: none; border-radius: 0; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { color: #f8fafc; background: #334155; }
+        .sidebar .nav-section { color: #475569; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 16px 20px 4px; }
+        .main-content { margin-left: 260px; padding: 40px; }
+        .page-header { border-bottom: 1px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 32px; }
+        .page-header h1 { font-size: 28px; font-weight: 700; color: #1e293b; }
+        .page-header .meta { color: #64748b; font-size: 14px; }
+        h2 { font-size: 20px; font-weight: 600; color: #1e293b; margin-top: 40px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+        h3 { font-size: 16px; font-weight: 600; color: #334155; margin-top: 24px; margin-bottom: 8px; }
+        .file-badge { display: inline-block; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 12px; font-size: 12px; font-family: monospace; color: #0f172a; margin-bottom: 12px; }
+        pre[class*="language-"] { border-radius: 8px; font-size: 13px; margin: 0 0 24px 0; }
+        .back-link { color: #3b82f6; text-decoration: none; font-size: 14px; }
+        .back-link:hover { text-decoration: underline; }
+        @media (max-width: 768px) { .sidebar { width: 100%; position: relative; min-height: auto; } .main-content { margin-left: 0; padding: 20px; } }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="index.html" class="sidebar-brand"><strong>TravelPanel v2</strong><br>Agent B2B Docs</a>
+        <div class="nav-section">Overview</div>
+        <a href="index.html" class="nav-link"><i class="bi bi-house"></i> Home</a>
+        <div class="nav-section">Detailed Parts</div>
+        <a href="01-migrations.html" class="nav-link"><i class="bi bi-database"></i> Part 1: Migrations</a>
+        <a href="02-models.html" class="nav-link"><i class="bi bi-box"></i> Part 2: Models</a>
+        <a href="03-middleware-routes.html" class="nav-link"><i class="bi bi-signpost-split"></i> Part 3: Middleware &amp; Routes</a>
+        <a href="04-admin-controllers.html" class="nav-link"><i class="bi bi-person-gear"></i> Part 4: Admin Controllers</a>
+        <a href="05-agent-controllers.html" class="nav-link"><i class="bi bi-person-badge"></i> Part 5: Agent Controllers</a>
+        <a href="06-views-agent-layout.html" class="nav-link"><i class="bi bi-layout-sidebar"></i> Part 6: Agent Views</a>
+        <a href="07-views-admin-agents.html" class="nav-link active"><i class="bi bi-people"></i> Part 7: Admin Views</a>
+        <a href="08-admin-sidebar-and-implementation-order.html" class="nav-link"><i class="bi bi-list-check"></i> Part 8: Implementation</a>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <a href="index.html" class="back-link"><i class="bi bi-arrow-left"></i> Back to Index</a>
+            <h1 class="mt-2">Part 7: Admin Agent Management Views</h1>
+            <div class="meta">Agents list, Agent detail tabs, Permissions toggle, Wallet forms, Top-Up requests</div>
+        </div>
+
+        <hr>
+
+        <h2>View 1: Agents List</h2>
+        <div class="file-badge"><i class="bi bi-file-code"></i> resources/views/admin/agents/index.blade.php</div>
+        <pre><code class="language-markup">@extends('admin.layouts.app')
+@section('title', 'Agents Management')
+
+@section('content')
+&lt;div class="d-flex justify-content-between align-items-center mb-4"&gt;
+    &lt;div&gt;
+        &lt;h4 class="mb-1"&gt;Agents Management&lt;/h4&gt;
+        &lt;p class="text-muted mb-0"&gt;Manage B2B travel agents&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;a href="{{ route('admin.agents.create') }}" class="btn btn-primary"&gt;
+        &lt;i class="bi bi-plus-circle"&gt;&lt;/i&gt; Add Agent
+    &lt;/a&gt;
+&lt;/div&gt;
+
+{{-- Stats --}}
+&lt;div class="row g-3 mb-4"&gt;
+    &lt;div class="col-6 col-md-3"&gt;
+        &lt;div class="card border-0 shadow-sm text-center"&gt;
+            &lt;div class="card-body py-3"&gt;
+                &lt;div class="fs-3 fw-bold text-primary"&gt;{{ $stats['total'] }}&lt;/div&gt;
+                &lt;div class="small text-muted"&gt;Total Agents&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="col-6 col-md-3"&gt;
+        &lt;div class="card border-0 shadow-sm text-center"&gt;
+            &lt;div class="card-body py-3"&gt;
+                &lt;div class="fs-3 fw-bold text-success"&gt;{{ $stats['active'] }}&lt;/div&gt;
+                &lt;div class="small text-muted"&gt;Active&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="col-6 col-md-3"&gt;
+        &lt;div class="card border-0 shadow-sm text-center"&gt;
+            &lt;div class="card-body py-3"&gt;
+                &lt;div class="fs-3 fw-bold text-warning"&gt;{{ $stats['pending'] }}&lt;/div&gt;
+                &lt;div class="small text-muted"&gt;Pending&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="col-6 col-md-3"&gt;
+        &lt;div class="card border-0 shadow-sm text-center"&gt;
+            &lt;div class="card-body py-3"&gt;
+                &lt;div class="fs-3 fw-bold text-danger"&gt;{{ $stats['suspended'] }}&lt;/div&gt;
+                &lt;div class="small text-muted"&gt;Suspended&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+{{-- Filters --}}
+&lt;div class="card border-0 shadow-sm mb-3"&gt;
+    &lt;div class="card-body"&gt;
+        &lt;form method="GET" class="row g-2 align-items-end"&gt;
+            &lt;div class="col-md-5"&gt;
+                &lt;input type="text" name="search" class="form-control" placeholder="Search by name, email, company, code..."
+                       value="{{ request('search') }}"&gt;
+            &lt;/div&gt;
+            &lt;div class="col-md-3"&gt;
+                &lt;select name="status" class="form-select"&gt;
+                    &lt;option value=""&gt;All Status&lt;/option&gt;
+                    &lt;option value="active"    {{ request('status') === 'active'    ? 'selected' : '' }}&gt;Active&lt;/option&gt;
+                    &lt;option value="pending"   {{ request('status') === 'pending'   ? 'selected' : '' }}&gt;Pending&lt;/option&gt;
+                    &lt;option value="suspended" {{ request('status') === 'suspended' ? 'selected' : '' }}&gt;Suspended&lt;/option&gt;
+                &lt;/select&gt;
+            &lt;/div&gt;
+            &lt;div class="col-md-2"&gt;
+                &lt;button type="submit" class="btn btn-primary w-100"&gt;Filter&lt;/button&gt;
+            &lt;/div&gt;
+            &lt;div class="col-md-2"&gt;
+                &lt;a href="{{ route('admin.agents.index') }}" class="btn btn-outline-secondary w-100"&gt;Reset&lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/form&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+{{-- Table --}}
+&lt;div class="card border-0 shadow-sm"&gt;
+    &lt;div class="card-body p-0"&gt;
+        &lt;div class="table-responsive"&gt;
+            &lt;table class="table table-hover mb-0"&gt;
+                &lt;thead class="table-light"&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;Agent&lt;/th&gt;&lt;th&gt;Code&lt;/th&gt;&lt;th&gt;Company&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;
+                        &lt;th&gt;Wallet Balance&lt;/th&gt;&lt;th&gt;Commission&lt;/th&gt;&lt;th&gt;Joined&lt;/th&gt;&lt;th&gt;Actions&lt;/th&gt;
+                    &lt;/tr&gt;
+                &lt;/thead&gt;
+                &lt;tbody&gt;
+                    @forelse($agents as $agent)
+                    &lt;tr&gt;
+                        &lt;td&gt;
+                            &lt;div class="fw-semibold"&gt;{{ $agent-&gt;full_name }}&lt;/div&gt;
+                            &lt;div class="small text-muted"&gt;{{ $agent-&gt;email }}&lt;/div&gt;
+                        &lt;/td&gt;
+                        &lt;td&gt;&lt;code&gt;{{ $agent-&gt;agent_code }}&lt;/code&gt;&lt;/td&gt;
+                        &lt;td&gt;{{ $agent-&gt;company_name ?? '—' }}&lt;/td&gt;
+                        &lt;td&gt;{!! $agent-&gt;approval_status_badge !!}&lt;/td&gt;
+                        &lt;td&gt;
+                            @if($agent-&gt;wallet)
+                                &lt;span class="fw-semibold text-success"&gt;PKR {{ number_format($agent-&gt;wallet-&gt;balance, 0) }}&lt;/span&gt;
+                            @else
+                                &lt;span class="text-muted"&gt;—&lt;/span&gt;
+                            @endif
+                        &lt;/td&gt;
+                        &lt;td&gt;{{ $agent-&gt;commission_rate ?? 0 }}%&lt;/td&gt;
+                        &lt;td class="small text-muted"&gt;{{ $agent-&gt;created_at-&gt;format('d M Y') }}&lt;/td&gt;
+                        &lt;td&gt;
+                            &lt;div class="d-flex gap-1 flex-wrap"&gt;
+                                &lt;a href="{{ route('admin.agents.show', $agent) }}" class="btn btn-sm btn-outline-primary" title="View"&gt;
+                                    &lt;i class="bi bi-eye"&gt;&lt;/i&gt;
+                                &lt;/a&gt;
+                                &lt;a href="{{ route('admin.agents.edit', $agent) }}" class="btn btn-sm btn-outline-secondary" title="Edit"&gt;
+                                    &lt;i class="bi bi-pencil"&gt;&lt;/i&gt;
+                                &lt;/a&gt;
+                                &lt;a href="{{ route('admin.agents.permissions', $agent) }}" class="btn btn-sm btn-outline-warning" title="Permissions"&gt;
+                                    &lt;i class="bi bi-shield-check"&gt;&lt;/i&gt;
+                                &lt;/a&gt;
+                                &lt;a href="{{ route('admin.agents.wallet', $agent) }}" class="btn btn-sm btn-outline-success" title="Wallet"&gt;
+                                    &lt;i class="bi bi-wallet2"&gt;&lt;/i&gt;
+                                &lt;/a&gt;
+                                @if($agent-&gt;approval_status === 'pending')
+                                    &lt;form method="POST" action="{{ route('admin.agents.approve', $agent) }}" class="d-inline"&gt;
+                                        @csrf
+                                        &lt;button type="submit" class="btn btn-sm btn-success" title="Approve"&gt;
+                                            &lt;i class="bi bi-check-lg"&gt;&lt;/i&gt;
+                                        &lt;/button&gt;
+                                    &lt;/form&gt;
+                                @elseif($agent-&gt;approval_status === 'active')
+                                    &lt;button type="button" class="btn btn-sm btn-warning" title="Suspend"
+                                            data-bs-toggle="modal" data-bs-target="#suspendModal{{ $agent-&gt;id }}"&gt;
+                                        &lt;i class="bi bi-pause-circle"&gt;&lt;/i&gt;
+                                    &lt;/button&gt;
+                                @elseif($agent-&gt;approval_status === 'suspended')
+                                    &lt;form method="POST" action="{{ route('admin.agents.activate', $agent) }}" class="d-inline"&gt;
+                                        @csrf
+                                        &lt;button type="submit" class="btn btn-sm btn-info" title="Activate"&gt;
+                                            &lt;i class="bi bi-play-circle"&gt;&lt;/i&gt;
+                                        &lt;/button&gt;
+                                    &lt;/form&gt;
+                                @endif
+                            &lt;/div&gt;
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+
+                    {{-- Suspend Modal --}}
+                    &lt;div class="modal fade" id="suspendModal{{ $agent-&gt;id }}" tabindex="-1"&gt;
+                        &lt;div class="modal-dialog"&gt;
+                            &lt;div class="modal-content"&gt;
+                                &lt;form method="POST" action="{{ route('admin.agents.suspend', $agent) }}"&gt;
+                                    @csrf
+                                    &lt;div class="modal-header"&gt;
+                                        &lt;h5 class="modal-title"&gt;Suspend {{ $agent-&gt;full_name }}&lt;/h5&gt;
+                                        &lt;button type="button" class="btn-close" data-bs-dismiss="modal"&gt;&lt;/button&gt;
+                                    &lt;/div&gt;
+                                    &lt;div class="modal-body"&gt;
+                                        &lt;label class="form-label"&gt;Reason (optional)&lt;/label&gt;
+                                        &lt;textarea name="reason" class="form-control" rows="3" placeholder="Reason for suspension..."&gt;&lt;/textarea&gt;
+                                    &lt;/div&gt;
+                                    &lt;div class="modal-footer"&gt;
+                                        &lt;button type="button" class="btn btn-secondary" data-bs-dismiss="modal"&gt;Cancel&lt;/button&gt;
+                                        &lt;button type="submit" class="btn btn-warning"&gt;Suspend Agent&lt;/button&gt;
+                                    &lt;/div&gt;
+                                &lt;/form&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    @empty
+                    &lt;tr&gt;
+                        &lt;td colspan="8" class="text-center py-4 text-muted"&gt;No agents found.&lt;/td&gt;
+                    &lt;/tr&gt;
+                    @endforelse
+                &lt;/tbody&gt;
+            &lt;/table&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    @if($agents-&gt;hasPages())
+    &lt;div class="card-footer bg-white"&gt;
+        {{ $agents-&gt;withQueryString()-&gt;links() }}
+    &lt;/div&gt;
+    @endif
+&lt;/div&gt;
+@endsection</code></pre>
+
+        <hr>
+
+        <h2>View 2: Agent Detail (with Tabs)</h2>
+        <div class="file-badge"><i class="bi bi-file-code"></i> resources/views/admin/agents/show.blade.php</div>
+        <pre><code class="language-markup">@extends('admin.layouts.app')
+@section('title', 'Agent: ' . $agent-&gt;full_name)
+
+@section('content')
+&lt;div class="d-flex justify-content-between align-items-center mb-4"&gt;
+    &lt;div&gt;
+        &lt;h4 class="mb-1"&gt;{{ $agent-&gt;full_name }}&lt;/h4&gt;
+        &lt;small class="text-muted"&gt;{{ $agent-&gt;agent_code }} &amp;bull; {{ $agent-&gt;email }}&lt;/small&gt;
+    &lt;/div&gt;
+    &lt;div class="d-flex gap-2"&gt;
+        &lt;a href="{{ route('admin.agents.edit', $agent) }}" class="btn btn-outline-secondary"&gt;
+            &lt;i class="bi bi-pencil"&gt;&lt;/i&gt; Edit
+        &lt;/a&gt;
+        &lt;a href="{{ route('admin.agents.index') }}" class="btn btn-outline-primary"&gt;
+            &lt;i class="bi bi-arrow-left"&gt;&lt;/i&gt; Back
+        &lt;/a&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+{{-- Tabs --}}
+&lt;ul class="nav nav-tabs mb-4" id="agentTabs"&gt;
+    &lt;li class="nav-item"&gt;&lt;a class="nav-link active" data-bs-toggle="tab" href="#overview"&gt;Overview&lt;/a&gt;&lt;/li&gt;
+    &lt;li class="nav-item"&gt;&lt;a class="nav-link" data-bs-toggle="tab" href="#permissions"&gt;Permissions&lt;/a&gt;&lt;/li&gt;
+    &lt;li class="nav-item"&gt;&lt;a class="nav-link" data-bs-toggle="tab" href="#wallet"&gt;Wallet&lt;/a&gt;&lt;/li&gt;
+    &lt;li class="nav-item"&gt;&lt;a class="nav-link" data-bs-toggle="tab" href="#bookings"&gt;Bookings&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class="tab-content"&gt;
+
+    {{-- Overview Tab --}}
+    &lt;div class="tab-pane fade show active" id="overview"&gt;
+        &lt;div class="row g-4"&gt;
+            &lt;div class="col-lg-8"&gt;
+                &lt;div class="card border-0 shadow-sm"&gt;
+                    &lt;div class="card-header bg-white"&gt;&lt;h6 class="mb-0"&gt;Agent Information&lt;/h6&gt;&lt;/div&gt;
+                    &lt;div class="card-body"&gt;
+                        &lt;div class="row g-3"&gt;
+                            &lt;div class="col-md-6"&gt;&lt;label class="text-muted small"&gt;Full Name&lt;/label&gt;&lt;div class="fw-semibold"&gt;{{ $agent-&gt;full_name }}&lt;/div&gt;&lt;/div&gt;
+                            &lt;div class="col-md-6"&gt;&lt;label class="text-muted small"&gt;Email&lt;/label&gt;&lt;div&gt;{{ $agent-&gt;email }}&lt;/div&gt;&lt;/div&gt;
+                            &lt;div class="col-md-6"&gt;&lt;label class="text-muted small"&gt;Phone&lt;/label&gt;&lt;div&gt;{{ $agent-&gt;phone ?? '—' }}&lt;/div&gt;&lt;/div&gt;
+                            &lt;div class="col-md-6"&gt;&lt;label class="text-muted small"&gt;Agent Code&lt;/label&gt;&lt;div&gt;&lt;code&gt;{{ $agent-&gt;agent_code }}&lt;/code&gt;&lt;/div&gt;&lt;/div&gt;
+                            &lt;div class="col-md-6"&gt;&lt;label class="text-muted small"&gt;Company&lt;/label&gt;&lt;div&gt;{{ $agent-&gt;company_name ?? '—' }}&lt;/div&gt;&lt;/div&gt;
+                            &lt;div class="col-md-6"&gt;&lt;label class="text-muted small"&gt;Company Phone&lt;/label&gt;&lt;div&gt;{{ $agent-&gt;company_phone ?? '—' }}&lt;/div&gt;&lt;/div&gt;
+                            &lt;div class="col-md-6"&gt;&lt;label class="text-muted small"&gt;CNIC / Reg No.&lt;/label&gt;&lt;div&gt;{{ $agent-&gt;cnic_or_reg_number ?? '—' }}&lt;/div&gt;&lt;/div&gt;
+                            &lt;div class="col-md-6"&gt;&lt;label class="text-muted small"&gt;Commission Rate&lt;/label&gt;&lt;div&gt;{{ $agent-&gt;commission_rate ?? 0 }}%&lt;/div&gt;&lt;/div&gt;
+                            &lt;div class="col-12"&gt;&lt;label class="text-muted small"&gt;Company Address&lt;/label&gt;&lt;div&gt;{{ $agent-&gt;company_address ?? '—' }}&lt;/div&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class="col-lg-4"&gt;
+                &lt;div class="card border-0 shadow-sm mb-3"&gt;
+                    &lt;div class="card-body text-center"&gt;
+                        &lt;div class="mb-3"&gt;{!! $agent-&gt;approval_status_badge !!}&lt;/div&gt;
+                        @if($agent-&gt;approval_status === 'pending')
+                            &lt;form method="POST" action="{{ route('admin.agents.approve', $agent) }}"&gt;
+                                @csrf
+                                &lt;button type="submit" class="btn btn-success w-100 mb-2"&gt;Approve Agent&lt;/button&gt;
+                            &lt;/form&gt;
+                        @elseif($agent-&gt;approval_status === 'active')
+                            &lt;button type="button" class="btn btn-warning w-100" data-bs-toggle="modal" data-bs-target="#suspendModal"&gt;Suspend Agent&lt;/button&gt;
+                        @elseif($agent-&gt;approval_status === 'suspended')
+                            &lt;form method="POST" action="{{ route('admin.agents.activate', $agent) }}"&gt;
+                                @csrf
+                                &lt;button type="submit" class="btn btn-info w-100"&gt;Reactivate Agent&lt;/button&gt;
+                            &lt;/form&gt;
+                        @endif
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;div class="card border-0 shadow-sm"&gt;
+                    &lt;div class="card-header bg-white"&gt;&lt;h6 class="mb-0"&gt;Booking Stats&lt;/h6&gt;&lt;/div&gt;
+                    &lt;div class="card-body p-0"&gt;
+                        &lt;ul class="list-group list-group-flush"&gt;
+                            &lt;li class="list-group-item d-flex justify-content-between"&gt;&lt;span&gt;Hotels&lt;/span&gt;&lt;strong&gt;{{ $bookingStats['hotels'] }}&lt;/strong&gt;&lt;/li&gt;
+                            &lt;li class="list-group-item d-flex justify-content-between"&gt;&lt;span&gt;Flights&lt;/span&gt;&lt;strong&gt;{{ $bookingStats['flights'] }}&lt;/strong&gt;&lt;/li&gt;
+                            &lt;li class="list-group-item d-flex justify-content-between"&gt;&lt;span&gt;Tours&lt;/span&gt;&lt;strong&gt;{{ $bookingStats['tours'] }}&lt;/strong&gt;&lt;/li&gt;
+                            &lt;li class="list-group-item d-flex justify-content-between"&gt;&lt;span&gt;Umrah&lt;/span&gt;&lt;strong&gt;{{ $bookingStats['umrah'] }}&lt;/strong&gt;&lt;/li&gt;
+                            &lt;li class="list-group-item d-flex justify-content-between bg-light"&gt;&lt;span class="fw-semibold"&gt;Total&lt;/span&gt;&lt;strong&gt;{{ $bookingStats['total'] }}&lt;/strong&gt;&lt;/li&gt;
+                        &lt;/ul&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    {{-- Permissions Tab --}}
+    &lt;div class="tab-pane fade" id="permissions"&gt;
+        @include('admin.agents._tab_permissions')
+    &lt;/div&gt;
+
+    {{-- Wallet Tab --}}
+    &lt;div class="tab-pane fade" id="wallet"&gt;
+        @include('admin.agents._tab_wallet')
+    &lt;/div&gt;
+
+    {{-- Bookings Tab --}}
+    &lt;div class="tab-pane fade" id="bookings"&gt;
+        &lt;p class="text-muted"&gt;
+            &lt;a href="{{ route('admin.bookings.all') }}?agent_id={{ $agent-&gt;id }}"&gt;View all bookings by this agent &rarr;&lt;/a&gt;
+        &lt;/p&gt;
+    &lt;/div&gt;
+
+&lt;/div&gt;
+
+{{-- Suspend Modal --}}
+&lt;div class="modal fade" id="suspendModal" tabindex="-1"&gt;
+    &lt;div class="modal-dialog"&gt;
+        &lt;div class="modal-content"&gt;
+            &lt;form method="POST" action="{{ route('admin.agents.suspend', $agent) }}"&gt;
+                @csrf
+                &lt;div class="modal-header"&gt;
+                    &lt;h5 class="modal-title"&gt;Suspend Agent&lt;/h5&gt;
+                    &lt;button type="button" class="btn-close" data-bs-dismiss="modal"&gt;&lt;/button&gt;
+                &lt;/div&gt;
+                &lt;div class="modal-body"&gt;
+                    &lt;label class="form-label"&gt;Reason (optional)&lt;/label&gt;
+                    &lt;textarea name="reason" class="form-control" rows="3"&gt;&lt;/textarea&gt;
+                &lt;/div&gt;
+                &lt;div class="modal-footer"&gt;
+                    &lt;button type="button" class="btn btn-secondary" data-bs-dismiss="modal"&gt;Cancel&lt;/button&gt;
+                    &lt;button type="submit" class="btn btn-warning"&gt;Confirm Suspend&lt;/button&gt;
+                &lt;/div&gt;
+            &lt;/form&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+@endsection</code></pre>
+
+        <hr>
+
+        <h2>View 3: Permissions Tab (partial)</h2>
+        <div class="file-badge"><i class="bi bi-file-code"></i> resources/views/admin/agents/_tab_permissions.blade.php</div>
+        <pre><code class="language-markup">&lt;form method="POST" action="{{ route('admin.agents.permissions.save', $agent) }}"&gt;
+    @csrf
+    &lt;div class="card border-0 shadow-sm"&gt;
+        &lt;div class="card-header bg-white d-flex justify-content-between align-items-center"&gt;
+            &lt;h6 class="mb-0"&gt;&lt;i class="bi bi-shield-check"&gt;&lt;/i&gt; Module Permissions&lt;/h6&gt;
+            &lt;button type="submit" class="btn btn-primary btn-sm"&gt;Save Permissions&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class="card-body"&gt;
+
+            &lt;div class="row g-4"&gt;
+                {{-- Module Access --}}
+                &lt;div class="col-md-6"&gt;
+                    &lt;h6 class="text-muted text-uppercase small fw-bold mb-3"&gt;Module Access&lt;/h6&gt;
+                    @foreach(['module.hotels' =&gt; 'Hotels', 'module.flights' =&gt; 'Flights', 'module.tours' =&gt; 'Tours', 'module.umrah' =&gt; 'Umrah', 'module.visa' =&gt; 'Visa'] as $key =&gt; $label)
+                    &lt;div class="form-check form-switch mb-3"&gt;
+                        &lt;input class="form-check-input" type="checkbox" name="permissions[{{ $key }}]" value="1"
+                               id="perm_{{ str_replace('.', '_', $key) }}"
+                               {{ isset($agentPermissions[$key]) &amp;&amp; $agentPermissions[$key] ? 'checked' : '' }}&gt;
+                        &lt;label class="form-check-label fw-semibold" for="perm_{{ str_replace('.', '_', $key) }}"&gt;
+                            {{ $label }}
+                        &lt;/label&gt;
+                    &lt;/div&gt;
+                    @endforeach
+                &lt;/div&gt;
+
+                {{-- Sub Permissions --}}
+                &lt;div class="col-md-6"&gt;
+                    &lt;h6 class="text-muted text-uppercase small fw-bold mb-3"&gt;Source Permissions&lt;/h6&gt;
+                    @foreach(['hotels.api' =&gt; 'API Hotels (Hotelbeds/Agoda)', 'hotels.manual' =&gt; 'Manual Hotels', 'flights.api' =&gt; 'API Flights (Amadeus/Sabre)', 'flights.manual' =&gt; 'Manual Flights', 'tours.manual' =&gt; 'Manual Tours', 'umrah.manual' =&gt; 'Manual Umrah Packages', 'visa.submit' =&gt; 'Submit Visa Requests'] as $key =&gt; $label)
+                    &lt;div class="form-check form-switch mb-3"&gt;
+                        &lt;input class="form-check-input" type="checkbox" name="permissions[{{ $key }}]" value="1"
+                               id="perm_{{ str_replace('.', '_', $key) }}"
+                               {{ isset($agentPermissions[$key]) &amp;&amp; $agentPermissions[$key] ? 'checked' : '' }}&gt;
+                        &lt;label class="form-check-label" for="perm_{{ str_replace('.', '_', $key) }}"&gt;
+                            {{ $label }}
+                        &lt;/label&gt;
+                    &lt;/div&gt;
+                    @endforeach
+                &lt;/div&gt;
+
+                {{-- Wallet Permissions --}}
+                &lt;div class="col-md-6"&gt;
+                    &lt;h6 class="text-muted text-uppercase small fw-bold mb-3"&gt;Wallet&lt;/h6&gt;
+                    @foreach(['wallet.view' =&gt; 'View Wallet Balance', 'wallet.request' =&gt; 'Request Top-Up', 'bookings.view' =&gt; 'View Own Bookings'] as $key =&gt; $label)
+                    &lt;div class="form-check form-switch mb-3"&gt;
+                        &lt;input class="form-check-input" type="checkbox" name="permissions[{{ $key }}]" value="1"
+                               id="perm_{{ str_replace('.', '_', $key) }}"
+                               {{ isset($agentPermissions[$key]) &amp;&amp; $agentPermissions[$key] ? 'checked' : '' }}&gt;
+                        &lt;label class="form-check-label" for="perm_{{ str_replace('.', '_', $key) }}"&gt;
+                            {{ $label }}
+                        &lt;/label&gt;
+                    &lt;/div&gt;
+                    @endforeach
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/form&gt;</code></pre>
+
+        <hr>
+
+        <h2>View 4: Wallet Tab (partial)</h2>
+        <div class="file-badge"><i class="bi bi-file-code"></i> resources/views/admin/agents/_tab_wallet.blade.php</div>
+        <pre><code class="language-markup">@php $wallet = $agent-&gt;wallet; @endphp
+
+{{-- Balance Cards --}}
+&lt;div class="row g-3 mb-4"&gt;
+    &lt;div class="col-md-4"&gt;
+        &lt;div class="card border-0 shadow-sm text-center"&gt;
+            &lt;div class="card-body py-3"&gt;
+                &lt;div class="text-muted small"&gt;Balance&lt;/div&gt;
+                &lt;div class="fs-4 fw-bold text-success"&gt;PKR {{ number_format($wallet?-&gt;balance ?? 0, 2) }}&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="col-md-4"&gt;
+        &lt;div class="card border-0 shadow-sm text-center"&gt;
+            &lt;div class="card-body py-3"&gt;
+                &lt;div class="text-muted small"&gt;Total Credited&lt;/div&gt;
+                &lt;div class="fs-4 fw-bold text-primary"&gt;PKR {{ number_format($wallet?-&gt;total_credited ?? 0, 2) }}&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="col-md-4"&gt;
+        &lt;div class="card border-0 shadow-sm text-center"&gt;
+            &lt;div class="card-body py-3"&gt;
+                &lt;div class="text-muted small"&gt;Total Debited&lt;/div&gt;
+                &lt;div class="fs-4 fw-bold text-danger"&gt;PKR {{ number_format($wallet?-&gt;total_debited ?? 0, 2) }}&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="row g-3"&gt;
+    {{-- Add Balance --}}
+    &lt;div class="col-md-6"&gt;
+        &lt;div class="card border-0 shadow-sm"&gt;
+            &lt;div class="card-header bg-success text-white"&gt;&lt;h6 class="mb-0"&gt;Add Balance (Credit)&lt;/h6&gt;&lt;/div&gt;
+            &lt;div class="card-body"&gt;
+                &lt;form method="POST" action="{{ route('admin.agents.wallet.credit', $agent) }}"&gt;
+                    @csrf
+                    &lt;div class="mb-3"&gt;
+                        &lt;label class="form-label"&gt;Amount (PKR)&lt;/label&gt;
+                        &lt;input type="number" name="amount" class="form-control" min="1" step="1" required&gt;
+                    &lt;/div&gt;
+                    &lt;div class="mb-3"&gt;
+                        &lt;label class="form-label"&gt;Payment Method&lt;/label&gt;
+                        &lt;input type="text" name="payment_method" class="form-control" placeholder="e.g. Bank Transfer, Cash"&gt;
+                    &lt;/div&gt;
+                    &lt;div class="mb-3"&gt;
+                        &lt;label class="form-label"&gt;Note&lt;/label&gt;
+                        &lt;textarea name="note" class="form-control" rows="2" placeholder="Optional note..."&gt;&lt;/textarea&gt;
+                    &lt;/div&gt;
+                    &lt;button type="submit" class="btn btn-success w-100"&gt;Add Balance&lt;/button&gt;
+                &lt;/form&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    {{-- Deduct Balance --}}
+    &lt;div class="col-md-6"&gt;
+        &lt;div class="card border-0 shadow-sm"&gt;
+            &lt;div class="card-header bg-danger text-white"&gt;&lt;h6 class="mb-0"&gt;Deduct Balance (Debit)&lt;/h6&gt;&lt;/div&gt;
+            &lt;div class="card-body"&gt;
+                &lt;form method="POST" action="{{ route('admin.agents.wallet.debit', $agent) }}"&gt;
+                    @csrf
+                    &lt;div class="mb-3"&gt;
+                        &lt;label class="form-label"&gt;Amount (PKR)&lt;/label&gt;
+                        &lt;input type="number" name="amount" class="form-control" min="1" step="1" required&gt;
+                    &lt;/div&gt;
+                    &lt;div class="mb-3"&gt;
+                        &lt;label class="form-label"&gt;Reason &lt;span class="text-danger"&gt;*&lt;/span&gt;&lt;/label&gt;
+                        &lt;textarea name="note" class="form-control" rows="2" placeholder="Reason for deduction..." required&gt;&lt;/textarea&gt;
+                    &lt;/div&gt;
+                    &lt;button type="submit" class="btn btn-danger w-100"
+                            onclick="return confirm('Deduct from wallet?')"&gt;Deduct Balance&lt;/button&gt;
+                &lt;/form&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="mt-3 text-end"&gt;
+    &lt;a href="{{ route('admin.agents.wallet.transactions', $agent) }}" class="btn btn-outline-primary"&gt;
+        &lt;i class="bi bi-clock-history"&gt;&lt;/i&gt; View Full Transaction History
+    &lt;/a&gt;
+&lt;/div&gt;</code></pre>
+
+        <hr>
+
+        <h2>View 5: Top-Up Requests List</h2>
+        <div class="file-badge"><i class="bi bi-file-code"></i> resources/views/admin/topup-requests/index.blade.php</div>
+        <pre><code class="language-markup">@extends('admin.layouts.app')
+@section('title', 'Top-Up Requests')
+
+@section('content')
+&lt;div class="d-flex justify-content-between align-items-center mb-4"&gt;
+    &lt;div&gt;
+        &lt;h4 class="mb-1"&gt;Wallet Top-Up Requests&lt;/h4&gt;
+        @if($pendingCount &gt; 0)
+            &lt;span class="badge bg-warning text-dark"&gt;{{ $pendingCount }} pending&lt;/span&gt;
+        @endif
+    &lt;/div&gt;
+&lt;/div&gt;
+
+{{-- Filter --}}
+&lt;div class="card border-0 shadow-sm mb-3"&gt;
+    &lt;div class="card-body py-2"&gt;
+        &lt;form method="GET" class="d-flex gap-2 align-items-center"&gt;
+            &lt;select name="status" class="form-select form-select-sm" style="width:150px;"&gt;
+                &lt;option value=""&gt;All Status&lt;/option&gt;
+                &lt;option value="pending"  {{ request('status') === 'pending'  ? 'selected' : '' }}&gt;Pending&lt;/option&gt;
+                &lt;option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}&gt;Approved&lt;/option&gt;
+                &lt;option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}&gt;Rejected&lt;/option&gt;
+            &lt;/select&gt;
+            &lt;button type="submit" class="btn btn-primary btn-sm"&gt;Filter&lt;/button&gt;
+            &lt;a href="{{ route('admin.topup.index') }}" class="btn btn-outline-secondary btn-sm"&gt;Reset&lt;/a&gt;
+        &lt;/form&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="card border-0 shadow-sm"&gt;
+    &lt;div class="card-body p-0"&gt;
+        &lt;div class="table-responsive"&gt;
+            &lt;table class="table table-hover mb-0"&gt;
+                &lt;thead class="table-light"&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;#&lt;/th&gt;&lt;th&gt;Agent&lt;/th&gt;&lt;th&gt;Amount&lt;/th&gt;&lt;th&gt;Method&lt;/th&gt;
+                        &lt;th&gt;Proof&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Submitted&lt;/th&gt;&lt;th&gt;Actions&lt;/th&gt;
+                    &lt;/tr&gt;
+                &lt;/thead&gt;
+                &lt;tbody&gt;
+                    @forelse($requests as $req)
+                    &lt;tr&gt;
+                        &lt;td&gt;{{ $req-&gt;id }}&lt;/td&gt;
+                        &lt;td&gt;
+                            &lt;div class="fw-semibold"&gt;{{ $req-&gt;agent-&gt;full_name }}&lt;/div&gt;
+                            &lt;div class="small text-muted"&gt;{{ $req-&gt;agent-&gt;agent_code }}&lt;/div&gt;
+                        &lt;/td&gt;
+                        &lt;td class="fw-semibold"&gt;PKR {{ number_format($req-&gt;amount, 2) }}&lt;/td&gt;
+                        &lt;td&gt;{{ $req-&gt;payment_method ?? '—' }}&lt;/td&gt;
+                        &lt;td&gt;
+                            @if($req-&gt;payment_proof)
+                                &lt;a href="{{ asset('storage/' . $req-&gt;payment_proof) }}" target="_blank" class="btn btn-sm btn-outline-secondary"&gt;
+                                    &lt;i class="bi bi-file-earmark"&gt;&lt;/i&gt; View
+                                &lt;/a&gt;
+                            @else
+                                &lt;span class="text-muted"&gt;—&lt;/span&gt;
+                            @endif
+                        &lt;/td&gt;
+                        &lt;td&gt;&lt;span class="{{ $req-&gt;status_badge_class }}"&gt;{{ ucfirst($req-&gt;status) }}&lt;/span&gt;&lt;/td&gt;
+                        &lt;td class="small text-muted"&gt;{{ $req-&gt;created_at-&gt;format('d M Y, h:i A') }}&lt;/td&gt;
+                        &lt;td&gt;
+                            @if($req-&gt;status === 'pending')
+                            &lt;div class="d-flex gap-1"&gt;
+                                &lt;form method="POST" action="{{ route('admin.topup.approve', $req) }}" class="d-inline"&gt;
+                                    @csrf
+                                    &lt;button type="submit" class="btn btn-sm btn-success"
+                                            onclick="return confirm('Approve PKR {{ number_format($req-&gt;amount, 0) }} top-up?')"&gt;
+                                        &lt;i class="bi bi-check-lg"&gt;&lt;/i&gt; Approve
+                                    &lt;/button&gt;
+                                &lt;/form&gt;
+                                &lt;button type="button" class="btn btn-sm btn-danger"
+                                        data-bs-toggle="modal" data-bs-target="#rejectModal{{ $req-&gt;id }}"&gt;
+                                    &lt;i class="bi bi-x-lg"&gt;&lt;/i&gt; Reject
+                                &lt;/button&gt;
+                            &lt;/div&gt;
+
+                            {{-- Reject Modal --}}
+                            &lt;div class="modal fade" id="rejectModal{{ $req-&gt;id }}" tabindex="-1"&gt;
+                                &lt;div class="modal-dialog"&gt;
+                                    &lt;div class="modal-content"&gt;
+                                        &lt;form method="POST" action="{{ route('admin.topup.reject', $req) }}"&gt;
+                                            @csrf
+                                            &lt;div class="modal-header"&gt;
+                                                &lt;h5 class="modal-title"&gt;Reject Top-Up Request&lt;/h5&gt;
+                                                &lt;button type="button" class="btn-close" data-bs-dismiss="modal"&gt;&lt;/button&gt;
+                                            &lt;/div&gt;
+                                            &lt;div class="modal-body"&gt;
+                                                &lt;label class="form-label"&gt;Rejection Reason &lt;span class="text-danger"&gt;*&lt;/span&gt;&lt;/label&gt;
+                                                &lt;textarea name="rejection_note" class="form-control" rows="3" required
+                                                          placeholder="Tell agent why request was rejected..."&gt;&lt;/textarea&gt;
+                                            &lt;/div&gt;
+                                            &lt;div class="modal-footer"&gt;
+                                                &lt;button type="button" class="btn btn-secondary" data-bs-dismiss="modal"&gt;Cancel&lt;/button&gt;
+                                                &lt;button type="submit" class="btn btn-danger"&gt;Reject Request&lt;/button&gt;
+                                            &lt;/div&gt;
+                                        &lt;/form&gt;
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                            @else
+                                &lt;a href="{{ route('admin.topup.show', $req) }}" class="btn btn-sm btn-outline-secondary"&gt;
+                                    &lt;i class="bi bi-eye"&gt;&lt;/i&gt; View
+                                &lt;/a&gt;
+                            @endif
+                        &lt;/td&gt;
+                    &lt;/tr&gt;
+                    @empty
+                    &lt;tr&gt;
+                        &lt;td colspan="8" class="text-center py-4 text-muted"&gt;No requests found.&lt;/td&gt;
+                    &lt;/tr&gt;
+                    @endforelse
+                &lt;/tbody&gt;
+            &lt;/table&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    @if($requests-&gt;hasPages())
+    &lt;div class="card-footer bg-white"&gt;{{ $requests-&gt;withQueryString()-&gt;links() }}&lt;/div&gt;
+    @endif
+&lt;/div&gt;
+@endsection</code></pre>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html>

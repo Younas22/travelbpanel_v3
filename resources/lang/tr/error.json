@@ -1,0 +1,22 @@
+{
+    "page_title": "Sayfa bulunamadı",
+    "error_code": "404",
+    "error_title": "Hay aksi! Bu sayfa havalandı",
+    "error_description": "Aradığınız sayfa mevcut değil veya yeni bir hedefe taşınmış.",
+    "go_home": "Ana sayfaya git",
+    "view_pricing": "Fiyatlandırma planlarını görüntüle",
+    "limited_offer": "Sınırlı süreli teklif",
+    "promo_title": "Çevrimiçi seyahat işinizi başlatın",
+    "promo_description": "Tarz ile başlatın — <span class=\"font-semibold text-gray-800\">Otel, Uçuş, Tur, Vize ve Umre</span> rezervasyonları hepsi bir platformda",
+    "white_label": "Beyaz etiket çözümü",
+    "setup_time": "15 dakikada kurulum",
+    "hotels": "Oteller",
+    "flights": "Uçuşlar",
+    "tours": "Turlar",
+    "visa": "Vize",
+    "umrah": "Umre",
+    "starting_from": "Sadece başlangıç",
+    "solution_desc": "Eksiksiz beyaz etiket seyahat işletme çözümü",
+    "get_started": "Şimdi başla",
+    "powered_by": "Tarafından desteklenmektedir"
+}

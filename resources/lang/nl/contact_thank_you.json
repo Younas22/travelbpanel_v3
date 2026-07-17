@@ -1,0 +1,30 @@
+{
+    "heading": "Bedankt voor het contact opnemen!",
+    "message": "Wij hebben uw bericht ontvangen en ons team zal dit binnenkort beoordelen. U ontvangt een bevestigingsmail op het door u opgegeven e-mailadres.",
+
+    "what_next_title": "Wat gebeurt er nu?",
+
+    "step_review_title": "Wij beoordelen uw bericht",
+    "step_review_desc": "Ons team zal uw aanvraag zorgvuldig bekijken",
+
+    "step_response_title": "Reactie binnen 24-48 uur",
+    "step_response_desc": "Wij reageren meestal binnen 1-2 werkdagen",
+
+    "step_reply_title": "Wij nemen contact met u op",
+    "step_reply_desc": "U ontvangt onze reactie per e-mail",
+
+    "step_urgent_title": "Dringende hulp nodig?",
+    "step_urgent_desc": "Bel ons op",
+
+    "contact_title": "Directe hulp nodig?",
+    "contact_desc": "Als uw verzoek dringend is, neem dan direct contact met ons op:",
+
+    "email_label": "E-mail",
+    "phone_label": "Telefoon",
+
+    "office_hours": "Kantooruren",
+    "office_time": "Maandag - Vrijdag, 09:30 - 18:00",
+
+    "btn_home": "Terug naar home",
+    "btn_contact": "Nog een bericht verzenden"
+  }

@@ -1,0 +1,22 @@
+{
+    "title": "Your Flight Invoice",
+    "booking_reference": "Booking Reference",
+    "dear": "Dear",
+    "intro": "Thank you for booking with :business. Your flight booking has been confirmed successfully.",
+    "invoice_instruction": "Please click the button below to view and download your complete invoice:",
+    "view_invoice": "View Your Invoice",
+    "copy_link": "Or copy this link:",
+    "important_title": "Important:",
+    "important_1": "Please carry a printed or digital copy of your invoice when traveling",
+    "important_2": "Arrive at the airport at least 3 hours before your flight departure",
+    "important_3": "Carry valid identification and travel documents",
+    "need_help": "Need Help?",
+    "help_text": "If you have any questions, please contact us:",
+    "support": "24/7 Customer Support",
+    "thank_you": "Thank you for choosing :business. We wish you a safe and pleasant journey!",
+    "regards": "Best regards,",
+    "team": "Team",
+    "trusted_partner": "Your Trusted Travel Partner",
+    "rights": "All rights reserved."
+  }
+

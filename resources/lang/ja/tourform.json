@@ -1,0 +1,22 @@
+{
+    "where": "どこへ",
+    "search_destinations": "目的地を検索",
+    "when": "いつ",
+    "tour_type": "ツアータイプ",
+    "all_tour": "すべてのツアー",
+    "travelers": "旅行者",
+    "adult": "大人",
+    "child": "子供",
+    "apply": "適用",
+    "search_tours": "ツアーを検索",
+    "select_destination": "目的地を選択してください",
+    "select_dates": "日付を選択してください",
+    "type_3_characters": "検索するには少なくとも3文字を入力してください...",
+    "searching": "検索中...",
+    "no_destinations_found": "目的地が見つかりません",
+    "error_loading": "目的地の読み込みエラー",
+    "loading_tour_types": "ツアータイプを読み込み中...",
+    "error_loading_types": "ツアータイプの読み込みエラー",
+    "years_12_plus": "(12歳以上)",
+    "years_2_11": "(2〜11歳)"
+}

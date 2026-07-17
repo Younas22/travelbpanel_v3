@@ -1,0 +1,13 @@
+{
+    "heading": "تحديث حالة الحجز",
+    "dear_customer": "عزيزي العميل،",
+    "booking_text": "تم <strong>:status</strong> حجز <strong>:type</strong> الخاص بك برقم المرجع <strong>:reference</strong>.",
+    "view_details": "عرض التفاصيل",
+    "thank_you": "شكراً لاختيارك :business.",
+    "Confirmed": "تأكيد",
+    "Pending": "قيد الانتظار",
+    "Cancelled": "إلغاء",
+    "flight": "رحلة الطيران",
+    "hotel": "الفندق"
+
+  }

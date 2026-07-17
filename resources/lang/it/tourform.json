@@ -1,0 +1,22 @@
+{
+    "where": "Dove",
+    "search_destinations": "Cerca destinazioni",
+    "when": "Quando",
+    "tour_type": "Tipo di Tour",
+    "all_tour": "Tutti i tour",
+    "travelers": "Viaggiatori",
+    "adult": "Adulto",
+    "child": "Bambino",
+    "apply": "Applica",
+    "search_tours": "Cerca Tour",
+    "select_destination": "Seleziona una destinazione",
+    "select_dates": "Seleziona le date",
+    "type_3_characters": "Digita almeno 3 caratteri per cercare...",
+    "searching": "Ricerca in corso...",
+    "no_destinations_found": "Nessuna destinazione trovata",
+    "error_loading": "Errore nel caricamento delle destinazioni",
+    "loading_tour_types": "Caricamento tipi di tour...",
+    "error_loading_types": "Errore nel caricamento dei tipi di tour",
+    "years_12_plus": "(12+ anni)",
+    "years_2_11": "(2-11 anni)"
+}

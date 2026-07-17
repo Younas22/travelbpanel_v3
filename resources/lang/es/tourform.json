@@ -1,0 +1,22 @@
+{
+    "where": "Dónde",
+    "search_destinations": "Buscar destinos",
+    "when": "Cuándo",
+    "tour_type": "Tipo de tour",
+    "all_tour": "Todos los tours",
+    "travelers": "Viajeros",
+    "adult": "Adulto",
+    "child": "Niño",
+    "apply": "Aplicar",
+    "search_tours": "Buscar tours",
+    "select_destination": "Por favor seleccione un destino",
+    "select_dates": "Por favor seleccione las fechas",
+    "type_3_characters": "Escriba al menos 3 caracteres para buscar...",
+    "searching": "Buscando...",
+    "no_destinations_found": "No se encontraron destinos",
+    "error_loading": "Error al cargar destinos",
+    "loading_tour_types": "Cargando tipos de tours...",
+    "error_loading_types": "Error al cargar tipos de tours",
+    "years_12_plus": "(12+ años)",
+    "years_2_11": "(2-11 años)"
+}

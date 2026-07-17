@@ -1,0 +1,21 @@
+{
+    "page_title": "Demo Account",
+    "header_title": "Demo Account",
+    "header_subtitle": "You're using a demo account for testing purposes",
+    "demo_mode": "Demo Mode",
+    "booking_not_available": "Booking Not Available",
+    "demo_description": "This is a demonstration account. You can explore all features and test the platform, but real bookings cannot be completed.",
+    "start_travel_portal": "Start Your Travel Portal",
+    "upgrade_description": "Want to launch your own travel booking platform? Check out our pricing and features.",
+    "view_pricing": "View Pricing Details",
+    "what_you_can_do": "What You Can Do:",
+    "browse_flights_hotels": "Browse flights and hotels",
+    "view_detailed_info": "View detailed information",
+    "test_booking_flow": "Test the booking flow",
+    "view_invoices": "View invoices and confirmations",
+    "test_ui_features": "Test all UI features",
+    "booking_restricted": "Booking Restricted",
+    "booking_restricted_text": "Payment processing and final bookings are disabled on demo accounts. No real charges will be made.",
+    "go_home": "Go Home",
+    "explore_more": "Explore More Features"
+}

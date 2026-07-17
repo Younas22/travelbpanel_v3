@@ -1,0 +1,21 @@
+{
+    "page_title": "Demo Account",
+    "header_title": "Demo Account",
+    "header_subtitle": "U gebruikt een demo account voor testdoeleinden",
+    "demo_mode": "Demo Modus",
+    "booking_not_available": "Boeking Niet Beschikbaar",
+    "demo_description": "Dit is een demonstratie account. U kunt alle functies verkennen en het platform testen, maar echte boekingen kunnen niet worden voltooid.",
+    "start_travel_portal": "Start Uw Reisportaal",
+    "upgrade_description": "Wilt u uw eigen reisboekingsplatform lanceren? Bekijk onze prijzen en functies.",
+    "view_pricing": "Bekijk Prijsdetails",
+    "what_you_can_do": "Wat U Kunt Doen:",
+    "browse_flights_hotels": "Vluchten en hotels zoeken",
+    "view_detailed_info": "Gedetailleerde informatie bekijken",
+    "test_booking_flow": "De boekingsstroom testen",
+    "view_invoices": "Facturen en bevestigingen bekijken",
+    "test_ui_features": "Alle UI-functies testen",
+    "booking_restricted": "Boeking Beperkt",
+    "booking_restricted_text": "Betalingsverwerking en definitieve boekingen zijn uitgeschakeld op demo accounts. Er worden geen echte kosten in rekening gebracht.",
+    "go_home": "Naar Home",
+    "explore_more": "Meer Functies Verkennen"
+}

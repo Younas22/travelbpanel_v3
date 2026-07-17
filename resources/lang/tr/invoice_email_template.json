@@ -1,0 +1,21 @@
+{
+    "title": "Uçuş Faturanız",
+    "booking_reference": "Rezervasyon Referansı",
+    "dear": "Sayın",
+    "intro": ":business ile rezervasyon yaptığınız için teşekkür ederiz. Uçuş rezervasyonunuz başarıyla onaylandı.",
+    "invoice_instruction": "Tam faturanızı görüntülemek ve indirmek için lütfen aşağıdaki düğmeye tıklayın:",
+    "view_invoice": "Faturanızı Görüntüleyin",
+    "copy_link": "Veya bu bağlantıyı kopyalayın:",
+    "important_title": "Önemli:",
+    "important_1": "Seyahat ederken lütfen faturanızın yazdırılmış veya dijital bir kopyasını yanınızda bulundurun",
+    "important_2": "Uçuşunuzun kalkışından en az 3 saat önce havalimanına varın",
+    "important_3": "Geçerli kimlik ve seyahat belgelerini yanınızda bulundurun",
+    "need_help": "Yardıma mı İhtiyacınız Var?",
+    "help_text": "Herhangi bir sorunuz varsa lütfen bizimle iletişime geçin:",
+    "support": "7/24 Müşteri Desteği",
+    "thank_you": ":business'i seçtiğiniz için teşekkür ederiz. Güvenli ve keyifli bir yolculuk dileriz!",
+    "regards": "Saygılarımızla,",
+    "team": "Ekibi",
+    "trusted_partner": "Güvenilir Seyahat Ortağınız",
+    "rights": "Tüm hakları saklıdır."
+  }

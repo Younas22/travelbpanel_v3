@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 8: Sidebar &amp; Implementation Order — TravelPanel v2 Docs</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        .sidebar { width: 260px; min-height: 100vh; background: #1e293b; position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 100; }
+        .sidebar-brand { display: block; padding: 20px; color: #f8fafc; font-size: 14px; font-weight: 600; border-bottom: 1px solid #334155; text-decoration: none; }
+        .sidebar-brand strong { color: #60a5fa; }
+        .sidebar .nav-link { color: #94a3b8; padding: 8px 20px; font-size: 13px; display: flex; align-items: center; gap: 8px; text-decoration: none; border-radius: 0; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { color: #f8fafc; background: #334155; }
+        .sidebar .nav-section { color: #475569; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 16px 20px 4px; }
+        .main-content { margin-left: 260px; padding: 40px; }
+        .page-header { border-bottom: 1px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 32px; }
+        .page-header h1 { font-size: 28px; font-weight: 700; color: #1e293b; }
+        .page-header .meta { color: #64748b; font-size: 14px; }
+        h2 { font-size: 20px; font-weight: 600; color: #1e293b; margin-top: 40px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+        h3 { font-size: 16px; font-weight: 600; color: #334155; margin-top: 24px; margin-bottom: 8px; }
+        .file-badge { display: inline-block; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 12px; font-size: 12px; font-family: monospace; color: #0f172a; margin-bottom: 12px; }
+        pre[class*="language-"] { border-radius: 8px; font-size: 13px; margin: 0 0 24px 0; }
+        .back-link { color: #3b82f6; text-decoration: none; font-size: 14px; }
+        .back-link:hover { text-decoration: underline; }
+        .phase-card { border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 16px; overflow: hidden; }
+        .phase-header { background: #f8fafc; padding: 12px 16px; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e2e8f0; }
+        .phase-num { width: 28px; height: 28px; border-radius: 50%; background: #3b82f6; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+        .phase-body { padding: 12px 16px; }
+        .step-item { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+        .step-item:last-child { border-bottom: none; }
+        .step-num { color: #94a3b8; font-size: 11px; width: 40px; flex-shrink: 0; padding-top: 1px; }
+        .checklist-item { display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; font-size: 13px; }
+        .checklist-item i { color: #10b981; margin-top: 2px; flex-shrink: 0; }
+        @media (max-width: 768px) { .sidebar { width: 100%; position: relative; min-height: auto; } .main-content { margin-left: 0; padding: 20px; } }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="index.html" class="sidebar-brand"><strong>TravelPanel v2</strong><br>Agent B2B Docs</a>
+        <div class="nav-section">Overview</div>
+        <a href="index.html" class="nav-link"><i class="bi bi-house"></i> Home</a>
+        <div class="nav-section">Detailed Parts</div>
+        <a href="01-migrations.html" class="nav-link"><i class="bi bi-database"></i> Part 1: Migrations</a>
+        <a href="02-models.html" class="nav-link"><i class="bi bi-box"></i> Part 2: Models</a>
+        <a href="03-middleware-routes.html" class="nav-link"><i class="bi bi-signpost-split"></i> Part 3: Middleware &amp; Routes</a>
+        <a href="04-admin-controllers.html" class="nav-link"><i class="bi bi-person-gear"></i> Part 4: Admin Controllers</a>
+        <a href="05-agent-controllers.html" class="nav-link"><i class="bi bi-person-badge"></i> Part 5: Agent Controllers</a>
+        <a href="06-views-agent-layout.html" class="nav-link"><i class="bi bi-layout-sidebar"></i> Part 6: Agent Views</a>
+        <a href="07-views-admin-agents.html" class="nav-link"><i class="bi bi-people"></i> Part 7: Admin Views</a>
+        <a href="08-admin-sidebar-and-implementation-order.html" class="nav-link active"><i class="bi bi-list-check"></i> Part 8: Implementation</a>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <a href="index.html" class="back-link"><i class="bi bi-arrow-left"></i> Back to Index</a>
+            <h1 class="mt-2">Part 8: Sidebar Update &amp; Implementation Order</h1>
+            <div class="meta">Admin sidebar additions, Create Agent form, 9-phase implementation guide, file summary</div>
+        </div>
+
+        <hr>
+
+        <h2>Admin Sidebar — Add Agent Links</h2>
+        <p class="text-muted">Add this block <strong>after the Suppliers nav-item</strong> (line ~60) in the admin sidebar:</p>
+        <div class="file-badge"><i class="bi bi-file-code"></i> resources/views/admin/layouts/sidebar.blade.php — addition</div>
+        <pre><code class="language-markup">{{-- Agents Management --}}
+&lt;div class="nav-item dropdown"&gt;
+    &lt;a href="#" class="nav-link dropdown-toggle {{ request()-&gt;routeIs('admin.agents*') ? 'active' : '' }}" data-bs-toggle="dropdown"&gt;
+        &lt;i class="bi bi-person-badge"&gt;&lt;/i&gt;
+        Agents
+        @php $pendingAgents = \App\Models\User::agents()-&gt;where('approval_status', 'pending')-&gt;count(); @endphp
+        @if($pendingAgents &gt; 0)
+            &lt;span class="badge bg-warning text-dark ms-auto"&gt;{{ $pendingAgents }}&lt;/span&gt;
+        @endif
+    &lt;/a&gt;
+    &lt;ul class="dropdown-menu"&gt;
+        &lt;li&gt;
+            &lt;a class="dropdown-item {{ request()-&gt;routeIs('admin.agents.index') ? 'active' : '' }}"
+               href="{{ route('admin.agents.index') }}"&gt;
+                &lt;i class="bi bi-people"&gt;&lt;/i&gt; All Agents
+            &lt;/a&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+            &lt;a class="dropdown-item {{ request()-&gt;routeIs('admin.agents.create') ? 'active' : '' }}"
+               href="{{ route('admin.agents.create') }}"&gt;
+                &lt;i class="bi bi-person-plus"&gt;&lt;/i&gt; Add New Agent
+            &lt;/a&gt;
+        &lt;/li&gt;
+        &lt;li&gt;&lt;hr class="dropdown-divider"&gt;&lt;/li&gt;
+        &lt;li&gt;
+            &lt;a class="dropdown-item {{ request()-&gt;routeIs('admin.topup*') ? 'active' : '' }}"
+               href="{{ route('admin.topup.index') }}"&gt;
+                &lt;i class="bi bi-wallet2"&gt;&lt;/i&gt; Top-Up Requests
+                @php $pendingTopups = \App\Models\AgentTopupRequest::pending()-&gt;count(); @endphp
+                @if($pendingTopups &gt; 0)
+                    &lt;span class="badge bg-danger ms-1"&gt;{{ $pendingTopups }}&lt;/span&gt;
+                @endif
+            &lt;/a&gt;
+        &lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;</code></pre>
+
+        <hr>
+
+        <h2>Add Create Agent Form</h2>
+        <div class="file-badge"><i class="bi bi-file-code"></i> resources/views/admin/agents/create.blade.php</div>
+        <pre><code class="language-markup">@extends('admin.layouts.app')
+@section('title', 'Add New Agent')
+
+@section('content')
+&lt;div class="d-flex justify-content-between align-items-center mb-4"&gt;
+    &lt;h4&gt;Add New Agent&lt;/h4&gt;
+    &lt;a href="{{ route('admin.agents.index') }}" class="btn btn-outline-secondary"&gt;
+        &lt;i class="bi bi-arrow-left"&gt;&lt;/i&gt; Back
+    &lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class="row justify-content-center"&gt;
+    &lt;div class="col-lg-8"&gt;
+        &lt;form method="POST" action="{{ route('admin.agents.store') }}"&gt;
+            @csrf
+            &lt;div class="card border-0 shadow-sm mb-3"&gt;
+                &lt;div class="card-header bg-white"&gt;&lt;h6 class="mb-0"&gt;Personal Information&lt;/h6&gt;&lt;/div&gt;
+                &lt;div class="card-body"&gt;
+                    &lt;div class="row g-3"&gt;
+                        &lt;div class="col-md-6"&gt;
+                            &lt;label class="form-label"&gt;First Name &lt;span class="text-danger"&gt;*&lt;/span&gt;&lt;/label&gt;
+                            &lt;input type="text" name="first_name" class="form-control @error('first_name') is-invalid @enderror"
+                                   value="{{ old('first_name') }}" required&gt;
+                            @error('first_name') &lt;div class="invalid-feedback"&gt;{{ $message }}&lt;/div&gt; @enderror
+                        &lt;/div&gt;
+                        &lt;div class="col-md-6"&gt;
+                            &lt;label class="form-label"&gt;Last Name &lt;span class="text-danger"&gt;*&lt;/span&gt;&lt;/label&gt;
+                            &lt;input type="text" name="last_name" class="form-control @error('last_name') is-invalid @enderror"
+                                   value="{{ old('last_name') }}" required&gt;
+                            @error('last_name') &lt;div class="invalid-feedback"&gt;{{ $message }}&lt;/div&gt; @enderror
+                        &lt;/div&gt;
+                        &lt;div class="col-md-6"&gt;
+                            &lt;label class="form-label"&gt;Email &lt;span class="text-danger"&gt;*&lt;/span&gt;&lt;/label&gt;
+                            &lt;input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
+                                   value="{{ old('email') }}" required&gt;
+                            @error('email') &lt;div class="invalid-feedback"&gt;{{ $message }}&lt;/div&gt; @enderror
+                        &lt;/div&gt;
+                        &lt;div class="col-md-6"&gt;
+                            &lt;label class="form-label"&gt;Phone&lt;/label&gt;
+                            &lt;input type="text" name="phone" class="form-control" value="{{ old('phone') }}"&gt;
+                        &lt;/div&gt;
+                        &lt;div class="col-md-6"&gt;
+                            &lt;label class="form-label"&gt;Password &lt;span class="text-danger"&gt;*&lt;/span&gt;&lt;/label&gt;
+                            &lt;input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required&gt;
+                            @error('password') &lt;div class="invalid-feedback"&gt;{{ $message }}&lt;/div&gt; @enderror
+                        &lt;/div&gt;
+                        &lt;div class="col-md-6"&gt;
+                            &lt;label class="form-label"&gt;Confirm Password &lt;span class="text-danger"&gt;*&lt;/span&gt;&lt;/label&gt;
+                            &lt;input type="password" name="password_confirmation" class="form-control" required&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;div class="card border-0 shadow-sm mb-3"&gt;
+                &lt;div class="card-header bg-white"&gt;&lt;h6 class="mb-0"&gt;Company Information&lt;/h6&gt;&lt;/div&gt;
+                &lt;div class="card-body"&gt;
+                    &lt;div class="row g-3"&gt;
+                        &lt;div class="col-md-6"&gt;
+                            &lt;label class="form-label"&gt;Company Name&lt;/label&gt;
+                            &lt;input type="text" name="company_name" class="form-control" value="{{ old('company_name') }}"&gt;
+                        &lt;/div&gt;
+                        &lt;div class="col-md-6"&gt;
+                            &lt;label class="form-label"&gt;Company Phone&lt;/label&gt;
+                            &lt;input type="text" name="company_phone" class="form-control" value="{{ old('company_phone') }}"&gt;
+                        &lt;/div&gt;
+                        &lt;div class="col-md-6"&gt;
+                            &lt;label class="form-label"&gt;CNIC / Business Reg No.&lt;/label&gt;
+                            &lt;input type="text" name="cnic_or_reg_number" class="form-control" value="{{ old('cnic_or_reg_number') }}"&gt;
+                        &lt;/div&gt;
+                        &lt;div class="col-md-6"&gt;
+                            &lt;label class="form-label"&gt;Commission Rate (%)&lt;/label&gt;
+                            &lt;input type="number" name="commission_rate" class="form-control" min="0" max="100" step="0.01"
+                                   value="{{ old('commission_rate', 0) }}"&gt;
+                        &lt;/div&gt;
+                        &lt;div class="col-12"&gt;
+                            &lt;label class="form-label"&gt;Company Address&lt;/label&gt;
+                            &lt;textarea name="company_address" class="form-control" rows="2"&gt;{{ old('company_address') }}&lt;/textarea&gt;
+                        &lt;/div&gt;
+                        &lt;div class="col-12"&gt;
+                            &lt;label class="form-label"&gt;Internal Notes&lt;/label&gt;
+                            &lt;textarea name="internal_notes" class="form-control" rows="2" placeholder="Admin-only notes..."&gt;{{ old('internal_notes') }}&lt;/textarea&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;button type="submit" class="btn btn-primary w-100"&gt;
+                &lt;i class="bi bi-person-plus"&gt;&lt;/i&gt; Create Agent
+            &lt;/button&gt;
+        &lt;/form&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+@endsection</code></pre>
+
+        <hr>
+
+        <h2>Implementation Order — Step by Step</h2>
+        <p class="text-muted">Follow phases in order. Each phase depends on the previous completing successfully.</p>
+
+        <div class="phase-card">
+            <div class="phase-header"><div class="phase-num">1</div> Phase 1: Database (Run these first)</div>
+            <div class="phase-body">
+                <pre><code class="language-bash">php artisan make:migration add_agent_fields_to_users_table
+# Paste Migration 1 code, then:
+php artisan migrate
+
+php artisan make:migration create_agent_wallets_table
+# Paste Migration 2 code, then:
+php artisan migrate
+
+php artisan make:migration create_agent_wallet_transactions_table
+# Paste Migration 3 code, then:
+php artisan migrate
+
+php artisan make:migration create_agent_permissions_table
+# Paste Migration 4 code, then:
+php artisan migrate
+
+php artisan make:migration create_agent_topup_requests_table
+# Paste Migration 5 code, then:
+php artisan migrate
+
+php artisan make:migration add_agent_id_to_booking_tables
+# Paste Migration 6 code, then:
+php artisan migrate</code></pre>
+            </div>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header"><div class="phase-num">2</div> Phase 2: Models</div>
+            <div class="phase-body">
+                <div class="step-item"><div class="step-num">Step 2.1</div><div>Create <code>app/Models/AgentWallet.php</code> (Part 2 code)</div></div>
+                <div class="step-item"><div class="step-num">Step 2.2</div><div>Create <code>app/Models/AgentWalletTransaction.php</code> (Part 2 code)</div></div>
+                <div class="step-item"><div class="step-num">Step 2.3</div><div>Create <code>app/Models/AgentPermission.php</code> (Part 2 code)</div></div>
+                <div class="step-item"><div class="step-num">Step 2.4</div><div>Create <code>app/Models/AgentTopupRequest.php</code> (Part 2 code)</div></div>
+                <div class="step-item"><div class="step-num">Step 2.5</div><div>Update <code>app/Models/User.php</code> — add fillable, casts, relations, and methods</div></div>
+            </div>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header"><div class="phase-num">3</div> Phase 3: Middleware &amp; Routes</div>
+            <div class="phase-body">
+                <div class="step-item"><div class="step-num">Step 3.1</div><div>Create <code>app/Http/Middleware/AgentMiddleware.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 3.2</div><div>Create <code>app/Http/Middleware/AgentPermissionMiddleware.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 3.3</div><div>Update <code>bootstrap/app.php</code> — register middleware aliases + agent route file</div></div>
+                <div class="step-item"><div class="step-num">Step 3.4</div><div>Create <code>routes/agent.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 3.5</div><div>Add agent routes to <code>routes/admin.php</code></div></div>
+                <pre class="mt-2"><code class="language-bash">php artisan route:clear
+php artisan route:list --path=agent</code></pre>
+            </div>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header"><div class="phase-num">4</div> Phase 4: Admin Controllers</div>
+            <div class="phase-body">
+                <div class="step-item"><div class="step-num">Step 4.1</div><div>Create <code>app/Http/Controllers/Admin/AgentController.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 4.2</div><div>Create <code>app/Http/Controllers/Admin/AgentWalletController.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 4.3</div><div>Create <code>app/Http/Controllers/Admin/TopupRequestController.php</code></div></div>
+            </div>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header"><div class="phase-num">5</div> Phase 5: Admin Views</div>
+            <div class="phase-body">
+                <div class="step-item"><div class="step-num">Step 5.1</div><div>Create <code>resources/views/admin/agents/index.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 5.2</div><div>Create <code>resources/views/admin/agents/create.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 5.3</div><div>Create <code>resources/views/admin/agents/edit.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 5.4</div><div>Create <code>resources/views/admin/agents/show.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 5.5</div><div>Create <code>resources/views/admin/agents/_tab_permissions.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 5.6</div><div>Create <code>resources/views/admin/agents/_tab_wallet.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 5.7</div><div>Create <code>resources/views/admin/agents/transactions.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 5.8</div><div>Create <code>resources/views/admin/topup-requests/index.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 5.9</div><div>Create <code>resources/views/admin/topup-requests/show.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 5.10</div><div>Update <code>resources/views/admin/layouts/sidebar.blade.php</code> — add Agents menu</div></div>
+            </div>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header"><div class="phase-num">6</div> Phase 6: Agent Auth + Core</div>
+            <div class="phase-body">
+                <div class="step-item"><div class="step-num">Step 6.1</div><div>Create <code>app/Http/Controllers/Agent/AuthController.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 6.2</div><div>Create <code>resources/views/agent/auth/login.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 6.3</div><div>Create <code>resources/views/agent/layouts/app.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 6.4</div><div>Create <code>resources/views/agent/layouts/sidebar.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 6.5</div><div>Create <code>resources/views/agent/layouts/navbar.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 6.6</div><div>Create <code>resources/views/agent/pending.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 6.7</div><div>Create <code>resources/views/agent/suspended.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 6.8</div><div>Create <code>resources/views/agent/403.blade.php</code></div></div>
+            </div>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header"><div class="phase-num">7</div> Phase 7: Agent Dashboard + Wallet + Bookings</div>
+            <div class="phase-body">
+                <div class="step-item"><div class="step-num">Step 7.1</div><div>Create <code>app/Http/Controllers/Agent/DashboardController.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 7.2</div><div>Create <code>resources/views/agent/dashboard.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 7.3</div><div>Create <code>app/Http/Controllers/Agent/WalletController.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 7.4</div><div>Create <code>resources/views/agent/wallet/index.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 7.5</div><div>Create <code>resources/views/agent/wallet/transactions.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 7.6</div><div>Create <code>resources/views/agent/wallet/topup.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 7.7</div><div>Create <code>app/Http/Controllers/Agent/BookingController.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 7.8</div><div>Create <code>resources/views/agent/bookings/index.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 7.9</div><div>Create <code>resources/views/agent/bookings/show.blade.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 7.10</div><div>Create <code>app/Http/Controllers/Agent/ProfileController.php</code></div></div>
+                <div class="step-item"><div class="step-num">Step 7.11</div><div>Create <code>resources/views/agent/profile/index.blade.php</code></div></div>
+            </div>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header"><div class="phase-num">8</div> Phase 8: Agent — Add Manual Properties</div>
+            <div class="phase-body">
+                <div class="alert alert-info" style="font-size:13px; margin-bottom:12px;">
+                    <strong>Architecture Note:</strong><br>
+                    Agent does <strong>NOT</strong> have a separate search/booking engine. For searching &amp; booking
+                    (flights, hotels, tours, umrah, visa), the agent visits the <strong>public website</strong> and books on behalf of customers.<br><br>
+                    What agent CAN do from their panel is <strong>add/edit/delete manual properties</strong>
+                    (hotels, tour packages, umrah packages) — same forms as admin.
+                    Every record saved by an agent has <code>agent_id</code> and <code>added_by = 'agent'</code> stored so admin can track who added what.
+                </div>
+
+                <h6 style="font-size:13px; font-weight:600; margin-top:8px;">New Permissions (added to AgentPermission::ALL_PERMISSIONS)</h6>
+                <div class="step-item"><div class="step-num">Perm</div><div><code>bookings.make</code> — Make bookings via public website</div></div>
+                <div class="step-item"><div class="step-num">Perm</div><div><code>bookings.view</code> — View own bookings in agent panel</div></div>
+                <div class="step-item"><div class="step-num">Perm</div><div><code>hotels.add</code> — Add / edit / delete manual hotels</div></div>
+                <div class="step-item"><div class="step-num">Perm</div><div><code>tours.add</code> — Add / edit / delete tour packages</div></div>
+                <div class="step-item"><div class="step-num">Perm</div><div><code>umrah.add</code> — Add / edit / delete umrah packages</div></div>
+
+                <h6 style="font-size:13px; font-weight:600; margin-top:16px;">Migration</h6>
+                <div class="step-item"><div class="step-num">Step 8.1</div><div>Run <code>php artisan migrate</code> for <code>2026_03_16_000007_add_agent_id_to_property_tables.php</code><br>
+                    Adds <code>agent_id</code> &amp; <code>added_by</code> columns to <code>hotels</code>, <code>tours</code>, <code>umrah</code> tables.</div></div>
+
+                <h6 style="font-size:13px; font-weight:600; margin-top:16px;">Controllers (CRUD — mirrors admin)</h6>
+                <div class="step-item"><div class="step-num">Step 8.2</div><div><code>Agent/HotelController.php</code> — index, create, store, edit, update, destroy<br>Scoped to <code>agent_id = auth()->id()</code>. Sets <code>added_by = 'agent'</code> on store.</div></div>
+                <div class="step-item"><div class="step-num">Step 8.3</div><div><code>Agent/TourController.php</code> — same pattern for tour packages</div></div>
+                <div class="step-item"><div class="step-num">Step 8.4</div><div><code>Agent/UmrahController.php</code> — same pattern for umrah packages</div></div>
+                <div class="step-item"><div class="step-num">N/A</div><div><code>FlightController.php</code> &amp; <code>VisaController.php</code> — intentionally empty stubs (not needed)</div></div>
+
+                <h6 style="font-size:13px; font-weight:600; margin-top:16px;">Views to Create</h6>
+                <div class="step-item"><div class="step-num">Step 8.5</div><div><code>agent/hotels/index.blade.php</code> — list agent's hotels (paginated table)</div></div>
+                <div class="step-item"><div class="step-num">Step 8.6</div><div><code>agent/hotels/create.blade.php</code> — add hotel form (mirrors admin form)</div></div>
+                <div class="step-item"><div class="step-num">Step 8.7</div><div><code>agent/hotels/edit.blade.php</code> — edit hotel form</div></div>
+                <div class="step-item"><div class="step-num">Step 8.8</div><div><code>agent/tours/index.blade.php</code> — list agent's tour packages</div></div>
+                <div class="step-item"><div class="step-num">Step 8.9</div><div><code>agent/tours/create.blade.php</code> — add tour package form</div></div>
+                <div class="step-item"><div class="step-num">Step 8.10</div><div><code>agent/tours/edit.blade.php</code> — edit tour package form</div></div>
+                <div class="step-item"><div class="step-num">Step 8.11</div><div><code>agent/umrah/index.blade.php</code> — list agent's umrah packages</div></div>
+                <div class="step-item"><div class="step-num">Step 8.12</div><div><code>agent/umrah/create.blade.php</code> — add umrah package form</div></div>
+                <div class="step-item"><div class="step-num">Step 8.13</div><div><code>agent/umrah/edit.blade.php</code> — edit umrah package form</div></div>
+
+                <h6 style="font-size:13px; font-weight:600; margin-top:16px;">Routes Summary</h6>
+                <pre><code class="language-bash"># hotels.add permission gates:  GET/POST /agent/hotels, GET/PUT/DELETE /agent/hotels/{id}
+# tours.add  permission gates:  GET/POST /agent/tours,  GET/PUT/DELETE /agent/tours/{id}
+# umrah.add  permission gates:  GET/POST /agent/umrah,  GET/PUT/DELETE /agent/umrah/{id}
+# bookings.view gates:          GET /agent/bookings, GET /agent/bookings/{type}/{id}</code></pre>
+
+                <h6 style="font-size:13px; font-weight:600; margin-top:8px;">Admin visibility</h6>
+                <div class="step-item"><div class="step-num">Note</div><div>In admin's hotel/tour/umrah list views, show an <strong>"Agent" badge</strong> next to records where <code>added_by = 'agent'</code>, with the agent's name (join on <code>agent_id → users.name</code>). Admin sees everything; agent sees only their own records.</div></div>
+            </div>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-header"><div class="phase-num">9</div> Phase 9: Test Everything</div>
+            <div class="phase-body">
+                <pre><code class="language-bash"># Step 9.1 - Create agent via admin panel
+# Verify: agent_code is auto-generated (AGT-0001)
+
+# Step 9.2 - Login as agent
+# Visit: /agent/login
+# Verify: dashboard loads with stats
+
+# Step 9.3 - Admin sets permissions
+# Go to: /admin/agents/{id}  → Permissions tab
+# Toggle hotels ON, save
+# Verify: Hotels nav appears in agent sidebar
+
+# Step 9.4 - Agent submits top-up request
+# Agent: /agent/wallet/topup → submit form
+# Admin: /admin/topup-requests → approve
+# Verify: wallet balance increases
+
+# Step 9.5 - Agent makes hotel booking
+# Agent: /agent/hotels → search → book
+# Verify: wallet deducted, booking confirmed
+
+# Step 9.6 - Test insufficient balance
+# Verify: error message shown, booking blocked
+
+# Step 9.7 - Check admin bookings view
+# Verify: bookings show "Agent" badge + agent name
+
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear</code></pre>
+            </div>
+        </div>
+
+        <hr>
+
+        <h2>Summary of All Files to Create/Modify</h2>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white fw-semibold"><i class="bi bi-plus-circle text-success"></i> New Files (37 total)</div>
+                    <div class="card-body" style="font-size:13px;">
+                        <strong class="text-muted d-block mb-1">Migrations (6):</strong>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> 2026_03_15_000001_add_agent_fields_to_users_table.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> 2026_03_15_000002_create_agent_wallets_table.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> 2026_03_15_000003_create_agent_wallet_transactions_table.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> 2026_03_15_000004_create_agent_permissions_table.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> 2026_03_15_000005_create_agent_topup_requests_table.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> 2026_03_15_000006_add_agent_id_to_booking_tables.php</div>
+
+                        <strong class="text-muted d-block mt-3 mb-1">Models (4):</strong>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> app/Models/AgentWallet.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> app/Models/AgentWalletTransaction.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> app/Models/AgentPermission.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> app/Models/AgentTopupRequest.php</div>
+
+                        <strong class="text-muted d-block mt-3 mb-1">Middleware (2):</strong>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> app/Http/Middleware/AgentMiddleware.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> app/Http/Middleware/AgentPermissionMiddleware.php</div>
+
+                        <strong class="text-muted d-block mt-3 mb-1">Routes (1):</strong>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> routes/agent.php</div>
+
+                        <strong class="text-muted d-block mt-3 mb-1">Admin Controllers (3):</strong>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> Admin/AgentController.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> Admin/AgentWalletController.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> Admin/TopupRequestController.php</div>
+
+                        <strong class="text-muted d-block mt-3 mb-1">Agent Controllers (10):</strong>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> Agent/AuthController.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> Agent/DashboardController.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> Agent/ProfileController.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> Agent/WalletController.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> Agent/BookingController.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> Agent/HotelController.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> Agent/FlightController.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> Agent/TourController.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> Agent/UmrahController.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> Agent/VisaController.php</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-header bg-white fw-semibold"><i class="bi bi-pencil text-warning"></i> Files to Modify (4)</div>
+                    <div class="card-body" style="font-size:13px;">
+                        <div class="checklist-item"><i class="bi bi-pencil-square text-warning"></i> app/Models/User.php — add agent fields, relations, methods</div>
+                        <div class="checklist-item"><i class="bi bi-pencil-square text-warning"></i> bootstrap/app.php — register middleware + agent route file</div>
+                        <div class="checklist-item"><i class="bi bi-pencil-square text-warning"></i> routes/admin.php — add agent + topup routes</div>
+                        <div class="checklist-item"><i class="bi bi-pencil-square text-warning"></i> resources/views/admin/layouts/sidebar.blade.php — add Agents menu</div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white fw-semibold"><i class="bi bi-layout-text-window text-primary"></i> Views — Admin (9)</div>
+                    <div class="card-body" style="font-size:13px;">
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> admin/agents/index.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> admin/agents/create.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> admin/agents/edit.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> admin/agents/show.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> admin/agents/_tab_permissions.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> admin/agents/_tab_wallet.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> admin/agents/transactions.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> admin/topup-requests/index.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> admin/topup-requests/show.blade.php</div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mt-3">
+                    <div class="card-header bg-white fw-semibold"><i class="bi bi-layout-sidebar text-info"></i> Views — Agent (25+)</div>
+                    <div class="card-body" style="font-size:13px;">
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/layouts/app.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/layouts/sidebar.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/layouts/navbar.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/auth/login.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/pending.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/suspended.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/403.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/dashboard.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/wallet/index.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/wallet/transactions.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/wallet/topup.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/bookings/index.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/bookings/show.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/profile/index.blade.php</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/hotels/index, search, details, booking, invoice</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/flights/index, results, booking, invoice</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/tours/index, details, booking, invoice</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/umrah/index, details, booking, invoice</div>
+                        <div class="checklist-item"><i class="bi bi-check-circle-fill"></i> agent/visa/index, apply</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html>

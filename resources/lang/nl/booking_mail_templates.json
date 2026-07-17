@@ -1,0 +1,14 @@
+{
+    "heading": "Boekingsstatus update",
+    "dear_customer": "Beste klant,",
+    "booking_text": "Uw <strong>:type</strong>-boeking met referentie <strong>:reference</strong> is <strong>:status</strong>.",
+    "view_details": "Bekijk details",
+    "thank_you": "Bedankt dat u voor :business heeft gekozen.",
+    "Confirmed": "bevestigd",
+    "Pending": "in behandeling",
+    "Cancelled": "geannuleerd",
+    "flight": "vlucht",
+    "hotel": "hotel"
+    
+  }
+

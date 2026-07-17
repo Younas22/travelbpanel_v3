@@ -1,0 +1,18 @@
+{
+  "filters": "Filtres",
+  "stops": "Escales",
+  "all_flights": "Tous les Vols",
+  "stop": "Escale",
+  "price": "Prix",
+  "preferred_airlines": "Compagnies Aériennes Préférées",
+  "flights_found": "Vols trouvés",
+  "total_fare": "Tarif total",
+  "book": "Réserver",
+  "outbound": "Aller",
+  "pc": "PC",
+  "nonstop": "Sans Escale",
+  "direct": "Direct",
+  "no_flights_found": "Aucun Vol Trouvé",
+  "no_flights_message": "Nous n'avons trouvé aucun vol correspondant à vos critères de recherche. Essayez d'ajuster votre destination, vos dates ou les détails des passagers.",
+  "search_again": "Rechercher à Nouveau"
+}

@@ -1,0 +1,22 @@
+{
+    "title": "항공권 송장",
+    "booking_reference": "예약 번호",
+    "dear": "고객님께",
+    "intro": ":business와 함께 예약해 주셔서 감사합니다. 항공권 예약이 성공적으로 확인되었습니다.",
+    "invoice_instruction": "아래 버튼을 클릭하여 전체 송장을 보고 다운로드하세요:",
+    "view_invoice": "송장 보기",
+    "copy_link": "또는 이 링크를 복사하세요:",
+    "important_title": "중요:",
+    "important_1": "여행 시 송장의 인쇄본 또는 디지털 사본을 지참하세요",
+    "important_2": "항공편 출발 최소 3시간 전에 공항에 도착하세요",
+    "important_3": "유효한 신분증 및 여행 서류를 지참하세요",
+    "need_help": "도움이 필요하신가요?",
+    "help_text": "질문이 있으시면 저희에게 연락하세요:",
+    "support": "24/7 고객 지원",
+    "thank_you": ":business를 선택해 주셔서 감사합니다. 안전하고 즐거운 여행 되시기 바랍니다!",
+    "regards": "감사합니다,",
+    "team": "팀",
+    "trusted_partner": "신뢰할 수 있는 여행 파트너",
+    "rights": "모든 권리 보유."
+  }
+

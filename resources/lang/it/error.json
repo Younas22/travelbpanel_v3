@@ -1,0 +1,22 @@
+{
+    "page_title": "Pagina non trovata",
+    "error_code": "404",
+    "error_title": "Ops! Questa pagina è decollata",
+    "error_description": "La pagina che stai cercando non esiste o è stata spostata in una nuova destinazione.",
+    "go_home": "Vai alla home page",
+    "view_pricing": "Visualizza i piani tariffari",
+    "limited_offer": "Offerta a tempo limitato",
+    "promo_title": "Avvia la tua attività di viaggi online",
+    "promo_description": "Lancia con stile — <span class=\"font-semibold text-gray-800\">Hotel, Volo, Tour, Visto e Umrah</span> prenotazioni tutto su una piattaforma",
+    "white_label": "Soluzione white label",
+    "setup_time": "Configurazione in 15 minuti",
+    "hotels": "Hotel",
+    "flights": "Voli",
+    "tours": "Tour",
+    "visa": "Visto",
+    "umrah": "Umrah",
+    "starting_from": "A partire da soli",
+    "solution_desc": "Soluzione completa per attività di viaggi white label",
+    "get_started": "Inizia ora",
+    "powered_by": "Offerto da"
+}

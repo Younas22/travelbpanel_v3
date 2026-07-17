@@ -1,0 +1,21 @@
+{
+    "title": "Ihre Flugrechnung",
+    "booking_reference": "Buchungsreferenz",
+    "dear": "Sehr geehrte/r",
+    "intro": "Vielen Dank, dass Sie bei :business gebucht haben. Ihre Flugbuchung wurde erfolgreich bestätigt.",
+    "invoice_instruction": "Bitte klicken Sie auf die Schaltfläche unten, um Ihre vollständige Rechnung anzusehen und herunterzuladen:",
+    "view_invoice": "Ihre Rechnung anzeigen",
+    "copy_link": "Oder kopieren Sie diesen Link:",
+    "important_title": "Wichtig:",
+    "important_1": "Bitte führen Sie eine gedruckte oder digitale Kopie Ihrer Rechnung beim Reisen mit",
+    "important_2": "Erscheinen Sie mindestens 3 Stunden vor Abflug am Flughafen",
+    "important_3": "Führen Sie gültige Ausweisdokumente und Reisedokumente mit",
+    "need_help": "Brauchen Sie Hilfe?",
+    "help_text": "Wenn Sie Fragen haben, kontaktieren Sie uns bitte:",
+    "support": "24/7 Kundensupport",
+    "thank_you": "Vielen Dank, dass Sie sich für :business entschieden haben. Wir wünschen Ihnen eine sichere und angenehme Reise!",
+    "regards": "Mit freundlichen Grüßen,",
+    "team": "Team",
+    "trusted_partner": "Ihr vertrauenswürdiger Reisepartner",
+    "rights": "Alle Rechte vorbehalten."
+  }

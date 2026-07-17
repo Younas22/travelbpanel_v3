@@ -1,0 +1,14 @@
+{
+    "heading": "予約状況の更新",
+    "dear_customer": "お客様へ",
+    "booking_text": "参照番号<strong>:reference</strong>の<strong>:type</strong>予約が<strong>:status</strong>されました。",
+    "view_details": "詳細を見る",
+    "thank_you": ":businessをお選びいただきありがとうございます。",
+    "Confirmed": "確認",
+    "Pending": "保留中",
+    "Cancelled": "キャンセル",
+    "flight": "フライト",
+    "hotel": "ホテル"
+
+  }
+

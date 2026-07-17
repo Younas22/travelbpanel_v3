@@ -1,0 +1,49 @@
+{
+    "contact_us": "お問い合わせ",
+    "contact_us_desc": "ご質問や予約に関するお手伝いが必要ですか？私たちのチームが喜んでサポートいたします！",
+
+    "contact_information": "連絡先情報",
+    "address": "住所",
+    "phone": "電話",
+    "alternate_phone": "代替電話",
+    "email": "メール",
+
+    "office_hours": "営業時間",
+    "monday_friday": "月曜日 - 金曜日",
+    "saturday": "土曜日",
+    "sunday": "日曜日",
+    "closed": "休業",
+
+    "send_message": "メッセージを送信",
+
+    "first_name": "名",
+    "first_name_placeholder": "名を入力してください",
+
+    "last_name": "姓",
+    "last_name_placeholder": "姓を入力してください",
+
+    "phone_optional": "電話（オプション）",
+    "phone_placeholder": "電話番号を入力してください",
+
+    "email_placeholder": "メールアドレスを入力してください",
+
+    "subject": "件名",
+    "select_subject": "件名を選択",
+
+    "booking_reference_optional": "予約参照番号（オプション）",
+    "booking_reference_placeholder": "該当する場合は予約参照番号を入力してください",
+
+    "message": "メッセージ",
+    "message_placeholder": "どのようにお手伝いできるかお知らせください...",
+
+    "privacy_agreement": "プライバシーポリシーと利用規約に同意します",
+
+    "send_message_btn": "メッセージを送信",
+
+    "flight_ticket_booking": "航空券予約",
+    "hotel_booking": "ホテル予約",
+    "existing_booking": "既存の予約",
+    "price_quote": "見積もり",
+    "complaint": "苦情",
+    "general_question": "一般的な質問"
+}

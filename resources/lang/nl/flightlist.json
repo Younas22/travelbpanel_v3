@@ -1,0 +1,18 @@
+{
+  "filters": "Filters",
+  "stops": "Tussenstops",
+  "all_flights": "Alle vluchten",
+  "stop": "Tussenstop",
+  "price": "Prijs",
+  "preferred_airlines": "Voorkeursluchtvaartmaatschappijen",
+  "flights_found": "Vluchten gevonden",
+  "total_fare": "Totale prijs",
+  "book": "Boeken",
+  "outbound": "Heenreis",
+  "pc": "ST",
+  "nonstop": "Non Stop",
+  "direct": "Direct",
+  "no_flights_found": "Geen vluchten gevonden",
+  "no_flights_message": "We konden geen vluchten vinden die overeenkomen met uw zoekcriteria. Probeer uw bestemming, data of passagiersgegevens aan te passen.",
+  "search_again": "Opnieuw zoeken"
+}

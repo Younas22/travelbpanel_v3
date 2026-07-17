@@ -1,0 +1,21 @@
+{
+    "title": "Votre Facture de Vol",
+    "booking_reference": "Référence de Réservation",
+    "dear": "Cher/Chère",
+    "intro": "Merci d'avoir réservé avec :business. Votre réservation de vol a été confirmée avec succès.",
+    "invoice_instruction": "Veuillez cliquer sur le bouton ci-dessous pour consulter et télécharger votre facture complète :",
+    "view_invoice": "Voir Votre Facture",
+    "copy_link": "Ou copiez ce lien :",
+    "important_title": "Important :",
+    "important_1": "Veuillez emporter une copie imprimée ou numérique de votre facture lors de votre voyage",
+    "important_2": "Arrivez à l'aéroport au moins 3 heures avant le départ de votre vol",
+    "important_3": "Munissez-vous d'une pièce d'identité et de documents de voyage valides",
+    "need_help": "Besoin d'Aide ?",
+    "help_text": "Si vous avez des questions, veuillez nous contacter :",
+    "support": "Support Client 24/7",
+    "thank_you": "Merci d'avoir choisi :business. Nous vous souhaitons un voyage sûr et agréable !",
+    "regards": "Cordialement,",
+    "team": "L'Équipe",
+    "trusted_partner": "Votre Partenaire de Voyage de Confiance",
+    "rights": "Tous droits réservés."
+  }

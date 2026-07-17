@@ -1,0 +1,50 @@
+{
+    "contact_us": "Neem contact met ons op",
+    "contact_us_desc": "Heeft u vragen of hulp nodig bij uw boeking? Ons team helpt u graag!",
+
+    "contact_information": "Contactgegevens",
+    "address": "Adres",
+    "phone": "Telefoon",
+    "alternate_phone": "Alternatieve telefoon",
+    "email": "E-mail",
+
+    "office_hours": "Openingstijden",
+    "monday_friday": "Maandag - Vrijdag",
+    "saturday": "Zaterdag",
+    "sunday": "Zondag",
+    "closed": "Gesloten",
+
+    "send_message": "Stuur ons een bericht",
+
+    "first_name": "Voornaam",
+    "first_name_placeholder": "Voer voornaam in",
+
+    "last_name": "Achternaam",
+    "last_name_placeholder": "Voer achternaam in",
+
+    "phone_optional": "Telefoon (optioneel)",
+    "phone_placeholder": "Voer uw telefoonnummer in",
+
+    "email_placeholder": "Voer uw e-mailadres in",
+
+    "subject": "Onderwerp",
+    "select_subject": "Selecteer onderwerp",
+
+    "booking_reference_optional": "Boekingsreferentie (optioneel)",
+    "booking_reference": "boekingsreferentie",
+    "booking_reference_placeholder": "Voer indien van toepassing de boekingsreferentie in",
+
+    "message": "Bericht",
+    "message_placeholder": "Laat ons weten hoe we u kunnen helpen...",
+
+    "privacy_agreement": "Ik ga akkoord met het privacybeleid en de servicevoorwaarden",
+
+    "send_message_btn": "Bericht verzenden",
+
+    "flight_ticket_booking": "Vliegticket boeken",
+    "hotel_booking": "Hotelboeking",
+    "existing_booking": "Bestaande boeking",
+    "price_quote": "Prijsopgave",
+    "complaint": "Klacht",
+    "general_question": "Algemene vraag"
+}

@@ -1,0 +1,49 @@
+{
+    "contact_us": "문의하기",
+    "contact_us_desc": "질문이 있거나 예약에 도움이 필요하신가요? 저희 팀이 기꺼이 도와드리겠습니다!",
+
+    "contact_information": "연락처 정보",
+    "address": "주소",
+    "phone": "전화",
+    "alternate_phone": "보조 전화",
+    "email": "이메일",
+
+    "office_hours": "영업 시간",
+    "monday_friday": "월요일 - 금요일",
+    "saturday": "토요일",
+    "sunday": "일요일",
+    "closed": "휴무",
+
+    "send_message": "메시지 보내기",
+
+    "first_name": "이름",
+    "first_name_placeholder": "이름 입력",
+
+    "last_name": "성",
+    "last_name_placeholder": "성 입력",
+
+    "phone_optional": "전화번호 (선택사항)",
+    "phone_placeholder": "전화번호 입력",
+
+    "email_placeholder": "이메일 입력",
+
+    "subject": "제목",
+    "select_subject": "제목 선택",
+
+    "booking_reference_optional": "예약 참조 번호 (선택사항)",
+    "booking_reference_placeholder": "해당하는 경우 예약 참조 번호 입력",
+
+    "message": "메시지",
+    "message_placeholder": "어떻게 도와드릴 수 있는지 알려주세요...",
+
+    "privacy_agreement": "개인정보 보호정책 및 서비스 약관에 동의합니다",
+
+    "send_message_btn": "메시지 보내기",
+
+    "flight_ticket_booking": "항공권 예약",
+    "hotel_booking": "호텔 예약",
+    "existing_booking": "기존 예약",
+    "price_quote": "가격 견적",
+    "complaint": "불만 사항",
+    "general_question": "일반 질문"
+}

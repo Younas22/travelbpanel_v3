@@ -1,0 +1,21 @@
+{
+    "page_title": "Cuenta Demo",
+    "header_title": "Cuenta Demo",
+    "header_subtitle": "Estás usando una cuenta de demostración con fines de prueba",
+    "demo_mode": "Modo Demo",
+    "booking_not_available": "Reserva No Disponible",
+    "demo_description": "Esta es una cuenta de demostración. Puedes explorar todas las funciones y probar la plataforma, pero no se pueden completar reservas reales.",
+    "start_travel_portal": "Inicia Tu Portal de Viajes",
+    "upgrade_description": "¿Quieres lanzar tu propia plataforma de reservas de viaje? Consulta nuestros precios y características.",
+    "view_pricing": "Ver Detalles de Precios",
+    "what_you_can_do": "Lo Que Puedes Hacer:",
+    "browse_flights_hotels": "Buscar vuelos y hoteles",
+    "view_detailed_info": "Ver información detallada",
+    "test_booking_flow": "Probar el flujo de reserva",
+    "view_invoices": "Ver facturas y confirmaciones",
+    "test_ui_features": "Probar todas las funciones de UI",
+    "booking_restricted": "Reserva Restringida",
+    "booking_restricted_text": "El procesamiento de pagos y las reservas finales están deshabilitados en cuentas demo. No se realizarán cargos reales.",
+    "go_home": "Ir al Inicio",
+    "explore_more": "Explorar Más Funciones"
+}

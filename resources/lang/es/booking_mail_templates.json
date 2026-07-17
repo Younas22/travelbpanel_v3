@@ -1,0 +1,13 @@
+{
+    "heading": "Actualización del Estado de la Reserva",
+    "dear_customer": "Estimado Cliente,",
+    "booking_text": "Su reserva de <strong>:type</strong> con referencia <strong>:reference</strong> ha sido <strong>:status</strong>.",
+    "view_details": "Ver Detalles",
+    "thank_you": "Gracias por elegir :business.",
+    "Confirmed": "confirmada",
+    "Pending": "pendiente",
+    "Cancelled": "cancelada",
+    "flight": "vuelo",
+    "hotel": "hotel"
+
+  }

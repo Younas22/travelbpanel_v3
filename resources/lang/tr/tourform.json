@@ -1,0 +1,22 @@
+{
+    "where": "Nerede",
+    "search_destinations": "Destinasyon ara",
+    "when": "Ne Zaman",
+    "tour_type": "Tur Türü",
+    "all_tour": "Tüm turlar",
+    "travelers": "Yolcular",
+    "adult": "Yetişkin",
+    "child": "Çocuk",
+    "apply": "Uygula",
+    "search_tours": "Tur Ara",
+    "select_destination": "Lütfen bir destinasyon seçin",
+    "select_dates": "Lütfen tarih seçin",
+    "type_3_characters": "Aramak için en az 3 karakter yazın...",
+    "searching": "Aranıyor...",
+    "no_destinations_found": "Destinasyon bulunamadı",
+    "error_loading": "Destinasyonlar yüklenirken hata",
+    "loading_tour_types": "Tur türleri yükleniyor...",
+    "error_loading_types": "Tur türleri yüklenirken hata",
+    "years_12_plus": "(12+ yaş)",
+    "years_2_11": "(2-11 yaş)"
+}

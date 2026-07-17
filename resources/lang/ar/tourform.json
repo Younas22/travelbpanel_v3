@@ -1,0 +1,22 @@
+{
+    "where": "أين",
+    "search_destinations": "ابحث عن الوجهات",
+    "when": "متى",
+    "tour_type": "نوع الجولة",
+    "all_tour": "جميع الجولات",
+    "travelers": "المسافرون",
+    "adult": "بالغ",
+    "child": "طفل",
+    "apply": "تطبيق",
+    "search_tours": "ابحث عن الجولات",
+    "select_destination": "الرجاء اختيار الوجهة",
+    "select_dates": "الرجاء اختيار التواريخ",
+    "type_3_characters": "اكتب 3 أحرف على الأقل للبحث...",
+    "searching": "جاري البحث...",
+    "no_destinations_found": "لم يتم العثور على وجهات",
+    "error_loading": "خطأ في تحميل الوجهات",
+    "loading_tour_types": "جاري تحميل أنواع الجولات...",
+    "error_loading_types": "خطأ في تحميل أنواع الجولات",
+    "years_12_plus": "(12+ سنة)",
+    "years_2_11": "(2-11 سنة)"
+}

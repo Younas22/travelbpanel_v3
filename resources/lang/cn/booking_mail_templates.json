@@ -1,0 +1,13 @@
+{
+    "heading": "预订状态更新",
+    "dear_customer": "尊敬的客户，",
+    "booking_text": "您的<strong>:type</strong>预订，参考编号<strong>:reference</strong>，已<strong>:status</strong>。",
+    "view_details": "查看详情",
+    "thank_you": "感谢您选择:business。",
+    "Confirmed": "已确认",
+    "Pending": "待处理",
+    "Cancelled": "已取消",
+    "flight": "航班",
+    "hotel": "酒店"
+
+  }

@@ -1,0 +1,49 @@
+{
+    "contact_us": "Kontaktieren Sie uns",
+    "contact_us_desc": "Haben Sie Fragen oder benötigen Sie Hilfe bei Ihrer Buchung? Unser Team hilft Ihnen gerne weiter!",
+
+    "contact_information": "Kontaktinformationen",
+    "address": "Adresse",
+    "phone": "Telefon",
+    "alternate_phone": "Alternatives Telefon",
+    "email": "E-Mail",
+
+    "office_hours": "Öffnungszeiten",
+    "monday_friday": "Montag - Freitag",
+    "saturday": "Samstag",
+    "sunday": "Sonntag",
+    "closed": "Geschlossen",
+
+    "send_message": "Senden Sie uns eine Nachricht",
+
+    "first_name": "Vorname",
+    "first_name_placeholder": "Vorname eingeben",
+
+    "last_name": "Nachname",
+    "last_name_placeholder": "Nachname eingeben",
+
+    "phone_optional": "Telefon (Optional)",
+    "phone_placeholder": "Geben Sie Ihre Telefonnummer ein",
+
+    "email_placeholder": "Geben Sie Ihre E-Mail-Adresse ein",
+
+    "subject": "Betreff",
+    "select_subject": "Betreff auswählen",
+
+    "booking_reference_optional": "Buchungsreferenz (Optional)",
+    "booking_reference_placeholder": "Geben Sie die Buchungsreferenz ein, falls zutreffend",
+
+    "message": "Nachricht",
+    "message_placeholder": "Sagen Sie uns, wie wir helfen können...",
+
+    "privacy_agreement": "Ich stimme der Datenschutzerklärung und den Nutzungsbedingungen zu",
+
+    "send_message_btn": "Nachricht senden",
+
+    "flight_ticket_booking": "Flugticket-Buchung",
+    "hotel_booking": "Hotelbuchung",
+    "existing_booking": "Bestehende Buchung",
+    "price_quote": "Preisangebot",
+    "complaint": "Beschwerde",
+    "general_question": "Allgemeine Frage"
+}

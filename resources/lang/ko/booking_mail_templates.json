@@ -1,0 +1,14 @@
+{
+    "heading": "예약 상태 업데이트",
+    "dear_customer": "고객님께,",
+    "booking_text": "참조 번호 <strong>:reference</strong>인 귀하의 <strong>:type</strong> 예약이 <strong>:status</strong> 되었습니다.",
+    "view_details": "세부 정보 보기",
+    "thank_you": ":business을(를) 선택해 주셔서 감사합니다.",
+    "Confirmed": "확인",
+    "Pending": "대기 중",
+    "Cancelled": "취소",
+    "flight": "항공편",
+    "hotel": "호텔"
+
+  }
+

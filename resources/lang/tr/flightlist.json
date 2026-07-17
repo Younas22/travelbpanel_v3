@@ -1,0 +1,18 @@
+{
+  "filters": "Filtreler",
+  "stops": "Duraklar",
+  "all_flights": "Tüm Uçuşlar",
+  "stop": "Durak",
+  "price": "Fiyat",
+  "preferred_airlines": "Tercih Edilen Havayolları",
+  "flights_found": "Uçuş bulundu",
+  "total_fare": "Toplam ücret",
+  "book": "Rezervasyon Yap",
+  "outbound": "Gidiş",
+  "pc": "PC",
+  "nonstop": "Direkt",
+  "direct": "Direkt",
+  "no_flights_found": "Uçuş Bulunamadı",
+  "no_flights_message": "Arama kriterlerinize uygun uçuş bulamadık. Destinasyonunuzu, tarihlerinizi veya yolcu bilgilerinizi ayarlamayı deneyin.",
+  "search_again": "Tekrar Ara"
+}

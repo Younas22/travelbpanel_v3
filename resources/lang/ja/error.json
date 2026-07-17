@@ -1,0 +1,22 @@
+{
+    "page_title": "ページが見つかりません",
+    "error_code": "404",
+    "error_title": "おっと！このページは飛び立ちました",
+    "error_description": "お探しのページは存在しないか、新しい目的地に移動されました。",
+    "go_home": "ホームページへ",
+    "view_pricing": "料金プランを見る",
+    "limited_offer": "期間限定オファー",
+    "promo_title": "オンライン旅行ビジネスを始めましょう",
+    "promo_description": "スタイリッシュに始めよう — <span class=\"font-semibold text-gray-800\">ホテル、フライト、ツアー、ビザ、ウムラ</span> 予約すべて1つのプラットフォームで",
+    "white_label": "ホワイトラベルソリューション",
+    "setup_time": "15分でセットアップ",
+    "hotels": "ホテル",
+    "flights": "フライト",
+    "tours": "ツアー",
+    "visa": "ビザ",
+    "umrah": "ウムラ",
+    "starting_from": "わずか",
+    "solution_desc": "完全なホワイトラベル旅行ビジネスソリューション",
+    "get_started": "今すぐ始める",
+    "powered_by": "提供元"
+}

@@ -1,0 +1,14 @@
+{
+    "heading": "Aggiornamento Stato Prenotazione",
+    "dear_customer": "Gentile Cliente,",
+    "booking_text": "La tua prenotazione <strong>:type</strong> con riferimento <strong>:reference</strong> è stata <strong>:status</strong>.",
+    "view_details": "Visualizza Dettagli",
+    "thank_you": "Grazie per aver scelto :business.",
+    "Confirmed": "confermata",
+    "Pending": "in attesa",
+    "Cancelled": "cancellata",
+    "flight": "volo",
+    "hotel": "hotel"
+
+  }
+

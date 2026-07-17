@@ -1,0 +1,22 @@
+{
+    "where": "어디로",
+    "search_destinations": "목적지 검색",
+    "when": "언제",
+    "tour_type": "투어 유형",
+    "all_tour": "모든 투어",
+    "travelers": "여행자",
+    "adult": "성인",
+    "child": "어린이",
+    "apply": "적용",
+    "search_tours": "투어 검색",
+    "select_destination": "목적지를 선택해주세요",
+    "select_dates": "날짜를 선택해주세요",
+    "type_3_characters": "검색하려면 최소 3자를 입력하세요...",
+    "searching": "검색 중...",
+    "no_destinations_found": "목적지를 찾을 수 없습니다",
+    "error_loading": "목적지 로드 오류",
+    "loading_tour_types": "투어 유형 로딩 중...",
+    "error_loading_types": "투어 유형 로드 오류",
+    "years_12_plus": "(12세 이상)",
+    "years_2_11": "(2-11세)"
+}

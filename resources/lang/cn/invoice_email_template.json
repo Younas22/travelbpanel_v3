@@ -1,0 +1,21 @@
+{
+    "title": "您的航班发票",
+    "booking_reference": "预订参考号",
+    "dear": "尊敬的",
+    "intro": "感谢您在:business预订。您的航班预订已成功确认。",
+    "invoice_instruction": "请点击下方按钮查看和下载完整发票：",
+    "view_invoice": "查看您的发票",
+    "copy_link": "或复制此链接：",
+    "important_title": "重要提示：",
+    "important_1": "旅行时请携带发票的打印或电子副本",
+    "important_2": "请在航班起飞前至少3小时到达机场",
+    "important_3": "携带有效身份证件和旅行文件",
+    "need_help": "需要帮助？",
+    "help_text": "如果您有任何问题，请联系我们：",
+    "support": "24/7 客户支持",
+    "thank_you": "感谢您选择:business。祝您旅途安全愉快！",
+    "regards": "此致敬礼，",
+    "team": "团队",
+    "trusted_partner": "您值得信赖的旅行合作伙伴",
+    "rights": "保留所有权利。"
+  }

@@ -1,0 +1,18 @@
+{
+  "filters": "필터",
+  "stops": "경유",
+  "all_flights": "모든 항공편",
+  "stop": "경유",
+  "price": "가격",
+  "preferred_airlines": "선호 항공사",
+  "flights_found": "항공편 검색됨",
+  "total_fare": "총 운임",
+  "book": "예약",
+  "outbound": "출발",
+  "pc": "개",
+  "nonstop": "직항",
+  "direct": "직항",
+  "no_flights_found": "항공편을 찾을 수 없습니다",
+  "no_flights_message": "검색 조건에 맞는 항공편을 찾을 수 없습니다. 목적지, 날짜 또는 승객 정보를 조정해보세요.",
+  "search_again": "다시 검색"
+}

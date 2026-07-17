@@ -1,0 +1,49 @@
+{
+    "contact_us": "联系我们",
+    "contact_us_desc": "您有问题或需要帮助预订吗？我们的团队很乐意为您提供帮助！",
+
+    "contact_information": "联系信息",
+    "address": "地址",
+    "phone": "电话",
+    "alternate_phone": "备用电话",
+    "email": "电子邮件",
+
+    "office_hours": "办公时间",
+    "monday_friday": "周一至周五",
+    "saturday": "周六",
+    "sunday": "周日",
+    "closed": "关闭",
+
+    "send_message": "给我们留言",
+
+    "first_name": "名字",
+    "first_name_placeholder": "输入名字",
+
+    "last_name": "姓氏",
+    "last_name_placeholder": "输入姓氏",
+
+    "phone_optional": "电话（可选）",
+    "phone_placeholder": "输入您的电话号码",
+
+    "email_placeholder": "输入您的电子邮件",
+
+    "subject": "主题",
+    "select_subject": "选择主题",
+
+    "booking_reference_optional": "预订参考（可选）",
+    "booking_reference_placeholder": "如果适用，请输入预订参考",
+
+    "message": "消息",
+    "message_placeholder": "告诉我们如何帮助您...",
+
+    "privacy_agreement": "我同意隐私政策和服务条款",
+
+    "send_message_btn": "发送消息",
+
+    "flight_ticket_booking": "机票预订",
+    "hotel_booking": "酒店预订",
+    "existing_booking": "现有预订",
+    "price_quote": "价格报价",
+    "complaint": "投诉",
+    "general_question": "一般问题"
+}

@@ -1,0 +1,21 @@
+{
+    "page_title": "デモアカウント",
+    "header_title": "デモアカウント",
+    "header_subtitle": "テスト目的でデモアカウントをご利用中です",
+    "demo_mode": "デモモード",
+    "booking_not_available": "予約できません",
+    "demo_description": "これはデモアカウントです。すべての機能を探索してプラットフォームをテストできますが、実際の予約は完了できません。",
+    "start_travel_portal": "旅行ポータルを始めましょう",
+    "upgrade_description": "独自の旅行予約プラットフォームを立ち上げたいですか？料金と機能をご確認ください。",
+    "view_pricing": "料金詳細を見る",
+    "what_you_can_do": "できること：",
+    "browse_flights_hotels": "フライトとホテルの閲覧",
+    "view_detailed_info": "詳細情報の確認",
+    "test_booking_flow": "予約フローのテスト",
+    "view_invoices": "請求書と確認書の閲覧",
+    "test_ui_features": "すべてのUI機能のテスト",
+    "booking_restricted": "予約制限中",
+    "booking_restricted_text": "デモアカウントでは支払い処理と最終予約が無効です。実際の料金は発生しません。",
+    "go_home": "ホームへ戻る",
+    "explore_more": "さらに機能を探索する"
+}

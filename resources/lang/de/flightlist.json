@@ -1,0 +1,18 @@
+{
+  "filters": "Filter",
+  "stops": "Stopps",
+  "all_flights": "Alle Flüge",
+  "stop": "Stopp",
+  "price": "Preis",
+  "preferred_airlines": "Bevorzugte Fluggesellschaften",
+  "flights_found": "Flüge gefunden",
+  "total_fare": "Gesamtpreis",
+  "book": "Buchen",
+  "outbound": "Hinflug",
+  "pc": "STK",
+  "nonstop": "Nonstop",
+  "direct": "Direkt",
+  "no_flights_found": "Keine Flüge gefunden",
+  "no_flights_message": "Wir konnten keine Flüge finden, die Ihren Suchkriterien entsprechen. Versuchen Sie, Ihr Ziel, Ihre Daten oder Ihre Passagierdetails anzupassen.",
+  "search_again": "Erneut suchen"
+}

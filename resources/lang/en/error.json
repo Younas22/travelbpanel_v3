@@ -1,0 +1,22 @@
+{
+    "page_title": "Page Not Found",
+    "error_code": "404",
+    "error_title": "Oops! This Page Has Taken Off",
+    "error_description": "The page you're looking for doesn't exist or has been moved to a new destination.",
+    "go_home": "Go to Home Page",
+    "view_pricing": "View Pricing Plans",
+    "limited_offer": "Limited Time Offer",
+    "promo_title": "Start Your Travel Business Online",
+    "promo_description": "Launch with style — <span class=\"font-semibold text-gray-800\">Hotel, Flight, Tour, Visa & Umrah</span> booking all in one platform",
+    "white_label": "White Label Solution",
+    "setup_time": "Setup in 15 Minutes",
+    "hotels": "Hotels",
+    "flights": "Flights",
+    "tours": "Tours",
+    "visa": "Visa",
+    "umrah": "Umrah",
+    "starting_from": "Starting from just",
+    "solution_desc": "Complete white-label travel business solution",
+    "get_started": "Get Started Now",
+    "powered_by": "Powered by"
+}

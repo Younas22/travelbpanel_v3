@@ -1,0 +1,21 @@
+{
+    "page_title": "Demo Hesap",
+    "header_title": "Demo Hesap",
+    "header_subtitle": "Test amaçlı bir demo hesabı kullanıyorsunuz",
+    "demo_mode": "Demo Modu",
+    "booking_not_available": "Rezervasyon Mevcut Değil",
+    "demo_description": "Bu bir tanıtım hesabıdır. Tüm özellikleri keşfedebilir ve platformu test edebilirsiniz, ancak gerçek rezervasyonlar tamamlanamaz.",
+    "start_travel_portal": "Seyahat Portalınızı Başlatın",
+    "upgrade_description": "Kendi seyahat rezervasyon platformunuzu başlatmak ister misiniz? Fiyatlandırmamızı ve özelliklerimizi inceleyin.",
+    "view_pricing": "Fiyat Detaylarını Görüntüle",
+    "what_you_can_do": "Neler Yapabilirsiniz:",
+    "browse_flights_hotels": "Uçuş ve otellere göz atın",
+    "view_detailed_info": "Ayrıntılı bilgileri görüntüleyin",
+    "test_booking_flow": "Rezervasyon akışını test edin",
+    "view_invoices": "Faturaları ve onayları görüntüleyin",
+    "test_ui_features": "Tüm UI özelliklerini test edin",
+    "booking_restricted": "Rezervasyon Kısıtlandı",
+    "booking_restricted_text": "Demo hesaplarda ödeme işleme ve nihai rezervasyonlar devre dışıdır. Gerçek ücret alınmayacaktır.",
+    "go_home": "Ana Sayfaya Git",
+    "explore_more": "Daha Fazla Özelliği Keşfet"
+}

@@ -1,0 +1,18 @@
+{
+  "filters": "Filtri",
+  "stops": "Scali",
+  "all_flights": "Tutti i Voli",
+  "stop": "Scalo",
+  "price": "Prezzo",
+  "preferred_airlines": "Compagnie Aeree Preferite",
+  "flights_found": "Voli trovati",
+  "total_fare": "Tariffa totale",
+  "book": "Prenota",
+  "outbound": "Andata",
+  "pc": "PC",
+  "nonstop": "Diretto",
+  "direct": "Diretto",
+  "no_flights_found": "Nessun Volo Trovato",
+  "no_flights_message": "Non siamo riusciti a trovare voli corrispondenti ai tuoi criteri di ricerca. Prova a modificare la destinazione, le date o i dettagli dei passeggeri.",
+  "search_again": "Cerca di Nuovo"
+}

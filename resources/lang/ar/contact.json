@@ -1,0 +1,49 @@
+{
+    "contact_us": "اتصل بنا",
+    "contact_us_desc": "هل لديك أسئلة أو تحتاج إلى مساعدة في حجزك؟ فريقنا سعيد بمساعدتك!",
+
+    "contact_information": "معلومات الاتصال",
+    "address": "العنوان",
+    "phone": "الهاتف",
+    "alternate_phone": "هاتف بديل",
+    "email": "البريد الإلكتروني",
+
+    "office_hours": "ساعات العمل",
+    "monday_friday": "الاثنين - الجمعة",
+    "saturday": "السبت",
+    "sunday": "الأحد",
+    "closed": "مغلق",
+
+    "send_message": "أرسل لنا رسالة",
+
+    "first_name": "الاسم الأول",
+    "first_name_placeholder": "أدخل الاسم الأول",
+
+    "last_name": "اسم العائلة",
+    "last_name_placeholder": "أدخل اسم العائلة",
+
+    "phone_optional": "الهاتف (اختياري)",
+    "phone_placeholder": "أدخل رقم هاتفك",
+
+    "email_placeholder": "أدخل بريدك الإلكتروني",
+
+    "subject": "الموضوع",
+    "select_subject": "اختر الموضوع",
+
+    "booking_reference_optional": "رقم الحجز المرجعي (اختياري)",
+    "booking_reference_placeholder": "أدخل رقم الحجز المرجعي إن وجد",
+
+    "message": "الرسالة",
+    "message_placeholder": "أخبرنا كيف يمكننا المساعدة...",
+
+    "privacy_agreement": "أوافق على سياسة الخصوصية وشروط الخدمة",
+
+    "send_message_btn": "إرسال الرسالة",
+
+    "flight_ticket_booking": "حجز تذاكر الطيران",
+    "hotel_booking": "حجز الفنادق",
+    "existing_booking": "حجز حالي",
+    "price_quote": "عرض سعر",
+    "complaint": "شكوى",
+    "general_question": "سؤال عام"
+}

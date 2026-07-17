@@ -1,0 +1,30 @@
+{
+    "heading": "感谢您联系我们！",
+    "message": "我们已收到您的消息，我们的团队将很快审核。您将在提供的电子邮件地址收到确认邮件。",
+
+    "what_next_title": "接下来会发生什么？",
+
+    "step_review_title": "我们审核您的消息",
+    "step_review_desc": "我们的团队将仔细审核您的咨询",
+
+    "step_response_title": "24-48小时内回复",
+    "step_response_desc": "我们通常会在1-2个工作日内回复",
+
+    "step_reply_title": "我们会回复您",
+    "step_reply_desc": "您将通过电子邮件收到我们的回复",
+
+    "step_urgent_title": "需要紧急帮助？",
+    "step_urgent_desc": "请致电",
+
+    "contact_title": "需要立即帮助？",
+    "contact_desc": "如果您的事情紧急，请随时直接联系我们：",
+
+    "email_label": "电子邮件",
+    "phone_label": "电话",
+
+    "office_hours": "办公时间",
+    "office_time": "周一至周五，上午9:30 - 下午6:00",
+
+    "btn_home": "返回首页",
+    "btn_contact": "发送另一条消息"
+  }

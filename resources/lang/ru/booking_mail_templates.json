@@ -1,0 +1,14 @@
+{
+    "heading": "Обновление статуса бронирования",
+    "dear_customer": "Уважаемый клиент,",
+    "booking_text": "Ваше бронирование <strong>:type</strong> с номером <strong>:reference</strong> было <strong>:status</strong>.",
+    "view_details": "Посмотреть детали",
+    "thank_you": "Спасибо за выбор :business.",
+    "Confirmed": "подтверждено",
+    "Pending": "ожидает",
+    "Cancelled": "отменено",
+    "flight": "авиабилет",
+    "hotel": "отель"
+
+  }
+

@@ -1,0 +1,31 @@
+{
+    "heading": "お問い合わせありがとうございます！",
+    "message": "メッセージを受信いたしました。チームがまもなく確認いたします。ご提供いただいたメールアドレスに確認メールが送信されます。",
+
+    "what_next_title": "次のステップは？",
+
+    "step_review_title": "メッセージの確認",
+    "step_review_desc": "チームがお問い合わせ内容を注意深く確認いたします",
+
+    "step_response_title": "24〜48時間以内に返信",
+    "step_response_desc": "通常1〜2営業日以内に返信いたします",
+
+    "step_reply_title": "返信いたします",
+    "step_reply_desc": "メールで返信をお送りいたします",
+
+    "step_urgent_title": "緊急のお手伝いが必要ですか？",
+    "step_urgent_desc": "お電話ください",
+
+    "contact_title": "すぐにサポートが必要ですか？",
+    "contact_desc": "緊急の場合は、直接お問い合わせください：",
+
+    "email_label": "メール",
+    "phone_label": "電話",
+
+    "office_hours": "営業時間",
+    "office_time": "月曜日 - 金曜日、午前9:30 - 午後6:00",
+
+    "btn_home": "ホームに戻る",
+    "btn_contact": "別のメッセージを送信"
+  }
+

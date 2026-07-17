@@ -1,0 +1,31 @@
+{
+    "heading": "Thank You for Contacting Us!",
+    "message": "We have received your message and our team will review it shortly. You should receive a confirmation email at the address you provided.",
+
+    "what_next_title": "What Happens Next?",
+
+    "step_review_title": "We Review Your Message",
+    "step_review_desc": "Our team will carefully review your inquiry",
+
+    "step_response_title": "Response Within 24-48 Hours",
+    "step_response_desc": "We typically respond within 1-2 business days",
+
+    "step_reply_title": "We'll Get Back to You",
+    "step_reply_desc": "You'll receive our response via email",
+
+    "step_urgent_title": "Need Urgent Help?",
+    "step_urgent_desc": "Call us at",
+
+    "contact_title": "Need Immediate Assistance?",
+    "contact_desc": "If your matter is urgent, please don't hesitate to contact us directly:",
+
+    "email_label": "Email",
+    "phone_label": "Phone",
+
+    "office_hours": "Office Hours",
+    "office_time": "Monday - Friday, 09:30 AM - 06:00 PM",
+
+    "btn_home": "Back to Home",
+    "btn_contact": "Send Another Message"
+  }
+

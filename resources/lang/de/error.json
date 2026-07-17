@@ -1,0 +1,22 @@
+{
+    "page_title": "Seite nicht gefunden",
+    "error_code": "404",
+    "error_title": "Hoppla! Diese Seite ist abgehoben",
+    "error_description": "Die gesuchte Seite existiert nicht oder wurde zu einem neuen Ziel verschoben.",
+    "go_home": "Zur Startseite",
+    "view_pricing": "Preispläne anzeigen",
+    "limited_offer": "Zeitlich begrenztes Angebot",
+    "promo_title": "Starten Sie Ihr Online-Reisegeschäft",
+    "promo_description": "Starten Sie mit Stil — <span class=\"font-semibold text-gray-800\">Hotel, Flug, Tour, Visum & Umrah</span> Buchungen alles auf einer Plattform",
+    "white_label": "White-Label-Lösung",
+    "setup_time": "Einrichtung in 15 Minuten",
+    "hotels": "Hotels",
+    "flights": "Flüge",
+    "tours": "Touren",
+    "visa": "Visum",
+    "umrah": "Umrah",
+    "starting_from": "Ab nur",
+    "solution_desc": "Komplette White-Label-Reisegeschäftslösung",
+    "get_started": "Jetzt loslegen",
+    "powered_by": "Unterstützt von"
+}

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Part 4: Admin Controllers — TravelPanel v2 Docs</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        .sidebar { width: 260px; min-height: 100vh; background: #1e293b; position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 100; }
+        .sidebar-brand { display: block; padding: 20px; color: #f8fafc; font-size: 14px; font-weight: 600; border-bottom: 1px solid #334155; text-decoration: none; }
+        .sidebar-brand strong { color: #60a5fa; }
+        .sidebar .nav-link { color: #94a3b8; padding: 8px 20px; font-size: 13px; display: flex; align-items: center; gap: 8px; text-decoration: none; border-radius: 0; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { color: #f8fafc; background: #334155; }
+        .sidebar .nav-section { color: #475569; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 16px 20px 4px; }
+        .main-content { margin-left: 260px; padding: 40px; }
+        .page-header { border-bottom: 1px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 32px; }
+        .page-header h1 { font-size: 28px; font-weight: 700; color: #1e293b; }
+        .page-header .meta { color: #64748b; font-size: 14px; }
+        h2 { font-size: 20px; font-weight: 600; color: #1e293b; margin-top: 40px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+        h3 { font-size: 16px; font-weight: 600; color: #334155; margin-top: 24px; margin-bottom: 8px; }
+        .file-badge { display: inline-block; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 12px; font-size: 12px; font-family: monospace; color: #0f172a; margin-bottom: 12px; }
+        pre[class*="language-"] { border-radius: 8px; font-size: 13px; margin: 0 0 24px 0; }
+        .back-link { color: #3b82f6; text-decoration: none; font-size: 14px; }
+        .back-link:hover { text-decoration: underline; }
+        @media (max-width: 768px) { .sidebar { width: 100%; position: relative; min-height: auto; } .main-content { margin-left: 0; padding: 20px; } }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="index.html" class="sidebar-brand"><strong>TravelPanel v2</strong><br>Agent B2B Docs</a>
+        <div class="nav-section">Overview</div>
+        <a href="index.html" class="nav-link"><i class="bi bi-house"></i> Home</a>
+        <div class="nav-section">Detailed Parts</div>
+        <a href="01-migrations.html" class="nav-link"><i class="bi bi-database"></i> Part 1: Migrations</a>
+        <a href="02-models.html" class="nav-link"><i class="bi bi-box"></i> Part 2: Models</a>
+        <a href="03-middleware-routes.html" class="nav-link"><i class="bi bi-signpost-split"></i> Part 3: Middleware &amp; Routes</a>
+        <a href="04-admin-controllers.html" class="nav-link active"><i class="bi bi-person-gear"></i> Part 4: Admin Controllers</a>
+        <a href="05-agent-controllers.html" class="nav-link"><i class="bi bi-person-badge"></i> Part 5: Agent Controllers</a>
+        <a href="06-views-agent-layout.html" class="nav-link"><i class="bi bi-layout-sidebar"></i> Part 6: Agent Views</a>
+        <a href="07-views-admin-agents.html" class="nav-link"><i class="bi bi-people"></i> Part 7: Admin Views</a>
+        <a href="08-admin-sidebar-and-implementation-order.html" class="nav-link"><i class="bi bi-list-check"></i> Part 8: Implementation</a>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <a href="index.html" class="back-link"><i class="bi bi-arrow-left"></i> Back to Index</a>
+            <h1 class="mt-2">Part 4: Admin Controllers</h1>
+            <div class="meta">AgentController, AgentWalletController, TopupRequestController</div>
+        </div>
+
+        <hr>
+
+        <h2>Controller 1: Admin\AgentController</h2>
+        <div class="file-badge"><i class="bi bi-file-code"></i> app/Http/Controllers/Admin/AgentController.php</div>
+        <pre><code class="language-php">&lt;?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\AgentPermission;
+use App\Models\AgentWallet;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+
+class AgentController extends Controller
+{
+    public function index(Request $request)
+    {
+        $query = User::agents()-&gt;with('wallet');
+
+        if ($request-&gt;filled('search')) {
+            $s = $request-&gt;search;
+            $query-&gt;where(function ($q) use ($s) {
+                $q-&gt;where('first_name', 'like', "%{$s}%")
+                  -&gt;orWhere('last_name', 'like', "%{$s}%")
+                  -&gt;orWhere('email', 'like', "%{$s}%")
+                  -&gt;orWhere('company_name', 'like', "%{$s}%")
+                  -&gt;orWhere('agent_code', 'like', "%{$s}%");
+            });
+        }
+
+        if ($request-&gt;filled('status')) {
+            $query-&gt;where('approval_status', $request-&gt;status);
+        }
+
+        $agents = $query-&gt;latest()-&gt;paginate(20);
+
+        $stats = [
+            'total'     =&gt; User::agents()-&gt;count(),
+            'active'    =&gt; User::agents()-&gt;where('approval_status', 'active')-&gt;count(),
+            'pending'   =&gt; User::agents()-&gt;where('approval_status', 'pending')-&gt;count(),
+            'suspended' =&gt; User::agents()-&gt;where('approval_status', 'suspended')-&gt;count(),
+        ];
+
+        $pendingTopups = \App\Models\AgentTopupRequest::pending()-&gt;count();
+
+        return view('admin.agents.index', compact('agents', 'stats', 'pendingTopups'));
+    }
+
+    public function create()
+    {
+        return view('admin.agents.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request-&gt;validate([
+            'first_name'   =&gt; 'required|string|max:100',
+            'last_name'    =&gt; 'required|string|max:100',
+            'email'        =&gt; 'required|email|unique:users,email',
+            'phone'        =&gt; 'nullable|string|max:30',
+            'company_name' =&gt; 'nullable|string|max:255',
+            'company_phone'=&gt; 'nullable|string|max:30',
+            'company_address' =&gt; 'nullable|string',
+            'cnic_or_reg_number' =&gt; 'nullable|string|max:100',
+            'commission_rate' =&gt; 'nullable|numeric|min:0|max:100',
+            'password'     =&gt; 'required|min:8|confirmed',
+        ]);
+
+        $agent = User::create([
+            'user_type'       =&gt; 'agent',
+            'first_name'      =&gt; $request-&gt;first_name,
+            'last_name'       =&gt; $request-&gt;last_name,
+            'email'           =&gt; $request-&gt;email,
+            'phone'           =&gt; $request-&gt;phone,
+            'company_name'    =&gt; $request-&gt;company_name,
+            'company_phone'   =&gt; $request-&gt;company_phone,
+            'company_address' =&gt; $request-&gt;company_address,
+            'cnic_or_reg_number' =&gt; $request-&gt;cnic_or_reg_number,
+            'commission_rate' =&gt; $request-&gt;commission_rate ?? 0,
+            'agent_code'      =&gt; User::generateAgentCode(),
+            'approval_status' =&gt; 'active',
+            'approved_by'     =&gt; auth()-&gt;id(),
+            'approved_at'     =&gt; now(),
+            'password'        =&gt; Hash::make($request-&gt;password),
+        ]);
+
+        // Create wallet
+        AgentWallet::create(['agent_id' =&gt; $agent-&gt;id]);
+
+        return redirect()-&gt;route('admin.agents.show', $agent)
+                         -&gt;with('success', 'Agent created successfully! Code: ' . $agent-&gt;agent_code);
+    }
+
+    public function show(User $agent)
+    {
+        $this-&gt;ensureAgent($agent);
+        $agent-&gt;load(['wallet', 'agentPermissions', 'topupRequests' =&gt; fn($q) =&gt; $q-&gt;latest()-&gt;take(5)]);
+
+        $bookingStats = $this-&gt;getAgentBookingStats($agent-&gt;id);
+        $allPermissions = AgentPermission::ALL_PERMISSIONS;
+        $agentPermissions = AgentPermission::getAgentPermissions($agent-&gt;id);
+
+        return view('admin.agents.show', compact('agent', 'bookingStats', 'allPermissions', 'agentPermissions'));
+    }
+
+    public function edit(User $agent)
+    {
+        $this-&gt;ensureAgent($agent);
+        return view('admin.agents.edit', compact('agent'));
+    }
+
+    public function update(Request $request, User $agent)
+    {
+        $this-&gt;ensureAgent($agent);
+
+        $request-&gt;validate([
+            'first_name'      =&gt; 'required|string|max:100',
+            'last_name'       =&gt; 'required|string|max:100',
+            'email'           =&gt; 'required|email|unique:users,email,' . $agent-&gt;id,
+            'phone'           =&gt; 'nullable|string|max:30',
+            'company_name'    =&gt; 'nullable|string|max:255',
+            'commission_rate' =&gt; 'nullable|numeric|min:0|max:100',
+        ]);
+
+        $agent-&gt;update($request-&gt;only([
+            'first_name', 'last_name', 'email', 'phone',
+            'company_name', 'company_phone', 'company_address',
+            'cnic_or_reg_number', 'commission_rate', 'internal_notes',
+        ]));
+
+        return redirect()-&gt;route('admin.agents.show', $agent)-&gt;with('success', 'Agent updated.');
+    }
+
+    public function destroy(User $agent)
+    {
+        $this-&gt;ensureAgent($agent);
+        $agent-&gt;delete();
+        return redirect()-&gt;route('admin.agents.index')-&gt;with('success', 'Agent deleted.');
+    }
+
+    public function approve(User $agent)
+    {
+        $this-&gt;ensureAgent($agent);
+        $agent-&gt;approveAgent(auth()-&gt;id());
+        return back()-&gt;with('success', 'Agent approved successfully.');
+    }
+
+    public function suspend(Request $request, User $agent)
+    {
+        $this-&gt;ensureAgent($agent);
+        $agent-&gt;suspendAgent($request-&gt;reason);
+        return back()-&gt;with('success', 'Agent suspended.');
+    }
+
+    public function activate(User $agent)
+    {
+        $this-&gt;ensureAgent($agent);
+        $agent-&gt;activateAgent();
+        return back()-&gt;with('success', 'Agent reactivated.');
+    }
+
+    public function permissions(User $agent)
+    {
+        $this-&gt;ensureAgent($agent);
+        $allPermissions = AgentPermission::ALL_PERMISSIONS;
+        $agentPermissions = AgentPermission::getAgentPermissions($agent-&gt;id);
+        return view('admin.agents.permissions', compact('agent', 'allPermissions', 'agentPermissions'));
+    }
+
+    public function savePermissions(Request $request, User $agent)
+    {
+        $this-&gt;ensureAgent($agent);
+        AgentPermission::savePermissions($agent-&gt;id, $request-&gt;input('permissions', []));
+        return back()-&gt;with('success', 'Permissions saved.');
+    }
+
+    // ─── Private Helpers ──────────────────────────────────────────────────────
+
+    private function ensureAgent(User $user): void
+    {
+        if (!$user-&gt;isAgent()) abort(404);
+    }
+
+    private function getAgentBookingStats(int $agentId): array
+    {
+        return [
+            'hotels'  =&gt; \App\Models\HotelBooking::where('agent_id', $agentId)-&gt;count(),
+            'flights' =&gt; \App\Models\FlightBooking::where('agent_id', $agentId)-&gt;count(),
+            'tours'   =&gt; \App\Models\TourBooking::where('agent_id', $agentId)-&gt;count(),
+            'umrah'   =&gt; \App\Models\UmrahBooking::where('agent_id', $agentId)-&gt;count(),
+            'total'   =&gt; \App\Models\HotelBooking::where('agent_id', $agentId)-&gt;count()
+                       + \App\Models\FlightBooking::where('agent_id', $agentId)-&gt;count()
+                       + \App\Models\TourBooking::where('agent_id', $agentId)-&gt;count()
+                       + \App\Models\UmrahBooking::where('agent_id', $agentId)-&gt;count(),
+        ];
+    }
+}</code></pre>
+
+        <hr>
+
+        <h2>Controller 2: Admin\AgentWalletController</h2>
+        <div class="file-badge"><i class="bi bi-file-code"></i> app/Http/Controllers/Admin/AgentWalletController.php</div>
+        <pre><code class="language-php">&lt;?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\AgentWallet;
+use App\Models\AgentWalletTransaction;
+use Illuminate\Http\Request;
+
+class AgentWalletController extends Controller
+{
+    public function index(User $agent)
+    {
+        $wallet = $agent-&gt;wallet ?? AgentWallet::create(['agent_id' =&gt; $agent-&gt;id]);
+        $recentTransactions = AgentWalletTransaction::byAgent($agent-&gt;id)-&gt;latest()-&gt;take(10)-&gt;get();
+
+        return view('admin.agents.wallet', compact('agent', 'wallet', 'recentTransactions'));
+    }
+
+    public function credit(Request $request, User $agent)
+    {
+        $request-&gt;validate([
+            'amount'         =&gt; 'required|numeric|min:1',
+            'payment_method' =&gt; 'nullable|string|max:100',
+            'note'           =&gt; 'nullable|string|max:500',
+        ]);
+
+        $wallet = $agent-&gt;wallet ?? AgentWallet::create(['agent_id' =&gt; $agent-&gt;id]);
+
+        $wallet-&gt;credit(
+            amount:        $request-&gt;amount,
+            note:          $request-&gt;note ?? 'Manual credit by admin',
+            performedBy:   auth()-&gt;id(),
+            paymentMethod: $request-&gt;payment_method,
+        );
+
+        return back()-&gt;with('success', 'PKR ' . number_format($request-&gt;amount, 2) . ' added to wallet.');
+    }
+
+    public function debit(Request $request, User $agent)
+    {
+        $request-&gt;validate([
+            'amount' =&gt; 'required|numeric|min:1',
+            'note'   =&gt; 'required|string|max:500',
+        ]);
+
+        $wallet = $agent-&gt;wallet;
+
+        if (!$wallet || !$wallet-&gt;hasSufficientBalance($request-&gt;amount)) {
+            return back()-&gt;with('error', 'Insufficient wallet balance.');
+        }
+
+        $wallet-&gt;debit(
+            amount:      $request-&gt;amount,
+            note:        $request-&gt;note,
+            performedBy: auth()-&gt;id(),
+        );
+
+        return back()-&gt;with('success', 'PKR ' . number_format($request-&gt;amount, 2) . ' deducted from wallet.');
+    }
+
+    public function transactions(Request $request, User $agent)
+    {
+        $query = AgentWalletTransaction::byAgent($agent-&gt;id)-&gt;with('performedBy');
+
+        if ($request-&gt;filled('type')) {
+            $query-&gt;where('type', $request-&gt;type);
+        }
+
+        if ($request-&gt;filled('from') &amp;&amp; $request-&gt;filled('to')) {
+            $query-&gt;byDateRange($request-&gt;from, $request-&gt;to . ' 23:59:59');
+        }
+
+        $transactions = $query-&gt;latest()-&gt;paginate(20);
+        $wallet = $agent-&gt;wallet;
+
+        return view('admin.agents.transactions', compact('agent', 'wallet', 'transactions'));
+    }
+}</code></pre>
+
+        <hr>
+
+        <h2>Controller 3: Admin\TopupRequestController</h2>
+        <div class="file-badge"><i class="bi bi-file-code"></i> app/Http/Controllers/Admin/TopupRequestController.php</div>
+        <pre><code class="language-php">&lt;?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\AgentTopupRequest;
+use App\Models\AgentWallet;
+use Illuminate\Http\Request;
+
+class TopupRequestController extends Controller
+{
+    public function index(Request $request)
+    {
+        $query = AgentTopupRequest::with('agent')-&gt;latest();
+
+        if ($request-&gt;filled('status')) {
+            $query-&gt;where('status', $request-&gt;status);
+        } else {
+            $query-&gt;pending(); // default: show pending
+        }
+
+        $requests = $query-&gt;paginate(20);
+        $pendingCount = AgentTopupRequest::pending()-&gt;count();
+
+        return view('admin.topup-requests.index', compact('requests', 'pendingCount'));
+    }
+
+    public function show(AgentTopupRequest $topupRequest)
+    {
+        $topupRequest-&gt;load('agent', 'reviewedBy');
+        return view('admin.topup-requests.show', compact('topupRequest'));
+    }
+
+    public function approve(Request $request, AgentTopupRequest $topupRequest)
+    {
+        if ($topupRequest-&gt;status !== 'pending') {
+            return back()-&gt;with('error', 'This request has already been reviewed.');
+        }
+
+        $wallet = AgentWallet::firstOrCreate(
+            ['agent_id' =&gt; $topupRequest-&gt;agent_id],
+        );
+
+        // Add balance
+        $wallet-&gt;credit(
+            amount:        $topupRequest-&gt;amount,
+            note:          'Top-up request #' . $topupRequest-&gt;id . ' approved',
+            performedBy:   auth()-&gt;id(),
+            paymentMethod: $topupRequest-&gt;payment_method,
+            reference:     'TOPUP-' . $topupRequest-&gt;id,
+        );
+
+        // Update request status
+        $topupRequest-&gt;update([
+            'status'      =&gt; 'approved',
+            'reviewed_by' =&gt; auth()-&gt;id(),
+            'reviewed_at' =&gt; now(),
+        ]);
+
+        return back()-&gt;with('success', 'Top-up request approved. PKR ' . number_format($topupRequest-&gt;amount, 2) . ' added to agent wallet.');
+    }
+
+    public function reject(Request $request, AgentTopupRequest $topupRequest)
+    {
+        $request-&gt;validate([
+            'rejection_note' =&gt; 'required|string|max:500',
+        ]);
+
+        if ($topupRequest-&gt;status !== 'pending') {
+            return back()-&gt;with('error', 'This request has already been reviewed.');
+        }
+
+        $topupRequest-&gt;update([
+            'status'         =&gt; 'rejected',
+            'reviewed_by'    =&gt; auth()-&gt;id(),
+            'reviewed_at'    =&gt; now(),
+            'rejection_note' =&gt; $request-&gt;rejection_note,
+        ]);
+
+        return back()-&gt;with('success', 'Top-up request rejected.');
+    }
+}</code></pre>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html>

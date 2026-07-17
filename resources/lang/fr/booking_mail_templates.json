@@ -1,0 +1,14 @@
+{
+    "heading": "Mise à Jour du Statut de Réservation",
+    "dear_customer": "Cher Client,",
+    "booking_text": "Votre réservation de <strong>:type</strong> avec la référence <strong>:reference</strong> a été <strong>:status</strong>.",
+    "view_details": "Voir les Détails",
+    "thank_you": "Merci d'avoir choisi :business.",
+    "Confirmed": "confirmée",
+    "Pending": "en attente",
+    "Cancelled": "annulée",
+    "flight": "vol",
+    "hotel": "hôtel"
+
+  }
+

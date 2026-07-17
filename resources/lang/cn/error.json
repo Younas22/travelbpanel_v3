@@ -1,0 +1,22 @@
+{
+    "page_title": "找不到页面",
+    "error_code": "404",
+    "error_title": "哎呀！此页面已起飞",
+    "error_description": "您要查找的页面不存在或已移至新目的地。",
+    "go_home": "前往主页",
+    "view_pricing": "查看价格计划",
+    "limited_offer": "限时优惠",
+    "promo_title": "在线开启您的旅游业务",
+    "promo_description": "时尚启动 — <span class=\"font-semibold text-gray-800\">酒店、航班、旅游、签证和朝觐</span> 预订全在一个平台上",
+    "white_label": "白标解决方案",
+    "setup_time": "15分钟内完成设置",
+    "hotels": "酒店",
+    "flights": "航班",
+    "tours": "旅游",
+    "visa": "签证",
+    "umrah": "朝觐",
+    "starting_from": "仅需",
+    "solution_desc": "完整的白标旅游业务解决方案",
+    "get_started": "立即开始",
+    "powered_by": "技术支持"
+}

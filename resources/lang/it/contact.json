@@ -1,0 +1,49 @@
+{
+    "contact_us": "Contattaci",
+    "contact_us_desc": "Hai domande o hai bisogno di aiuto con la tua prenotazione? Il nostro team è felice di aiutarti!",
+
+    "contact_information": "Informazioni di Contatto",
+    "address": "Indirizzo",
+    "phone": "Telefono",
+    "alternate_phone": "Telefono Alternativo",
+    "email": "Email",
+
+    "office_hours": "Orari d'Ufficio",
+    "monday_friday": "Lunedì - Venerdì",
+    "saturday": "Sabato",
+    "sunday": "Domenica",
+    "closed": "Chiuso",
+
+    "send_message": "Inviaci un Messaggio",
+
+    "first_name": "Nome",
+    "first_name_placeholder": "Inserisci il nome",
+
+    "last_name": "Cognome",
+    "last_name_placeholder": "Inserisci il cognome",
+
+    "phone_optional": "Telefono (Facoltativo)",
+    "phone_placeholder": "Inserisci il tuo numero di telefono",
+
+    "email_placeholder": "Inserisci la tua email",
+
+    "subject": "Oggetto",
+    "select_subject": "Seleziona Oggetto",
+
+    "booking_reference_optional": "Riferimento Prenotazione (Facoltativo)",
+    "booking_reference_placeholder": "Inserisci il riferimento prenotazione se applicabile",
+
+    "message": "Messaggio",
+    "message_placeholder": "Dicci come possiamo aiutarti...",
+
+    "privacy_agreement": "Accetto l'informativa sulla privacy e i termini di servizio",
+
+    "send_message_btn": "Invia Messaggio",
+
+    "flight_ticket_booking": "Prenotazione Biglietto Aereo",
+    "hotel_booking": "Prenotazione Hotel",
+    "existing_booking": "Prenotazione Esistente",
+    "price_quote": "Preventivo di Prezzo",
+    "complaint": "Reclamo",
+    "general_question": "Domanda Generale"
+}

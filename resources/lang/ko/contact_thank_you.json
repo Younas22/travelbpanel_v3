@@ -1,0 +1,31 @@
+{
+    "heading": "문의해 주셔서 감사합니다!",
+    "message": "메시지를 받았으며 저희 팀이 곧 검토할 것입니다. 제공하신 주소로 확인 이메일을 받으실 것입니다.",
+
+    "what_next_title": "다음 단계는 무엇인가요?",
+
+    "step_review_title": "메시지 검토",
+    "step_review_desc": "저희 팀이 귀하의 문의를 신중히 검토할 것입니다",
+
+    "step_response_title": "24-48시간 내 응답",
+    "step_response_desc": "일반적으로 1-2 영업일 이내에 응답합니다",
+
+    "step_reply_title": "회신 드리겠습니다",
+    "step_reply_desc": "이메일을 통해 답변을 받으실 것입니다",
+
+    "step_urgent_title": "긴급 도움이 필요하신가요?",
+    "step_urgent_desc": "다음으로 전화하세요",
+
+    "contact_title": "즉시 도움이 필요하신가요?",
+    "contact_desc": "긴급한 사항이 있으시면 주저하지 마시고 직접 연락해 주세요:",
+
+    "email_label": "이메일",
+    "phone_label": "전화",
+
+    "office_hours": "영업 시간",
+    "office_time": "월요일 - 금요일, 오전 09:30 - 오후 06:00",
+
+    "btn_home": "홈으로 돌아가기",
+    "btn_contact": "다른 메시지 보내기"
+  }
+

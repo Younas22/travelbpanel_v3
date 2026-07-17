@@ -1,0 +1,49 @@
+{
+    "contact_us": "Свяжитесь с нами",
+    "contact_us_desc": "У вас есть вопросы или нужна помощь с бронированием? Наша команда будет рада помочь!",
+
+    "contact_information": "Контактная информация",
+    "address": "Адрес",
+    "phone": "Телефон",
+    "alternate_phone": "Альтернативный телефон",
+    "email": "Электронная почта",
+
+    "office_hours": "Часы работы",
+    "monday_friday": "Понедельник - Пятница",
+    "saturday": "Суббота",
+    "sunday": "Воскресенье",
+    "closed": "Закрыто",
+
+    "send_message": "Отправьте нам сообщение",
+
+    "first_name": "Имя",
+    "first_name_placeholder": "Введите имя",
+
+    "last_name": "Фамилия",
+    "last_name_placeholder": "Введите фамилию",
+
+    "phone_optional": "Телефон (необязательно)",
+    "phone_placeholder": "Введите ваш номер телефона",
+
+    "email_placeholder": "Введите вашу электронную почту",
+
+    "subject": "Тема",
+    "select_subject": "Выберите тему",
+
+    "booking_reference_optional": "Номер бронирования (необязательно)",
+    "booking_reference_placeholder": "Введите номер бронирования, если применимо",
+
+    "message": "Сообщение",
+    "message_placeholder": "Расскажите, как мы можем помочь...",
+
+    "privacy_agreement": "Я согласен с политикой конфиденциальности и условиями обслуживания",
+
+    "send_message_btn": "Отправить сообщение",
+
+    "flight_ticket_booking": "Бронирование авиабилета",
+    "hotel_booking": "Бронирование отеля",
+    "existing_booking": "Существующее бронирование",
+    "price_quote": "Ценовое предложение",
+    "complaint": "Жалоба",
+    "general_question": "Общий вопрос"
+}

@@ -1,0 +1,19 @@
+{
+    "package_type": "Paket Türü",
+    "all_packages": "Tüm Paketler",
+    "when": "Ne Zaman",
+    "travelers": "Yolcular",
+    "adult": "Yetişkin",
+    "child": "Çocuk",
+    "apply": "Uygula",
+    "search_packages": "Paket Ara",
+    "select_dates": "Lütfen tarih seçin",
+    "loading_package_types": "Paket türleri yükleniyor...",
+    "error_loading_types": "Paket türleri yüklenirken hata",
+    "years_12_plus": "(12+ yaş)",
+    "years_2_11": "(2-11 yaş)",
+    "economy": "Ekonomi",
+    "standard": "Standart",
+    "premium": "Premium",
+    "luxury": "Lüks"
+}

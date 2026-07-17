@@ -1,0 +1,21 @@
+{
+    "page_title": "Demo-Konto",
+    "header_title": "Demo-Konto",
+    "header_subtitle": "Sie verwenden ein Demo-Konto zu Testzwecken",
+    "demo_mode": "Demo-Modus",
+    "booking_not_available": "Buchung Nicht Verfügbar",
+    "demo_description": "Dies ist ein Demo-Konto. Sie können alle Funktionen erkunden und die Plattform testen, aber echte Buchungen können nicht abgeschlossen werden.",
+    "start_travel_portal": "Starten Sie Ihr Reiseportal",
+    "upgrade_description": "Möchten Sie Ihre eigene Reisebuchungsplattform starten? Sehen Sie sich unsere Preise und Funktionen an.",
+    "view_pricing": "Preisdetails anzeigen",
+    "what_you_can_do": "Was Sie tun können:",
+    "browse_flights_hotels": "Flüge und Hotels durchsuchen",
+    "view_detailed_info": "Detaillierte Informationen anzeigen",
+    "test_booking_flow": "Den Buchungsablauf testen",
+    "view_invoices": "Rechnungen und Bestätigungen anzeigen",
+    "test_ui_features": "Alle UI-Funktionen testen",
+    "booking_restricted": "Buchung Eingeschränkt",
+    "booking_restricted_text": "Zahlungsverarbeitung und endgültige Buchungen sind bei Demo-Konten deaktiviert. Es werden keine echten Gebühren erhoben.",
+    "go_home": "Startseite",
+    "explore_more": "Weitere Funktionen erkunden"
+}

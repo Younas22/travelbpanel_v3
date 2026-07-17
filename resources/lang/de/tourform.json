@@ -1,0 +1,22 @@
+{
+    "where": "Wohin",
+    "search_destinations": "Reiseziele suchen",
+    "when": "Wann",
+    "tour_type": "Tourtyp",
+    "all_tour": "Alle Touren",
+    "travelers": "Reisende",
+    "adult": "Erwachsener",
+    "child": "Kind",
+    "apply": "Anwenden",
+    "search_tours": "Touren suchen",
+    "select_destination": "Bitte wählen Sie ein Reiseziel aus",
+    "select_dates": "Bitte wählen Sie Daten aus",
+    "type_3_characters": "Geben Sie mindestens 3 Zeichen ein, um zu suchen...",
+    "searching": "Suche läuft...",
+    "no_destinations_found": "Keine Reiseziele gefunden",
+    "error_loading": "Fehler beim Laden der Reiseziele",
+    "loading_tour_types": "Tourtypen werden geladen...",
+    "error_loading_types": "Fehler beim Laden der Tourtypen",
+    "years_12_plus": "(12+ J.)",
+    "years_2_11": "(2-11 J.)"
+}

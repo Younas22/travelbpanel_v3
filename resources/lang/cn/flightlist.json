@@ -1,0 +1,18 @@
+{
+  "filters": "筛选",
+  "stops": "经停",
+  "all_flights": "所有航班",
+  "stop": "经停",
+  "price": "价格",
+  "preferred_airlines": "首选航空公司",
+  "flights_found": "找到的航班",
+  "total_fare": "总票价",
+  "book": "预订",
+  "outbound": "去程",
+  "pc": "件",
+  "nonstop": "直飞",
+  "direct": "直达",
+  "no_flights_found": "未找到航班",
+  "no_flights_message": "我们找不到符合您搜索条件的航班。请尝试调整目的地、日期或乘客详情。",
+  "search_again": "再次搜索"
+}
