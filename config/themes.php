@@ -1,0 +1,158 @@
+<?php
+
+/**
+ * Built-in theme presets for the admin Theme Settings page.
+ *
+ * Selecting a preset just pre-fills the same CSS-variable-driven fields
+ * stored in `theme_settings` — there is no separate stylesheet per theme.
+ * Every value here maps 1:1 to a column on the ThemeSetting model.
+ */
+return [
+
+    'default' => [
+        'label' => 'Default',
+        'description' => 'Modern clean design (current admin)',
+        'icon' => 'bi-square',
+        'preview' => ['#0C6DFD', '#F8FAFC', '#FFFFFF'],
+        'values' => [
+            'primary_color' => '#0C6DFD',
+            'secondary_color' => '#64748B',
+            'success_color' => '#10B981',
+            'warning_color' => '#F59E0B',
+            'danger_color' => '#EF4444',
+            'info_color' => '#0EA5E9',
+            'body_background' => '#F8FAFC',
+            'sidebar_background' => '#FFFFFF',
+            'navbar_background' => '#FFFFFF',
+            'card_background' => '#FFFFFF',
+            'text_color' => '#1F2937',
+            'border_color' => '#E5E7EB',
+            'input_background' => '#FFFFFF',
+            'input_border' => '#E5E7EB',
+            'input_focus_color' => '#0C6DFD',
+        ],
+    ],
+
+    'dark' => [
+        'label' => 'Dark',
+        'description' => 'Professional dark dashboard',
+        'icon' => 'bi-moon-stars',
+        'preview' => ['#3B82F6', '#0F172A', '#1E293B'],
+        'values' => [
+            'primary_color' => '#3B82F6',
+            'secondary_color' => '#94A3B8',
+            'success_color' => '#22C55E',
+            'warning_color' => '#F59E0B',
+            'danger_color' => '#F87171',
+            'info_color' => '#38BDF8',
+            'body_background' => '#0F172A',
+            'sidebar_background' => '#1E293B',
+            'navbar_background' => '#1E293B',
+            'card_background' => '#1E293B',
+            'text_color' => '#E2E8F0',
+            'border_color' => '#334155',
+            'input_background' => '#0F172A',
+            'input_border' => '#334155',
+            'input_focus_color' => '#3B82F6',
+        ],
+        'dark' => true,
+    ],
+
+    'elegant' => [
+        'label' => 'Elegant',
+        'description' => 'Minimal premium dashboard',
+        'icon' => 'bi-gem',
+        'preview' => ['#111827', '#FAFAF9', '#FFFFFF'],
+        'values' => [
+            'primary_color' => '#111827',
+            'secondary_color' => '#78716C',
+            'success_color' => '#15803D',
+            'warning_color' => '#B45309',
+            'danger_color' => '#B91C1C',
+            'info_color' => '#0369A1',
+            'body_background' => '#FAFAF9',
+            'sidebar_background' => '#FFFFFF',
+            'navbar_background' => '#FFFFFF',
+            'card_background' => '#FFFFFF',
+            'text_color' => '#1C1917',
+            'border_color' => '#E7E5E4',
+            'input_background' => '#FFFFFF',
+            'input_border' => '#E7E5E4',
+            'input_focus_color' => '#111827',
+        ],
+    ],
+
+    'purple' => [
+        'label' => 'Purple',
+        'description' => 'Purple modern dashboard',
+        'icon' => 'bi-magic',
+        'preview' => ['#8B5CF6', '#F5F3FF', '#FFFFFF'],
+        'values' => [
+            'primary_color' => '#8B5CF6',
+            'secondary_color' => '#6D6A85',
+            'success_color' => '#10B981',
+            'warning_color' => '#F59E0B',
+            'danger_color' => '#EF4444',
+            'info_color' => '#3B82F6',
+            'body_background' => '#F5F3FF',
+            'sidebar_background' => '#FFFFFF',
+            'navbar_background' => '#FFFFFF',
+            'card_background' => '#FFFFFF',
+            'text_color' => '#2E1065',
+            'border_color' => '#E9E4F8',
+            'input_background' => '#FFFFFF',
+            'input_border' => '#E0D9F5',
+            'input_focus_color' => '#8B5CF6',
+        ],
+    ],
+
+    'green' => [
+        'label' => 'Green',
+        'description' => 'Green professional dashboard',
+        'icon' => 'bi-tree',
+        'preview' => ['#059669', '#F0FDF4', '#FFFFFF'],
+        'values' => [
+            'primary_color' => '#059669',
+            'secondary_color' => '#5B6B63',
+            'success_color' => '#16A34A',
+            'warning_color' => '#F59E0B',
+            'danger_color' => '#EF4444',
+            'info_color' => '#0EA5E9',
+            'body_background' => '#F0FDF4',
+            'sidebar_background' => '#FFFFFF',
+            'navbar_background' => '#FFFFFF',
+            'card_background' => '#FFFFFF',
+            'text_color' => '#052E1C',
+            'border_color' => '#DCFCE7',
+            'input_background' => '#FFFFFF',
+            'input_border' => '#D1FAE5',
+            'input_focus_color' => '#059669',
+        ],
+    ],
+
+    'midnight' => [
+        'label' => 'Midnight',
+        'description' => 'Dark navy dashboard',
+        'icon' => 'bi-stars',
+        'preview' => ['#6366F1', '#0B1120', '#111827'],
+        'values' => [
+            'primary_color' => '#6366F1',
+            'secondary_color' => '#8B93B0',
+            'success_color' => '#22C55E',
+            'warning_color' => '#FBBF24',
+            'danger_color' => '#F87171',
+            'info_color' => '#818CF8',
+            'body_background' => '#0B1120',
+            'sidebar_background' => '#111827',
+            'navbar_background' => '#111827',
+            'card_background' => '#111827',
+            'text_color' => '#E5E7EB',
+            'border_color' => '#1F2937',
+            'input_background' => '#0B1120',
+            'input_border' => '#1F2937',
+            'input_focus_color' => '#6366F1',
+        ],
+        'dark' => true,
+    ],
+
+];

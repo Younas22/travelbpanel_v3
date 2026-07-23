@@ -226,6 +226,7 @@
                 <a href="{{ route('admin.settings.email') }}" class="sb-kid {{ request()->routeIs('admin.settings.email*') ? 'sb-kid-on' : '' }}"><i class="bi bi-envelope-at"></i> Email</a>
                 <a href="{{ route('admin.settings.payment') }}" class="sb-kid {{ request()->routeIs('admin.settings.payment*') ? 'sb-kid-on' : '' }}"><i class="bi bi-wallet2"></i> Payment</a>
                 <a href="{{ route('admin.settings.languages.index') }}" class="sb-kid {{ request()->routeIs('admin.settings.languages*') ? 'sb-kid-on' : '' }}"><i class="bi bi-translate"></i> Languages</a>
+                <a href="{{ route('admin.settings.theme') }}" class="sb-kid {{ request()->routeIs('admin.settings.theme*') ? 'sb-kid-on' : '' }}"><i class="bi bi-palette"></i> Theme</a>
             </div>
         </div>
 

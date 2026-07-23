@@ -1,5 +1,6 @@
+@php($__activeTheme = app(\App\Services\ThemeService::class)->active())
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
+<html lang="en" data-bs-theme="{{ $__activeTheme->isDark() ? 'dark' : 'light' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,10 +34,15 @@
     <!-- In your head section -->
     <link rel="stylesheet" href="{{ url('public/assets/libs/toastify/toastify.min.css') }}">
     <link href="{{ asset('public/assets/css/admin.css') }}" rel="stylesheet">
+    @if($__activeTheme->font_family && !in_array(strtolower($__activeTheme->font_family), ['system font', 'system', 'system-ui']))
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family={{ str_replace(' ', '+', $__activeTheme->font_family) }}:wght@400;500;600;700&display=swap" rel="stylesheet">
+    @endif
+    <style id="theme-vars">{!! app(\App\Services\ThemeService::class)->inlineStyleTag($__activeTheme) !!}</style>
     @stack('styles')
 
 </head>
-<body>
+<body class="theme-{{ $__activeTheme->theme_name }} {{ $__activeTheme->layoutBodyClasses() }}">
     @include('admin.layouts.sidebar')
 
     <div class="main-content">

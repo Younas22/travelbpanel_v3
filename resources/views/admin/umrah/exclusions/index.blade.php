@@ -3,135 +3,146 @@
 
 @section('content')
 
-<div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
-    <a href="{{ route('agent.dashboard') }}" class="umr-link">Dashboard</a>
-    <i class="fas fa-chevron-right text-gray-300"></i>
-    <a href="{{ route('agent.umrah.index') }}" class="umr-link">My Umrah</a>
-    <i class="fas fa-chevron-right text-gray-300"></i>
-    <span class="text-gray-600">Exclusions</span>
-</div>
-
-<div class="flex items-center justify-between mb-5">
-    <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg flex items-center justify-center umr-icon-bg">
-            <i class="fas fa-times-circle umr-accent"></i>
-        </div>
-        <div>
-            <h4 class="text-lg font-bold text-gray-800">Umrah Exclusions</h4>
-            <p class="text-xs text-gray-400">Manage exclusions for Umrah packages</p>
-        </div>
+    <!-- ===== BREADCRUMB ===== -->
+    <div class="tex-breadcrumb">
+        <a href="{{ route('agent.dashboard') }}">Dashboard</a>
+        <i class="bi bi-chevron-right"></i>
+        <a href="{{ route('agent.umrah.index') }}">My Umrah</a>
+        <i class="bi bi-chevron-right"></i>
+        <span>Exclusions</span>
     </div>
-    <button onclick="openModal('addModal')" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white umr-btn-solid">
-        <i class="fas fa-plus text-xs"></i> Add Exclusion
-    </button>
-</div>
 
-<div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead>
-                <tr class="border-b border-gray-100 bg-gray-50">
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">#</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Name</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Created At</th>
-                    <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-50">
-                @forelse($exclusions as $exclusion)
-                <tr class="hover:bg-gray-50 transition">
-                    <td class="px-4 py-3 text-xs text-gray-400">{{ $exclusion->id }}</td>
-                    <td class="px-4 py-3 font-semibold text-gray-800">{{ $exclusion->name }}</td>
-                    <td class="px-4 py-3 text-sm text-gray-600">{{ $exclusion->created_at->format('d M Y') }}</td>
-                    <td class="px-4 py-3">
-                        <div class="flex items-center justify-end gap-2">
-                            <button onclick="openModal('editModal{{ $exclusion->id }}')" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-gray-200 text-gray-600 hover:bg-gray-50 transition">
-                                <i class="fas fa-pencil text-xs"></i>
-                            </button>
-                            <form action="{{ route(($routePrefix ?? 'admin.umrah.exclusions') . '.destroy', $exclusion->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition border-none cursor-pointer">
-                                    <i class="fas fa-trash text-xs"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="tex-header">
+        <div class="tex-header-left">
+            <div class="tex-header-icon"><i class="bi bi-x-circle"></i></div>
+            <div>
+                <h2 class="tex-title">Umrah Exclusions</h2>
+                <p class="tex-subtitle">Manage exclusions for Umrah packages</p>
+            </div>
+        </div>
+        <button onclick="openModal('addModal')" class="tex-add-btn">
+            <i class="bi bi-plus-circle"></i> Add Exclusion
+        </button>
+    </div>
+
+    <!-- ===== TABLE CARD ===== -->
+    <div class="tex-card">
+        <div class="table-responsive">
+            <table class="tex-table">
+                <thead>
                 <tr>
-                    <td colspan="4">
-                        <div class="text-center py-12">
-                            <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3 umr-icon-bg">
-                                <i class="fas fa-times-circle text-xl umr-accent"></i>
-                            </div>
-                            <p class="text-sm font-semibold text-gray-600 mb-1">No exclusions found</p>
-                            <p class="text-xs text-gray-400">Add your first exclusion to get started.</p>
-                        </div>
-                    </td>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Created At</th>
+                    <th class="text-end">Actions</th>
                 </tr>
+                </thead>
+                <tbody>
+                @forelse($exclusions as $exclusion)
+                    <tr>
+                        <td><span class="tex-meta">{{ $exclusion->id }}</span></td>
+                        <td><span class="tex-name">{{ $exclusion->name }}</span></td>
+                        <td><span class="tex-meta">{{ $exclusion->created_at->format('d M Y') }}</span></td>
+                        <td>
+                            <div class="tex-actions">
+                                <button onclick="openModal('editModal{{ $exclusion->id }}')" class="tex-btn tex-btn-edit" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <form action="{{ route(($routePrefix ?? 'admin.umrah.exclusions') . '.destroy', $exclusion->id) }}"
+                                      method="POST" class="d-inline"
+                                      onsubmit="return confirm('Are you sure?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="tex-btn tex-btn-delete" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4">
+                            <div class="tex-empty">
+                                <div class="tex-empty-icon"><i class="bi bi-x-circle"></i></div>
+                                <h5>No exclusions found</h5>
+                                <p>Add your first exclusion to get started.</p>
+                            </div>
+                        </td>
+                    </tr>
                 @endforelse
-            </tbody>
-        </table>
-    </div>
-    @if($exclusions->hasPages())
-    <div class="px-5 py-3 border-t border-gray-100">
-        {{ $exclusions->links() }}
-    </div>
-    @endif
-</div>
+                </tbody>
+            </table>
+        </div>
 
-{{-- Add Modal --}}
-<div id="addModal" class="fixed inset-0 hidden flex items-center justify-center umr-modal-overlay">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
-        <form action="{{ route(($routePrefix ?? 'admin.umrah.exclusions') . '.store') }}" method="POST">
-            @csrf
-            <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-                <h5 class="font-semibold text-gray-800 text-sm">Add Exclusion</h5>
-                <button type="button" onclick="closeModal('addModal')" class="text-gray-400 hover:text-gray-600 border-none bg-transparent cursor-pointer text-lg leading-none">&times;</button>
+        @if($exclusions->hasPages())
+            <div class="tex-pagination">
+                {{ $exclusions->links() }}
             </div>
-            <div class="p-5">
-                <label class="block text-xs font-semibold text-gray-600 mb-1.5">Exclusion Name</label>
-                <input type="text" name="name" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50" placeholder="e.g., Additional Meals, Room Extras" required>
-            </div>
-            <div class="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-100">
-                <button type="button" onclick="closeModal('addModal')" class="px-4 py-2 rounded-lg text-sm font-semibold border border-gray-200 text-gray-600 hover:bg-gray-50 transition bg-transparent cursor-pointer">Cancel</button>
-                <button type="submit" class="px-5 py-2 rounded-lg text-sm font-semibold text-white border-none cursor-pointer umr-btn-fill">Add Exclusion</button>
-            </div>
-        </form>
+        @endif
     </div>
-</div>
 
-{{-- Edit Modals --}}
-@foreach($exclusions as $exclusion)
-<div id="editModal{{ $exclusion->id }}" class="fixed inset-0 hidden flex items-center justify-center umr-modal-overlay">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
-        <form action="{{ route(($routePrefix ?? 'admin.umrah.exclusions') . '.update', $exclusion->id) }}" method="POST">
-            @csrf @method('PATCH')
-            <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-                <h5 class="font-semibold text-gray-800 text-sm">Edit Exclusion</h5>
-                <button type="button" onclick="closeModal('editModal{{ $exclusion->id }}')" class="text-gray-400 hover:text-gray-600 border-none bg-transparent cursor-pointer text-lg leading-none">&times;</button>
-            </div>
-            <div class="p-5">
-                <label class="block text-xs font-semibold text-gray-600 mb-1.5">Exclusion Name</label>
-                <input type="text" name="name" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50" value="{{ $exclusion->name }}" required>
-            </div>
-            <div class="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-100">
-                <button type="button" onclick="closeModal('editModal{{ $exclusion->id }}')" class="px-4 py-2 rounded-lg text-sm font-semibold border border-gray-200 text-gray-600 hover:bg-gray-50 transition bg-transparent cursor-pointer">Cancel</button>
-                <button type="submit" class="px-5 py-2 rounded-lg text-sm font-semibold text-white border-none cursor-pointer umr-btn-fill">Update</button>
-            </div>
-        </form>
+    <!-- ===== ADD MODAL ===== -->
+    <div id="addModal" class="tex-modal-overlay hidden">
+        <div class="tex-modal">
+            <form action="{{ route(($routePrefix ?? 'admin.umrah.exclusions') . '.store') }}" method="POST">
+                @csrf
+                <div class="tex-modal-header">
+                    <h5>Add Exclusion</h5>
+                    <button type="button" onclick="closeModal('addModal')" class="tex-modal-close">&times;</button>
+                </div>
+                <div class="tex-modal-body">
+                    <div class="tex-field">
+                        <label>Exclusion Name</label>
+                        <input type="text" name="name" class="form-control"
+                               placeholder="e.g., Additional Meals, Room Extras" required>
+                    </div>
+                </div>
+                <div class="tex-modal-footer">
+                    <button type="button" onclick="closeModal('addModal')" class="tex-btn tex-btn-cancel">Cancel</button>
+                    <button type="submit" class="tex-btn tex-btn-primary">Add Exclusion</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-@endforeach
+
+    <!-- ===== EDIT MODALS ===== -->
+    @foreach($exclusions as $exclusion)
+        <div id="editModal{{ $exclusion->id }}" class="tex-modal-overlay hidden">
+            <div class="tex-modal">
+                <form action="{{ route(($routePrefix ?? 'admin.umrah.exclusions') . '.update', $exclusion->id) }}" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <div class="tex-modal-header">
+                        <h5>Edit Exclusion</h5>
+                        <button type="button" onclick="closeModal('editModal{{ $exclusion->id }}')" class="tex-modal-close">&times;</button>
+                    </div>
+                    <div class="tex-modal-body">
+                        <div class="tex-field">
+                            <label>Exclusion Name</label>
+                            <input type="text" name="name" class="form-control"
+                                   value="{{ $exclusion->name }}" required>
+                        </div>
+                    </div>
+                    <div class="tex-modal-footer">
+                        <button type="button" onclick="closeModal('editModal{{ $exclusion->id }}')" class="tex-btn tex-btn-cancel">Cancel</button>
+                        <button type="submit" class="tex-btn tex-btn-primary">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endforeach
 
 @endsection
 
+
 @push('scripts')
-<script>
-function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('fixed')) closeModal(e.target.id);
-});
-</script>
+    <script>
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('tex-modal-overlay')) closeModal(e.target.id);
+        });
+    </script>
 @endpush

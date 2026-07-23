@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\TourController;
 use App\Http\Controllers\Admin\TourPackageTypeController;
 use App\Http\Controllers\Admin\TourInclusionController;
 use App\Http\Controllers\Admin\TourExclusionController;
+use App\Http\Controllers\Admin\ThemeSettingController;
 
 
 Route::get('/test-csrf', function() {
@@ -249,6 +250,11 @@ Route::prefix('modules')->name('admin.modules.')->group(function () {
         // Email settings routes mein add karo
         Route::post('/settings/email/test-connection', [SettingController::class, 'testEmailConnection'])->name('email.test-connection');
         Route::post('/settings/email/send-test', [SettingController::class, 'sendTestEmail'])->name('email.send-test');
+
+        // Theme / appearance settings
+        Route::get('/theme', [ThemeSettingController::class, 'edit'])->name('theme');
+        Route::post('/theme', [ThemeSettingController::class, 'update'])->name('theme.update');
+        Route::post('/theme/reset', [ThemeSettingController::class, 'reset'])->name('theme.reset');
     });
 
 
