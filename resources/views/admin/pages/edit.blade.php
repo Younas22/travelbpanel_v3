@@ -4,57 +4,9 @@
 
 @section('title', 'Edit Page')
 
-@section('styles')
-<!-- CKEditor 5 Styles -->
-<style>
-.ck-editor__editable_inline {
-    min-height: 400px;
-}
-.ck.ck-editor {
-    max-width: 100%;
-}
-.ck-content {
-    font-size: 16px;
-    line-height: 1.6;
-}
-.form-group {
-    margin-bottom: 1.5rem;
-}
-.card {
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
-    border: none;
-    border-radius: 10px;
-}
-.card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 10px 10px 0 0 !important;
-}
-.btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    padding: 10px 25px;
-    border-radius: 25px;
-}
-.btn-secondary {
-    padding: 10px 25px;
-    border-radius: 25px;
-}
-.nav-tabs .nav-link {
-    border-radius: 8px 8px 0 0;
-    margin-right: 5px;
-    border: none;
-    background: #f8f9fa;
-}
-.nav-tabs .nav-link.active {
-    background: white;
-    border-bottom: 2px solid #667eea;
-}
-</style>
-@endsection
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid cke-gradient-form">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -148,7 +100,7 @@
 
                                             <div class="form-group">
                                                 <label for="en_content" class="form-label">Page Content</label>
-                                                <textarea name="en_content" id="en_content" class="form-control ckeditor" style="display: none;">{{ old('en_content', $page->en_content) }}</textarea>
+                                                <textarea name="en_content" id="en_content" class="form-control ckeditor d-none">{{ old('en_content', $page->en_content) }}</textarea>
                                             </div>
 
                                             <div class="form-group">
@@ -176,7 +128,7 @@
 
                                             <div class="form-group">
                                                 <label for="nl_content" class="form-label">Page Content</label>
-                                                <textarea name="nl_content" id="nl_content" class="form-control ckeditor" style="display: none;">{{ old('nl_content', $page->nl_content) }}</textarea>
+                                                <textarea name="nl_content" id="nl_content" class="form-control ckeditor d-none">{{ old('nl_content', $page->nl_content) }}</textarea>
                                             </div>
 
                                             <div class="form-group">
@@ -275,7 +227,7 @@
                         <!-- Action Buttons -->
                         <div class="row">
                             <div class="col-12">
-                                <div class="d-flex justify-content-between align-items-center mt-4 pt-3" style="border-top: 1px solid #dee2e6;">
+                                <div class="d-flex justify-content-between align-items-center mt-4 pt-3 section-divider-top">
                                     <div>
                                         <button type="button" class="btn btn-outline-secondary" onclick="saveDraft()">
                                             <i class="fas fa-save me-1"></i> Save as Draft

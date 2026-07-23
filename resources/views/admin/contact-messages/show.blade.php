@@ -13,7 +13,7 @@
 
     <!-- Message Header -->
     <div class="card shadow-sm mb-4">
-        <div class="card-header bg-gradient-primary text-white">
+        <div class="card-header cm-header-purple text-white">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h4 class="mb-0">Message #CM{{ str_pad($contactMessage->id, 6, '0', STR_PAD_LEFT) }}</h4>
@@ -125,7 +125,7 @@
         </div>
         <div class="card-body">
             <div class="p-3 bg-light rounded">
-                <p style="white-space: pre-wrap; line-height: 1.8;">{{ $contactMessage->message }}</p>
+                <p class="message-content-text">{{ $contactMessage->message }}</p>
             </div>
         </div>
     </div>
@@ -160,9 +160,4 @@
     </div>
 </div>
 
-<style>
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-</style>
 @endsection

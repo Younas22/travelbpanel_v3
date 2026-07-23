@@ -124,9 +124,9 @@
                         <tr>
                             <td>
                                 @if($package->images->first())
-                                    <img src="{{ asset('public/assets/images/' . $package->images->first()->image) }}" alt="" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                                    <img src="{{ asset('public/assets/images/' . $package->images->first()->image) }}" alt="" class="rounded hotel-thumb-img">
                                 @else
-                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center hotel-thumb-placeholder">
                                         <i class="bi bi-image text-muted"></i>
                                     </div>
                                 @endif
@@ -191,13 +191,13 @@
                                     <div class="mt-1 d-flex gap-1">
                                         <form action="{{ route('admin.umrah.packages.approve', $package->id) }}" method="POST" class="d-inline">
                                             @csrf
-                                            <button type="submit" class="btn btn-xs btn-success" style="font-size:11px;padding:2px 6px;">
+                                            <button type="submit" class="btn btn-xs btn-success hotel-approval-btn">
                                                 <i class="bi bi-check-lg"></i> Approve
                                             </button>
                                         </form>
                                         <form action="{{ route('admin.umrah.packages.reject', $package->id) }}" method="POST" class="d-inline">
                                             @csrf
-                                            <button type="submit" class="btn btn-xs btn-danger" style="font-size:11px;padding:2px 6px;">
+                                            <button type="submit" class="btn btn-xs btn-danger hotel-approval-btn">
                                                 <i class="bi bi-x-lg"></i> Reject
                                             </button>
                                         </form>

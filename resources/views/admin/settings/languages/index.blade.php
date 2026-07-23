@@ -28,14 +28,14 @@
             <table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th style="width: 8%">Order</th>
-                        <th style="width: 10%">Code</th>
-                        <th style="width: 18%">Name</th>
-                        <th style="width: 18%">Native Name</th>
-                        <th style="width: 10%">Direction</th>
-                        <th style="width: 10%">Status</th>
-                        <th style="width: 10%">Default</th>
-                        <th style="width: 16%">Actions</th>
+                        <th class="w-8p">Order</th>
+                        <th class="w-10p">Code</th>
+                        <th class="w-18p">Name</th>
+                        <th class="w-18p">Native Name</th>
+                        <th class="w-10p">Direction</th>
+                        <th class="w-10p">Status</th>
+                        <th class="w-10p">Default</th>
+                        <th class="w-16p">Actions</th>
                     </tr>
                 </thead>
                 <tbody>

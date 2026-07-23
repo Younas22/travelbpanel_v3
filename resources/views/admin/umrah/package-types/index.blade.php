@@ -4,24 +4,24 @@
 @section('content')
 
 <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
-    <a href="{{ route('agent.dashboard') }}" style="color:#0077BE; text-decoration:none;">Dashboard</a>
+    <a href="{{ route('agent.dashboard') }}" class="umr-link">Dashboard</a>
     <i class="fas fa-chevron-right text-gray-300"></i>
-    <a href="{{ route('agent.umrah.index') }}" style="color:#0077BE; text-decoration:none;">My Umrah</a>
+    <a href="{{ route('agent.umrah.index') }}" class="umr-link">My Umrah</a>
     <i class="fas fa-chevron-right text-gray-300"></i>
     <span class="text-gray-600">Package Types</span>
 </div>
 
 <div class="flex items-center justify-between mb-5">
     <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#e8f4fd;">
-            <i class="fas fa-tags" style="color:#0077BE;"></i>
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center umr-icon-bg">
+            <i class="fas fa-tags umr-accent"></i>
         </div>
         <div>
             <h4 class="text-lg font-bold text-gray-800">Umrah Package Types</h4>
             <p class="text-xs text-gray-400">Manage package types for Umrah packages</p>
         </div>
     </div>
-    <button onclick="openModal('addModal')" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white" style="background:#0077BE; border:none; cursor:pointer;">
+    <button onclick="openModal('addModal')" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white umr-btn-solid">
         <i class="fas fa-plus text-xs"></i> Add Package Type
     </button>
 </div>
@@ -75,8 +75,8 @@
                 <tr>
                     <td colspan="5">
                         <div class="text-center py-12">
-                            <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3" style="background:#e8f4fd;">
-                                <i class="fas fa-tags text-xl" style="color:#0077BE;"></i>
+                            <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3 umr-icon-bg">
+                                <i class="fas fa-tags text-xl umr-accent"></i>
                             </div>
                             <p class="text-sm font-semibold text-gray-600 mb-1">No package types found</p>
                             <p class="text-xs text-gray-400">Add your first package type to get started.</p>
@@ -95,7 +95,7 @@
 </div>
 
 {{-- Add Modal --}}
-<div id="addModal" class="fixed inset-0 hidden flex items-center justify-center" style="z-index:9999; background:rgba(0,0,0,0.4);">
+<div id="addModal" class="fixed inset-0 hidden flex items-center justify-center umr-modal-overlay">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
         <form action="{{ route(($routePrefix ?? 'admin.umrah.package-types') . '.store') }}" method="POST">
             @csrf
@@ -118,7 +118,7 @@
             </div>
             <div class="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-100">
                 <button type="button" onclick="closeModal('addModal')" class="px-4 py-2 rounded-lg text-sm font-semibold border border-gray-200 text-gray-600 hover:bg-gray-50 transition bg-transparent cursor-pointer">Cancel</button>
-                <button type="submit" class="px-5 py-2 rounded-lg text-sm font-semibold text-white border-none cursor-pointer" style="background:#0077BE;">Add Package Type</button>
+                <button type="submit" class="px-5 py-2 rounded-lg text-sm font-semibold text-white border-none cursor-pointer umr-btn-fill">Add Package Type</button>
             </div>
         </form>
     </div>
@@ -126,7 +126,7 @@
 
 {{-- Edit Modals --}}
 @foreach($packageTypes as $type)
-<div id="editModal{{ $type->id }}" class="fixed inset-0 hidden flex items-center justify-center" style="z-index:9999; background:rgba(0,0,0,0.4);">
+<div id="editModal{{ $type->id }}" class="fixed inset-0 hidden flex items-center justify-center umr-modal-overlay">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
         <form action="{{ route(($routePrefix ?? 'admin.umrah.package-types') . '.update', $type->id) }}" method="POST">
             @csrf @method('PATCH')
@@ -149,7 +149,7 @@
             </div>
             <div class="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-100">
                 <button type="button" onclick="closeModal('editModal{{ $type->id }}')" class="px-4 py-2 rounded-lg text-sm font-semibold border border-gray-200 text-gray-600 hover:bg-gray-50 transition bg-transparent cursor-pointer">Cancel</button>
-                <button type="submit" class="px-5 py-2 rounded-lg text-sm font-semibold text-white border-none cursor-pointer" style="background:#0077BE;">Update</button>
+                <button type="submit" class="px-5 py-2 rounded-lg text-sm font-semibold text-white border-none cursor-pointer umr-btn-fill">Update</button>
             </div>
         </form>
     </div>

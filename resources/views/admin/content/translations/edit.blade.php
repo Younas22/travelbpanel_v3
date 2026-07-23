@@ -3,7 +3,7 @@
 @section('title', 'Edit Translation Group')
 
 @section('content')
-<div class="content-area">
+<div class="content-area translation-edit-page">
     <!-- Page Header -->
     <div class="page-header">
         <div class="row align-items-center">
@@ -130,12 +130,4 @@
     </div>
 </div>
 
-<style>
-    code {
-        padding: 2px 6px;
-        background-color: #f0f0f0;
-        border-radius: 3px;
-        font-size: 13px;
-    }
-</style>
 @endsection

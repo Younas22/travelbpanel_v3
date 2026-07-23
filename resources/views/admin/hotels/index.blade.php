@@ -123,9 +123,9 @@
                         <tr>
                             <td>
                                 @if($hotel->images->first())
-                                    <img src="{{ asset('public/assets/images/' . $hotel->images->first()->image_path) }}" alt="" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                                    <img src="{{ asset('public/assets/images/' . $hotel->images->first()->image_path) }}" alt="" class="rounded hotel-thumb-img">
                                 @else
-                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center hotel-thumb-placeholder">
                                         <i class="bi bi-building text-muted"></i>
                                     </div>
                                 @endif
@@ -161,12 +161,11 @@
                                     <div class="mt-1 d-flex gap-1">
                                         <form action="{{ route('admin.hotels.approve', $hotel) }}" method="POST" class="d-inline">
                                             @csrf
-                                            <button type="submit" class="btn btn-xs btn-success" style="font-size:11px;padding:2px 6px;" title="Approve">
+                                            <button type="submit" class="btn btn-xs btn-success hotel-approval-btn" title="Approve">
                                                 <i class="bi bi-check-lg"></i> Approve
                                             </button>
                                         </form>
-                                        <button type="button" class="btn btn-xs btn-danger reject-btn"
-                                            style="font-size:11px;padding:2px 6px;"
+                                        <button type="button" class="btn btn-xs btn-danger reject-btn hotel-approval-btn"
                                             data-hotel-id="{{ $hotel->id }}"
                                             data-hotel-name="{{ $hotel->name }}"
                                             data-reject-url="{{ route('admin.hotels.reject', $hotel) }}">
@@ -228,48 +227,6 @@
     </div>
 </div>
 
-@push('styles')
-<style>
-.status-toggle-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    outline: none;
-}
-.status-toggle-btn:focus { outline: none; box-shadow: none; }
-.toggle-track {
-    position: relative;
-    width: 44px;
-    height: 24px;
-    border-radius: 12px;
-    background-color: #dc3545;
-    transition: background-color 0.25s ease;
-    display: inline-block;
-    flex-shrink: 0;
-}
-.status-toggle-btn.active .toggle-track {
-    background-color: #198754;
-}
-.toggle-thumb {
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background-color: #fff;
-    transition: transform 0.25s ease;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
-}
-.status-toggle-btn.active .toggle-thumb {
-    transform: translateX(20px);
-}
-</style>
-@endpush
 
 <!-- Reject Modal -->
 <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">

@@ -182,7 +182,7 @@
                     <div class="card-body">
                         <div class="mb-3">
                             <label class="form-label">Inclusions</label>
-                            <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+                            <div class="border rounded p-2 umr-checklist-box">
                                 @php $selectedInclusions = old('inclusions', $umrah->inclusions ?? []); @endphp
                                 @foreach($inclusions as $inclusion)
                                     <div class="form-check">
@@ -195,7 +195,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Exclusions</label>
-                            <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+                            <div class="border rounded p-2 umr-checklist-box">
                                 @php $selectedExclusions = old('exclusions', $umrah->exclusions ?? []); @endphp
                                 @foreach($exclusions as $exclusion)
                                     <div class="form-check">
@@ -249,7 +249,7 @@
                             @foreach($umrah->images as $image)
                             <div class="col-6">
                                 <div class="position-relative">
-                                    <img src="{{ asset('public/assets/images/' . $image->image) }}" alt="" class="img-fluid rounded" style="height: 100px; width: 100%; object-fit: cover;">
+                                    <img src="{{ asset('public/assets/images/' . $image->image) }}" alt="" class="img-fluid rounded umr-img-100">
                                     <a href="{{ route($deleteImageRouteName ?? 'admin.umrah.packages.delete-image', $image->id) }}"
                                        class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 delete-image-btn"
                                        onclick="event.preventDefault(); if(confirm('Delete this image?')) document.getElementById('delete-image-{{ $image->id }}').submit();">
@@ -290,7 +290,7 @@
 
     @if($umrah->images->count() > 0)
         @foreach($umrah->images as $image)
-        <form id="delete-image-{{ $image->id }}" action="{{ route($deleteImageRouteName ?? 'admin.umrah.packages.delete-image', $image->id) }}" method="POST" style="display: none;">
+        <form id="delete-image-{{ $image->id }}" action="{{ route($deleteImageRouteName ?? 'admin.umrah.packages.delete-image', $image->id) }}" method="POST" class="d-none">
             @csrf
             @method('DELETE')
         </form>

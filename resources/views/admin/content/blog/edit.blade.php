@@ -2,70 +2,9 @@
 
 @section('title', 'Edit Blog')
 
-@section('styles')
-<!-- CKEditor 5 Styles -->
-<style>
-.ck-editor__editable_inline {
-    min-height: 400px;
-}
-.ck.ck-editor {
-    max-width: 100%;
-}
-.ck-content {
-    font-size: 16px;
-    line-height: 1.6;
-}
-.image-preview {
-    max-width: 200px;
-    margin-top: 10px;
-    border-radius: 8px;
-    border: 2px solid #dee2e6;
-}
-.current-featured-image {
-    max-width: 200px;
-    border-radius: 8px;
-    border: 2px solid #dee2e6;
-}
-.form-group {
-    margin-bottom: 1.5rem;
-}
-.card {
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
-    border: none;
-    border-radius: 10px;
-}
-.card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 10px 10px 0 0 !important;
-}
-.btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    padding: 10px 25px;
-    border-radius: 25px;
-}
-.btn-secondary {
-    padding: 10px 25px;
-    border-radius: 25px;
-}
-.btn-warning {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    border: none;
-    color: white;
-}
-.remove-image-section {
-    background: #fff5f5;
-    border: 1px solid #fed7d7;
-    border-radius: 8px;
-    padding: 10px;
-    margin: 10px 0;
-}
-</style>
-@endsection
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid cke-gradient-form">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -138,8 +77,8 @@
                                     <label for="content" class="form-label">
                                         <i class="fas fa-edit me-1"></i>Content <span class="text-danger">*</span>
                                     </label>
-                                    <textarea name="content" id="content" class="form-control @error('content') is-invalid @enderror" 
-                                              required style="display: none;">{{ old('content', $post->content) }}</textarea>
+                                    <textarea name="content" id="content" class="form-control @error('content') is-invalid @enderror d-none"
+                                              required>{{ old('content', $post->content) }}</textarea>
                                     @error('content')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -202,7 +141,7 @@
                                             @enderror
                                         </div>
 
-                                        <div class="form-group" id="scheduled_at_field" style="{{ old('status', $post->status) == 'scheduled' ? '' : 'display: none;' }}">
+                                        <div class="form-group {{ old('status', $post->status) == 'scheduled' ? '' : 'd-none' }}" id="scheduled_at_field">
                                             <label for="scheduled_at" class="form-label">Scheduled Date/Time</label>
                                             <input type="datetime-local" name="scheduled_at" id="scheduled_at" 
                                                    class="form-control @error('scheduled_at') is-invalid @enderror" 
@@ -235,7 +174,7 @@
                                         </div>
 
                                         <!-- Post Stats -->
-                                        <div class="mt-3 pt-3" style="border-top: 1px solid #dee2e6;">
+                                        <div class="mt-3 pt-3 section-divider-top">
                                             <small class="text-muted">
                                                 <div><strong>Created:</strong> {{ $post->created_at->format('M j, Y g:i A') }}</div>
                                                 <div><strong>Updated:</strong> {{ $post->updated_at->format('M j, Y g:i A') }}</div>
@@ -325,8 +264,7 @@
                                         <!-- New Image Upload -->
                                         <div class="form-group">
                                             <label class="form-label">{{ $post->featured_image ? 'Replace with New Image' : 'Upload Featured Image' }}</label>
-                                            <div class="image-upload-area" onclick="document.getElementById('featured_image').click()" 
-                                                 style="border: 2px dashed #dee2e6; padding: 20px; text-align: center; cursor: pointer; border-radius: 8px;">
+                                            <div class="image-upload-area upload-dropzone" onclick="document.getElementById('featured_image').click()">
                                                 <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
                                                 <p class="mb-0 text-muted">Click to upload new image</p>
                                                 <small class="text-muted">Max 2MB (JPG, PNG, GIF)</small>
@@ -393,7 +331,7 @@
                         <!-- Action Buttons -->
                         <div class="row">
                             <div class="col-12">
-                                <div class="d-flex justify-content-between align-items-center mt-4 pt-3" style="border-top: 1px solid #dee2e6;">
+                                <div class="d-flex justify-content-between align-items-center mt-4 pt-3 section-divider-top">
                                     <div>
                                         <button type="button" class="btn btn-outline-secondary" onclick="saveDraft()">
                                             <i class="fas fa-save me-1"></i> Save as Draft

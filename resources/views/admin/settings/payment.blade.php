@@ -34,11 +34,10 @@
                     <div class="payment-method-card h-100">
                         <div class="payment-header">
                             <div class="payment-info">
-                                <div class="payment-logo logo-paypal"
-                                    style="background:#fff; border-radius:25px; display:flex; align-items:center; justify-content:center; width:50px; height:50px; overflow:hidden;">
+                                <div class="payment-logo logo-paypal payment-logo-generic">
                                     <img src="{{ url('public/assets/images/settings/payment/'.$value->name.'.png') }}"
                                         alt="{{$value->name}}"
-                                        style="width:100%; height:100%; object-fit:contain;">
+                                        class="payment-logo-img">
                                 </div>
 
                                 <div class="payment-details">

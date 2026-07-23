@@ -241,7 +241,7 @@
                         <!-- Action Buttons -->
                         <div class="row">
                             <div class="col-12">
-                                <div class="d-flex justify-content-between align-items-center mt-4 pt-3" style="border-top: 1px solid #dee2e6;">
+                                <div class="d-flex justify-content-between align-items-center mt-4 pt-3 section-divider-top">
                                     <div class="d-flex gap-2">
                                         <button type="button" class="btn btn-outline-info modern-btn" onclick="previewMenuItem()">
                                             <i class="bi bi-eye me-1"></i> Preview Changes
@@ -295,7 +295,7 @@
                     @foreach($popularIcons as $icon)
                         <div class="col-2 text-center mb-3">
                             <button type="button" class="btn btn-outline-secondary w-100 icon-option" onclick="selectIcon('bi {{ $icon }}')">
-                                <i class="bi {{ $icon }} d-block mb-1" style="font-size: 1.5rem;"></i>
+                                <i class="bi {{ $icon }} d-block mb-1 icon-preview-lg"></i>
                                 <small>{{ str_replace('bi-', '', $icon) }}</small>
                             </button>
                         </div>

@@ -395,8 +395,7 @@
                             <div class="current-image">
                                 <img src="{{ asset('public/assets/images/' . $settings['branding']['business_logo']) }}" 
                                      alt="Current Logo" 
-                                     class="image-preview" 
-                                     style="max-height: 60px; object-fit: contain;">
+                                     class="image-preview logo-preview-60">
                                 <div class="mt-2 small text-muted">Current Dark Logo</div>
                             </div>
                         @else
@@ -410,7 +409,7 @@
                         <div class="upload-text">Click to upload dark logo</div>
                         <div class="upload-hint">PNG, JPG, GIF supported, max size 2 MB</div>
                     </div>
-                    <input type="file" id="logoUpload" name="business_logo" accept="image/*" style="display: none;">
+                    <input type="file" id="logoUpload" name="business_logo" accept="image/*" class="d-none">
                 </div>
 
                 <!-- White Logo (NEW) -->
@@ -422,8 +421,7 @@
                                 <div class="white-logo-preview">
                                     <img src="{{ asset('public/assets/images/' . $settings['branding']['business_logo_white']) }}" 
                                          alt="Current White Logo" 
-                                         class="image-preview" 
-                                         style="max-height: 60px; object-fit: contain;">
+                                         class="image-preview logo-preview-60">
                                 </div>
                                 <div class="mt-2 small text-muted">Current White Logo</div>
                             </div>
@@ -438,7 +436,7 @@
                         <div class="upload-text">Click to upload white logo</div>
                         <div class="upload-hint">PNG recommended for transparency, max size 2 MB</div>
                     </div>
-                    <input type="file" id="logoWhiteUpload" name="business_logo_white" accept="image/*" style="display: none;">
+                    <input type="file" id="logoWhiteUpload" name="business_logo_white" accept="image/*" class="d-none">
                 </div>
 
                 <!-- Favicon -->
@@ -448,8 +446,8 @@
                         @if(!empty($settings['branding']['favicon']))
                             <div class="current-image">
                                 <img src="{{ asset('public/assets/images/' . $settings['branding']['favicon']) }}" 
-                                     alt="Current Favicon" 
-                                     style="width: 32px; height: 32px; object-fit: contain;">
+                                     alt="Current Favicon"
+                                     class="favicon-preview-32">
                                 <div class="mt-2 small text-muted">Current Favicon (32x32)</div>
                             </div>
                         @else
@@ -463,7 +461,7 @@
                         <div class="upload-text">Click to upload favicon</div>
                         <div class="upload-hint">PNG, ICO supported, max size 1 MB, recommended 32x32px</div>
                     </div>
-                    <input type="file" id="faviconUpload" name="favicon" accept="image/*,.ico" style="display: none;">
+                    <input type="file" id="faviconUpload" name="favicon" accept="image/*,.ico" class="d-none">
                 </div>
 
             </div>
@@ -477,73 +475,6 @@
     </div>
 </div>
 
-<style>
-    .logo-preview-container {
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100px;
-    }
-
-    .current-image {
-        text-align: center;
-    }
-
-    .white-logo-preview {
-        background: #1f2937;
-        border-radius: 6px;
-        padding: 1rem;
-        display: inline-block;
-    }
-
-    .white-logo-preview img {
-        display: block;
-    }
-
-    .no-image {
-        color: #9ca3af;
-        font-size: 0.95rem;
-    }
-
-    .file-upload-area {
-        border: 2px dashed #d1d5db;
-        border-radius: 8px;
-        padding: 2rem 1.5rem;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background: white;
-        margin-bottom: 1.5rem;
-    }
-
-    .file-upload-area:hover {
-        border-color: #3b82f6;
-        background-color: #f0f7ff;
-    }
-
-    .upload-icon {
-        font-size: 2.5rem;
-        color: #3b82f6;
-        margin-bottom: 0.5rem;
-    }
-
-    .upload-text {
-        font-weight: 500;
-        color: #1f2937;
-        margin-bottom: 0.25rem;
-    }
-
-    .upload-hint {
-        font-size: 0.875rem;
-        color: #6b7280;
-    }
-</style>
-
             <!-- Home Page Tab -->
             <div class="tab-pane fade" id="homepage" role="tabpanel">
                 <div class="settings-content">
@@ -556,7 +487,7 @@
                                 <label class="form-label">Homepage Cover Image</label>
                                 @if(!empty($settings['homepage']['cover_image']))
                                     <div class="current-image">
-                                        <img src="{{ asset('public/assets/images/' .  $settings['homepage']['cover_image']) }}" alt="Current Cover" class="image-preview" style="max-width: 300px; max-height: 150px;">
+                                        <img src="{{ asset('public/assets/images/' .  $settings['homepage']['cover_image']) }}" alt="Current Cover" class="image-preview cover-preview-300">
                                         <div class="mt-2 small text-muted">Current Cover Image</div>
                                     </div>
                                 @endif
@@ -567,7 +498,7 @@
                                     <div class="upload-text">Click to upload homepage cover</div>
                                     <div class="upload-hint">PNG, JPG supported, max size 5 MB<br>Recommended size: 1920x800 pixels</div>
                                 </div>
-                                <input type="file" id="coverUpload" name="cover_image" accept="image/*" style="display: none;">
+                                <input type="file" id="coverUpload" name="cover_image" accept="image/*" class="d-none">
                             </div>
 
                             <div class="form-group">

@@ -189,12 +189,12 @@
                                 <div class="row g-3" id="existing-images-grid">
                                     @foreach($hotel->images as $image)
                                     <div class="col-md-3 image-item" id="image-{{ $image->id }}" data-id="{{ $image->id }}">
-                                        <div class="position-relative border rounded overflow-hidden" style="cursor: grab;">
-                                            <div class="drag-handle bg-dark bg-opacity-50 text-white text-center py-1" style="font-size:12px; cursor:grab;">
+                                        <div class="position-relative border rounded overflow-hidden img-drag-wrap">
+                                            <div class="drag-handle bg-dark bg-opacity-50 text-white text-center py-1 img-drag-handle">
                                                 <i class="bi bi-grip-horizontal"></i> Drag
                                             </div>
-                                            <img src="{{ asset('public/assets/images/' . $image->image_path) }}" class="img-fluid" style="width:100%; height:140px; object-fit:cover;" alt="">
-                                            <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 delete-image-btn" data-id="{{ $image->id }}" style="z-index:10;">
+                                            <img src="{{ asset('public/assets/images/' . $image->image_path) }}" class="img-fluid img-drag-thumb" alt="">
+                                            <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 delete-image-btn img-delete-btn" data-id="{{ $image->id }}">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                             <div class="p-1">
@@ -204,7 +204,7 @@
                                     </div>
                                     @endforeach
                                 </div>
-                                <div id="reorder-status" class="mt-2" style="display:none;"></div>
+                                <div id="reorder-status" class="mt-2 d-none"></div>
                             </div>
                         </div>
                         @endif
@@ -294,9 +294,9 @@
                                 <tr>
                                     <td>
                                         @if($roomType->images->first())
-                                            <img src="{{ asset('public/assets/images/' . $roomType->images->first()->image_path) }}" alt="" class="rounded" style="width:50px;height:50px;object-fit:cover;">
+                                            <img src="{{ asset('public/assets/images/' . $roomType->images->first()->image_path) }}" alt="" class="rounded roomtype-thumb-img">
                                         @else
-                                            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width:50px;height:50px;">
+                                            <div class="bg-light rounded d-flex align-items-center justify-content-center roomtype-thumb-placeholder">
                                                 <i class="bi bi-door-open text-muted"></i>
                                             </div>
                                         @endif
@@ -430,10 +430,6 @@
     </div>{{-- end tab-content --}}
 </div>
 
-@push('styles')
-@include('admin.hotels._tab-styles')
-@endpush
-
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script>
@@ -501,7 +497,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         previewDiv.id = `preview-${fileIndex}`;
                         previewDiv.innerHTML = `
                             <div class="position-relative">
-                                <img src="${e.target.result}" class="img-fluid rounded" style="width: 100%; height: 150px; object-fit: cover;">
+                                <img src="${e.target.result}" class="img-fluid rounded preview-thumb">
                                 <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 remove-image" data-index="${fileIndex}">
                                     <i class="bi bi-x"></i>
                                 </button>
@@ -539,7 +535,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     previewDiv.className = 'col-md-3';
                     previewDiv.innerHTML = `
                         <div class="position-relative">
-                            <img src="${e.target.result}" class="img-fluid rounded" style="width: 100%; height: 150px; object-fit: cover;">
+                            <img src="${e.target.result}" class="img-fluid rounded preview-thumb">
                             <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 remove-image" data-index="${index}">
                                 <i class="bi bi-x"></i>
                             </button>

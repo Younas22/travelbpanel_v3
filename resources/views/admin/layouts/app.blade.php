@@ -32,7 +32,7 @@
     <link href="{{ url('public/assets/libs/bootstrap-icons/font/bootstrap-icons.min.css') }}" rel="stylesheet">
     <!-- In your head section -->
     <link rel="stylesheet" href="{{ url('public/assets/libs/toastify/toastify.min.css') }}">
-    <link href="{{ asset('public/assets/css/admin2.css') }}" rel="stylesheet">
+    <link href="{{ asset('public/assets/css/admin.css') }}" rel="stylesheet">
     @stack('styles')
 
 </head>

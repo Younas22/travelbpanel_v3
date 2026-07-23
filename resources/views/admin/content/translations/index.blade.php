@@ -75,9 +75,9 @@
             <table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th style="width: 30%">Key</th>
-                        <th style="width: 60%">Value</th>
-                        <th style="width: 10%">Actions</th>
+                        <th class="w-30p">Key</th>
+                        <th class="w-60p">Value</th>
+                        <th class="w-10p">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -126,9 +126,4 @@
     @endif
 </div>
 
-<style>
-    .translations-table {
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-</style>
 @endsection

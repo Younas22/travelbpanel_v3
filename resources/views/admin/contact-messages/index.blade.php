@@ -183,7 +183,7 @@
                                 </td>
                                 
                                 <td>
-                                    <div style="max-width: 300px;">
+                                    <div class="msg-preview-300">
                                         <small class="text-muted">
                                             {{ Str::limit($message->message, 80) }}
                                         </small>

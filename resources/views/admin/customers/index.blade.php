@@ -302,33 +302,6 @@
     </div>
 </div>
 
-@push('styles')
-<style>
-    /* Add your custom CSS styles here */
-    .customer-tier {
-        padding: 3px 8px;
-        border-radius: 4px;
-        font-size: 12px;
-        font-weight: 500;
-    }
-    .tier-bronze { background-color: #cd7f32; color: white; }
-    .tier-silver { background-color: #c0c0c0; color: white; }
-    .tier-gold { background-color: #ffd700; color: black; }
-    .tier-platinum { background-color: #e5e4e2; color: black; }
-    
-    .badge-status {
-        padding: 3px 8px;
-        border-radius: 4px;
-        font-size: 12px;
-        font-weight: 500;
-    }
-    .status-active { background-color: #d1fae5; color: #065f46; }
-    .status-inactive { background-color: #fef3c7; color: #92400e; }
-    .status-suspended { background-color: #fee2e2; color: #b91c1c; }
-    .status-vip { background-color: #e0e7ff; color: #4338ca; }
-</style>
-@endpush
-
 @push('scripts')
 <script>
     // Add any custom JavaScript here
@@ -394,7 +367,7 @@
                                     <i class="bi bi-cloud-upload upload-icon"></i>
                                     <div class="upload-text">Click to upload profile image</div>
                                     <div class="upload-hint">PNG, JPG up to 2MB</div>
-                                    <input type="file" id="profileImage" accept="image/*" style="display: none;">
+                                    <input type="file" id="profileImage" accept="image/*" class="d-none">
                                 </div>
                             </div>
                         </div>

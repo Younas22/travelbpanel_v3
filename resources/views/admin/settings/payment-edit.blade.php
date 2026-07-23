@@ -3,7 +3,7 @@
 @section('title', 'Edit Payment Gateway')
 
 @section('content')
-<div class="content-area p-4">
+<div class="content-area p-4 payment-gateway-edit">
     <!-- Page Header -->
     <div class="page-header mb-4">
         <div class="row align-items-center">
@@ -26,11 +26,10 @@
         <div class="card-body p-4">
             <!-- Gateway Header -->
             <div class="d-flex align-items-center mb-4">
-                <div class="payment-logo logo-paypal me-3"
-                    style="background:#fff; border-radius:25px; display:flex; align-items:center; justify-content:center; width:60px; height:60px; overflow:hidden; border: 1px solid #e0e0e0;">
+                <div class="payment-logo logo-paypal me-3 payment-logo-generic-lg">
                     <img src="{{ url('public/assets/images/settings/payment/'.$payment_gateway->name.'.png') }}"
                         alt="{{$payment_gateway->name}}"
-                        style="width:100%; height:100%; object-fit:contain;">
+                        class="payment-logo-img">
                 </div>
                 <div>
                     <h4 class="mb-1">{{ucfirst($payment_gateway->name)}}</h4>
@@ -203,52 +202,5 @@ function showNotification(message, type = 'success') {
     alert(message);
 }
 </script>
-
-<style>
-.modern-card {
-    border-radius: 12px;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.section-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #2c3e50;
-}
-
-.section-description {
-    color: #6c757d;
-    font-size: 0.9rem;
-}
-
-.credential-input {
-    border-radius: 8px;
-    padding: 0.75rem;
-}
-
-.required-field::after {
-    content: " *";
-    color: #dc3545;
-}
-
-.dev-mode-section {
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 8px;
-}
-
-.form-check-input {
-    width: 3rem;
-    height: 1.5rem;
-    cursor: pointer;
-}
-
-.modern-btn {
-    border-radius: 8px;
-    padding: 0.5rem 1.5rem;
-    font-weight: 500;
-}
-</style>
 
 @endsection

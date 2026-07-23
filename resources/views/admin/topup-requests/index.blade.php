@@ -15,7 +15,7 @@
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-body py-2">
         <form method="GET" class="d-flex gap-2 align-items-center">
-            <select name="status" class="form-select form-select-sm" style="width:150px;">
+            <select name="status" class="form-select form-select-sm w-150px">
                 <option value="">All Status</option>
                 <option value="pending"  {{ request('status') === 'pending'  ? 'selected' : '' }}>Pending</option>
                 <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Approved</option>

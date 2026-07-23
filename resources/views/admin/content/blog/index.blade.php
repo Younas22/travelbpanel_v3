@@ -226,12 +226,12 @@
                                     <div class="text-center">
                                         <div class="author-avatar mx-auto">
                                             @if($post->author && $post->author->profile_image)
-                                                <img src="{{ asset('public/' . $post->author->profile_image) }}" alt="{{ $post->author->full_name }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                                                <img src="{{ asset('public/' . $post->author->profile_image) }}" alt="{{ $post->author->full_name }}" class="author-avatar-img">
                                             @else
                                                 {{ $post->author ? $post->author->initials : 'AU' }}
                                             @endif
                                         </div>
-                                        <div class="small text-muted mt-1" style="font-size:11px;">{{ $post->author ? $post->author->full_name : 'Admin' }}</div>
+                                        <div class="small text-muted mt-1 text-11px">{{ $post->author ? $post->author->full_name : 'Admin' }}</div>
                                     </div>
                                 </td>
                                 <td>
@@ -348,7 +348,7 @@
                                                     </li>
                                                 @endif
                                                 <li>
-                                                    <form action="{{ route('admin.content.blog.destroy', $post) }}" method="POST" style="display: inline;">
+                                                    <form action="{{ route('admin.content.blog.destroy', $post) }}" method="POST" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Are you sure?')">
@@ -426,7 +426,7 @@
                     <div class="mb-3">
                         <label class="form-label">Color</label>
                         <div class="d-flex gap-2 align-items-center">
-                            <input type="color" name="color" class="form-control form-control-color" value="#667eea" style="width: 60px;">
+                            <input type="color" name="color" class="form-control form-control-color color-input-60" value="#667eea">
                             <span class="text-muted">Choose category color for tags</span>
                         </div>
                     </div>
@@ -487,7 +487,7 @@
                     <div class="mb-3">
                         <label class="form-label">Color</label>
                         <div class="d-flex gap-2 align-items-center">
-                            <input type="color" name="color" class="form-control form-control-color" style="width: 60px;">
+                            <input type="color" name="color" class="form-control form-control-color color-input-60">
                             <span class="text-muted">Choose category color for tags</span>
                         </div>
                     </div>
@@ -556,13 +556,13 @@
                     </table>
                 </div>
 
-                <div id="categoriesLoading" class="text-center py-4" style="display: none;">
+                <div id="categoriesLoading" class="text-center py-4 d-none">
                     <div class="spinner-border" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
 
-                <div id="categoriesEmpty" class="text-center py-4" style="display: none;">
+                <div id="categoriesEmpty" class="text-center py-4 d-none">
                     <i class="bi bi-tags fs-1 text-muted"></i>
                     <h6 class="text-muted mt-2">No categories found</h6>
                     <p class="text-muted">Create your first category to get started.</p>

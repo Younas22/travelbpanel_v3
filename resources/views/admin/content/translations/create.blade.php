@@ -183,12 +183,4 @@
     });
 </script>
 
-<style>
-    .translation-pair {
-        padding: 15px;
-        border: 1px solid #e9ecef;
-        border-radius: 4px;
-        background-color: #f8f9fa;
-    }
-</style>
 @endsection

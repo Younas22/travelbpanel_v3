@@ -136,25 +136,25 @@
                     {{-- Mini summary strip --}}
                     <div class="booking-summary-strip">
                         <div class="bss-item">
-                            <span class="bss-dot" style="background:#1a68b3"></span>
+                            <span class="bss-dot bss-dot-blue"></span>
                             <span class="bss-label">Flight</span>
                             <span class="bss-val">{{ number_format($stats['flight_bookings'] ?? 0) }}</span>
                         </div>
                         <div class="bss-sep"></div>
                         <div class="bss-item">
-                            <span class="bss-dot" style="background:#1a7a44"></span>
+                            <span class="bss-dot bss-dot-green"></span>
                             <span class="bss-label">Stay</span>
                             <span class="bss-val">{{ number_format($stats['hotel_bookings'] ?? 0) }}</span>
                         </div>
                         <div class="bss-sep"></div>
                         <div class="bss-item">
-                            <span class="bss-dot" style="background:#a05c0a"></span>
+                            <span class="bss-dot bss-dot-amber"></span>
                             <span class="bss-label">Tour</span>
                             <span class="bss-val">{{ number_format($stats['tour_bookings'] ?? 0) }}</span>
                         </div>
                         <div class="bss-sep"></div>
                         <div class="bss-item">
-                            <span class="bss-dot" style="background:#5340c0"></span>
+                            <span class="bss-dot bss-dot-purple"></span>
                             <span class="bss-label">Umrah</span>
                             <span class="bss-val">{{ number_format($stats['umrah_bookings'] ?? 0) }}</span>
                         </div>
@@ -314,9 +314,9 @@
                                 <text x="48" y="57" text-anchor="middle" font-size="8" fill="#999">bookings</text>
                             </svg>
                             <div class="donut-legend">
-                                <div class="donut-leg-item"><span class="donut-dot" style="background:#1a6b3a"></span><span>Confirmed <strong>{{ $confirmed }}</strong></span></div>
-                                <div class="donut-leg-item"><span class="donut-dot" style="background:#f0b054"></span><span>Pending <strong>{{ $pending }}</strong></span></div>
-                                <div class="donut-leg-item"><span class="donut-dot" style="background:#e05252"></span><span>Cancelled <strong>{{ $cancelled }}</strong></span></div>
+                                <div class="donut-leg-item"><span class="donut-dot donut-dot-confirmed"></span><span>Confirmed <strong>{{ $confirmed }}</strong></span></div>
+                                <div class="donut-leg-item"><span class="donut-dot donut-dot-pending"></span><span>Pending <strong>{{ $pending }}</strong></span></div>
+                                <div class="donut-leg-item"><span class="donut-dot donut-dot-cancelled"></span><span>Cancelled <strong>{{ $cancelled }}</strong></span></div>
                             </div>
                         </div>
                     </div>
@@ -360,212 +360,4 @@
         </div>
     </div>
 
-    <style>
-        .flex-1 { flex: 1; min-width: 0; }
-
-        /* ── Stat Cards ───────────────────────────── */
-        .stat-card {
-            background: var(--bs-body-bg);
-            border: 1px solid var(--bs-border-color);
-            border-radius: 14px;
-            padding: 1.1rem 1.25rem;
-        }
-        .stat-label {
-            font-size: 12px; color: var(--bs-secondary-color);
-            margin-bottom: 4px; font-weight: 400;
-        }
-        .stat-value {
-            font-size: 26px; font-weight: 600;
-            color: var(--bs-body-color);
-            line-height: 1.1; margin-bottom: 4px;
-        }
-        .stat-sub { font-size: 11px; }
-        .stat-icon {
-            width: 40px; height: 40px; border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px; flex-shrink: 0;
-        }
-        .icon-blue   { background: #EBF3FD; color: #1a68b3; }
-        .icon-green  { background: #EAF6EE; color: #1a7a44; }
-        .icon-amber  { background: #FDF3E3; color: #a05c0a; }
-        .icon-purple { background: #F0EFFE; color: #5340c0; }
-
-        [data-bs-theme="dark"] .icon-blue   { background: #0c2f4d; color: #7db8f0; }
-        [data-bs-theme="dark"] .icon-green  { background: #0a2e1a; color: #6dd499; }
-        [data-bs-theme="dark"] .icon-amber  { background: #2e1e05; color: #f0b054; }
-        [data-bs-theme="dark"] .icon-purple { background: #1e1553; color: #b5adf5; }
-
-        /* ── Progress bar infographic ──────────────── */
-        .stat-bar-wrap { margin-top: 12px; }
-        .stat-bar {
-            height: 4px; background: var(--bs-border-color);
-            border-radius: 4px; overflow: hidden;
-        }
-        .stat-bar-fill { height: 100%; border-radius: 4px; transition: width .6s ease; }
-        .bar-blue  { background: #1a68b3; }
-        .bar-amber { background: #a05c0a; }
-        .stat-bar-labels {
-            display: flex; justify-content: space-between;
-            margin-top: 4px; font-size: 10px;
-            color: var(--bs-secondary-color);
-        }
-
-        /* ── Sparkline infographic ─────────────────── */
-        .stat-sparkline {
-            margin-top: 10px; height: 28px; overflow: hidden;
-        }
-        .stat-sparkline svg { width: 100%; height: 28px; }
-
-        /* ── Booking summary strip ─────────────────── */
-        .booking-summary-strip {
-            display: flex; align-items: center;
-            padding: 10px 20px; gap: 0;
-            border-bottom: 1px solid var(--bs-border-color);
-            background: var(--bs-secondary-bg);
-        }
-        .bss-item {
-            display: flex; align-items: center; gap: 6px;
-            flex: 1; justify-content: center;
-        }
-        .bss-dot {
-            width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
-        }
-        .bss-label { font-size: 11px; color: var(--bs-secondary-color); }
-        .bss-val   { font-size: 13px; font-weight: 600; color: var(--bs-body-color); }
-        .bss-sep   { width: 1px; height: 28px; background: var(--bs-border-color); }
-
-        /* ── Donut chart ───────────────────────────── */
-        .donut-wrap {
-            padding: 14px 16px 8px;
-            border-bottom: 1px solid var(--bs-border-color);
-        }
-        .donut-chart-wrap {
-            display: flex; align-items: center; gap: 16px;
-        }
-        .donut-legend { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-        .donut-leg-item {
-            display: flex; align-items: center; gap: 7px;
-            font-size: 12px; color: var(--bs-body-color);
-        }
-        .donut-leg-item strong { margin-left: auto; font-weight: 600; }
-        .donut-dot {
-            width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-        }
-
-        /* ── Panels ────────────────────────────────── */
-        .dash-panel {
-            background: var(--bs-body-bg);
-            border: 1px solid var(--bs-border-color);
-            border-radius: 14px; overflow: hidden;
-        }
-        .dash-panel-header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--bs-border-color);
-            background: var(--bs-secondary-bg);
-        }
-        .dash-panel-title { font-size: 15px; font-weight: 600; color: var(--bs-body-color); margin-bottom: 2px; }
-        .dash-panel-sub   { font-size: 12px; color: var(--bs-secondary-color); }
-        .dash-view-btn {
-            font-size: 12px; font-weight: 500; color: var(--bs-primary);
-            text-decoration: none; padding: 5px 12px;
-            border: 1px solid var(--bs-primary); border-radius: 8px;
-            display: flex; align-items: center; white-space: nowrap;
-            transition: background .15s, color .15s;
-        }
-        .dash-view-btn:hover { background: var(--bs-primary); color: #fff; }
-
-        /* ── Table ─────────────────────────────────── */
-        .dash-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .dash-table thead th {
-            padding: 10px 16px; font-size: 11px; font-weight: 600;
-            text-transform: uppercase; letter-spacing: .4px;
-            color: var(--bs-secondary-color);
-            border-bottom: 1px solid var(--bs-border-color);
-            background: transparent; white-space: nowrap;
-        }
-        .dash-table tbody td {
-            padding: 11px 16px; vertical-align: middle;
-            border-bottom: 1px solid var(--bs-border-color);
-            color: var(--bs-body-color);
-        }
-        .dash-table tbody tr:last-child td { border-bottom: none; }
-        .dash-table tbody tr:hover td { background: var(--bs-tertiary-bg); }
-
-        .booking-id-link {
-            font-size: 12px; font-weight: 600; color: var(--bs-primary);
-            text-decoration: none; display: block;
-        }
-        .row-meta { font-size: 11px; color: var(--bs-secondary-color); margin-top: 2px; }
-        .cust-cell { display: flex; align-items: center; gap: 9px; }
-        .cust-avatar {
-            width: 30px; height: 30px; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 11px; font-weight: 600; flex-shrink: 0;
-        }
-        .cust-name  { font-size: 13px; font-weight: 500; color: var(--bs-body-color); }
-        .route-name { font-size: 13px; font-weight: 500; color: var(--bs-body-color); }
-        .route-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 3px; }
-        .type-badge {
-            display: inline-block; font-size: 10px; font-weight: 600;
-            padding: 2px 7px; border-radius: 4px; letter-spacing: .2px;
-        }
-        .stops-pill {
-            display: inline-block; font-size: 10px; font-weight: 500;
-            padding: 2px 6px; border-radius: 4px;
-            background: #EBF3FD; color: #1a68b3; letter-spacing: .2px;
-        }
-        [data-bs-theme="dark"] .stops-pill { background: #0c2f4d; color: #7db8f0; }
-        .amount-val { font-size: 13px; font-weight: 600; color: var(--bs-body-color); }
-        .pax-count  { text-transform: uppercase; letter-spacing: .3px; }
-
-        /* ── Status Badges ─────────────────────────── */
-        .status-badge {
-            display: inline-block; padding: 3px 10px;
-            border-radius: 20px; font-size: 11px;
-            font-weight: 500; letter-spacing: .2px; text-transform: capitalize;
-        }
-        .status-confirmed { background: #e6f4ec; color: #1a6b3a; }
-        .status-pending   { background: #fdf3e3; color: #8a5210; }
-        .status-cancelled { background: #fdecea; color: #a32020; }
-        [data-bs-theme="dark"] .status-confirmed { background: #0a2e1a; color: #6dd499; }
-        [data-bs-theme="dark"] .status-pending   { background: #2e1e05; color: #f0b054; }
-        [data-bs-theme="dark"] .status-cancelled { background: #2e0a0a; color: #f08080; }
-
-        /* ── Quick Actions ─────────────────────────── */
-        .quick-actions-list { padding: 8px; display: flex; flex-direction: column; gap: 2px; }
-        .qa-item {
-            display: flex; align-items: center; gap: 13px;
-            padding: 13px 12px; border-radius: 10px;
-            text-decoration: none; color: inherit;
-            border: 1px solid transparent;
-            transition: background .15s, border-color .15s;
-        }
-        .qa-item:hover { background: var(--bs-tertiary-bg); border-color: var(--bs-border-color); color: inherit; }
-        .qa-icon {
-            width: 38px; height: 38px; border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 17px; flex-shrink: 0;
-        }
-        .qa-body { flex: 1; min-width: 0; }
-        .qa-title { font-size: 13px; font-weight: 500; color: var(--bs-body-color); }
-        .qa-desc  { font-size: 11px; color: var(--bs-secondary-color); margin-top: 1px; }
-        .qa-arrow { font-size: 14px; color: var(--bs-secondary-color); transition: transform .15s, color .15s; }
-        .qa-item:hover .qa-arrow { transform: translateX(2px); color: var(--bs-primary); }
-
-        /* ── Responsive ────────────────────────────── */
-        @media (max-width: 768px) {
-            .stat-value { font-size: 22px; }
-            .dash-panel-header { padding: 14px 16px; }
-            .dash-table thead th, .dash-table tbody td { padding: 10px 12px; }
-            .booking-summary-strip { padding: 8px 12px; gap: 0; }
-            .bss-label { display: none; }
-        }
-        @media (max-width: 576px) {
-            .stat-value { font-size: 20px; }
-            .dash-table { font-size: 12px; }
-            .dash-table thead th { font-size: 10px; }
-            .status-badge { font-size: 10px; padding: 2px 8px; }
-        }
-    </style>
 @endsection

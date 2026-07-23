@@ -109,9 +109,9 @@
                         <tr>
                             <td>
                                 @if($roomType->images->first())
-                                    <img src="{{ asset('public/assets/images/' . $roomType->images->first()->image_path) }}" alt="" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                                    <img src="{{ asset('public/assets/images/' . $roomType->images->first()->image_path) }}" alt="" class="rounded hotel-thumb-img">
                                 @else
-                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center hotel-thumb-placeholder">
                                         <i class="bi bi-door-open text-muted"></i>
                                     </div>
                                 @endif
@@ -185,47 +185,6 @@
     </div>
 </div>
 
-@push('styles')
-<style>
-.status-toggle-btn {
-    display: inline-flex;
-    align-items: center;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    outline: none;
-}
-.status-toggle-btn:focus { outline: none; box-shadow: none; }
-.toggle-track {
-    position: relative;
-    width: 44px;
-    height: 24px;
-    border-radius: 12px;
-    background-color: #dc3545;
-    transition: background-color 0.25s ease;
-    display: inline-block;
-    flex-shrink: 0;
-}
-.status-toggle-btn.active .toggle-track {
-    background-color: #198754;
-}
-.toggle-thumb {
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background-color: #fff;
-    transition: transform 0.25s ease;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
-}
-.status-toggle-btn.active .toggle-thumb {
-    transform: translateX(20px);
-}
-</style>
-@endpush
 
 @push('scripts')
 <script>

@@ -15,7 +15,7 @@
             </div>
             <div class="col-md-6">
                 <div class="text-end">
-                    <button class="btn btn-outline-danger modern-btn me-2" onclick="bulkAction('delete')" id="bulkDeleteBtn" style="display: none;">
+                    <button class="btn btn-outline-danger modern-btn me-2 d-none" onclick="bulkAction('delete')" id="bulkDeleteBtn">
                         <i class="bi bi-trash"></i> Delete Selected
                     </button>
                     <a href="{{ route('admin.pages.create') }}" class="btn btn-primary modern-btn">
@@ -131,7 +131,7 @@
     </div>
 
     <!-- Bulk Actions Bar -->
-    <div class="alert alert-info d-flex justify-content-between align-items-center" id="bulkActionsBar" style="display: none;">
+    <div class="alert alert-info d-flex justify-content-between align-items-center d-none" id="bulkActionsBar">
         <div>
             <strong><span id="selectedCount">0</span></strong> pages selected
         </div>

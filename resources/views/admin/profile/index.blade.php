@@ -23,14 +23,12 @@
                     <div class="profile-image-container position-relative d-inline-block">
                         <img src="{{ url('public/'.$user->profile_image) }}"
                              alt="Profile"
-                             class="rounded-circle border border-4 border-white shadow"
-                             width="120" height="120"
-                             style="object-fit: cover;">
+                             class="rounded-circle border border-4 border-white shadow object-fit-cover"
+                             width="120" height="120">
                         <button type="button"
-                                class="btn btn-sm btn-light rounded-circle position-absolute bottom-0 end-0 shadow"
+                                class="btn btn-sm btn-light rounded-circle position-absolute bottom-0 end-0 shadow btn-edit-avatar-35"
                                 data-bs-toggle="modal"
-                                data-bs-target="#profilePictureModal"
-                                style="width: 35px; height: 35px;">
+                                data-bs-target="#profilePictureModal">
                             <i class="bi bi-camera"></i>
                         </button>
                     </div>
@@ -361,9 +359,8 @@
                     <div class="text-center mb-3">
                         <img src="{{ url('public/'.$user->profile_image) }}"
                              alt="Current Profile"
-                             class="rounded-circle border shadow mb-3"
+                             class="rounded-circle border shadow mb-3 object-fit-cover"
                              width="150" height="150"
-                             style="object-fit: cover;"
                              id="previewImage">
                     </div>
                     <div class="form-group">

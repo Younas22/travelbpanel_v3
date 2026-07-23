@@ -158,7 +158,7 @@
         </div>
 
         <!-- Bulk Actions Bar (Hidden by default) -->
-        <div class="col-12" id="bulkActionsBar" style="display: none;">
+        <div class="col-12 d-none" id="bulkActionsBar">
             <div class="alert alert-info d-flex justify-content-between align-items-center">
                 <div>
                     <strong><span id="selectedCount">0</span></strong> subscribers selected

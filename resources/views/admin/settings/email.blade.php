@@ -183,7 +183,7 @@
                 </form>
 
                 <!-- Test Result -->
-                <div id="testResult" class="test-result" style="display: none;">
+                <div id="testResult" class="test-result d-none">
                     <div class="d-flex align-items-center">
                         <i class="bi bi-check-circle-fill me-2" id="testResultIcon"></i>
                         <strong id="testResultMessage">Test email sent successfully!</strong>

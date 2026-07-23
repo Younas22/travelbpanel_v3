@@ -218,10 +218,6 @@
     </div>
 </div>
 
-@push('styles')
-@include('admin.hotels._tab-styles')
-@endpush
-
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -242,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     previewDiv.id = `preview-${fileIndex}`;
                     previewDiv.innerHTML = `
                         <div class="position-relative">
-                            <img src="${e.target.result}" class="img-fluid rounded" style="width:100%;height:150px;object-fit:cover;">
+                            <img src="${e.target.result}" class="img-fluid rounded preview-thumb">
                             <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 remove-image" data-index="${fileIndex}">
                                 <i class="bi bi-x"></i>
                             </button>
@@ -279,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 previewDiv.className = 'col-md-3';
                 previewDiv.innerHTML = `
                     <div class="position-relative">
-                        <img src="${e.target.result}" class="img-fluid rounded" style="width:100%;height:150px;object-fit:cover;">
+                        <img src="${e.target.result}" class="img-fluid rounded preview-thumb">
                         <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 remove-image" data-index="${index}">
                             <i class="bi bi-x"></i>
                         </button>

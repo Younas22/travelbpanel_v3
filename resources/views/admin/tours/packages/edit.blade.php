@@ -5,7 +5,7 @@
     @php $tour = $tour ?? $package ?? null; @endphp
 
         <!-- ===== PAGE HEADER ===== -->
-    <div class="etp-header">
+    <div class="etp-header etp-header-edit">
         <div>
             <h2 class="etp-title">Edit Tour Package</h2>
             <p class="etp-subtitle">{{ $tour->name }}</p>
@@ -318,7 +318,7 @@
         @foreach($tour->images as $image)
             <form id="delete-image-{{ $image->id }}"
                   action="{{ route($deleteImageRouteName ?? 'admin.tours.packages.delete-image', $image->id) }}"
-                  method="POST" style="display:none;">
+                  method="POST" class="d-none">
                 @csrf
                 @method('DELETE')
             </form>
@@ -330,165 +330,6 @@
 @push('styles')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
-    <style>
-        /* ===== PAGE HEADER ===== */
-        .etp-header {
-            display: flex; align-items: center; justify-content: space-between;
-            flex-wrap: wrap; gap: 12px; margin-bottom: 1.25rem;
-        }
-        .etp-title { font-size: 20px; font-weight: 600; color: var(--bs-body-color); margin: 0 0 4px; }
-        .etp-subtitle { font-size: 13px; color: var(--bs-secondary-color); margin: 0; }
-        .etp-back-btn {
-            display: inline-flex; align-items: center; gap: 7px;
-            padding: 8px 16px; border-radius: 8px;
-            border: 1px solid var(--bs-border-color);
-            background: var(--bs-secondary-bg); color: var(--bs-secondary-color);
-            font-size: 13px; font-weight: 500; text-decoration: none;
-            transition: background .15s, color .15s;
-        }
-        .etp-back-btn:hover { background: var(--bs-tertiary-bg); color: var(--bs-body-color); text-decoration: none; }
-
-        /* ===== ERROR CARD ===== */
-        .etp-error-card {
-            background: #FCEBEB; border-radius: 12px;
-            padding: 1rem 1.25rem; margin-bottom: 1.25rem;
-        }
-        [data-bs-theme="dark"] .etp-error-card { background: #2e0a0a; }
-        .etp-error-title {
-            display: flex; align-items: center; gap: 8px;
-            font-size: 13px; font-weight: 600; color: #A32D2D; margin-bottom: 6px;
-        }
-        [data-bs-theme="dark"] .etp-error-title { color: #f08080; }
-        .etp-error-list { margin: 0; padding-left: 1.4rem; font-size: 12px; color: #A32D2D; }
-        [data-bs-theme="dark"] .etp-error-list { color: #f08080; }
-
-        /* ===== LAYOUT ===== */
-        .etp-layout {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 1.25rem;
-            align-items: start;
-        }
-
-        /* ===== CARD ===== */
-        .etp-card {
-            background: var(--bs-body-bg);
-            border: 1px solid var(--bs-border-color);
-            border-radius: 14px;
-            padding: 1.25rem 1.5rem;
-            margin-bottom: 1.25rem;
-        }
-        .etp-sidebar .etp-card { margin-bottom: 1.25rem; }
-
-        /* ===== SECTION TITLE ===== */
-        .etp-section-title {
-            display: flex; align-items: center; gap: 8px;
-            font-size: 14px; font-weight: 600; color: var(--bs-body-color);
-            margin: 0 0 1.1rem; padding-bottom: .85rem;
-            border-bottom: 1px solid var(--bs-border-color);
-        }
-        .etp-section-title i { font-size: 15px; color: #0C6DFD; }
-
-        /* ===== GRIDS ===== */
-        .etp-grid-1 { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-        .etp-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .etp-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
-        .etp-span-2 { grid-column: 1 / -1; }
-
-        /* ===== FIELDS ===== */
-        .etp-field label {
-            font-size: 12px; font-weight: 500;
-            color: var(--bs-secondary-color); margin-bottom: 6px; display: block;
-        }
-        .etp-req { color: #A32D2D; }
-        .etp-field-spaced { margin-top: 1rem; }
-        .etp-hint { font-size: 11px; color: var(--bs-secondary-color); margin-top: 5px; }
-
-        .etp-card .form-control,
-        .etp-card .form-select {
-            border-radius: 8px; border-color: var(--bs-border-color); font-size: 13px;
-        }
-        .etp-card .form-control:focus,
-        .etp-card .form-select:focus {
-            border-color: #0C6DFD;
-            box-shadow: 0 0 0 3px rgba(12,109,253,.12);
-        }
-
-        /* ===== INCLUSIONS / EXCLUSIONS ===== */
-        .etp-check-label {
-            font-size: 11px; font-weight: 600; margin-bottom: 8px;
-            display: flex; align-items: center; gap: 5px;
-            text-transform: uppercase; letter-spacing: .05em;
-        }
-        .etp-check-inc { color: #0C6DFD; }
-        .etp-check-exc { color: #A32D2D; }
-        .etp-check-box {
-            border: 1px solid var(--bs-border-color);
-            border-radius: 10px;
-            padding: 10px 12px;
-            max-height: 200px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: var(--bs-border-color) transparent;
-        }
-        .etp-check-row {
-            display: flex; align-items: center; gap: 8px;
-            padding: 4px 0; font-size: 13px; color: var(--bs-body-color);
-        }
-        .etp-check-row:not(:last-child) { border-bottom: 1px solid var(--bs-border-color); }
-        .etp-check-row label { margin: 0; cursor: pointer; }
-        .etp-check-row .form-check-input:checked { background-color: #0C6DFD; border-color: #0C6DFD; }
-
-        /* ===== IMAGES ===== */
-        .etp-img-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .etp-img-wrap { position: relative; border-radius: 8px; overflow: hidden; }
-        .etp-img {
-            width: 100%; height: 90px;
-            object-fit: cover; display: block;
-            border: 1px solid var(--bs-border-color);
-            border-radius: 8px;
-        }
-        .etp-img-delete {
-            position: absolute; top: 4px; right: 4px;
-            width: 22px; height: 22px;
-            background: #A32D2D; color: #fff;
-            border: none; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 13px; cursor: pointer; line-height: 1;
-            transition: opacity .12s;
-        }
-        .etp-img-delete:hover { opacity: .85; }
-
-        /* ===== SUBMIT GROUP ===== */
-        .etp-submit-group { display: flex; flex-direction: column; gap: 8px; }
-        .etp-btn {
-            display: flex; align-items: center; justify-content: center; gap: 7px;
-            padding: 10px 18px; border-radius: 8px;
-            font-size: 13px; font-weight: 500;
-            cursor: pointer; text-decoration: none;
-            transition: opacity .15s, background .15s;
-            border: 1px solid var(--bs-border-color);
-        }
-        .etp-btn-primary { background: #0C6DFD; border-color: #0C6DFD; color: #fff; }
-        .etp-btn-primary:hover { opacity: .9; color: #fff; }
-        .etp-btn-outline { background: var(--bs-secondary-bg); color: var(--bs-secondary-color); }
-        .etp-btn-outline:hover { background: var(--bs-tertiary-bg); color: var(--bs-body-color); text-decoration: none; }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 992px) {
-            .etp-layout { grid-template-columns: 1fr; }
-            .etp-sidebar { order: -1; }
-        }
-        @media (max-width: 768px) {
-            .etp-grid-2 { grid-template-columns: 1fr; }
-            .etp-grid-3 { grid-template-columns: 1fr 1fr; }
-            .etp-span-2 { grid-column: auto; }
-        }
-        @media (max-width: 480px) {
-            .etp-grid-3 { grid-template-columns: 1fr; }
-            .etp-header { align-items: flex-start; }
-        }
-    </style>
 @endpush
 
 @push('scripts')
