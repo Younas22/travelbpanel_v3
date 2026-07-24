@@ -757,3 +757,165 @@ input:checked + .toggle-slider::before, input:checked + .am-switch-slider::befor
 @media (max-width: 480px) {
     .wal-stats-grid { grid-template-columns: 1fr; }
 }
+
+/* =====================================================
+   Bookings (bookings/index.blade.php, show.blade.php)
+===================================================== */
+.bk-tabs { display: flex; align-items: center; gap: 4px; padding: var(--am-space-3) var(--am-space-4); border-bottom: 1px solid var(--border-color); overflow-x: auto; }
+.bk-tab { padding: 8px 16px; border-radius: 9999px; font-size: 12px; font-weight: 650; white-space: nowrap; text-decoration: none; color: color-mix(in srgb, var(--text-color) 55%, transparent); transition: all .15s var(--am-ease); }
+.bk-tab:hover { background: var(--primary-tint-6); color: var(--text-color); text-decoration: none; }
+.bk-tab.bk-tab-active { background: var(--primary-color); color: #fff; }
+.bk-tab.bk-tab-active:hover { color: #fff; }
+
+.bk-detail-row { display: grid; grid-template-columns: 160px 1fr; gap: 10px; padding: 11px 0; border-bottom: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent); font-size: 13px; }
+.bk-detail-row:last-child { border-bottom: none; }
+.bk-detail-label { font-size: 11.5px; font-weight: 650; color: color-mix(in srgb, var(--text-color) 50%, transparent); text-transform: uppercase; letter-spacing: .03em; }
+.bk-detail-value { color: var(--text-color); }
+
+.bk-summary-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; font-size: 13px; }
+.bk-summary-row .label { color: color-mix(in srgb, var(--text-color) 50%, transparent); font-size: 12px; }
+.bk-summary-total { display: flex; align-items: center; justify-content: space-between; padding-top: var(--am-space-3); margin-top: 4px; border-top: 1px solid var(--border-color); font-weight: 700; }
+.bk-summary-total .amt { color: var(--success-color); font-size: 15px; }
+
+@media (max-width: 575.98px) {
+    .bk-detail-row { grid-template-columns: 1fr; gap: 2px; }
+}
+
+/* =====================================================
+   Hotels / Room Types / Rooms / Amenities
+   (hotels/index, create, edit; room-types/*; rooms/*;
+   amenities/index)
+===================================================== */
+.ap-tab-bar { display: flex; align-items: center; gap: 4px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--card-radius); padding: 6px; margin-bottom: var(--am-space-4); overflow-x: auto; box-shadow: var(--am-shadow-sm); }
+.ap-tab-item {
+    display: inline-flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: var(--radius-md);
+    font-size: 12.5px; font-weight: 650; white-space: nowrap; background: transparent; border: none;
+    color: color-mix(in srgb, var(--text-color) 55%, transparent); cursor: pointer; transition: all .15s var(--am-ease);
+}
+.ap-tab-item:hover { background: var(--primary-tint-6); color: var(--text-color); }
+.ap-tab-item.active { background: var(--primary-color); color: #fff; }
+.ap-tab-count { background: color-mix(in srgb, var(--text-color) 12%, transparent); color: var(--text-color); font-size: 10.5px; font-weight: 700; padding: 1px 7px; border-radius: 9999px; }
+.ap-tab-item.active .ap-tab-count { background: rgba(255,255,255,.28); color: #fff; }
+.ap-tab-pane { display: none; }
+.ap-tab-pane.active { display: block; }
+
+.ap-upload-dropzone {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+    border: 2px dashed var(--border-color); border-radius: var(--card-radius); padding: var(--am-space-5);
+    cursor: pointer; transition: border-color .15s var(--am-ease), background .15s var(--am-ease);
+}
+.ap-upload-dropzone:hover { border-color: var(--primary-color); background: var(--primary-tint-6); }
+.ap-upload-dropzone i { font-size: 1.6rem; color: var(--primary-color); margin-bottom: 8px; }
+.ap-upload-dropzone .ap-upload-title { font-size: 13px; font-weight: 650; color: var(--text-color); }
+.ap-upload-dropzone .ap-upload-hint { font-size: 11px; color: color-mix(in srgb, var(--text-color) 50%, transparent); margin-top: 2px; }
+
+.ap-img-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; margin-top: var(--am-space-3); }
+.ap-img-item { position: relative; border-radius: var(--radius-md); overflow: hidden; aspect-ratio: 1; border: 1px solid var(--border-color); }
+.ap-img-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ap-img-drag-handle {
+    position: absolute; top: 0; left: 0; right: 0; padding: 4px; text-align: center;
+    background: rgba(0,0,0,.45); color: #fff; font-size: 11px; opacity: 0; transition: opacity .15s var(--am-ease);
+    cursor: grab; z-index: 2;
+}
+.ap-img-item:hover .ap-img-drag-handle { opacity: 1; }
+.ap-img-delete {
+    position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(0,0,0,.6); color: #fff; border: none; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; cursor: pointer; opacity: 0; transition: opacity .15s var(--am-ease); z-index: 2;
+}
+.ap-img-item:hover .ap-img-delete { opacity: 1; }
+.ap-img-delete:hover { background: var(--danger-color); }
+.ap-reorder-status { margin-top: 8px; font-size: 12px; }
+
+.ap-checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+.ap-checkbox-item { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--text-color); cursor: pointer; }
+
+.ap-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.ap-status-dot.dot-available { background: var(--success-color); }
+.ap-status-dot.dot-occupied { background: var(--danger-color); }
+.ap-status-dot.dot-maintenance { background: var(--warning-color); }
+
+.ap-info-tip { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: color-mix(in srgb, var(--text-color) 65%, transparent); margin-bottom: var(--am-space-3); }
+.ap-info-tip i { margin-top: 2px; flex-shrink: 0; }
+.ap-kv-row { display: flex; align-items: center; justify-content: space-between; font-size: 13px; padding: 6px 0; }
+.ap-kv-row .label { color: color-mix(in srgb, var(--text-color) 50%, transparent); }
+
+@media (max-width: 575.98px) {
+    .ap-img-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* =====================================================
+   Profile (profile/index.blade.php)
+===================================================== */
+.ap-avatar-wrap { position: relative; display: inline-block; margin-bottom: var(--am-space-3); }
+.ap-avatar-lg {
+    width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto;
+    border: 2px solid var(--primary-color); display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover)); color: #fff;
+    font-size: 1.5rem; font-weight: 700;
+}
+.ap-avatar-camera-btn {
+    position: absolute; bottom: 0; right: 0; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--primary-color); color: #fff; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: var(--am-shadow-md); border: 2px solid var(--card-bg); font-size: 12px;
+}
+.ap-profile-header { text-align: center; padding-bottom: var(--am-space-4); margin-bottom: var(--am-space-4); border-bottom: 1px solid var(--border-color); }
+.ap-profile-name { font-weight: 700; font-size: 14px; color: var(--text-color); margin-top: 4px; }
+.ap-profile-email { font-size: 11.5px; color: color-mix(in srgb, var(--text-color) 50%, transparent); }
+
+/* =====================================================
+   Standalone status pages (403, pending, suspended) —
+   not wrapped by the app shell.
+===================================================== */
+.ap-status-shell {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: var(--body-bg); padding: var(--am-space-4);
+}
+.ap-status-card {
+    background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px;
+    box-shadow: var(--am-shadow-lg); text-align: center; padding: 48px 40px; max-width: 440px; width: 100%;
+}
+.ap-status-icon { font-size: 3rem; margin-bottom: var(--am-space-3); }
+.ap-status-card h4 { margin-bottom: var(--am-space-3); }
+.ap-status-card p { color: color-mix(in srgb, var(--text-color) 55%, transparent); font-size: 13.5px; line-height: 1.6; margin-bottom: var(--am-space-4); }
+
+/* =====================================================
+   Theme Settings (settings/theme.blade.php) — preset /
+   design-style cards, color swatches, radius picker.
+   Same visual language as admin-modern's equivalent.
+===================================================== */
+.theme-card {
+    position: relative; height: 100%; padding: 16px;
+    border: 2px solid var(--border-color); border-radius: var(--card-radius);
+    cursor: pointer; background: var(--card-bg);
+    transition: border-color .2s var(--am-ease), transform .2s var(--am-ease), box-shadow .2s var(--am-ease);
+}
+.theme-card:hover { border-color: color-mix(in srgb, var(--primary-color) 45%, var(--border-color)); transform: translateY(-2px); box-shadow: var(--am-shadow-sm); }
+.theme-card.active { border-color: var(--primary-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 18%, transparent); }
+.theme-card-check { position: absolute; top: 8px; right: 8px; color: var(--primary-color); opacity: 0; transition: opacity .2s var(--am-ease); }
+.theme-card.active .theme-card-check { opacity: 1; }
+.theme-card-preview { display: flex; height: 32px; border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 10px; border: 1px solid var(--border-color); }
+.theme-card-preview span { flex: 1; }
+.theme-card-body { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.theme-card-icon { color: var(--primary-color); }
+.theme-card-label { font-weight: 650; font-size: 0.8125rem; }
+.theme-card-desc { flex-basis: 100%; font-size: 0.7rem; color: color-mix(in srgb, var(--text-color) 55%, transparent); }
+
+.color-swatch-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.color-swatch-btn { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--card-bg); box-shadow: 0 0 0 1px var(--border-color); cursor: pointer; transition: transform .15s var(--am-ease); }
+.color-swatch-btn:hover { transform: scale(1.12); }
+.color-swatch-btn.active { box-shadow: 0 0 0 2px var(--card-bg), 0 0 0 4px var(--primary-color); }
+.color-field-swatch { width: 38px; height: 36px; padding: 2px; border: 1px solid var(--input-border); border-radius: var(--input-radius); background: none; cursor: pointer; flex-shrink: 0; }
+
+.radius-option {
+    display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px;
+    border: 2px solid var(--border-color); border-radius: var(--card-radius); cursor: pointer;
+    transition: border-color .2s var(--am-ease); text-align: center;
+}
+.radius-option:hover { border-color: color-mix(in srgb, var(--primary-color) 45%, var(--border-color)); }
+.radius-option.active { border-color: var(--primary-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 18%, transparent); }
+.radius-option input { display: none; }
+.radius-preview { width: 40px; height: 40px; background: var(--primary-tint-16); border: 2px solid var(--primary-color); }
+.radius-label { font-size: 12px; font-weight: 650; }
+
+.layout-toggle-row { display: flex; align-items: flex-start; gap: 12px; padding: var(--am-space-3); border: 1px solid var(--border-color); border-radius: var(--card-radius); height: 100%; }
