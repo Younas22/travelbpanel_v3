@@ -9,6 +9,7 @@ class ThemeSetting extends Model
     protected $fillable = [
         'user_id',
         'theme_name',
+        'design_style',
         'primary_color',
         'secondary_color',
         'success_color',
@@ -46,6 +47,7 @@ class ThemeSetting extends Model
         return [
             'user_id' => $userId,
             'theme_name' => 'default',
+            'design_style' => 'classic',
             'primary_color' => '#0C6DFD',
             'secondary_color' => '#64748B',
             'success_color' => '#10B981',
@@ -115,6 +117,23 @@ class ThemeSetting extends Model
     public static function forUser(int $userId): self
     {
         return static::firstOrCreate(['user_id' => $userId], static::defaults($userId));
+    }
+
+    /**
+     * "classic" -> admin.css (the original design), "modern" -> the new
+     * admin-modern.css design. Both consume the exact same CSS variables,
+     * so colors/fonts/radius/layout toggles apply identically to either.
+     */
+    public function designStylesheet(): string
+    {
+        return $this->design_style === 'modern'
+            ? 'public/assets/css/admin-modern.css'
+            : 'public/assets/css/admin.css';
+    }
+
+    public function isModernDesign(): bool
+    {
+        return $this->design_style === 'modern';
     }
 
     public function getLayoutOption(string $key, $default = null)

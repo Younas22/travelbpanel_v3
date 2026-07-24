@@ -79,6 +79,51 @@
         <form id="themeSettingsForm">
             @csrf
             <input type="hidden" name="preset" id="selectedPreset" value="{{ $theme->theme_name }}">
+            <input type="hidden" name="design_style" id="selectedDesignStyle" value="{{ $theme->design_style }}">
+
+            {{-- Design Style --}}
+            <div class="settings-section">
+                <div class="section-title">
+                    <div class="section-icon"><i class="bi bi-layout-text-window-reverse"></i></div>
+                    Design Style
+                </div>
+                <div class="section-description">Choose the overall visual design for the admin panel. Your colors, typography, radius and layout options below apply to either one.</div>
+
+                <div class="row g-3">
+                    <div class="col-6 col-md-4">
+                        <div class="theme-card {{ $theme->design_style === 'classic' ? 'active' : '' }}"
+                             data-design-card data-design="classic">
+                            <div class="theme-card-check"><i class="bi bi-check-circle-fill"></i></div>
+                            <div class="theme-card-preview">
+                                <span style="background:#0C6DFD"></span>
+                                <span style="background:#F8FAFC"></span>
+                                <span style="background:#FFFFFF"></span>
+                            </div>
+                            <div class="theme-card-body">
+                                <div class="theme-card-icon"><i class="bi bi-square"></i></div>
+                                <div class="theme-card-label">Classic</div>
+                                <div class="theme-card-desc">The original admin design.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <div class="theme-card {{ $theme->design_style === 'modern' ? 'active' : '' }}"
+                             data-design-card data-design="modern">
+                            <div class="theme-card-check"><i class="bi bi-check-circle-fill"></i></div>
+                            <div class="theme-card-preview">
+                                <span style="background:#0C6DFD"></span>
+                                <span style="background:#f7f8fa"></span>
+                                <span style="background:#FFFFFF"></span>
+                            </div>
+                            <div class="theme-card-body">
+                                <div class="theme-card-icon"><i class="bi bi-stars"></i></div>
+                                <div class="theme-card-label">Modern</div>
+                                <div class="theme-card-desc">A softer, premium SaaS-style redesign.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {{-- Theme Style --}}
             <div class="settings-section">
@@ -263,11 +308,15 @@
 
 <script id="theme-initial-state" type="application/json">{!! json_encode([
     'theme' => $theme->only([
-        'theme_name', 'primary_color', 'secondary_color', 'success_color', 'warning_color',
+        'theme_name', 'design_style', 'primary_color', 'secondary_color', 'success_color', 'warning_color',
         'danger_color', 'info_color', 'body_background', 'sidebar_background', 'navbar_background',
         'card_background', 'text_color', 'border_color', 'input_background', 'input_border',
         'input_focus_color', 'font_family', 'font_size', 'border_radius',
     ]),
+    'design_stylesheets' => [
+        'classic' => asset('public/assets/css/admin.css') . '?v=' . (@filemtime(public_path('assets/css/admin.css')) ?: 1),
+        'modern' => asset('public/assets/css/admin-modern.css') . '?v=' . (@filemtime(public_path('assets/css/admin-modern.css')) ?: 1),
+    ],
     'layout_options' => $layoutOptions,
     'css_vars' => $theme->toCssVariables(),
     'routes' => [
@@ -279,5 +328,5 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-<script src="{{ asset('public/assets/js/admin-theme.js') }}"></script>
+<script src="{{ asset('public/assets/js/admin-theme.js') }}?v={{ @filemtime(public_path('assets/js/admin-theme.js')) }}"></script>
 @endpush

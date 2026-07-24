@@ -57,4 +57,4 @@
 @once
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 @endonce
-<script src="{{ asset('public/assets/js/theme-quick-switch.js') }}"></script>
+<script src="{{ asset('public/assets/js/theme-quick-switch.js') }}?v={{ @filemtime(public_path('assets/js/theme-quick-switch.js')) }}"></script>

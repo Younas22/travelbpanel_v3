@@ -44,6 +44,7 @@
 
     const initialState = JSON.parse(document.getElementById('theme-initial-state').textContent);
     const routes = initialState.routes;
+    const designStylesheets = initialState.design_stylesheets || {};
     let baseline = buildStateFromTheme(initialState.theme, initialState.layout_options);
 
     function buildStateFromTheme(theme, layoutOptions) {
@@ -156,8 +157,29 @@
         document.documentElement.setAttribute('data-bs-theme', state._dark ? 'dark' : 'light');
     }
 
+    function applyDesignStyle(designStyle) {
+        const link = document.getElementById('admin-design-css');
+        const href = designStylesheets[designStyle];
+        if (link && href) link.href = href;
+
+        form.querySelectorAll('[data-design-card]').forEach((c) => {
+            c.classList.toggle('active', c.dataset.design === designStyle);
+        });
+    }
+
+    form.querySelectorAll('[data-design-card]').forEach((card) => {
+        card.addEventListener('click', () => {
+            const design = card.dataset.design;
+            document.getElementById('selectedDesignStyle').value = design;
+            applyDesignStyle(design);
+        });
+    });
+
     function collectFormState() {
-        const state = { theme_name: document.getElementById('selectedPreset').value || 'custom' };
+        const state = {
+            theme_name: document.getElementById('selectedPreset').value || 'custom',
+            design_style: document.getElementById('selectedDesignStyle').value || 'classic',
+        };
 
         COLOR_FIELDS.forEach((name) => {
             const el = document.getElementById(name);
@@ -353,6 +375,8 @@
 
     function populateForm(theme) {
         document.getElementById('selectedPreset').value = theme.theme_name || 'default';
+        document.getElementById('selectedDesignStyle').value = theme.design_style || 'classic';
+        applyDesignStyle(theme.design_style || 'classic');
 
         COLOR_FIELDS.forEach((name) => {
             const el = document.getElementById(name);

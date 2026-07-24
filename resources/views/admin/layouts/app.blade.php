@@ -33,7 +33,7 @@
     <link href="{{ url('public/assets/libs/bootstrap-icons/font/bootstrap-icons.min.css') }}" rel="stylesheet">
     <!-- In your head section -->
     <link rel="stylesheet" href="{{ url('public/assets/libs/toastify/toastify.min.css') }}">
-    <link href="{{ asset('public/assets/css/admin.css') }}" rel="stylesheet">
+    <link id="admin-design-css" href="{{ asset($__activeTheme->designStylesheet()) }}?v={{ @filemtime(public_path(str_replace('public/', '', $__activeTheme->designStylesheet()))) }}" rel="stylesheet">
     @if($__activeTheme->font_family && !in_array(strtolower($__activeTheme->font_family), ['system font', 'system', 'system-ui']))
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link href="https://fonts.googleapis.com/css2?family={{ str_replace(' ', '+', $__activeTheme->font_family) }}:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -42,7 +42,7 @@
     @stack('styles')
 
 </head>
-<body class="theme-{{ $__activeTheme->theme_name }} {{ $__activeTheme->layoutBodyClasses() }}">
+<body class="theme-{{ $__activeTheme->theme_name }} design-{{ $__activeTheme->design_style }} {{ $__activeTheme->layoutBodyClasses() }}">
     @include('admin.layouts.sidebar')
 
     <div class="main-content">

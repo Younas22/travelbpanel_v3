@@ -265,5 +265,5 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-<script src="{{ asset('public/assets/js/admin-theme.js') }}"></script>
+<script src="{{ asset('public/assets/js/admin-theme.js') }}?v={{ @filemtime(public_path('assets/js/admin-theme.js')) }}"></script>
 @endpush
