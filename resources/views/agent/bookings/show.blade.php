@@ -5,8 +5,8 @@
 
 <div class="flex items-center justify-between mb-5">
     <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#e8f4fd;">
-            <i class="fas fa-receipt" style="color:#0077BE;"></i>
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center ap-tint-bg">
+            <i class="fas fa-receipt ap-accent"></i>
         </div>
         <div>
             <h4 class="text-lg font-bold text-gray-800">Booking Details</h4>
@@ -14,16 +14,15 @@
         </div>
     </div>
     <a href="{{ route('agent.bookings.index') }}"
-       class="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2"
-       style="background:#e8f4fd; color:#0077BE; text-decoration:none;">
+       class="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 ap-chip-link">
         <i class="fas fa-arrow-left"></i> Back to Bookings
     </a>
 </div>
 
 <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
-    <a href="{{ route('agent.dashboard') }}" style="color:#0077BE; text-decoration:none;">Dashboard</a>
+    <a href="{{ route('agent.dashboard') }}" class="ap-accent-link">Dashboard</a>
     <i class="fas fa-chevron-right text-gray-300"></i>
-    <a href="{{ route('agent.bookings.index') }}" style="color:#0077BE; text-decoration:none;">My Bookings</a>
+    <a href="{{ route('agent.bookings.index') }}" class="ap-accent-link">My Bookings</a>
     <i class="fas fa-chevron-right text-gray-300"></i>
     <span class="text-gray-600">Booking Details</span>
 </div>
@@ -173,8 +172,7 @@
 
         @if($type === 'hotel' && isset($booking->booking_code))
         <a href="{{ route('agent.hotels.invoice', $booking->booking_code) }}"
-           class="w-full px-5 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-2"
-           style="background:#0077BE; border:none; cursor:pointer; text-decoration:none;"
+           class="w-full px-5 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-2 ap-solid-accent-btn"
            target="_blank">
             <i class="fas fa-print"></i> Print Invoice
         </a>

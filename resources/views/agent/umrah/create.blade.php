@@ -188,7 +188,7 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label">Inclusions</label>
-                        <div class="border rounded p-2" style="max-height:200px;overflow-y:auto;">
+                        <div class="border rounded p-2 ap-scroll-200">
                             @php $selInc = old('inclusions', []); @endphp
                             @foreach($inclusions as $inc)
                                 <div class="form-check">
@@ -202,7 +202,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Exclusions</label>
-                        <div class="border rounded p-2" style="max-height:200px;overflow-y:auto;">
+                        <div class="border rounded p-2 ap-scroll-200">
                             @php $selExc = old('exclusions', []); @endphp
                             @foreach($exclusions as $exc)
                                 <div class="form-check">
@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const div = document.createElement('div');
                     div.className = 'col-md-4';
                     div.innerHTML = `<div class="position-relative">
-                        <img src="${e.target.result}" class="img-fluid rounded" style="height:100px;width:100%;object-fit:cover;">
+                        <img src="${e.target.result}" class="img-fluid rounded ap-img-h-100">
                         <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 remove-img" data-idx="${idx}"><i class="bi bi-x"></i></button>
                     </div>`;
                     previewContainer.appendChild(div);
@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const div = document.createElement('div');
                 div.className = 'col-md-4';
                 div.innerHTML = `<div class="position-relative">
-                    <img src="${e.target.result}" class="img-fluid rounded" style="height:100px;width:100%;object-fit:cover;">
+                    <img src="${e.target.result}" class="img-fluid rounded ap-img-h-100">
                     <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 remove-img" data-idx="${idx}"><i class="bi bi-x"></i></button>
                 </div>`;
                 previewContainer.appendChild(div);

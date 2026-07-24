@@ -4,8 +4,8 @@
 @section('content')
 
 <div class="flex items-center gap-3 mb-5">
-    <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#e8f4fd;">
-        <i class="fas fa-calendar-check" style="color:#0077BE;"></i>
+    <div class="w-9 h-9 rounded-lg flex items-center justify-center ap-tint-bg">
+        <i class="fas fa-calendar-check ap-accent"></i>
     </div>
     <div>
         <h4 class="text-lg font-bold text-gray-800">My Bookings</h4>
@@ -14,7 +14,7 @@
 </div>
 
 <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
-    <a href="{{ route('agent.dashboard') }}" style="color:#0077BE; text-decoration:none;">Dashboard</a>
+    <a href="{{ route('agent.dashboard') }}" class="ap-accent-link">Dashboard</a>
     <i class="fas fa-chevron-right text-gray-300"></i>
     <span class="text-gray-600">My Bookings</span>
 </div>
@@ -22,36 +22,31 @@
 <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mb-4">
     <div class="flex items-center gap-1 px-4 py-3 border-b border-gray-100 overflow-x-auto">
         <a href="{{ route('agent.bookings.index') }}"
-           class="px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition"
-           style="{{ $type === 'all' ? 'background:#0077BE; color:#fff;' : 'background:#f3f4f6; color:#6b7280;' }}">
+           class="px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ $type === 'all' ? 'ap-tab-pill-active' : 'ap-tab-pill-inactive' }}">
             <i class="fas fa-th-large mr-1"></i> All
         </a>
         <a href="{{ route('agent.bookings.index', ['type' => 'hotel']) }}"
-           class="px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition"
-           style="{{ $type === 'hotel' ? 'background:#0077BE; color:#fff;' : 'background:#f3f4f6; color:#6b7280;' }}">
+           class="px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ $type === 'hotel' ? 'ap-tab-pill-active' : 'ap-tab-pill-inactive' }}">
             <i class="fas fa-hotel mr-1"></i> Hotels
         </a>
         <a href="{{ route('agent.bookings.index', ['type' => 'flight']) }}"
-           class="px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition"
-           style="{{ $type === 'flight' ? 'background:#0077BE; color:#fff;' : 'background:#f3f4f6; color:#6b7280;' }}">
+           class="px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ $type === 'flight' ? 'ap-tab-pill-active' : 'ap-tab-pill-inactive' }}">
             <i class="fas fa-plane mr-1"></i> Flights
         </a>
         <a href="{{ route('agent.bookings.index', ['type' => 'tour']) }}"
-           class="px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition"
-           style="{{ $type === 'tour' ? 'background:#0077BE; color:#fff;' : 'background:#f3f4f6; color:#6b7280;' }}">
+           class="px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ $type === 'tour' ? 'ap-tab-pill-active' : 'ap-tab-pill-inactive' }}">
             <i class="fas fa-map-marker-alt mr-1"></i> Tours
         </a>
         <a href="{{ route('agent.bookings.index', ['type' => 'umrah']) }}"
-           class="px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition"
-           style="{{ $type === 'umrah' ? 'background:#0077BE; color:#fff;' : 'background:#f3f4f6; color:#6b7280;' }}">
+           class="px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ $type === 'umrah' ? 'ap-tab-pill-active' : 'ap-tab-pill-inactive' }}">
             <i class="fas fa-moon mr-1"></i> Umrah
         </a>
     </div>
 
     @if($bookings->isEmpty())
     <div class="text-center py-12">
-        <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3" style="background:#e8f4fd;">
-            <i class="fas fa-calendar-times text-xl" style="color:#0077BE;"></i>
+        <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3 ap-tint-bg">
+            <i class="fas fa-calendar-times text-xl ap-accent"></i>
         </div>
         <p class="text-sm font-semibold text-gray-600 mb-1">No bookings found</p>
         <p class="text-xs text-gray-400">Your bookings will appear here once made.</p>
@@ -90,7 +85,7 @@
                                 default  => url('flight/invoice', $booking['booking_code']),
                             };
                         @endphp
-                        <a href="{{ $agentInvoiceRoute }}" target="_blank" style="text-decoration:none; color:#0077BE;">
+                        <a href="{{ $agentInvoiceRoute }}" target="_blank" class="ap-accent-link">
                             <span class="font-semibold">#{{ $booking['booking_code'] ?? 'N/A' }}</span>
                             <i class="fas fa-arrow-up-right-from-square text-xs ml-1"></i>
                         </a>
@@ -138,13 +133,11 @@
                     <td class="px-4 py-3">
                         <div class="flex items-center gap-2">
                             <a href="{{ route('agent.bookings.show', [$booking['booking_type'], $booking['id']]) }}"
-                               class="px-3 py-1.5 rounded-lg text-xs font-semibold"
-                               style="background:#e8f4fd; color:#0077BE; text-decoration:none;">
+                               class="px-3 py-1.5 rounded-lg text-xs font-semibold ap-chip-link">
                                 View
                             </a>
                             <a href="{{ $agentInvoiceRoute }}" target="_blank"
-                               class="px-3 py-1.5 rounded-lg text-xs font-semibold"
-                               style="background:#e8f4fd; color:#0077BE; text-decoration:none;">
+                               class="px-3 py-1.5 rounded-lg text-xs font-semibold ap-chip-link">
                                 <i class="fas fa-file-invoice"></i> Invoice
                             </a>
                         </div>

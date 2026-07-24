@@ -304,7 +304,7 @@
                                 @if($roomType->status)
                                     <span class="ap-badge ap-badge-success">Active</span>
                                 @else
-                                    <span class="ap-badge" style="background:#f1f5f9;color:#64748b;">Inactive</span>
+                                    <span class="ap-badge ap-muted-badge">Inactive</span>
                                 @endif
                             </td>
                             <td class="text-right">
@@ -406,13 +406,6 @@
         @endif
     </div>
 </div>{{-- end rooms tab --}}
-
-@push('styles')
-<style>
-.select2-results__option .location-country-text { color: #9ca3af; }
-.select2-results__option--highlighted .location-country-text { color: rgba(255,255,255,.85); }
-</style>
-@endpush
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>

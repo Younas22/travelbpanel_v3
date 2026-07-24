@@ -13,7 +13,7 @@
         <div class="card border-0 shadow-sm mb-4">
             @if($package->images->first())
             <img src="{{ asset('public/assets/images/' . $package->images->first()->image_path) }}"
-                 class="card-img-top" style="height:280px;object-fit:cover" alt="{{ $package->name }}">
+                 class="card-img-top ap-img-h-280" alt="{{ $package->name }}">
             @endif
             <div class="card-body">
                 <h4 class="fw-bold mb-1">{{ $package->name }}</h4>
@@ -55,7 +55,7 @@
     </div>
 
     <div class="col-lg-4">
-        <div class="card border-0 shadow-sm sticky-top" style="top:80px">
+        <div class="card border-0 shadow-sm sticky-top ap-sticky-80">
             <div class="card-header bg-white"><h6 class="mb-0">Book This Package</h6></div>
             <div class="card-body">
                 <div class="mb-3">

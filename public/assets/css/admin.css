@@ -6,21 +6,21 @@
        These are the "Default" theme's fallback values. ===== */
     --primary-color: #0C6DFD;
     --primary-hover: color-mix(in srgb, var(--primary-color) 85%, black);
-    --secondary-color: var(--body-bg);
-    --success-color: var(--success-color);
-    --warning-color: var(--warning-color);
-    --danger-color: var(--danger-color);
+    --secondary-color: #f8fafc;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
     --info-color: #0ea5e9;
 
-    --body-bg: var(--body-bg);
+    --body-bg: #f9fafb;
     --sidebar-bg: #ffffff;
     --navbar-bg: #ffffff;
     --card-bg: #ffffff;
-    --text-color: var(--text-color);
-    --border-color: var(--border-color);
+    --text-color: #374151;
+    --border-color: #e5e7eb;
 
     --input-bg: #ffffff;
-    --input-border: var(--border-color);
+    --input-border: #e5e7eb;
     --input-focus-color: #0C6DFD;
 
     --font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -312,6 +312,22 @@ body.theme-navbar-fixed .adm-header { position: sticky; top: 0; }
     margin-left: var(--sidebar-width);
     min-height: 100vh;
     background: var(--body-bg);
+}
+
+/* Admin footer (layouts/footer.blade.php) uses Bootstrap's .bg-light
+   utility, which is a fixed neutral (#f8f9fa, !important) never meant to
+   track the theme — .bg-light/.btn-light/.table-light are used as a
+   deliberately-always-light surface in ~25 other places across the panel,
+   so bridging --bs-light itself would have re-themed all of those too
+   (and did, turning them near-black under Dark/Midnight). Scope the fix
+   to just the footer instead. */
+.footer.bg-light {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color);
+    border-top: 1px solid var(--border-color);
+}
+.footer.bg-light .text-muted {
+    color: color-mix(in srgb, var(--text-color) 65%, transparent) !important;
 }
 
 .header {
@@ -8499,3 +8515,562 @@ input:checked + .status-slider:before {
     .theme-qs-toggle { width: 38px; height: 38px; font-size: 1rem; }
 }
 .btn-edit-avatar-35 { width: 35px; height: 35px; }
+
+/* =====================================================
+   AGENT PANEL
+   Moved here from public/assets/css/style.css (which is
+   shared with the public-facing site) and from per-page
+   <style> blocks under resources/views/agent, so the
+   Admin and Agent panels share one stylesheet. Colors are
+   theme-variable driven the same way the Admin panel is;
+   see Theme Settings (admin.settings.theme) for the source
+   of truth. Agent pages also use Tailwind utility classes
+   for layout/spacing (loaded separately) — those aren't
+   part of this file and don't react to the theme, only the
+   component classes below (.ap-*, .agent-*) do.
+===================================================== */
+
+/* Agent Layout */
+.agent-layout-wrapper {
+    display: flex;
+    align-items: flex-start;
+    min-height: calc(100vh - 62px);
+}
+
+.agent-sidebar {
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 62px);
+    width: 33.333%;
+    max-width: 300px;
+    min-width: 220px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    overflow-y: auto;
+    flex-shrink: 0;
+    box-shadow: 1px 0 3px rgba(0, 0, 0, 0.04);
+    z-index: 100;
+    transition: transform 0.3s ease, background var(--transition-speed, .2s), border-color var(--transition-speed, .2s);
+}
+
+.agent-main-content {
+    flex: 1;
+    min-width: 0;
+    min-height: calc(100vh - 62px);
+    background: var(--body-bg);
+}
+
+.agent-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.55rem 0.875rem;
+    border-radius: var(--radius-md, 0.5rem);
+    color: var(--text-color);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    line-height: 1.4;
+}
+
+.agent-nav-link:hover {
+    background-color: var(--primary-tint-10);
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.agent-nav-link.active {
+    background-color: var(--primary-tint-10);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.agent-nav-section-title {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--text-color) 50%, transparent);
+    padding: 1rem 0.875rem 0.375rem;
+    display: block;
+}
+
+.agent-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 999;
+    backdrop-filter: blur(2px);
+}
+
+.agent-sidebar-overlay.active {
+    display: block;
+}
+
+/* Floating sidebar reopen button (agent/layouts/app.blade.php) */
+.agent-sidebar-reopen-btn {
+    display: none;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--primary-color);
+}
+
+@media (max-width: 1023px) {
+    .agent-layout-wrapper {
+        display: block;
+        min-height: auto;
+    }
+    .agent-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 280px;
+        max-width: 280px;
+        z-index: 1000;
+        transform: translateX(-100%);
+    }
+    .agent-sidebar.open {
+        transform: translateX(0);
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
+    }
+    .agent-main-content {
+        min-height: auto;
+    }
+}
+
+/* Sidebar desktop collapse toggle */
+@media (min-width: 1024px) {
+    .agent-sidebar {
+        transition: width 0.3s ease, min-width 0.3s ease, transform 0.3s ease;
+    }
+    .agent-sidebar.sidebar-collapsed {
+        width: 0 !important;
+        min-width: 0 !important;
+        overflow: hidden;
+        border-right: none;
+    }
+}
+@media (max-width: 1023px) {
+    #sidebarReopenBtn { display: flex !important; }
+    #sidebarReopenBtn.sidebar-is-open { display: none !important; }
+}
+
+/* Flag icon sizing (flag-icons lib) */
+.agent-layout-wrapper .fi,
+.fi {
+    width: 12px;
+    height: 9px;
+    display: inline-block;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    vertical-align: middle;
+}
+
+/* Select2 (plain/default skin — agent panel doesn't use the bootstrap-5 select2 theme) */
+.select2-container--default .select2-selection--single {
+    border: 1px solid var(--input-border, #d1d5db) !important;
+    border-radius: var(--input-radius, 0.5rem) !important;
+    height: 34px !important;
+    min-width: 80px !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 32px !important;
+    padding-left: 8px !important;
+    font-size: 11px !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 32px !important;
+}
+.select2-dropdown {
+    border: 1px solid var(--input-border, #d1d5db) !important;
+    border-radius: var(--input-radius, 0.5rem) !important;
+    min-width: 80px !important;
+}
+.select2-results__option {
+    padding: 6px 8px !important;
+    font-size: 11px !important;
+}
+.select2-results__option .location-country-text {
+    color: color-mix(in srgb, var(--text-color) 50%, transparent);
+}
+.select2-results__option--highlighted .location-country-text {
+    color: rgba(255, 255, 255, .85);
+}
+
+/* Agent Cards */
+.ap-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-radius, 0.75rem);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+.ap-card-header {
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-color);
+    background: color-mix(in srgb, var(--card-bg) 97%, var(--text-color));
+}
+.ap-card-body {
+    padding: 1.25rem;
+}
+
+/* Agent Buttons */
+.ap-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    background: var(--primary-color);
+    color: #ffffff;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: var(--btn-radius, 0.5rem);
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+}
+.ap-btn-primary:hover { background: color-mix(in srgb, var(--primary-color) 85%, black); color: #fff; text-decoration: none; }
+.ap-btn-warning { background: var(--warning-color); }
+.ap-btn-warning:hover { background: color-mix(in srgb, var(--warning-color) 75%, black); }
+
+.ap-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    background: var(--card-bg);
+    color: var(--text-color);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border-radius: var(--btn-radius, 0.5rem);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+.ap-btn-outline:hover { border-color: color-mix(in srgb, var(--text-color) 50%, transparent); color: var(--text-color); text-decoration: none; }
+
+.ap-btn-outline-sm {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.3rem 0.625rem;
+    background: var(--card-bg);
+    color: var(--primary-color);
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    border: 1px solid color-mix(in srgb, var(--primary-color) 35%, white);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+.ap-btn-outline-sm:hover { background: var(--primary-tint-10); text-decoration: none; }
+
+.ap-btn-danger-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem 0.5rem;
+    background: var(--card-bg);
+    color: var(--danger-color);
+    font-size: 0.75rem;
+    border-radius: 0.375rem;
+    border: 1px solid color-mix(in srgb, var(--danger-color) 35%, white);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.ap-btn-danger-sm:hover { background: color-mix(in srgb, var(--danger-color) 8%, white); }
+
+/* Agent Tables */
+.ap-table {
+    width: 100%;
+    font-size: 0.8125rem;
+    border-collapse: collapse;
+}
+.ap-table thead tr { background: var(--body-bg); }
+.ap-table thead th {
+    padding: 0.75rem 1.25rem;
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: color-mix(in srgb, var(--text-color) 70%, transparent);
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+}
+.ap-table thead th.text-right { text-align: right; }
+.ap-table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.15s;
+}
+.ap-table tbody tr:hover { background: var(--body-bg); }
+.ap-table tbody td {
+    padding: 0.75rem 1.25rem;
+    color: var(--text-color);
+    vertical-align: middle;
+}
+
+/* Agent Badges */
+.ap-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+.ap-badge-success { background: color-mix(in srgb, var(--success-color) 15%, white); color: color-mix(in srgb, var(--success-color) 70%, black); }
+.ap-badge-warning { background: color-mix(in srgb, var(--warning-color) 18%, white); color: color-mix(in srgb, var(--warning-color) 70%, black); }
+.ap-badge-danger  { background: color-mix(in srgb, var(--danger-color) 12%, white); color: color-mix(in srgb, var(--danger-color) 70%, black); }
+.ap-badge-blue    { background: color-mix(in srgb, var(--info-color) 15%, white); color: color-mix(in srgb, var(--info-color) 70%, black); }
+
+/* Agent Forms */
+.ap-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.375rem;
+}
+.ap-input {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--text-color);
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--input-radius, 0.5rem);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+}
+.ap-input:focus {
+    border-color: var(--input-focus-color, var(--primary-color));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus-color, var(--primary-color)) 10%, transparent);
+}
+.ap-input-error { border-color: var(--danger-color) !important; }
+.ap-input-disabled { background: var(--body-bg); color: color-mix(in srgb, var(--text-color) 50%, transparent); cursor: not-allowed; }
+.ap-error {
+    font-size: 0.7rem;
+    color: var(--danger-color);
+    margin-top: 0.25rem;
+}
+
+.ap-checkbox {
+    width: 1rem;
+    height: 1rem;
+    border: 1.5px solid var(--input-border);
+    border-radius: 0.25rem;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.ap-file-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    border: 2px dashed var(--input-border);
+    border-radius: var(--card-radius, 0.75rem);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    text-align: center;
+}
+.ap-file-label:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-tint-10);
+}
+
+/* Small reusable accent/status utility classes — replace inline style=""
+   attributes that were repeated verbatim across dozens of agent pages
+   (icon-circle chips, breadcrumb links, solid accent buttons/badges). */
+.ap-tint-bg { background: var(--primary-tint-10); }
+.ap-accent { color: var(--primary-color); }
+.ap-accent-link { color: var(--primary-color); text-decoration: none; }
+.ap-accent-link:hover { color: var(--primary-color); text-decoration: underline; }
+.ap-solid-accent { background: var(--primary-color); }
+.ap-solid-accent-btn { background: var(--primary-color); border: none; cursor: pointer; text-decoration: none; }
+.ap-navy-text { color: color-mix(in srgb, var(--primary-color) 85%, black); }
+.ap-navy-bg { background: color-mix(in srgb, var(--primary-color) 85%, black); border: none; cursor: pointer; }
+.ap-avatar-gradient { background: linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 75%, black)); }
+.ap-danger-icon-bg { background: color-mix(in srgb, var(--danger-color) 12%, white); }
+.ap-danger-icon-color { color: var(--danger-color); }
+.ap-warning-icon-bg { background: color-mix(in srgb, var(--warning-color) 18%, white); }
+.ap-muted-badge { background: var(--border-color); color: color-mix(in srgb, var(--text-color) 60%, transparent); }
+.ap-tab-pill-active { background: var(--primary-color); color: #fff; }
+.ap-tab-pill-inactive { background: var(--body-bg); color: color-mix(in srgb, var(--text-color) 60%, transparent); }
+.ap-chip-link { background: var(--primary-tint-10); color: var(--primary-color); text-decoration: none; }
+.ap-chip-link:hover { color: var(--primary-color); text-decoration: none; }
+.ap-accent-border { border-color: var(--primary-color); }
+.ap-camera-btn { background: var(--primary-color); border: 2px solid #fff; }
+.ap-tint-card { background: var(--primary-tint-10); border-color: color-mix(in srgb, var(--primary-color) 35%, white); }
+.ap-img-h-100 { height: 100px; width: 100%; object-fit: cover; }
+.ap-img-h-160 { height: 160px; object-fit: cover; }
+.ap-img-h-180 { height: 180px; object-fit: cover; }
+.ap-img-h-280 { height: 280px; object-fit: cover; }
+.ap-img-h-300 { height: 300px; object-fit: cover; }
+.ap-hero-wrap-280 { height: 280px; overflow: hidden; border-radius: .5rem .5rem 0 0; }
+.ap-h-100 { height: 100px; }
+.ap-h-180 { height: 180px; }
+.ap-scroll-200 { max-height: 200px; overflow-y: auto; }
+.ap-sticky-80 { top: 80px; }
+.ap-object-cover { object-fit: cover; }
+.ap-icon-fs-xs { font-size: .65rem; }
+.ap-icon-fs-sm { font-size: 11px; }
+.ap-icon-fs-lg { font-size: 3rem; }
+.ap-icon-fs-xl { font-size: 4rem; }
+.ap-status-card { max-width: 500px; }
+.ap-logo-h-45 { max-height: 45px; height: auto; width: auto; }
+.ap-force-inline { display: inline !important; }
+.ap-no-underline { text-decoration: none; }
+.ap-no-underline:hover { text-decoration: none; }
+
+/* Agent Widgets — Tabs */
+.ap-tab-bar {
+    display: flex;
+    gap: 0;
+    background: var(--body-bg);
+    border-radius: 10px;
+    padding: 4px;
+    width: fit-content;
+    margin-bottom: 1.25rem;
+}
+.ap-tab-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 20px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: color-mix(in srgb, var(--text-color) 60%, transparent);
+    background: transparent;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+    text-decoration: none;
+}
+.ap-tab-item:hover:not(.active) {
+    background: var(--border-color);
+    color: var(--text-color);
+}
+.ap-tab-item.active {
+    background: var(--card-bg);
+    color: var(--text-color);
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04);
+}
+.ap-tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1px 7px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    border-radius: 20px;
+    background: var(--border-color);
+    color: color-mix(in srgb, var(--text-color) 75%, transparent);
+    transition: all 0.18s;
+    min-width: 20px;
+}
+.ap-tab-item.active .ap-tab-count {
+    background: var(--primary-color);
+    color: #ffffff;
+}
+.ap-tab-pane { display: none; }
+.ap-tab-pane.active { display: block; }
+
+/* Agent Widgets — Modal */
+.ap-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+.ap-modal-overlay.active {
+    display: flex;
+    animation: apModalFadeIn 0.18s ease;
+}
+@keyframes apModalFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+.ap-modal {
+    background: var(--card-bg);
+    border-radius: var(--card-radius, 0.875rem);
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    animation: apModalSlideUp 0.2s ease;
+    overflow: hidden;
+}
+@keyframes apModalSlideUp {
+    from { transform: translateY(16px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+.ap-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+.ap-modal-close {
+    width: 1.75rem;
+    height: 1.75rem;
+    border: none;
+    background: var(--border-color);
+    color: color-mix(in srgb, var(--text-color) 60%, transparent);
+    border-radius: 0.375rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    transition: background 0.15s, color 0.15s;
+}
+.ap-modal-close:hover { background: color-mix(in srgb, var(--text-color) 15%, var(--border-color)); color: var(--text-color); }
+.ap-modal-body {
+    padding: 1.25rem;
+}
+.ap-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border-color);
+    background: color-mix(in srgb, var(--card-bg) 97%, var(--text-color));
+}
+
+/* Agent Responsive */
+@media (max-width: 640px) {
+    .ap-card-body { padding: 1rem; }
+    .ap-modal { max-width: 100%; }
+}

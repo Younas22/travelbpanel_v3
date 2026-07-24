@@ -5,8 +5,8 @@
 
 <div class="flex items-center justify-between mb-5">
     <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#e8f4fd;">
-            <i class="fas fa-wallet" style="color:#0077BE;"></i>
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center ap-tint-bg">
+            <i class="fas fa-wallet ap-accent"></i>
         </div>
         <div>
             <h4 class="text-lg font-bold text-gray-800">My Wallet</h4>
@@ -15,23 +15,22 @@
     </div>
     @if(auth()->user()->hasPermission('wallet.request'))
     <a href="{{ route('agent.wallet.topup') }}"
-       class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center gap-2"
-       style="background:#0077BE; border:none; cursor:pointer; text-decoration:none;">
+       class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center gap-2 ap-solid-accent-btn">
         <i class="fas fa-plus-circle"></i> Request Top-Up
     </a>
     @endif
 </div>
 
 <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
-    <a href="{{ route('agent.dashboard') }}" style="color:#0077BE; text-decoration:none;">Dashboard</a>
+    <a href="{{ route('agent.dashboard') }}" class="ap-accent-link">Dashboard</a>
     <i class="fas fa-chevron-right text-gray-300"></i>
     <span class="text-gray-600">My Wallet</span>
 </div>
 
 <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-5">
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:#e8f4fd;">
-            <i class="fas fa-wallet" style="color:#0077BE;"></i>
+        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ap-tint-bg">
+            <i class="fas fa-wallet ap-accent"></i>
         </div>
         <div>
             <p class="text-xs text-gray-400">Current Balance</p>
@@ -39,8 +38,8 @@
         </div>
     </div>
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:#e8f4fd;">
-            <i class="fas fa-arrow-circle-down" style="color:#0077BE;"></i>
+        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ap-tint-bg">
+            <i class="fas fa-arrow-circle-down ap-accent"></i>
         </div>
         <div>
             <p class="text-xs text-gray-400">Total Credited</p>
@@ -48,8 +47,8 @@
         </div>
     </div>
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:#fee2e2;">
-            <i class="fas fa-arrow-circle-up" style="color:#dc2626;"></i>
+        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ap-danger-icon-bg">
+            <i class="fas fa-arrow-circle-up ap-danger-icon-color"></i>
         </div>
         <div>
             <p class="text-xs text-gray-400">Total Spent</p>
@@ -62,15 +61,14 @@
     <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
         <span class="font-semibold text-sm text-gray-700">Recent Transactions</span>
         <a href="{{ route('agent.wallet.transactions') }}"
-           class="px-4 py-2 rounded-lg text-sm font-semibold"
-           style="background:#e8f4fd; color:#0077BE; text-decoration:none;">
+           class="px-4 py-2 rounded-lg text-sm font-semibold ap-chip-link">
             View All
         </a>
     </div>
     @if($recentTransactions->isEmpty())
     <div class="text-center py-12">
-        <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3" style="background:#e8f4fd;">
-            <i class="fas fa-receipt text-xl" style="color:#0077BE;"></i>
+        <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3 ap-tint-bg">
+            <i class="fas fa-receipt text-xl ap-accent"></i>
         </div>
         <p class="text-sm font-semibold text-gray-600 mb-1">No transactions yet</p>
         <p class="text-xs text-gray-400">Your wallet transactions will appear here.</p>

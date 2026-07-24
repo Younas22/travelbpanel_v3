@@ -8,12 +8,12 @@
         <div class="flex items-center gap-3 min-w-0 flex-1">
             @if($agent->profile_image)
                 <img src="{{ url('public/assets/images/agents/' . $agent->profile_image) }}"
-                     class="w-10 h-10 rounded-full object-cover border-2 flex-shrink-0" style="border-color:#0077BE;">
+                     class="w-10 h-10 rounded-full object-cover border-2 flex-shrink-0 ap-accent-border">
             @elseif($agent->company_logo)
                 <img src="{{ url('public/assets/images/settings/branding/' . $agent->company_logo) }}"
                      class="w-10 h-10 rounded-full object-contain border border-gray-200 bg-white flex-shrink-0">
             @else
-                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style="background:#0077BE;">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 ap-solid-accent">
                     {{ $agent->initials ?? strtoupper(substr($agent->first_name,0,1).substr($agent->last_name,0,1)) }}
                 </div>
             @endif

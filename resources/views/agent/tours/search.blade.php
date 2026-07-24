@@ -15,7 +15,7 @@
         <div class="card border-0 shadow-sm h-100">
             @if($tour->images->first())
             <img src="{{ asset('public/assets/images/' . $tour->images->first()->image_path) }}"
-                 class="card-img-top" style="height:160px;object-fit:cover" alt="{{ $tour->name }}">
+                 class="card-img-top ap-img-h-160" alt="{{ $tour->name }}">
             @endif
             <div class="card-body d-flex flex-column">
                 <h6 class="fw-bold">{{ $tour->name }}</h6>

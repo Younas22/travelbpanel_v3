@@ -9,8 +9,7 @@
         <a class="navbar-brand" href="{{ url('/') }}">
             <img src="{{ getSettingImage('business_logo','branding') }}"
                 alt="Logo"
-                class="img-fluid"
-                style="max-height: 45px; height: auto; width: auto;">
+                class="img-fluid ap-logo-h-45">
         </a>
 
         <!-- Desktop Menu -->
@@ -57,31 +56,31 @@
 
             <!-- Profile Dropdown -->
             <div class="relative group" id="profile-dropdown-wrapper-desktop">
-                <button class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 bg-white group-hover:bg-gray-50 transition text-sm font-semibold" style="color:#003580;">
+                <button class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 bg-white group-hover:bg-gray-50 transition text-sm font-semibold ap-navy-text">
                     @if(auth()->user()->company_logo)
                         <img src="{{ asset('public/assets/images/settings/branding/' . auth()->user()->company_logo) }}"
                              class="w-7 h-7 rounded-full object-contain border border-gray-200 bg-white">
                     @else
-                        <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#0077BE;">
+                        <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 ap-solid-accent">
                             {{ auth()->user()->initials }}
                         </div>
                     @endif
                     <span>{{ auth()->user()->first_name }}</span>
-                    <i class="fas fa-chevron-down text-xs" style="display:inline !important;"></i>
+                    <i class="fas fa-chevron-down text-xs ap-force-inline"></i>
                 </button>
                 <div class="absolute right-0 mt-0 pt-2 w-52 z-50 hidden group-hover:block">
                     <div class="bg-white rounded-xl shadow-lg border border-gray-100 py-2">
-                        <a href="{{ route('agent.dashboard') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
+                        <a href="{{ route('agent.dashboard') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition ap-navy-text">
                             <i class="fas fa-gauge-high w-4 text-center"></i> Dashboard
                         </a>
-                        <a href="{{ route('agent.profile.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
+                        <a href="{{ route('agent.profile.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition ap-navy-text">
                             <i class="fas fa-user w-4 text-center"></i> Profile
                         </a>
-                        <a href="{{ route('agent.bookings.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
+                        <a href="{{ route('agent.bookings.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition ap-navy-text">
                             <i class="fas fa-clock-rotate-left w-4 text-center"></i> My Bookings
                         </a>
                         @if(auth()->user()->hasPermission('wallet.view'))
-                        <a href="{{ route('agent.wallet.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
+                        <a href="{{ route('agent.wallet.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition ap-navy-text">
                             <i class="fas fa-wallet w-4 text-center"></i> My Wallet
                         </a>
                         @endif

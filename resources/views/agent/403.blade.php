@@ -8,9 +8,9 @@
 </head>
 <body class="bg-light">
 <div class="min-vh-100 d-flex align-items-center justify-content-center p-3">
-    <div class="card shadow border-0 text-center" style="max-width:500px;">
+    <div class="card shadow border-0 text-center ap-status-card">
         <div class="card-body p-5">
-            <i class="bi bi-lock text-secondary" style="font-size:4rem;"></i>
+            <i class="bi bi-lock text-secondary ap-icon-fs-xl"></i>
             <h4 class="mt-3">Access Denied</h4>
             <p class="text-muted">
                 You do not have permission to access this module.

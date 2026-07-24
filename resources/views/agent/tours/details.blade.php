@@ -13,7 +13,7 @@
         <div class="card border-0 shadow-sm mb-4">
             @if($tour->images->first())
             <img src="{{ asset('public/assets/images/' . $tour->images->first()->image_path) }}"
-                 class="card-img-top" style="height:300px;object-fit:cover" alt="{{ $tour->name }}">
+                 class="card-img-top ap-img-h-300" alt="{{ $tour->name }}">
             @endif
             <div class="card-body">
                 <h4 class="fw-bold mb-1">{{ $tour->name }}</h4>
@@ -51,7 +51,7 @@
     </div>
 
     <div class="col-lg-4">
-        <div class="card border-0 shadow-sm sticky-top" style="top:80px">
+        <div class="card border-0 shadow-sm sticky-top ap-sticky-80">
             <div class="card-header bg-white"><h6 class="mb-0">Book This Tour</h6></div>
             <div class="card-body">
                 <div class="mb-3">

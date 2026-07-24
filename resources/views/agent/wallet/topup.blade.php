@@ -4,8 +4,8 @@
 @section('content')
 
 <div class="flex items-center gap-3 mb-5">
-    <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#e8f4fd;">
-        <i class="fas fa-plus-circle" style="color:#0077BE;"></i>
+    <div class="w-9 h-9 rounded-lg flex items-center justify-center ap-tint-bg">
+        <i class="fas fa-plus-circle ap-accent"></i>
     </div>
     <div>
         <h4 class="text-lg font-bold text-gray-800">Request Wallet Top-Up</h4>
@@ -14,9 +14,9 @@
 </div>
 
 <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
-    <a href="{{ route('agent.dashboard') }}" style="color:#0077BE; text-decoration:none;">Dashboard</a>
+    <a href="{{ route('agent.dashboard') }}" class="ap-accent-link">Dashboard</a>
     <i class="fas fa-chevron-right text-gray-300"></i>
-    <a href="{{ route('agent.wallet.index') }}" style="color:#0077BE; text-decoration:none;">My Wallet</a>
+    <a href="{{ route('agent.wallet.index') }}" class="ap-accent-link">My Wallet</a>
     <i class="fas fa-chevron-right text-gray-300"></i>
     <span class="text-gray-600">Request Top-Up</span>
 </div>
@@ -30,7 +30,7 @@
 
             @if($pendingRequest)
             <div class="flex items-start gap-3 p-4 rounded-xl border border-yellow-200 bg-yellow-50 mb-4">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:#fef9c3;">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ap-warning-icon-bg">
                     <i class="fas fa-clock text-yellow-600 text-sm"></i>
                 </div>
                 <div>
@@ -51,7 +51,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1.5">
-                        Amount (PKR) <span style="color:#0077BE;">*</span>
+                        Amount (PKR) <span class="ap-accent">*</span>
                     </label>
                     <input type="number" name="amount"
                            class="w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50 @error('amount') border-red-400 @else border-gray-200 @enderror"
@@ -63,7 +63,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1.5">
-                        Payment Method <span style="color:#0077BE;">*</span>
+                        Payment Method <span class="ap-accent">*</span>
                     </label>
                     <select name="payment_method"
                             class="w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50 @error('payment_method') border-red-400 @else border-gray-200 @enderror"
@@ -100,13 +100,11 @@
 
                 <div class="flex gap-3 pt-2">
                     <button type="submit"
-                            class="flex-1 px-5 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-2"
-                            style="background:#0077BE; border:none; cursor:pointer;">
+                            class="flex-1 px-5 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-2 ap-solid-accent-btn">
                         <i class="fas fa-paper-plane"></i> Submit Request
                     </button>
                     <a href="{{ route('agent.wallet.index') }}"
-                       class="px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2"
-                       style="background:#e8f4fd; color:#0077BE; text-decoration:none;">
+                       class="px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 ap-chip-link">
                         <i class="fas fa-arrow-left"></i> Back
                     </a>
                 </div>

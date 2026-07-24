@@ -25,7 +25,7 @@
 @if(empty($flights))
     <div class="card border-0 shadow-sm">
         <div class="card-body text-center py-5">
-            <i class="bi bi-airplane text-muted" style="font-size:3rem"></i>
+            <i class="bi bi-airplane text-muted ap-icon-fs-lg"></i>
             <p class="text-muted mt-3">No flights found. Try different dates or routes.</p>
             <a href="{{ route('agent.flights.index') }}" class="btn btn-primary">Search Again</a>
         </div>

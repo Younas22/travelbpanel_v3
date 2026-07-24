@@ -15,7 +15,7 @@
         <div class="card border-0 shadow-sm h-100">
             @if($package->images->first())
             <img src="{{ asset('public/assets/images/' . $package->images->first()->image_path) }}"
-                 class="card-img-top" style="height:160px;object-fit:cover" alt="{{ $package->name }}">
+                 class="card-img-top ap-img-h-160" alt="{{ $package->name }}">
             @endif
             <div class="card-body d-flex flex-column">
                 <h6 class="fw-bold">{{ $package->name }}</h6>

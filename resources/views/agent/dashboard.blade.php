@@ -11,8 +11,7 @@
     </div>
     @if(auth()->user()->hasPermission('wallet.view'))
     <a href="{{ route('agent.wallet.index') }}"
-       class="hidden sm:flex items-center gap-2 px-4 py-2 border border-green-300 rounded-lg text-green-700 bg-green-50 hover:bg-green-100 transition text-sm font-semibold"
-       style="text-decoration:none;">
+       class="hidden sm:flex items-center gap-2 px-4 py-2 border border-green-300 rounded-lg text-green-700 bg-green-50 hover:bg-green-100 transition text-sm font-semibold ap-no-underline">
         <i class="fas fa-wallet"></i>
         Wallet: <strong>PKR {{ number_format($wallet?->balance ?? 0, 0) }}</strong>
     </a>
@@ -89,8 +88,7 @@
 
     @if(auth()->user()->hasPermission('module.flights'))
     <a href="{{ route('agent.flights.index') }}"
-       class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 text-center hover:shadow-md hover:border-green-200 transition group"
-       style="text-decoration:none;">
+       class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 text-center hover:shadow-md hover:border-green-200 transition group ap-no-underline">
         <i class="fas fa-plane text-green-500 text-3xl group-hover:scale-110 transition-transform inline-block"></i>
         <div class="mt-2 text-sm font-semibold text-gray-700">Book Flight</div>
     </a>
@@ -98,8 +96,7 @@
 
     @if(auth()->user()->hasPermission('module.tours'))
     <a href="{{ route('agent.tours.index') }}"
-       class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 text-center hover:shadow-md hover:border-yellow-200 transition group"
-       style="text-decoration:none;">
+       class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 text-center hover:shadow-md hover:border-yellow-200 transition group ap-no-underline">
         <i class="fas fa-map-location-dot text-yellow-500 text-3xl group-hover:scale-110 transition-transform inline-block"></i>
         <div class="mt-2 text-sm font-semibold text-gray-700">Book Tour</div>
     </a>
@@ -107,8 +104,7 @@
 
     @if(auth()->user()->hasPermission('module.umrah'))
     <a href="{{ route('agent.umrah.index') }}"
-       class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 text-center hover:shadow-md hover:border-cyan-200 transition group"
-       style="text-decoration:none;">
+       class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 text-center hover:shadow-md hover:border-cyan-200 transition group ap-no-underline">
         <i class="fas fa-moon text-cyan-500 text-3xl group-hover:scale-110 transition-transform inline-block"></i>
         <div class="mt-2 text-sm font-semibold text-gray-700">Book Umrah</div>
     </a>
@@ -123,8 +119,7 @@
         <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <h6 class="font-semibold text-gray-800">Recent Bookings</h6>
             <a href="{{ route('agent.bookings.index') }}"
-               class="text-xs px-3 py-1.5 border border-blue-200 text-blue-600 rounded-lg hover:bg-blue-50 transition"
-               style="text-decoration:none;">View All</a>
+               class="text-xs px-3 py-1.5 border border-blue-200 text-blue-600 rounded-lg hover:bg-blue-50 transition ap-no-underline">View All</a>
         </div>
         @if($recentBookings->isEmpty())
             <div class="text-center py-10 text-gray-400 text-sm">
@@ -165,8 +160,7 @@
         <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <h6 class="font-semibold text-gray-800">Wallet Activity</h6>
             <a href="{{ route('agent.wallet.transactions') }}"
-               class="text-xs px-3 py-1.5 border border-green-200 text-green-600 rounded-lg hover:bg-green-50 transition"
-               style="text-decoration:none;">View All</a>
+               class="text-xs px-3 py-1.5 border border-green-200 text-green-600 rounded-lg hover:bg-green-50 transition ap-no-underline">View All</a>
         </div>
         @if($recentTransactions->isEmpty())
             <div class="text-center py-10 text-gray-400 text-sm">

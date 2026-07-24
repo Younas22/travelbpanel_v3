@@ -1,5 +1,6 @@
+@php($__activeTheme = app(\App\Services\ThemeService::class)->active())
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}" dir="{{ in_array(app()->getLocale(), ['ar']) ? 'rtl' : 'ltr' }}">
+<html lang="{{ app()->getLocale() }}" dir="{{ in_array(app()->getLocale(), ['ar']) ? 'rtl' : 'ltr' }}" data-bs-theme="{{ $__activeTheme->isDark() ? 'dark' : 'light' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,64 +17,16 @@
     @else
         <link rel="stylesheet" href="{{ url('public/assets/css/style.css') }}">
     @endif
-
-    <style>
-        /* Select2 custom styles */
-        .select2-container--default .select2-selection--single {
-            border: 1px solid #d1d5db !important;
-            border-radius: 0.5rem !important;
-            height: 34px !important;
-            min-width: 80px !important;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 32px !important;
-            padding-left: 8px !important;
-            font-size: 11px !important;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 32px !important;
-        }
-        .select2-dropdown {
-            border: 1px solid #d1d5db !important;
-            border-radius: 0.5rem !important;
-            min-width: 80px !important;
-        }
-        .select2-results__option {
-            padding: 6px 8px !important;
-            font-size: 11px !important;
-        }
-        .fi {
-            width: 12px;
-            height: 9px;
-            display: inline-block;
-            background-size: contain;
-            background-position: center;
-            background-repeat: no-repeat;
-            vertical-align: middle;
-        }
-
-        /* Sidebar desktop toggle */
-        @media (min-width: 1024px) {
-            .agent-sidebar {
-                transition: width 0.3s ease, min-width 0.3s ease, transform 0.3s ease;
-            }
-            .agent-sidebar.sidebar-collapsed {
-                width: 0 !important;
-                min-width: 0 !important;
-                overflow: hidden;
-                border-right: none;
-            }
-        }
-        /* Reopen button: visible on mobile by default, hidden on desktop */
-        @media (max-width: 1023px) {
-            #sidebarReopenBtn { display: flex !important; }
-            #sidebarReopenBtn.sidebar-is-open { display: none !important; }
-        }
-    </style>
+    <link href="{{ asset('public/assets/css/admin.css') }}" rel="stylesheet">
+    @if($__activeTheme->font_family && !in_array(strtolower($__activeTheme->font_family), ['system font', 'system', 'system-ui']))
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family={{ str_replace(' ', '+', $__activeTheme->font_family) }}:wght@400;500;600;700&display=swap" rel="stylesheet">
+    @endif
+    <style id="theme-vars">{!! app(\App\Services\ThemeService::class)->inlineStyleTag($__activeTheme) !!}</style>
 
     @stack('styles')
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 theme-{{ $__activeTheme->theme_name }} {{ $__activeTheme->layoutBodyClasses() }}">
 
     @include('common.navbar')
 
@@ -85,8 +38,8 @@
 
         {{-- Floating reopen button - shown when sidebar is closed/collapsed --}}
         <button id="sidebarReopenBtn" onclick="toggleSidebar()"
-                class="fixed left-0 z-40 flex-col gap-1 justify-center items-center w-6 h-14 rounded-r-lg shadow-md transition"
-                style="display:none; top: 50%; transform: translateY(-50%); background:#0077BE;" title="Open Sidebar">
+                class="agent-sidebar-reopen-btn fixed left-0 z-40 flex-col gap-1 justify-center items-center w-6 h-14 rounded-r-lg shadow-md transition"
+                title="Open Sidebar">
             <span class="w-3 h-px rounded bg-white"></span>
             <span class="w-3 h-px rounded bg-white"></span>
             <span class="w-3 h-px rounded bg-white"></span>

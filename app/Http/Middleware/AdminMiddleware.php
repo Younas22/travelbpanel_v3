@@ -14,7 +14,7 @@ class AdminMiddleware
             return redirect()->route('admin.login');
         }
         
-        if (!auth()->user()->isAdmin() && !auth()->user()->isAgent()) {
+        if (!auth()->user()->isAdmin()) {
             abort(403, 'Access denied. Admin privileges required.');
         }
         

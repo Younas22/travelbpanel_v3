@@ -4,22 +4,22 @@
 @section('content')
 
 <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
-    <a href="{{ route('agent.dashboard') }}" style="color:#0077BE; text-decoration:none;">Dashboard</a>
+    <a href="{{ route('agent.dashboard') }}" class="ap-accent-link">Dashboard</a>
     <i class="fas fa-chevron-right text-gray-300"></i>
     <span class="text-gray-600">My Hotels</span>
 </div>
 
 <div class="flex items-center justify-between mb-5">
     <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#e8f4fd;">
-            <i class="fas fa-building" style="color:#0077BE;"></i>
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center ap-tint-bg">
+            <i class="fas fa-building ap-accent"></i>
         </div>
         <div>
             <h4 class="text-lg font-bold text-gray-800">My Hotels</h4>
             <p class="text-xs text-gray-400">Manage your hotel listings</p>
         </div>
     </div>
-    <a href="{{ route('agent.hotels.create') }}" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white" style="background:#0077BE; border:none; cursor:pointer; text-decoration:none;">
+    <a href="{{ route('agent.hotels.create') }}" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white ap-solid-accent-btn">
         <i class="fas fa-plus text-xs"></i> Add Hotel
     </a>
 </div>
@@ -27,12 +27,12 @@
 <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
     @if($hotels->isEmpty())
         <div class="text-center py-12">
-            <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3" style="background:#e8f4fd;">
-                <i class="fas fa-building text-xl" style="color:#0077BE;"></i>
+            <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3 ap-tint-bg">
+                <i class="fas fa-building text-xl ap-accent"></i>
             </div>
             <p class="text-sm font-semibold text-gray-600 mb-1">No hotels yet</p>
             <p class="text-xs text-gray-400 mb-4">Start by adding your first hotel listing.</p>
-            <a href="{{ route('agent.hotels.create') }}" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white" style="background:#0077BE; border:none; cursor:pointer; text-decoration:none;">
+            <a href="{{ route('agent.hotels.create') }}" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white ap-solid-accent-btn">
                 <i class="fas fa-plus text-xs"></i> Add Hotel
             </a>
         </div>
@@ -76,7 +76,7 @@
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('agent.hotels.edit', $hotel->id) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-gray-200 text-gray-600 hover:bg-gray-50 transition" style="text-decoration:none;">
+                                <a href="{{ route('agent.hotels.edit', $hotel->id) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-gray-200 text-gray-600 hover:bg-gray-50 transition ap-no-underline">
                                     <i class="fas fa-pencil text-xs"></i> Edit
                                 </a>
                                 <form method="POST" action="{{ route('agent.hotels.destroy', $hotel->id) }}" class="inline"

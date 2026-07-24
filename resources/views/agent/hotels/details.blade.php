@@ -16,9 +16,9 @@
     {{-- Hotel Header --}}
     <div class="card border-0 shadow-sm mb-4">
         @if(!empty($hotel['imgs']))
-        <div style="height:280px;overflow:hidden;border-radius:.5rem .5rem 0 0">
+        <div class="ap-hero-wrap-280">
             <img src="{{ is_array($hotel['imgs']) ? $hotel['imgs'][0] : $hotel['imgs'] }}"
-                 class="w-100 h-100" style="object-fit:cover" alt="{{ $hotel['h_name'] }}">
+                 class="w-100 h-100 ap-object-cover" alt="{{ $hotel['h_name'] }}">
         </div>
         @endif
         <div class="card-body">
@@ -56,9 +56,9 @@
             <div class="row align-items-center">
                 <div class="col-md-3">
                     @if(!empty($room['images'][0]))
-                    <img src="{{ $room['images'][0] }}" class="img-fluid rounded" style="height:100px;width:100%;object-fit:cover" alt="{{ $room['name'] }}">
+                    <img src="{{ $room['images'][0] }}" class="img-fluid rounded ap-img-h-100" alt="{{ $room['name'] }}">
                     @else
-                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height:100px"><i class="bi bi-door-open text-muted fs-2"></i></div>
+                    <div class="bg-light rounded d-flex align-items-center justify-content-center ap-h-100"><i class="bi bi-door-open text-muted fs-2"></i></div>
                     @endif
                 </div>
                 <div class="col-md-6">

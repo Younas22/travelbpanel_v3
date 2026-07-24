@@ -4,8 +4,8 @@
 @section('content')
 
 <div class="flex items-center gap-3 mb-5">
-    <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#e8f4fd;">
-        <i class="fas fa-user-circle" style="color:#0077BE;"></i>
+    <div class="w-9 h-9 rounded-lg flex items-center justify-center ap-tint-bg">
+        <i class="fas fa-user-circle ap-accent"></i>
     </div>
     <div>
         <h4 class="text-lg font-bold text-gray-800">My Profile</h4>
@@ -14,7 +14,7 @@
 </div>
 
 <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
-    <a href="{{ route('agent.dashboard') }}" style="color:#0077BE; text-decoration:none;">Dashboard</a>
+    <a href="{{ route('agent.dashboard') }}" class="ap-accent-link">Dashboard</a>
     <i class="fas fa-chevron-right text-gray-300"></i>
     <span class="text-gray-600">My Profile</span>
 </div>
@@ -36,7 +36,7 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 mb-1.5">
-                                First Name <span style="color:#0077BE;">*</span>
+                                First Name <span class="ap-accent">*</span>
                             </label>
                             <input type="text" name="first_name"
                                    class="w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50 @error('first_name') border-red-400 @else border-gray-200 @enderror"
@@ -46,7 +46,7 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 mb-1.5">
-                                Last Name <span style="color:#0077BE;">*</span>
+                                Last Name <span class="ap-accent">*</span>
                             </label>
                             <input type="text" name="last_name"
                                    class="w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50 @error('last_name') border-red-400 @else border-gray-200 @enderror"
@@ -93,8 +93,7 @@
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-100 flex justify-end">
                         <button type="submit"
-                                class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center gap-2"
-                                style="background:#0077BE; border:none; cursor:pointer;">
+                                class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center gap-2 ap-solid-accent-btn">
                             <i class="fas fa-save text-xs"></i> Save Changes
                         </button>
                     </div>
@@ -114,7 +113,7 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 mb-1.5">
-                                Current Password <span style="color:#0077BE;">*</span>
+                                Current Password <span class="ap-accent">*</span>
                             </label>
                             <div class="relative">
                                 <input type="password" name="current_password" id="cp1"
@@ -130,7 +129,7 @@
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-600 mb-1.5">
-                                    New Password <span style="color:#0077BE;">*</span>
+                                    New Password <span class="ap-accent">*</span>
                                 </label>
                                 <div class="relative">
                                     <input type="password" name="password" id="cp2"
@@ -144,7 +143,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-600 mb-1.5">
-                                    Confirm New Password <span style="color:#0077BE;">*</span>
+                                    Confirm New Password <span class="ap-accent">*</span>
                                 </label>
                                 <div class="relative">
                                     <input type="password" name="password_confirmation" id="cp3"
@@ -160,8 +159,7 @@
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-100 flex justify-end">
                         <button type="submit"
-                                class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center gap-2"
-                                style="background:#003580; border:none; cursor:pointer;">
+                                class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center gap-2 ap-navy-bg">
                             <i class="fas fa-lock text-xs"></i> Change Password
                         </button>
                     </div>
@@ -187,22 +185,18 @@
                         @if($agent->profile_image)
                             <img src="{{ url('public/assets/images/agents/' . $agent->profile_image) }}"
                                  id="avatarPreview"
-                                 class="w-20 h-20 rounded-full object-cover border-2 mx-auto"
-                                 style="border-color:#0077BE;">
+                                 class="w-20 h-20 rounded-full object-cover border-2 mx-auto ap-accent-border">
                         @else
-                            <div class="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto"
-                                 id="avatarInitials"
-                                 style="background:linear-gradient(135deg,#0077BE,#005a8f);">
+                            <div class="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto ap-avatar-gradient"
+                                 id="avatarInitials">
                                 {{ $agent->initials }}
                             </div>
                             <img src="" id="avatarPreview"
-                                 class="w-20 h-20 rounded-full object-cover border-2 mx-auto hidden"
-                                 style="border-color:#0077BE;">
+                                 class="w-20 h-20 rounded-full object-cover border-2 mx-auto hidden ap-accent-border">
                         @endif
                         <label for="photoInput"
-                               class="absolute bottom-0 right-0 w-7 h-7 rounded-full flex items-center justify-center cursor-pointer shadow-md"
-                               style="background:#0077BE; border:2px solid #fff;">
-                            <i class="fas fa-camera text-white" style="font-size:.65rem;"></i>
+                               class="absolute bottom-0 right-0 w-7 h-7 rounded-full flex items-center justify-center cursor-pointer shadow-md ap-camera-btn">
+                            <i class="fas fa-camera text-white ap-icon-fs-xs"></i>
                         </label>
                     </div>
                     <p class="font-semibold text-gray-800 text-sm">{{ $agent->full_name }}</p>
@@ -263,15 +257,14 @@
                     @csrf
                     <label for="logoInput"
                            class="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl py-5 px-4 cursor-pointer hover:border-blue-300 transition mb-3">
-                        <i class="fas fa-cloud-upload-alt text-2xl mb-2" style="color:#0077BE;"></i>
+                        <i class="fas fa-cloud-upload-alt text-2xl mb-2 ap-accent"></i>
                         <span class="text-xs font-semibold text-gray-600">Click to upload logo</span>
                         <span class="text-xs text-gray-400 mt-0.5">JPG, PNG — max 2MB</span>
                         <input type="file" name="logo" id="logoInput" class="hidden" accept="image/*">
                     </label>
                     @error('logo')<p class="text-xs text-red-500 mb-2">{{ $message }}</p>@enderror
                     <button type="submit"
-                            class="w-full px-5 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-2"
-                            style="background:#0077BE; border:none; cursor:pointer;">
+                            class="w-full px-5 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-2 ap-solid-accent-btn">
                         <i class="fas fa-upload text-xs"></i> Upload Logo
                     </button>
                 </form>

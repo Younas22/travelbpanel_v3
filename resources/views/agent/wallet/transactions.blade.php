@@ -5,8 +5,8 @@
 
 <div class="flex items-center justify-between mb-5">
     <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#e8f4fd;">
-            <i class="fas fa-history" style="color:#0077BE;"></i>
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center ap-tint-bg">
+            <i class="fas fa-history ap-accent"></i>
         </div>
         <div>
             <h4 class="text-lg font-bold text-gray-800">Wallet Transactions</h4>
@@ -14,16 +14,15 @@
         </div>
     </div>
     <a href="{{ route('agent.wallet.index') }}"
-       class="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2"
-       style="background:#e8f4fd; color:#0077BE; text-decoration:none;">
+       class="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 ap-chip-link">
         <i class="fas fa-arrow-left"></i> Back to Wallet
     </a>
 </div>
 
 <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
-    <a href="{{ route('agent.dashboard') }}" style="color:#0077BE; text-decoration:none;">Dashboard</a>
+    <a href="{{ route('agent.dashboard') }}" class="ap-accent-link">Dashboard</a>
     <i class="fas fa-chevron-right text-gray-300"></i>
-    <a href="{{ route('agent.wallet.index') }}" style="color:#0077BE; text-decoration:none;">My Wallet</a>
+    <a href="{{ route('agent.wallet.index') }}" class="ap-accent-link">My Wallet</a>
     <i class="fas fa-chevron-right text-gray-300"></i>
     <span class="text-gray-600">Transactions</span>
 </div>
@@ -31,8 +30,8 @@
 @if($wallet)
 <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-5">
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:#e8f4fd;">
-            <i class="fas fa-wallet" style="color:#0077BE;"></i>
+        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ap-tint-bg">
+            <i class="fas fa-wallet ap-accent"></i>
         </div>
         <div>
             <p class="text-xs text-gray-400">Current Balance</p>
@@ -40,8 +39,8 @@
         </div>
     </div>
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:#e8f4fd;">
-            <i class="fas fa-arrow-circle-down" style="color:#0077BE;"></i>
+        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ap-tint-bg">
+            <i class="fas fa-arrow-circle-down ap-accent"></i>
         </div>
         <div>
             <p class="text-xs text-gray-400">Total Credited</p>
@@ -49,8 +48,8 @@
         </div>
     </div>
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:#fee2e2;">
-            <i class="fas fa-arrow-circle-up" style="color:#dc2626;"></i>
+        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ap-danger-icon-bg">
+            <i class="fas fa-arrow-circle-up ap-danger-icon-color"></i>
         </div>
         <div>
             <p class="text-xs text-gray-400">Total Spent</p>
@@ -88,13 +87,11 @@
             </div>
             <div class="flex gap-2">
                 <button type="submit"
-                        class="flex-1 px-5 py-2.5 rounded-lg text-sm font-semibold text-white"
-                        style="background:#0077BE; border:none; cursor:pointer;">
+                        class="flex-1 px-5 py-2.5 rounded-lg text-sm font-semibold text-white ap-solid-accent-btn">
                     <i class="fas fa-filter mr-1"></i> Filter
                 </button>
                 <a href="{{ route('agent.wallet.transactions') }}"
-                   class="px-4 py-2.5 rounded-lg text-sm font-semibold"
-                   style="background:#e8f4fd; color:#0077BE; text-decoration:none;">
+                   class="px-4 py-2.5 rounded-lg text-sm font-semibold ap-chip-link">
                     Reset
                 </a>
             </div>
@@ -105,8 +102,8 @@
 <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
     @if($transactions->isEmpty())
     <div class="text-center py-12">
-        <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3" style="background:#e8f4fd;">
-            <i class="fas fa-receipt text-xl" style="color:#0077BE;"></i>
+        <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3 ap-tint-bg">
+            <i class="fas fa-receipt text-xl ap-accent"></i>
         </div>
         <p class="text-sm font-semibold text-gray-600 mb-1">No transactions found</p>
         <p class="text-xs text-gray-400">Try adjusting your filters or check back later.</p>

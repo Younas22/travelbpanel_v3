@@ -206,7 +206,7 @@
             </div>
 
             {{-- Info notice --}}
-            <div class="ap-card border-blue-100" style="background:#f0f9ff; border-color:#bfdbfe;">
+            <div class="ap-card border-blue-100 ap-tint-card">
                 <div class="ap-card-body">
                     <div class="flex gap-3">
                         <i class="fas fa-info-circle text-blue-400 mt-0.5 flex-shrink-0"></i>
@@ -223,13 +223,6 @@
     </div>
 </form>
 </div>
-
-@push('styles')
-<style>
-.select2-results__option .location-country-text { color: #9ca3af; }
-.select2-results__option--highlighted .location-country-text { color: rgba(255,255,255,.85); }
-</style>
-@endpush
 
 @push('scripts')
 <script>

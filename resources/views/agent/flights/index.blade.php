@@ -32,7 +32,7 @@
                     <label class="form-label fw-semibold">Departure</label>
                     <input type="date" name="departure_date" class="form-control" min="{{ date('Y-m-d') }}" required>
                 </div>
-                <div class="col-md-2" id="returnDateGroup" style="display:none">
+                <div class="col-md-2 d-none" id="returnDateGroup">
                     <label class="form-label fw-semibold">Return</label>
                     <input type="date" name="return_date" class="form-control">
                 </div>
