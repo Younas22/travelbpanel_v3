@@ -9,23 +9,23 @@ use InvalidArgumentException;
 use Throwable;
 
 /**
- * Transparently serves resources/views/agent-modern/* in place of
- * resources/views/agent/* when the current agent's personal Design Style
- * is "modern" — without any controller, route, or agent/* file ever being
- * touched. Controllers keep calling view('agent.dashboard'), completely
- * unaware this swap is happening. Mirrors ModernAdminViewFinder exactly,
- * scoped to the "agent." namespace and gated on User::isAgent() instead
- * of isAdmin() — see that class's docblock for the full rationale behind
- * each scoping rule (identical reasoning applies here).
+ * Transparently serves resources/views/admin-nova/* in place of
+ * resources/views/admin/* when the active Design Style is "nova" — mirrors
+ * ModernAdminViewFinder exactly (same scoping rules, same gate on
+ * User::isAdmin()), just for the third design and its own view prefix.
  *
- * Note: several agent.* views (e.g. agent.hotels.index, agent.tours.index)
- * are actually rendered by Admin\HotelController/TourController/etc via an
- * isAgent() branch in those controllers — but the VIEW NAME passed to
- * view() in that branch is always 'agent.*', never 'admin.*', so this
- * finder only ever needs to watch for the 'agent.' prefix; it never needs
- * to know about that admin-controller-reuse pattern at all.
+ * Nova is being rolled out phased, module-by-module, same as Modern was —
+ * right now only admin-nova/dashboard/index.blade.php (plus its own
+ * layouts/app.blade.php shell) exists. Any admin.* page with no admin-nova.*
+ * equivalent yet falls through this finder to the next one in the chain
+ * (ModernAdminViewFinder), which itself only swaps for design_style ===
+ * "modern" — so for a Nova user that inner check is false too, and it falls
+ * all the way through to the base finder, i.e. Classic. That fallback to
+ * Classic (not Modern) for not-yet-built Nova pages is intentional: Nova and
+ * Modern are independent, mutually exclusive designs, not a fallback chain
+ * of their own.
  */
-class ModernAgentViewFinder implements ViewFinderInterface
+class NovaAdminViewFinder implements ViewFinderInterface
 {
     public function __construct(protected ViewFinderInterface $inner)
     {
@@ -33,32 +33,31 @@ class ModernAgentViewFinder implements ViewFinderInterface
 
     public function find($name)
     {
-        if ($this->shouldTryModern($name)) {
-            $modernName = 'agent-modern.'.substr($name, strlen('agent.'));
+        if ($this->shouldTryNova($name)) {
+            $novaName = 'admin-nova.'.substr($name, strlen('admin.'));
 
             try {
-                return $this->inner->find($modernName);
+                return $this->inner->find($novaName);
             } catch (InvalidArgumentException) {
-                // No Modern equivalent authored yet for this view — fall
-                // through and resolve the classic agent.* name below.
+                // No Nova equivalent authored yet for this view — fall
+                // through and resolve via the next finder in the chain.
             }
         }
 
         return $this->inner->find($name);
     }
 
-    protected function shouldTryModern(string $name): bool
+    protected function shouldTryNova(string $name): bool
     {
-        if (! str_starts_with($name, 'agent.')) {
+        if (! str_starts_with($name, 'admin.')) {
             return false;
         }
 
         // Layout/partial names are never swapped, only page-level views are
         // — see ModernAdminViewFinder::shouldTryModern() for the full
-        // rationale (agent-modern pages always hardcode their own layout
-        // tree directly, e.g. @extends('agent-modern.layouts.app'), never
-        // the generic 'agent.layouts.app' name).
-        if (str_starts_with($name, 'agent.layouts.')) {
+        // rationale (same bug class, same fix, both designs hardcode their
+        // own layout tree directly and never rely on this swap for it).
+        if (str_starts_with($name, 'admin.layouts.')) {
             return false;
         }
 
@@ -66,17 +65,17 @@ class ModernAgentViewFinder implements ViewFinderInterface
             /** @var Guard $auth */
             $auth = app('auth')->guard();
 
-            if ($name === 'agent.auth.login' || $name === 'agent.auth.register') {
-                return app(ThemeService::class)->active(null)->isModernDesign();
+            if ($name === 'admin.auth.login') {
+                return app(ThemeService::class)->active(null)->design_style === 'nova';
             }
 
             $user = $auth->user();
 
-            if (! $user || ! method_exists($user, 'isAgent') || ! $user->isAgent()) {
+            if (! $user || ! method_exists($user, 'isAdmin') || ! $user->isAdmin()) {
                 return false;
             }
 
-            return app(ThemeService::class)->active($user->id)->isModernDesign();
+            return app(ThemeService::class)->active($user->id)->design_style === 'nova';
         } catch (Throwable) {
             return false;
         }

@@ -63,6 +63,18 @@ class ModernAdminViewFinder implements ViewFinderInterface
             return false;
         }
 
+        // Layout/partial names are never swapped, only page-level views are.
+        // Every design's own pages hardcode their own layout tree directly
+        // (e.g. admin-modern/dashboard/index.blade.php says @extends
+        // ('admin-modern.layouts.app'), never the generic 'admin.layouts.app'
+        // name) — so this prefix is only ever hit when an UNCONVERTED
+        // Classic page's own @extends('admin.layouts.app') resolves. Swapping
+        // it there would wrap still-Classic content in a different design's
+        // chrome, which is exactly the bug this guard prevents.
+        if (str_starts_with($name, 'admin.layouts.')) {
+            return false;
+        }
+
         try {
             /** @var Guard $auth */
             $auth = app('auth')->guard();

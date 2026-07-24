@@ -19,7 +19,7 @@ class UpdateThemeSettingRequest extends FormRequest
 
         return [
             'theme_name' => ['nullable', 'string', 'max:40'],
-            'design_style' => ['nullable', 'string', 'in:classic,modern'],
+            'design_style' => ['nullable', 'string', 'in:classic,modern,nova'],
 
             'primary_color' => $color,
             'secondary_color' => $color,

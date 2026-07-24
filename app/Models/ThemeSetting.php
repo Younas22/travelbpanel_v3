@@ -136,6 +136,17 @@ class ThemeSetting extends Model
         return $this->design_style === 'modern';
     }
 
+    /**
+     * "nova" -> the third design (see App\View\NovaAdminViewFinder), rolled
+     * out phased like Modern was — currently only its Dashboard exists, so
+     * every other admin.* page falls back to Classic (not Modern) while
+     * design_style is "nova".
+     */
+    public function isNovaDesign(): bool
+    {
+        return $this->design_style === 'nova';
+    }
+
     public function getLayoutOption(string $key, $default = null)
     {
         return data_get($this->layout_options, $key, data_get(static::defaultLayoutOptions(), $key, $default));
