@@ -268,7 +268,7 @@ code, pre, kbd {
 .sidebar-toggle:hover { background: var(--m-sidebar-bg-active); border-color: var(--primary-color); }
 
 .sidebar-brand { display: flex; align-items: center; text-decoration: none; color: inherit; gap: var(--m-space-2); }
-.sidebar-logo { height: 32px; width: auto; object-fit: contain; filter: brightness(0) invert(1); }
+.sidebar-logo { height: 32px; width: auto; object-fit: contain; }
 .sidebar-logo-icon {
     width: 36px; height: 36px;
     border-radius: var(--radius-md);
@@ -896,7 +896,7 @@ input:checked + .tp-switch-slider:before, input:checked + .tpe-switch-slider:bef
     background: var(--card-bg);
 }
 .theme-card:hover { border-color: color-mix(in srgb, var(--primary-color) 45%, var(--border-color)); transform: translateY(-2px); box-shadow: var(--m-shadow-md); }
-.theme-card.active { border-color: var(--primary-color); box-shadow: 0 0 0 3px var(--primary-tint-16); }
+.theme-card.active { border-color: var(--primary-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 18%, transparent); }
 .theme-card-check { position: absolute; top: 8px; right: 8px; color: var(--primary-color); opacity: 0; transition: opacity .2s var(--m-ease); }
 .theme-card.active .theme-card-check { opacity: 1; }
 .theme-card-preview { display: flex; height: 34px; border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 10px; border: 1px solid var(--border-color); }
@@ -924,7 +924,7 @@ input:checked + .tp-switch-slider:before, input:checked + .tpe-switch-slider:bef
     width: 100%; margin: 0;
 }
 .radius-option:hover { border-color: color-mix(in srgb, var(--primary-color) 45%, var(--border-color)); }
-.radius-option.active { border-color: var(--primary-color); box-shadow: 0 0 0 3px var(--primary-tint-16); }
+.radius-option.active { border-color: var(--primary-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 18%, transparent); }
 .radius-preview { width: 26px; height: 26px; background: var(--primary-color); flex-shrink: 0; }
 .radius-label { font-weight: 600; font-size: 0.8125rem; }
 
@@ -2323,7 +2323,7 @@ body.theme-midnight .tp-mod-header { background: var(--mod-dbg, var(--primary-ti
     width: 100%; padding: 0.5625rem 0.875rem; font-size: 0.875rem; border-radius: var(--input-radius);
     border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-color); transition: border-color .15s var(--m-ease), box-shadow .15s var(--m-ease);
 }
-.crc-input:focus { outline: none; border-color: var(--input-focus-color); box-shadow: 0 0 0 3px var(--primary-tint-16); }
+.crc-input:focus { outline: none; border-color: var(--input-focus-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus-color, var(--primary-color)) 12%, transparent); }
 .crc-input.is-invalid { border-color: var(--danger-color); }
 .crc-footer { display: flex; justify-content: flex-end; gap: 10px; }
 .crc-btn-cancel, .crc-btn-submit {
@@ -2365,21 +2365,187 @@ tr.table-warning, tr.table-warning td { background-color: color-mix(in srgb, var
 .message-content-text { white-space: pre-wrap; line-height: 1.8; }
 
 /* =====================================================
-   Global floating theme quick-switcher — same widget,
-   reskinned to match the modern shadow/radius scale.
+   admin-modern view tree (resources/views/admin-modern) —
+   markup here is new, independent from the classic blade
+   files but deliberately reuses the same component classes
+   above wherever the component is visually identical; a few
+   classes below are genuinely new to this file tree.
+===================================================== */
+.etp-img-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.etp-img-wrap { position: relative; border-radius: var(--radius-md); overflow: hidden; aspect-ratio: 1; }
+.etp-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.etp-img-delete {
+    position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(0,0,0,.6); color: #fff; border: none; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; cursor: pointer;
+}
+.etp-img-delete:hover { background: var(--danger-color); }
+
+/* =====================================================
+   Global floating theme quick-switcher — same widget as
+   Classic's (admin.css), reskinned to match the modern
+   shadow/radius scale. Base positioning/layout rules are
+   defined here in full (not just overrides) because this
+   view tree never loads admin.css, so there is no base
+   ruleset to cascade on top of.
 ===================================================== */
 .theme-qs-toggle {
-    box-shadow: var(--m-shadow-lg);
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    z-index: 2001;
+    width: 44px;
+    height: 44px;
+    border: none;
     border-radius: var(--radius-md) 0 0 var(--radius-md);
+    background: var(--primary-color);
+    color: #fff;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--m-shadow-lg);
+    transition: width var(--transition-speed, .2s), background var(--transition-speed, .2s);
 }
-.theme-qs-panel { box-shadow: var(--m-shadow-lg); border-left: 1px solid var(--border-color); }
-.theme-qs-card { border-radius: var(--card-radius); }
+.theme-qs-toggle:hover { width: 48px; }
+.theme-qs-toggle.spinning i { animation: theme-qs-spin 0.6s ease; }
+@keyframes theme-qs-spin { from { transform: rotate(0deg); } to { transform: rotate(180deg); } }
+
+.theme-qs-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 320px;
+    max-width: 90vw;
+    background: var(--card-bg);
+    color: var(--text-color);
+    box-shadow: var(--m-shadow-lg);
+    border-left: 1px solid var(--border-color);
+    z-index: 2000;
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+    display: flex;
+    flex-direction: column;
+}
+.theme-qs-panel.open { transform: translateX(0); }
+
+.theme-qs-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+.theme-qs-header h6 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color);
+}
+.theme-qs-close {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: color-mix(in srgb, var(--text-color) 60%, transparent);
+    cursor: pointer;
+    padding: 0;
+}
+.theme-qs-close:hover { color: var(--text-color); }
+
+.theme-qs-body {
+    padding: 1.25rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.theme-qs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.theme-qs-card {
+    border: 2px solid var(--border-color);
+    border-radius: var(--card-radius);
+    padding: 0.6rem;
+    cursor: pointer;
+    position: relative;
+    transition: border-color var(--transition-speed, .2s), transform var(--transition-speed, .2s);
+    background: var(--card-bg);
+}
+.theme-qs-card:hover {
+    border-color: color-mix(in srgb, var(--primary-color) 45%, var(--border-color));
+    transform: translateY(-2px);
+}
+.theme-qs-card.active {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 18%, transparent);
+}
+.theme-qs-check {
+    position: absolute;
+    top: 0.35rem;
+    right: 0.35rem;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity var(--transition-speed, .2s);
+}
+.theme-qs-card.active .theme-qs-check { opacity: 1; }
+.theme-qs-preview {
+    display: flex;
+    height: 26px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-bottom: 0.4rem;
+    border: 1px solid var(--border-color);
+}
+.theme-qs-preview span { flex: 1; }
+.theme-qs-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color);
+    text-align: center;
+}
+.theme-qs-full-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 1.25rem;
+    padding: 0.6rem;
+    border-radius: var(--btn-radius);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background var(--transition-speed, .2s);
+}
+.theme-qs-full-link:hover {
+    background: var(--body-bg);
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+@media (max-width: 576px) {
+    .theme-qs-toggle { width: 38px; height: 38px; font-size: 1rem; }
+}
 
 /* Sidebar: notification pill variant + "quick create" sub-links */
 .sb-pill.sb-pill-warn { background: color-mix(in srgb, var(--warning-color) 20%, transparent); color: color-mix(in srgb, var(--warning-color) 70%, black); }
-.sb-row.sb-quick { font-size: 12.5px; color: color-mix(in srgb, var(--text-color) 65%, transparent); }
+.sb-row.sb-quick { font-size: 12.5px; color: var(--m-sidebar-text-muted); }
 .sb-row.sb-quick .sb-ico { font-size: 13px; }
 .sb-row.sb-quick:hover { color: var(--primary-color); }
+.sb-row.sb-quick.sb-quick-on { color: var(--primary-color); background: var(--m-sidebar-bg-active); }
+.sb-row.sb-quick.sb-quick-on .sb-ico { color: var(--primary-color); }
 
 /* =====================================================
    Footer (layouts/footer.blade.php)
