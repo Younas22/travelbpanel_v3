@@ -656,3 +656,104 @@ input:checked + .toggle-slider::before, input:checked + .am-switch-slider::befor
     .reg-cta-band { padding: 32px 20px; }
     .reg-form-head, .reg-form-body { padding: 20px; }
 }
+
+/* =====================================================
+   Dashboard (dashboard.blade.php)
+===================================================== */
+.dash-welcome { display: flex; align-items: center; justify-content: space-between; gap: var(--am-space-3); margin-bottom: var(--am-space-5); flex-wrap: wrap; }
+.dash-welcome h4 { font-size: 1.25rem; margin-bottom: 2px; }
+.dash-welcome p { font-size: 13px; color: color-mix(in srgb, var(--text-color) 55%, transparent); margin: 0; }
+
+.dash-stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--am-space-3); margin-bottom: var(--am-space-5); }
+.dash-stat-card {
+    background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--card-radius);
+    box-shadow: var(--am-shadow-sm); padding: var(--am-space-3); display: flex; align-items: center; gap: 10px;
+    transition: transform .2s var(--am-ease), box-shadow .2s var(--am-ease);
+}
+.dash-stat-card:hover { transform: translateY(-2px); box-shadow: var(--am-shadow-md); }
+.dash-stat-icon { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.dash-stat-icon.icon-blue { background: color-mix(in srgb, #3b82f6 14%, transparent); color: #3b82f6; }
+.dash-stat-icon.icon-green { background: color-mix(in srgb, var(--success-color) 14%, transparent); color: var(--success-color); }
+.dash-stat-icon.icon-amber { background: color-mix(in srgb, var(--warning-color) 14%, transparent); color: var(--warning-color); }
+.dash-stat-icon.icon-cyan { background: color-mix(in srgb, var(--info-color) 14%, transparent); color: var(--info-color); }
+.dash-stat-label { font-size: 11px; color: color-mix(in srgb, var(--text-color) 50%, transparent); line-height: 1.3; }
+.dash-stat-value { font-size: 1.05rem; font-weight: 800; color: var(--text-color); line-height: 1.3; }
+
+.dash-quick-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--am-space-3); margin-bottom: var(--am-space-5); }
+.dash-quick-card {
+    background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--card-radius);
+    box-shadow: var(--am-shadow-sm); padding: var(--am-space-4); text-align: center;
+    transition: transform .2s var(--am-ease), box-shadow .2s var(--am-ease), border-color .2s var(--am-ease);
+    text-decoration: none;
+}
+.dash-quick-card:hover { transform: translateY(-3px); box-shadow: var(--am-shadow-md); border-color: color-mix(in srgb, var(--primary-color) 30%, var(--border-color)); text-decoration: none; }
+.dash-quick-card i { font-size: 1.7rem; transition: transform .2s var(--am-ease); }
+.dash-quick-card:hover i { transform: scale(1.1); }
+.dash-quick-card .dash-quick-label { margin-top: 10px; font-size: 13px; font-weight: 650; color: var(--text-color); }
+
+.dash-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--card-radius); box-shadow: var(--am-shadow-sm); margin-bottom: var(--am-space-4); }
+.dash-panel-header { padding: var(--am-space-4) var(--am-space-5); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; gap: var(--am-space-3); }
+.dash-panel-header h6 { font-size: 14px; font-weight: 700; margin: 0; }
+.dash-panel-link { font-size: 11.5px; font-weight: 650; padding: 6px 12px; border-radius: 9999px; border: 1px solid var(--border-color); color: var(--text-color); text-decoration: none; }
+.dash-panel-link:hover { background: var(--primary-tint-6); color: var(--primary-color); text-decoration: none; }
+
+.wallet-activity-list { list-style: none; margin: 0; padding: 0; }
+.wallet-activity-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: var(--am-space-3) var(--am-space-5); border-bottom: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent); }
+.wallet-activity-item:last-child { border-bottom: none; }
+.wallet-activity-note { font-size: 13px; font-weight: 600; color: var(--text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 260px; }
+.wallet-activity-date { font-size: 11px; color: color-mix(in srgb, var(--text-color) 50%, transparent); margin-top: 2px; }
+.wallet-activity-amt { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: var(--radius-md); white-space: nowrap; flex-shrink: 0; }
+.wallet-activity-amt.credit { background: color-mix(in srgb, var(--success-color) 12%, transparent); color: var(--success-color); }
+.wallet-activity-amt.debit { background: color-mix(in srgb, var(--danger-color) 10%, transparent); color: var(--danger-color); }
+
+@media (max-width: 1199.98px) {
+    .dash-stats-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 575.98px) {
+    .dash-stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .dash-quick-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* =====================================================
+   Shared page-level header + breadcrumb + icon badge
+   (used across wallet, bookings, hotels, tours, umrah,
+   flights, visa page headers)
+===================================================== */
+.ap-page-header { display: flex; align-items: center; justify-content: space-between; gap: var(--am-space-3); margin-bottom: var(--am-space-4); flex-wrap: wrap; }
+.ap-page-header-left { display: flex; align-items: center; gap: var(--am-space-3); }
+.ap-icon-badge {
+    width: 38px; height: 38px; border-radius: var(--radius-md); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+    background: var(--primary-tint-10); color: var(--primary-color);
+}
+.ap-page-title { font-size: 1.05rem; font-weight: 700; color: var(--text-color); margin: 0; }
+.ap-page-sub { font-size: 12px; color: color-mix(in srgb, var(--text-color) 55%, transparent); margin: 2px 0 0; }
+
+.ap-breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: color-mix(in srgb, var(--text-color) 45%, transparent); margin-bottom: var(--am-space-4); }
+.ap-breadcrumb a { color: color-mix(in srgb, var(--text-color) 55%, transparent); }
+.ap-breadcrumb a:hover { color: var(--primary-color); }
+.ap-breadcrumb i { font-size: 9px; }
+
+/* =====================================================
+   Wallet (wallet/index.blade.php, topup.blade.php,
+   transactions.blade.php)
+===================================================== */
+.wal-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--am-space-3); margin-bottom: var(--am-space-5); }
+.wal-stat-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--card-radius); box-shadow: var(--am-shadow-sm); padding: var(--am-space-4); display: flex; align-items: center; gap: 12px; }
+.wal-stat-icon { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 17px; }
+.wal-stat-icon.wal-accent { background: var(--primary-tint-10); color: var(--primary-color); }
+.wal-stat-icon.wal-danger { background: color-mix(in srgb, var(--danger-color) 12%, transparent); color: var(--danger-color); }
+.wal-stat-label { font-size: 11.5px; color: color-mix(in srgb, var(--text-color) 50%, transparent); }
+.wal-stat-value { font-size: 1.2rem; font-weight: 800; color: var(--text-color); }
+
+.wal-pending-notice { display: flex; align-items: flex-start; gap: 12px; padding: var(--am-space-4); border-radius: var(--card-radius); border: 1px solid color-mix(in srgb, var(--warning-color) 30%, transparent); background: color-mix(in srgb, var(--warning-color) 8%, transparent); }
+.wal-pending-icon { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--warning-color) 18%, transparent); color: color-mix(in srgb, var(--warning-color) 65%, black); }
+.wal-pending-notice p { font-size: 13px; color: color-mix(in srgb, var(--warning-color) 65%, black); margin: 0 0 2px; }
+.wal-pending-notice p:last-child { margin-bottom: 0; font-size: 12px; }
+
+@media (max-width: 767.98px) {
+    .wal-stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+    .wal-stats-grid { grid-template-columns: 1fr; }
+}
