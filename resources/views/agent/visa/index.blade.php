@@ -2,21 +2,21 @@
 @section('title', 'Visa Applications')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="flex justify-between items-center mb-4">
     <h4 class="mb-0"><i class="bi bi-passport"></i> Visa Applications</h4>
-    <a href="{{ route('agent.visa.apply') }}" class="btn btn-primary btn-sm">
+    <a href="{{ route('agent.visa.apply') }}" class="ap-btn-primary">
         <i class="bi bi-plus-circle"></i> New Application
     </a>
 </div>
 
 {{-- Filters --}}
-<div class="card border-0 shadow-sm mb-3">
-    <div class="card-body py-2">
-        <form method="GET" class="row g-2 align-items-center">
-            <div class="col-md-4">
+<div class="ap-card mb-3">
+    <div class="ap-card-body py-2">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-9 gap-2 items-center">
+            <div class="md:col-span-4">
                 <input type="text" name="search" class="form-control form-control-sm" placeholder="Search name, passport..." value="{{ request('search') }}">
             </div>
-            <div class="col-md-3">
+            <div class="md:col-span-3">
                 <select name="status" class="form-select form-select-sm">
                     <option value="">All Statuses</option>
                     <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
@@ -24,14 +24,14 @@
                     <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
                 </select>
             </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-funnel"></i> Filter</button>
+            <div class="md:col-span-2">
+                <button type="submit" class="ap-btn-primary w-full justify-center"><i class="bi bi-funnel"></i> Filter</button>
             </div>
         </form>
     </div>
 </div>
 
-<div class="card border-0 shadow-sm">
+<div class="ap-card">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
@@ -64,7 +64,7 @@
                         <span class="badge bg-{{ $color }}">{{ ucfirst($status) }}</span>
                     </td>
                     <td>
-                        <a href="{{ route('agent.visa.status', $visa->id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                        <a href="{{ route('agent.visa.status', $visa->id) }}" class="ap-btn-outline-sm">View</a>
                     </td>
                 </tr>
                 @empty
@@ -79,7 +79,7 @@
         </table>
     </div>
     @if($visaRequests->hasPages())
-    <div class="card-footer bg-white">{{ $visaRequests->links() }}</div>
+    <div class="card-footer">{{ $visaRequests->links() }}</div>
     @endif
 </div>
 @endsection

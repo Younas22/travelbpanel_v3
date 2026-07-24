@@ -2,9 +2,9 @@
 @section('title', 'Visa Application Status')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="flex justify-between items-center mb-4">
     <h4 class="mb-0"><i class="bi bi-passport"></i> Visa Application</h4>
-    <a href="{{ route('agent.visa.index') }}" class="btn btn-outline-secondary btn-sm">
+    <a href="{{ route('agent.visa.index') }}" class="ap-btn-outline">
         <i class="bi bi-arrow-left"></i> All Applications
     </a>
 </div>
@@ -23,14 +23,14 @@
     @endif
 </div>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-header bg-white d-flex justify-content-between">
+<div class="ap-card">
+    <div class="ap-card-header flex justify-between">
         <h6 class="mb-0">Application #{{ str_pad($visaRequest->id, 6, '0', STR_PAD_LEFT) }}</h6>
         <span class="badge bg-{{ $statusColor }}">{{ ucfirst($status) }}</span>
     </div>
-    <div class="card-body">
-        <div class="row g-3">
-            <div class="col-md-6">
+    <div class="ap-card-body">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
                 <h6 class="text-muted small mb-2">Visa Details</h6>
                 <table class="table table-sm table-borderless">
                     <tr><td class="text-muted">Visa Type</td><td><strong>{{ strtoupper($visaRequest->visa_type) }}</strong></td></tr>
@@ -38,7 +38,7 @@
                     <tr><td class="text-muted">Submitted</td><td>{{ $visaRequest->created_at->format('d M Y, h:i A') }}</td></tr>
                 </table>
             </div>
-            <div class="col-md-6">
+            <div>
                 <h6 class="text-muted small mb-2">Applicant Details</h6>
                 <table class="table table-sm table-borderless">
                     <tr><td class="text-muted">Full Name</td><td><strong>{{ $visaRequest->first_name }} {{ $visaRequest->middle_name }} {{ $visaRequest->surname }}</strong></td></tr>
@@ -53,10 +53,10 @@
         {{-- Documents --}}
         <hr>
         <h6 class="text-muted small mb-2">Submitted Documents</h6>
-        <div class="d-flex flex-wrap gap-2">
+        <div class="flex flex-wrap gap-2">
             @foreach(['passport_front' => 'Passport Front', 'passport_back' => 'Passport Back', 'passport_photo' => 'Photo', 'other_document' => 'Other'] as $key => $label)
             @if($visaRequest->$key)
-            <a href="{{ asset('storage/' . $visaRequest->$key) }}" target="_blank" class="btn btn-outline-primary btn-sm">
+            <a href="{{ asset('storage/' . $visaRequest->$key) }}" target="_blank" class="ap-btn-outline-sm">
                 <i class="bi bi-file-earmark"></i> {{ $label }}
             </a>
             @endif

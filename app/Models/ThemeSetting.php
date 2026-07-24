@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ThemeSetting extends Model
 {
     protected $fillable = [
+        'user_id',
         'theme_name',
         'primary_color',
         'secondary_color',
@@ -37,10 +38,13 @@ class ThemeSetting extends Model
 
     /**
      * Default (factory) values — also what "Reset to Default" restores.
+     * Pass $userId to seed a personal (agent-owned) row instead of the
+     * shared global one.
      */
-    public static function defaults(): array
+    public static function defaults(?int $userId = null): array
     {
         return [
+            'user_id' => $userId,
             'theme_name' => 'default',
             'primary_color' => '#0C6DFD',
             'secondary_color' => '#64748B',
@@ -82,17 +86,35 @@ class ThemeSetting extends Model
     }
 
     /**
-     * The single active theme row, creating the default one on first use.
+     * The active theme row. Pass $userId to resolve an agent's personal
+     * theme (falling back to the shared global default if they haven't
+     * customized one yet); omit it for the Admin panel's shared theme.
      */
-    public static function active(): self
+    public static function active(?int $userId = null): self
     {
-        $theme = static::where('is_active', true)->first();
+        if ($userId) {
+            $userTheme = static::where('user_id', $userId)->first();
+            if ($userTheme) {
+                return $userTheme;
+            }
+        }
+
+        $theme = static::whereNull('user_id')->where('is_active', true)->first();
 
         if (! $theme) {
-            $theme = static::firstOrCreate([], static::defaults());
+            $theme = static::firstOrCreate(['user_id' => null], static::defaults());
         }
 
         return $theme;
+    }
+
+    /**
+     * The row a user's Theme Settings page reads/writes — creates their
+     * personal row (seeded from today's global default) on first save.
+     */
+    public static function forUser(int $userId): self
+    {
+        return static::firstOrCreate(['user_id' => $userId], static::defaults($userId));
     }
 
     public function getLayoutOption(string $key, $default = null)

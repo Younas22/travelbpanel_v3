@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\UmrahController;
 use App\Http\Controllers\Admin\UmrahPackageTypeController;
 use App\Http\Controllers\Admin\UmrahInclusionController;
 use App\Http\Controllers\Admin\UmrahExclusionController;
+use App\Http\Controllers\Agent\ThemeSettingController;
 
 // ─── Agent Auth Routes (no middleware) ───────────────────────────────────────
 Route::prefix('agent')->name('agent.')->group(function () {
@@ -46,6 +47,13 @@ Route::prefix('agent')->name('agent.')->group(function () {
             Route::post('/password', [ProfileController::class, 'changePassword'])->name('password');
             Route::post('/logo',     [ProfileController::class, 'uploadLogo'])->name('logo');
             Route::post('/photo',    [ProfileController::class, 'uploadPhoto'])->name('photo');
+        });
+
+        // Theme / appearance settings (personal — each agent has their own)
+        Route::prefix('settings')->name('settings.')->group(function () {
+            Route::get('/theme', [ThemeSettingController::class, 'edit'])->name('theme');
+            Route::post('/theme', [ThemeSettingController::class, 'update'])->name('theme.update');
+            Route::post('/theme/reset', [ThemeSettingController::class, 'reset'])->name('theme.reset');
         });
 
         // ─── Wallet ───────────────────────────────────────────────────────────

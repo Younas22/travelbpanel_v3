@@ -1,6 +1,9 @@
-{{-- Global floating theme switcher — available on every admin page --}}
+{{-- Global floating theme switcher — available on every admin/agent page.
+     Pass $themeRoutePrefix ('admin' or 'agent') to target the right routes;
+     defaults to 'admin' for backward compatibility when omitted. --}}
 @php
     $__qsPresets = app(\App\Services\ThemeService::class)->presets();
+    $__qsRoutePrefix = $themeRoutePrefix ?? 'admin';
 @endphp
 <button type="button" id="themeQsToggle" class="theme-qs-toggle" title="Theme Settings" aria-label="Open theme switcher">
     <i class="bi bi-gear-fill"></i>
@@ -29,7 +32,7 @@
                 </div>
             @endforeach
         </div>
-        <a href="{{ route('admin.settings.theme') }}" class="theme-qs-full-link">
+        <a href="{{ route($__qsRoutePrefix . '.settings.theme') }}" class="theme-qs-full-link">
             <i class="bi bi-sliders"></i> Full Theme Settings
         </a>
     </div>
@@ -47,7 +50,7 @@
         'border_color', 'input_background', 'input_border', 'input_focus_color',
     ]),
     'routes' => [
-        'update' => route('admin.settings.theme.update'),
+        'update' => route($__qsRoutePrefix . '.settings.theme.update'),
     ],
 ]) !!}</script>
 

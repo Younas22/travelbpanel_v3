@@ -163,6 +163,12 @@
         </a>
         @endif
 
+        <a href="{{ route('agent.settings.theme') }}"
+           class="agent-nav-link {{ request()->routeIs('agent.settings.theme*') ? 'active' : '' }}">
+            <i class="fas fa-palette w-5 text-center"></i>
+            <span>Theme</span>
+        </a>
+
         <a href="{{ route('agent.profile.index') }}"
            class="agent-nav-link {{ request()->routeIs('agent.profile*') ? 'active' : '' }}">
             @if($agent->profile_image)

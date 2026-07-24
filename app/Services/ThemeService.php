@@ -9,12 +9,16 @@ class ThemeService
     /**
      * Cache the active theme for the lifetime of the request — every page
      * load reads it once (layout injection) and settings pages read it again.
+     * Keyed per user id ('global' for the Admin panel's shared theme) since
+     * an agent's personal theme and the global default are independent.
      */
-    protected static ?ThemeSetting $activeCache = null;
+    protected static array $activeCache = [];
 
-    public function active(): ThemeSetting
+    public function active(?int $userId = null): ThemeSetting
     {
-        return static::$activeCache ??= ThemeSetting::active();
+        $key = $userId ?? 'global';
+
+        return static::$activeCache[$key] ??= ThemeSetting::active($userId);
     }
 
     public function presets(): array
@@ -42,6 +46,18 @@ class ThemeService
         }
         $css .= "}";
 
+        // admin.css's ~500 component font-sizes are expressed in rem, which
+        // is relative to the ROOT (<html>) element's font-size, not <body>'s
+        // — so scaling only body{font-size} (the old behavior) left every
+        // rem-sized element completely unaffected. 0.875 is the rem value
+        // "14px" (the factory default) has always assumed a 16px root, so
+        // dividing by it here reproduces today's exact sizes when the
+        // default is selected, and scales every rem-based size in the
+        // panel proportionally for any other choice.
+        if (! empty($theme->font_size)) {
+            $css .= "html{font-size:calc(var(--font-size-base) / 0.875);}";
+        }
+
         if (! empty($theme->font_family)) {
             $css .= "body{font-family:var(--font-family);font-size:var(--font-size-base);}";
         }
@@ -49,8 +65,8 @@ class ThemeService
         return $css;
     }
 
-    public function forgetCache(): void
+    public function forgetCache(?int $userId = null): void
     {
-        static::$activeCache = null;
+        unset(static::$activeCache[$userId ?? 'global']);
     }
 }

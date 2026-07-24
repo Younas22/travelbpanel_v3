@@ -1,4 +1,4 @@
-@php($__activeTheme = app(\App\Services\ThemeService::class)->active())
+@php($__activeTheme = app(\App\Services\ThemeService::class)->active(auth()->id()))
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}" dir="{{ in_array(app()->getLocale(), ['ar']) ? 'rtl' : 'ltr' }}" data-bs-theme="{{ $__activeTheme->isDark() ? 'dark' : 'light' }}">
 <head>
@@ -9,6 +9,7 @@
 
     <script src="{{ url('public/assets/libs/tailwind/tailwind.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url('public/assets/libs/font-awesome/css/all.min.css') }}">
+    <link href="{{ url('public/assets/libs/bootstrap-icons/font/bootstrap-icons.min.css') }}" rel="stylesheet">
     <link href="{{ url('public/assets/libs/select2/css/select2.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ url('public/assets/libs/flag-icons/css/flag-icons.min.css') }}">
     <link rel="stylesheet" href="{{ url('public/assets/libs/toastify/toastify.min.css') }}">
@@ -108,6 +109,9 @@
             if (reopenBtn) reopenBtn.classList.remove('sidebar-is-open');
         }
     </script>
+    @auth
+        @include('admin.layouts.partials.theme-quick-switcher', ['themeRoutePrefix' => 'agent'])
+    @endauth
     @stack('scripts')
 </body>
 </html>
