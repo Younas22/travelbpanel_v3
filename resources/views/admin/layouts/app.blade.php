@@ -77,6 +77,7 @@
     </div>
 
     @include('admin.layouts.partials.scripts')
+    @include('admin.layouts.partials.theme-quick-switcher')
     @stack('scripts')
 </body>
 </html>

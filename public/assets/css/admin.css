@@ -8345,4 +8345,157 @@ input:checked + .status-slider:before {
     font-size: 0.75rem;
     color: color-mix(in srgb, var(--text-color) 70%, transparent);
 }
+
+/* ==========================
+   Global floating theme quick-switcher (every admin page)
+========================== */
+.theme-qs-toggle {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    z-index: 2001;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 8px 0 0 8px;
+    background: var(--primary-color);
+    color: #fff;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+    transition: width var(--transition-speed, .2s), background var(--transition-speed, .2s);
+}
+.theme-qs-toggle:hover { width: 48px; }
+.theme-qs-toggle.spinning i { animation: theme-qs-spin 0.6s ease; }
+@keyframes theme-qs-spin { from { transform: rotate(0deg); } to { transform: rotate(180deg); } }
+
+.theme-qs-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 320px;
+    max-width: 90vw;
+    background: var(--card-bg);
+    color: var(--text-color);
+    box-shadow: var(--shadow-lg);
+    border-left: 1px solid var(--border-color);
+    z-index: 2000;
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+    display: flex;
+    flex-direction: column;
+}
+.theme-qs-panel.open { transform: translateX(0); }
+
+.theme-qs-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+.theme-qs-header h6 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color);
+}
+.theme-qs-close {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: color-mix(in srgb, var(--text-color) 60%, transparent);
+    cursor: pointer;
+    padding: 0;
+}
+.theme-qs-close:hover { color: var(--text-color); }
+
+.theme-qs-body {
+    padding: 1.25rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.theme-qs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.theme-qs-card {
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 0.6rem;
+    cursor: pointer;
+    position: relative;
+    transition: border-color var(--transition-speed, .2s), transform var(--transition-speed, .2s);
+    background: var(--card-bg);
+}
+.theme-qs-card:hover {
+    border-color: color-mix(in srgb, var(--primary-color) 45%, var(--border-color));
+    transform: translateY(-2px);
+}
+.theme-qs-card.active {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 18%, transparent);
+}
+.theme-qs-check {
+    position: absolute;
+    top: 0.35rem;
+    right: 0.35rem;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity var(--transition-speed, .2s);
+}
+.theme-qs-card.active .theme-qs-check { opacity: 1; }
+.theme-qs-preview {
+    display: flex;
+    height: 26px;
+    border-radius: var(--radius-sm, 4px);
+    overflow: hidden;
+    margin-bottom: 0.4rem;
+    border: 1px solid var(--border-color);
+}
+.theme-qs-preview span { flex: 1; }
+.theme-qs-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-color);
+    text-align: center;
+}
+.theme-qs-full-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 1.25rem;
+    padding: 0.6rem;
+    border-radius: var(--btn-radius, var(--border-radius));
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background var(--transition-speed, .2s);
+}
+.theme-qs-full-link:hover {
+    background: var(--body-bg);
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+@media (max-width: 576px) {
+    .theme-qs-toggle { width: 38px; height: 38px; font-size: 1rem; }
+}
 .btn-edit-avatar-35 { width: 35px; height: 35px; }
