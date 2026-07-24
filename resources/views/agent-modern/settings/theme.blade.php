@@ -57,7 +57,7 @@
             <h4 class="ap-page-title"><i class="bi bi-palette"></i> Theme &amp; Appearance</h4>
             <p class="ap-page-sub">Customize colors, typography, shape and layout for your own view of the panel — changes preview instantly and only affect your account.</p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex flex-wrap gap-2 ap-theme-header-actions">
             <button type="button" class="ap-btn-outline" id="themeCancelBtn">
                 <i class="bi bi-x-lg"></i> Cancel
             </button>
@@ -171,7 +171,7 @@
                         <label class="form-label d-block">Custom</label>
                         <input type="color" class="form-control form-control-color" id="primary_color_picker" value="{{ $theme->primary_color }}">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-12 col-md-4">
                         <label class="form-label">Hex / RGBA Value</label>
                         <input type="text" class="form-control theme-var-input" id="primary_color" name="primary_color" data-css-var="--primary-color" value="{{ $theme->primary_color }}">
                     </div>
@@ -189,7 +189,7 @@
 
                 <div class="row g-3">
                     @foreach($secondaryColorFields as $field)
-                        <div class="col-md-3 col-sm-6">
+                        <div class="col-6 col-md-3">
                             <label class="form-label">{{ $field['label'] }}</label>
                             <div class="d-flex gap-2 align-items-center">
                                 <input type="color" class="color-field-swatch" data-paired="{{ $field['name'] }}" value="{{ str_starts_with($field['value'], '#') ? $field['value'] : '#ffffff' }}">
@@ -210,7 +210,7 @@
                 <p class="form-text mb-3">Applies across your panel via <code>--font-family</code> and <code>--font-size-base</code>.</p>
 
                 <div class="row g-3">
-                    <div class="col-md-4">
+                    <div class="col-12 col-md-4">
                         <label class="form-label">Font Family</label>
                         <select class="form-select theme-var-input" id="font_family" name="font_family" data-css-var="--font-family-raw">
                             @foreach($fontFamilies as $font)
@@ -218,7 +218,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-12 col-md-4">
                         <label class="form-label">Base Font Size</label>
                         <select class="form-select theme-var-input" id="font_size" name="font_size" data-css-var="--font-size-base">
                             @foreach(['12px', '13px', '14px', '15px', '16px', '18px'] as $size)
@@ -262,7 +262,7 @@
 
                 <div class="row g-3">
                     @foreach($layoutToggles as $toggle)
-                        <div class="col-md-6 col-lg-4">
+                        <div class="col-12 col-md-6 col-lg-4">
                             <div class="layout-toggle-row">
                                 <label class="toggle-switch">
                                     <input type="checkbox" name="layout_options[{{ $toggle['key'] }}]" value="1" data-layout-key="{{ $toggle['key'] }}" {{ !empty($layoutOptions[$toggle['key']]) ? 'checked' : '' }}>

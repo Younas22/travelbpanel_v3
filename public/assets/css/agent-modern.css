@@ -393,6 +393,17 @@ a:hover { color: var(--primary-hover); }
     .am-sidebar-overlay.active { display: block; }
 }
 
+@media (max-width: 575.98px) {
+    /* Topbar: currency/language switchers step aside on phones so the
+       wallet badge + account menu never get squeezed into overflow —
+       still reachable from the sidebar/profile, just not duplicated here. */
+    .am-topbar { padding: 0 var(--am-space-3); gap: var(--am-space-2); }
+    .am-topbar-select { display: none; }
+    .am-topbar-wallet span, .am-topbar-wallet { font-size: 11.5px; padding: 6px 9px; }
+    .am-topbar-user span { display: none; }
+    .am-topbar-title { max-width: 120px; }
+}
+
 /* =====================================================
    Page header
 ===================================================== */
@@ -721,6 +732,17 @@ input:checked + .toggle-slider::before, input:checked + .am-switch-slider::befor
 ===================================================== */
 .ap-page-header { display: flex; align-items: center; justify-content: space-between; gap: var(--am-space-3); margin-bottom: var(--am-space-4); flex-wrap: wrap; }
 .ap-page-header-left { display: flex; align-items: center; gap: var(--am-space-3); }
+
+@media (max-width: 575.98px) {
+    .ap-page-header { flex-direction: column; align-items: stretch; }
+    .ap-page-header > div:first-child { text-align: center; }
+    .ap-page-header-left { text-align: left; }
+    .ap-page-header .d-flex.gap-2:not(.ap-page-header-left) { width: 100%; }
+    .ap-theme-header-actions { flex-direction: column; }
+    .ap-theme-header-actions .ap-btn-primary,
+    .ap-theme-header-actions .ap-btn-outline,
+    .ap-theme-header-actions .ap-btn-danger { width: 100%; justify-content: center; }
+}
 .ap-icon-badge {
     width: 38px; height: 38px; border-radius: var(--radius-md); flex-shrink: 0;
     display: flex; align-items: center; justify-content: center; font-size: 16px;
