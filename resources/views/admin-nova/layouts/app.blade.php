@@ -35,14 +35,29 @@
          partial during its own early rollout. --}}
     <link id="admin-design-css" href="{{ asset('public/assets/css/admin-modern.css') }}?v={{ @filemtime(public_path('assets/css/admin-modern.css')) ?: 1 }}" rel="stylesheet">
 
-    @if($__activeTheme->font_family && !in_array(strtolower($__activeTheme->font_family), ['system font', 'system', 'system-ui']))
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link href="https://fonts.googleapis.com/css2?family={{ str_replace(' ', '+', $__activeTheme->font_family) }}:wght@400;500;600;700&display=swap" rel="stylesheet">
-    @endif
+    {{-- Nova's typography is a fixed part of its own design language (Plus
+         Jakarta Sans, see body.design-nova in admin-modern.css) rather than
+         the admin's per-account Theme Settings font choice — so it always
+         loads its own font here instead of the conditional $__activeTheme
+         ->font_family block the other designs use. --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style id="theme-vars">{!! app(\App\Services\ThemeService::class)->inlineStyleTag($__activeTheme) !!}</style>
     @stack('styles')
 </head>
 <body class="theme-{{ $__activeTheme->theme_name }} design-nova {{ $__activeTheme->layoutBodyClasses() }}">
+    <script>
+        // Applied synchronously, before the sidebar paints, so a collapsed
+        // preference from a previous visit doesn't flash open first.
+        if (localStorage.getItem('novaSidebarCollapsed') === '1') {
+            document.body.classList.add('nova-sidebar-collapsed');
+        }
+    </script>
+    <button type="button" class="sidebar-reopen-btn" onclick="toggleNovaSidebar()" aria-label="Open sidebar">
+        <i class="bi bi-layout-sidebar-inset"></i>
+    </button>
+
     @include('admin-modern.layouts.sidebar')
 
     <div class="main-content">
@@ -76,6 +91,12 @@
 
     @include('admin-modern.layouts.partials.scripts')
     @include('admin.layouts.partials.theme-quick-switcher')
+    <script>
+        function toggleNovaSidebar() {
+            var collapsed = document.body.classList.toggle('nova-sidebar-collapsed');
+            localStorage.setItem('novaSidebarCollapsed', collapsed ? '1' : '0');
+        }
+    </script>
     @stack('scripts')
 </body>
 </html>

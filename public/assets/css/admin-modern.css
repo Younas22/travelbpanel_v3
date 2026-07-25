@@ -2560,24 +2560,130 @@ tr.table-warning, tr.table-warning td { background-color: color-mix(in srgb, var
 /* =====================================================
    Nova (resources/views/admin-nova) — for now Nova borrows
    this file + admin-modern's sidebar/header/footer partials
-   as its chrome (see admin-nova/layouts/app.blade.php), but
-   its sidebar should read as a separate, LIGHT identity
-   rather than admin-modern's dark rail. Overriding just the
-   --m-sidebar-* tokens under body.design-nova reskins every
-   .sidebar/.sb-row/etc rule automatically (they all already
-   read these same custom properties) without duplicating a
-   single structural rule or touching Modern's own (still
-   dark) sidebar at all.
+   as its chrome (see admin-nova/layouts/app.blade.php).
+
+   Unlike Modern, Nova is a fixed, self-contained design
+   language (premium SaaS: Plus Jakarta Sans + a specific
+   blue/cyan palette + fully-rounded cards/inputs/buttons) —
+   by explicit product decision it does NOT follow the admin's
+   own Theme Settings color/font/radius pickers the way every
+   other design here does. Overriding the shared tokens here
+   (the same names ThemeService::inlineStyleTag injects onto
+   :root — see theme_shared_tokens_architecture memory) reskins
+   every rule in this file automatically since they all already
+   read these custom properties, without duplicating a single
+   structural rule or touching Modern's own tokens/dark sidebar
+   at all. Declaring these directly on body.design-nova (not
+   :root) beats the inline theme-vars tag for every descendant
+   regardless of selector specificity, because an element's own
+   declared custom property always wins over an inherited one.
 ===================================================== */
 body.design-nova {
+    --font-family: 'Plus Jakarta Sans', sans-serif;
+    --primary-color: #2563EB;
+    --info-color: #06B6D4;
+    --success-color: #22C55E;
+    --warning-color: #F59E0B;
+    --danger-color: #EF4444;
+    --body-bg: #F7F8FC;
+    --card-bg: #FFFFFF;
+    --sidebar-bg: #FFFFFF;
+    --navbar-bg: #FFFFFF;
+    --text-color: #000000;
+    --border-color: #E5E7EB;
+    --input-bg: #F3F4F6;
+    --input-border: #E5E7EB;
+    --input-focus-color: #2563EB;
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --card-radius: 24px;
+    --input-radius: 9999px;
+    --btn-radius: 9999px;
+
     --m-sidebar-bg: var(--card-bg);
     --m-sidebar-bg-active: var(--primary-tint-10);
     --m-sidebar-border: var(--border-color);
     --m-sidebar-text: var(--text-color);
-    --m-sidebar-text-muted: color-mix(in srgb, var(--text-color) 60%, transparent);
-    --m-sidebar-icon: color-mix(in srgb, var(--text-color) 50%, transparent);
+    /* Nova explicitly wants solid black everywhere, no gray — unlike every
+       other design here, its "muted" sidebar text/icons are NOT a reduced-
+       opacity blend of --text-color (that necessarily reads as gray once
+       --text-color is pure black), they're just pure black too. */
+    --m-sidebar-text-muted: var(--text-color);
+    --m-sidebar-icon: var(--text-color);
 }
 body.design-nova .sidebar { box-shadow: var(--m-shadow-sm); }
+
+/* Same reasoning for the header/dropdown/footer chrome Nova's own layout
+   renders (see admin-nova/layouts/app.blade.php) — these are hardcoded
+   color-mix() opacity blends in the shared rules above, so they can't be
+   fixed via a token override and need a direct color override instead. */
+body.design-nova .adm-header-sub,
+body.design-nova .adm-user-role,
+body.design-nova .adm-user-chevron,
+body.design-nova .adm-dd-role,
+body.design-nova .adm-dd-item i,
+body.design-nova .footer.bg-light .text-muted {
+    color: var(--text-color) !important;
+}
+
+/* Premium active nav item: blue gradient + soft glow, per the
+   "$100M SaaS" sidebar spec — .sb-on already gets the gradient
+   from --primary-color via the base .sb-row.sb-on rule above,
+   this just adds Nova's extra glow on top of it. */
+body.design-nova .sb-row.sb-on {
+    box-shadow: 0 8px 20px -6px color-mix(in srgb, var(--primary-color) 55%, transparent);
+}
+body.design-nova .sb-row { border-radius: var(--radius-md); }
+body.design-nova .adm-header { box-shadow: 0 1px 0 var(--border-color); }
+
+/* Desktop sidebar collapse button — markup lives in the shared
+   sidebar.blade.php (see .sidebar-collapse-btn there) but only Nova
+   shows/uses it; Classic/Modern leave it display:none so it's inert
+   dead markup for them, same pattern as every other Nova-only tweak
+   in this file. Clicking it toggles body.nova-sidebar-collapsed
+   (see the toggleNovaSidebar() script in admin-nova/layouts/app.blade.php),
+   which slides the sidebar fully off-canvas and collapses the content
+   margin back to 0 — reusing the existing transform/margin transitions
+   already defined on .sidebar/.main-content, no new animation needed. */
+.sidebar-collapse-btn {
+    display: none;
+    width: 32px; height: 32px;
+    align-items: center; justify-content: center;
+    margin-left: auto;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--text-color);
+    font-size: 15px;
+    cursor: pointer;
+    transition: background .15s var(--m-ease), border-color .15s var(--m-ease);
+}
+.sidebar-collapse-btn:hover { background: var(--primary-tint-6); border-color: var(--primary-color); }
+body.design-nova .sidebar-collapse-btn { display: flex; }
+
+body.design-nova.nova-sidebar-collapsed .sidebar { transform: translateX(-100%); }
+body.design-nova.nova-sidebar-collapsed .main-content { margin-left: 0; }
+
+/* Collapsing the sidebar takes .sidebar-collapse-btn with it (it's inside
+   .sidebar), so this fixed re-open affordance (markup in admin-nova/layouts
+   /app.blade.php) is the only way back — hidden unless collapsed. */
+.sidebar-reopen-btn {
+    display: none;
+    position: fixed; top: 18px; left: 18px; z-index: 210;
+    width: 38px; height: 38px;
+    align-items: center; justify-content: center;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--card-bg);
+    color: var(--text-color);
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: var(--m-shadow-md);
+    transition: background .15s var(--m-ease), transform .15s var(--m-ease);
+}
+.sidebar-reopen-btn:hover { background: var(--primary-tint-6); }
+body.design-nova.nova-sidebar-collapsed .sidebar-reopen-btn { display: flex; }
 
 /* =====================================================
    Responsive

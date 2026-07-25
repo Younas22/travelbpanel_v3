@@ -16,6 +16,15 @@
                 </div>
             @endif
         </a>
+
+        {{-- Desktop sidebar collapse button — Nova only (see .sidebar-collapse-btn
+             in admin-modern.css, display:none by default, shown under
+             body.design-nova). Classic/Modern already have their own
+             .sidebar-toggle above for the separate mobile off-canvas
+             behaviour; this is a distinct desktop show/hide affordance. --}}
+        <button class="sidebar-collapse-btn" type="button" onclick="toggleNovaSidebar()" aria-label="Collapse sidebar">
+            <i class="bi bi-layout-sidebar-inset"></i>
+        </button>
     </div>
 
     {{-- View Website --}}
