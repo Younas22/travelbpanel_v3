@@ -260,8 +260,8 @@
                     };
                     $serviceName = match($booking->booking_type) {
                         'hotel' => $booking->hotel_info['name'] ?? 'N/A',
-                        'tour'  => $booking->tour_name ?? 'N/A',
-                        'umrah' => $booking->umrah_name ?? 'N/A',
+                        'tour'  => $booking->tour_info['name'] ?? 'N/A',
+                        'umrah' => $booking->umrah_info['name'] ?? 'N/A',
                         default => $booking->flight_route['route'] ?? 'N/A',
                     };
 
@@ -303,6 +303,16 @@
                         'cancelled' => 'text-novadanger',
                         default => 'text-novawarning',
                     };
+                    $paymentColor = match($booking->booking_payment_state) {
+                        'paid' => 'text-novasuccess',
+                        'refunded' => 'text-novablue',
+                        default => 'text-novawarning',
+                    };
+
+                    $paxCount = $booking->booking_type === 'hotel' ? ($booking->guest_count ?? 'N/A') : ($booking->passenger_count ?? 'N/A');
+
+                    $userData = is_string($booking->booking_user_data) ? json_decode($booking->booking_user_data, true) : $booking->booking_user_data;
+                    $phone = (is_array($userData) ? ($userData['user_phone'] ?? null) : ($userData->user_phone ?? null)) ?: 'No number';
                 @endphp
                 <a href="{{ $invoiceRoute }}" target="_blank"
                    class="tt-row flex items-center gap-3 rounded-xl border border-novaborder p-3 sm:p-3.5"
@@ -363,9 +373,28 @@
                         </div>
                     @endif
 
+                    {{-- Passengers/Guests, Phone, and Partner stacked as one
+                         single column now — label above value, each on its
+                         own line. --}}
+                    <div class="hidden lg:flex flex-col gap-1.5 w-28 flex-shrink-0 px-2">
+                        <div class="min-w-0">
+                            <p class="text-[9px] text-novamuted">{{ $booking->booking_type === 'hotel' ? 'Guests' : 'Passengers' }}</p>
+                            <p class="text-xs font-semibold text-novatext truncate mt-0.5">{{ $paxCount }}</p>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[9px] text-novamuted">Phone</p>
+                            <p class="text-xs text-novatext truncate mt-0.5">{{ $phone }}</p>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[9px] text-novamuted">Partner</p>
+                            <p class="text-xs text-novatext truncate mt-0.5" title="{{ ucfirst($booking->booking_supplier_name ?? 'Manual') }}">{{ ucfirst($booking->booking_supplier_name ?? 'Manual') }}</p>
+                        </div>
+                    </div>
+
                     <div class="text-right flex-shrink-0 ml-auto">
                         <p class="text-sm font-bold text-novatext">{{ $booking->formatted_amount }}</p>
-                        <p class="text-xs {{ $statusColor }} font-medium mt-0.5">{{ ucfirst($booking->booking_status_flag) }}</p>
+                        <p class="text-xs {{ $statusColor }} font-semibold mt-0.5">{{ ucfirst($booking->booking_status_flag) }}</p>
+                        <p class="text-[10px] {{ $paymentColor }} font-medium">{{ ucfirst($booking->booking_payment_state) }}</p>
                     </div>
                 </a>
             @empty

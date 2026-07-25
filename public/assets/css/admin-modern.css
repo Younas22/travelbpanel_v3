@@ -2637,6 +2637,17 @@ body.design-nova .sb-row.sb-on {
 body.design-nova .sb-row { border-radius: var(--radius-md); }
 body.design-nova .adm-header { box-shadow: 0 1px 0 var(--border-color); }
 
+/* .sb-kid.sb-kid-on (active item inside an expanded sidebar group, e.g.
+   "All bookings" under Bookings) is styled white-text-on-tinted-bg in the
+   base rule above — built for Modern's dark sidebar, where that tint reads
+   as a visible dark highlight. Nova's sidebar is light, so that same tint
+   is near-white and white text on it is essentially invisible. Nova needs
+   dark text + a stronger tint instead. */
+body.design-nova .sb-kid.sb-kid-on {
+    color: var(--text-color);
+    background: var(--primary-tint-16);
+}
+
 /* Desktop sidebar collapse button — markup lives in the shared
    sidebar.blade.php (see .sidebar-collapse-btn there) but only Nova
    shows/uses it; Classic/Modern leave it display:none so it's inert
