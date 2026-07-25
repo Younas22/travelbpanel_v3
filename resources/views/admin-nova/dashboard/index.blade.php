@@ -63,21 +63,21 @@
 <div id="dashTT" class="tt-fade-in">
 
     {{-- ============ KPI CARDS ============ --}}
-    <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
+    <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
         @foreach($ttKpis as $kpi)
-            <div class="tt-card bg-white rounded-xl border border-slate-100 shadow-sm p-3.5">
-                <div class="flex items-center justify-between mb-2">
-                    <p class="text-xs text-slate-500 truncate">{{ $kpi['label'] }}</p>
-                    <div class="w-6 h-6 rounded-full {{ $kpi['circle'] }} text-white flex items-center justify-center flex-shrink-0">
+            <div class="tt-card bg-white rounded-xl border border-slate-100 shadow-sm p-4 sm:p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <p class="text-xs sm:text-sm text-slate-500 truncate">{{ $kpi['label'] }}</p>
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full {{ $kpi['circle'] }} text-white flex items-center justify-center flex-shrink-0">
                         @if($kpi['icon'] === 'passport')
-                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8 17h8"/></svg>
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8 17h8"/></svg>
                         @else
-                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                         @endif
                     </div>
                 </div>
                 <div class="flex items-end justify-between gap-1">
-                    <span class="text-lg sm:text-xl font-bold text-slate-900 truncate">{{ $kpi['value'] }}+</span>
+                    <span class="text-xl sm:text-2xl font-bold text-slate-900 truncate">{{ $kpi['value'] }}+</span>
                     <span class="inline-flex items-center gap-0.5 text-[11px] font-semibold text-emerald-600 flex-shrink-0">
                         <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15 12 9l-6 6"/></svg>
                         +0.2%
@@ -88,7 +88,7 @@
     </div>
 
     {{-- ============ SALES PERFORMANCE ============ --}}
-    <div class="tt-card bg-white rounded-xl border border-slate-100 shadow-sm p-4 sm:p-5 mb-4">
+    <div class="tt-card bg-white rounded-xl border border-slate-100 shadow-sm p-5 sm:p-6 mb-5">
         <div class="flex flex-wrap items-start justify-between gap-2 mb-3">
             <div>
                 <h2 class="text-sm font-bold text-slate-900">Total Sales Performance</h2>
@@ -101,11 +101,11 @@
         </div>
 
         <div class="flex gap-2">
-            <div class="hidden sm:flex flex-col justify-between text-[10px] text-slate-400 py-1 h-44 sm:h-52">
+            <div class="hidden sm:flex flex-col justify-between text-[10px] text-slate-400 py-1 h-52 sm:h-60">
                 <span>60k</span><span>50k</span><span>40k</span><span>30k</span><span>20k</span><span>10k</span>
             </div>
             <div class="flex-1 min-w-0">
-                <div class="h-44 sm:h-52">
+                <div class="h-52 sm:h-60">
                     <svg viewBox="0 0 700 240" preserveAspectRatio="none" class="w-full h-full">
                         <defs>
                             <linearGradient id="ttGradA" x1="0" y1="0" x2="0" y2="1">
@@ -135,10 +135,16 @@
     </div>
 
     {{-- ============ ALL BOOKINGS ============ --}}
-    <div class="tt-card bg-white rounded-xl border border-slate-100 shadow-sm p-4 sm:p-5">
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-            <h2 class="text-sm font-bold text-slate-900">All Bookings</h2>
-            <span class="text-[11px] text-slate-400">{{ $recent_bookings->count() }} shown</span>
+    <div class="tt-card bg-white rounded-xl border border-slate-100 shadow-sm p-5 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div class="flex items-center gap-2">
+                <h2 class="text-sm sm:text-base font-bold text-slate-900">All Bookings</h2>
+                <span class="text-[11px] text-slate-400">{{ $recent_bookings->count() }} shown</span>
+            </div>
+            <a href="{{ route('admin.bookings.all') }}" class="inline-flex items-center gap-1.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-1.5 text-[11px] font-semibold transition-colors flex-shrink-0">
+                View All Bookings
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
         </div>
 
         {{-- Real, working filters — client-side over the bookings already
@@ -222,9 +228,9 @@
                     }
                 @endphp
                 <a href="{{ $invoiceRoute }}" target="_blank"
-                   class="tt-row flex items-center gap-3 rounded-lg border border-slate-100 p-2.5 sm:p-3 transition-colors"
+                   class="tt-row flex items-center gap-3 rounded-lg border border-slate-100 p-3 sm:p-3.5 transition-colors"
                    data-type="{{ $booking->booking_type }}" data-status="{{ $booking->booking_status_flag }}" data-date="{{ $booking->created_at->format('Y-m-d') }}">
-                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full {{ $tc['icon'] }} flex items-center justify-center flex-shrink-0">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full {{ $tc['icon'] }} flex items-center justify-center flex-shrink-0">
                         @switch($booking->booking_type)
                             @case('hotel')
                                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4M9 7h1M9 11h1M14 7h1M14 11h1"/></svg>

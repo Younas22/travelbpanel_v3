@@ -2558,6 +2558,28 @@ tr.table-warning, tr.table-warning td { background-color: color-mix(in srgb, var
 .footer.bg-light .text-muted { color: color-mix(in srgb, var(--text-color) 55%, transparent) !important; font-size: 0.75rem; }
 
 /* =====================================================
+   Nova (resources/views/admin-nova) — for now Nova borrows
+   this file + admin-modern's sidebar/header/footer partials
+   as its chrome (see admin-nova/layouts/app.blade.php), but
+   its sidebar should read as a separate, LIGHT identity
+   rather than admin-modern's dark rail. Overriding just the
+   --m-sidebar-* tokens under body.design-nova reskins every
+   .sidebar/.sb-row/etc rule automatically (they all already
+   read these same custom properties) without duplicating a
+   single structural rule or touching Modern's own (still
+   dark) sidebar at all.
+===================================================== */
+body.design-nova {
+    --m-sidebar-bg: var(--card-bg);
+    --m-sidebar-bg-active: var(--primary-tint-10);
+    --m-sidebar-border: var(--border-color);
+    --m-sidebar-text: var(--text-color);
+    --m-sidebar-text-muted: color-mix(in srgb, var(--text-color) 60%, transparent);
+    --m-sidebar-icon: color-mix(in srgb, var(--text-color) 50%, transparent);
+}
+body.design-nova .sidebar { box-shadow: var(--m-shadow-sm); }
+
+/* =====================================================
    Responsive
 ===================================================== */
 @media (max-width: 575.98px) {
