@@ -31,6 +31,24 @@
     </button>
 </div>
 
+{{-- Column headings — only shown once the row-cards below lock into the
+     single-line lg: layout; below that breakpoint every field already
+     carries its own small inline label, so a separate heading row would
+     just duplicate them. --}}
+<div class="hidden lg:flex items-center gap-3 px-4 pb-2 mb-1">
+    <span class="w-4 flex-shrink-0"></span>
+    <span class="w-10 flex-shrink-0"></span>
+    <span class="w-32 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Booking</span>
+    <span class="w-40 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Customer</span>
+    <span class="flex-1 min-w-0 px-2 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Details</span>
+    <span class="w-24 flex-shrink-0 text-center text-[10px] font-semibold uppercase tracking-wide text-novamuted">Date / Stay</span>
+    <span class="w-16 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Pax</span>
+    <span class="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Phone</span>
+    <span class="w-20 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Partner</span>
+    <span class="w-28 flex-shrink-0 text-right text-[10px] font-semibold uppercase tracking-wide text-novamuted">Amount / Status</span>
+    <span class="flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted" style="width:96px;">Actions</span>
+</div>
+
 <div class="space-y-3" id="bkList">
     @forelse($bookings as $booking)
         @php
@@ -78,35 +96,48 @@
             $userData = is_string($booking->booking_user_data) ? json_decode($booking->booking_user_data, true) : $booking->booking_user_data;
             $phone = (is_array($userData) ? ($userData['user_phone'] ?? null) : ($userData->user_phone ?? null)) ?: 'No number';
         @endphp
-        <div class="tt-row flex items-center gap-3 rounded-2xl border border-novaborder p-3.5 sm:p-4"
+        <div class="tt-row flex flex-col lg:flex-row lg:items-center gap-2.5 lg:gap-3 rounded-2xl border border-novaborder p-3 lg:p-4"
              data-type="{{ $type }}" data-status="{{ $booking->booking_status_flag }}">
-            <input type="checkbox" class="booking-checkbox w-4 h-4 rounded border-novaborder text-novablue flex-shrink-0"
-                   data-id="{{ $booking->id }}" data-type="{{ $type }}">
 
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full {{ $tc['icon'] }} flex items-center justify-center flex-shrink-0">
-                @switch($type)
-                    @case('hotel')
-                        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4M9 7h1M9 11h1M14 7h1M14 11h1"/></svg>
-                        @break
-                    @case('tour')
-                        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8 6 6 9.5 6 13a6 6 0 0 0 12 0c0-3.5-2-7-6-11Z"/></svg>
-                        @break
-                    @case('umrah')
-                        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
-                        @break
-                    @default
-                        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 19.5 21 12 2.5 4.5 5 11l-2.5.5L5 12l-2.5.5Z"/></svg>
-                @endswitch
+            {{-- Top line on mobile (checkbox, icon, booking id, amount);
+                 first three segments of the single row from lg: up. --}}
+            <div class="flex items-center gap-2.5 lg:gap-3">
+                <input type="checkbox" class="booking-checkbox w-4 h-4 rounded border-novaborder text-novablue flex-shrink-0"
+                       data-id="{{ $booking->id }}" data-type="{{ $type }}">
+
+                <div class="w-8 h-8 lg:w-10 lg:h-10 rounded-full {{ $tc['icon'] }} flex items-center justify-center flex-shrink-0">
+                    @switch($type)
+                        @case('hotel')
+                            <svg class="w-4 h-4 lg:w-4.5 lg:h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4M9 7h1M9 11h1M14 7h1M14 11h1"/></svg>
+                            @break
+                        @case('tour')
+                            <svg class="w-4 h-4 lg:w-4.5 lg:h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8 6 6 9.5 6 13a6 6 0 0 0 12 0c0-3.5-2-7-6-11Z"/></svg>
+                            @break
+                        @case('umrah')
+                            <svg class="w-4 h-4 lg:w-4.5 lg:h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+                            @break
+                        @default
+                            <svg class="w-4 h-4 lg:w-4.5 lg:h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 19.5 21 12 2.5 4.5 5 11l-2.5.5L5 12l-2.5.5Z"/></svg>
+                    @endswitch
+                </div>
+
+                <a href="{{ $invoiceRoute }}" target="_blank" class="min-w-0 flex-1 lg:flex-none lg:w-32">
+                    <p class="text-xs lg:text-sm font-semibold text-novatext truncate">#{{ $booking->booking_code_ref }}</p>
+                    <p class="text-[10px] lg:text-xs text-novamuted truncate mt-0.5">{{ $booking->created_at->format('M j, Y') }}</p>
+                    <span class="inline-flex mt-1 lg:mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $tc['badge'] }}">{{ $tc['label'] }}</span>
+                </a>
+
+                {{-- Amount shows up here on mobile/tablet (top-right of the
+                     card); hidden again from lg: where it moves to its own
+                     column at the end of the single-line row instead. --}}
+                <div class="lg:hidden text-right flex-shrink-0">
+                    <p class="text-xs font-bold text-novatext truncate">{{ $booking->formatted_amount }}</p>
+                    <p class="text-[10px] {{ $statusColor }} font-semibold mt-0.5 truncate">{{ ucfirst($booking->booking_status_flag) }}</p>
+                </div>
             </div>
 
-            <a href="{{ $invoiceRoute }}" target="_blank" class="min-w-0 w-28 sm:w-32 flex-shrink-0">
-                <p class="text-sm font-semibold text-novatext truncate">#{{ $booking->booking_code_ref }}</p>
-                <p class="text-xs text-novamuted truncate mt-0.5">{{ $booking->created_at->format('M j, Y') }}</p>
-                <span class="inline-flex mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $tc['badge'] }}">{{ $tc['label'] }}</span>
-            </a>
-
-            <div class="hidden sm:flex items-center gap-2 w-40 flex-shrink-0">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0"
+            <div class="flex items-center gap-2 lg:w-40 lg:flex-shrink-0">
+                <div class="w-7 h-7 lg:w-8 lg:h-8 rounded-full flex items-center justify-center text-[10px] lg:text-[11px] font-bold flex-shrink-0"
                      style="background:{{ $avatar['bg'] }}; color:{{ $avatar['text'] }}">{{ $initials }}</div>
                 <div class="min-w-0">
                     <p class="text-xs font-semibold text-novatext truncate">{{ $booking->customer_name ?? 'N/A' }}</p>
@@ -114,52 +145,55 @@
                 </div>
             </div>
 
-            <div class="hidden lg:block flex-1 min-w-0 px-2">
+            <div class="lg:flex-1 min-w-0 lg:px-2">
                 <p class="text-xs font-semibold text-novatext truncate">{{ Str::limit($serviceName, 28) }}</p>
                 <p class="text-[11px] text-novamuted truncate mt-0.5">{{ $serviceLocation }}</p>
             </div>
 
-            <div class="hidden xl:block w-24 flex-shrink-0 text-center">
-                <p class="text-xs font-semibold text-novatext">{{ $dateLine }}</p>
-                <p class="text-[11px] text-novamuted mt-0.5">{{ $dateSub }}</p>
-            </div>
-
-            {{-- Passengers/Guests, Phone, and Partner stacked as one single
-                 column now — label above value, each on its own line. --}}
-            <div class="hidden xl:flex flex-col gap-1.5 w-28 flex-shrink-0 px-1">
-                <div class="min-w-0">
+            {{-- Date/Stay, Passengers, Phone, and Partner — a compact strip
+                 that wraps freely on mobile/tablet and locks to one line
+                 with fixed column widths from lg: up. --}}
+            <div class="flex flex-wrap items-start gap-x-4 gap-y-1.5 lg:flex-nowrap lg:gap-4">
+                <div class="w-20 lg:w-24 flex-shrink-0 lg:text-center">
+                    <p class="text-[9px] text-novamuted">Date / Stay</p>
+                    <p class="text-xs font-semibold text-novatext mt-0.5">{{ $dateLine }}</p>
+                    <p class="text-[10px] text-novamuted">{{ $dateSub }}</p>
+                </div>
+                <div class="w-20 lg:w-16 flex-shrink-0 min-w-0">
                     <p class="text-[9px] text-novamuted">{{ $type === 'hotel' ? 'Guests' : 'Passengers' }}</p>
                     <p class="text-xs font-semibold text-novatext truncate mt-0.5">{{ $paxCount }}</p>
                 </div>
-                <div class="min-w-0">
+                <div class="w-24 flex-shrink-0 min-w-0">
                     <p class="text-[9px] text-novamuted">Phone</p>
                     <p class="text-xs text-novatext truncate mt-0.5">{{ $phone }}</p>
                 </div>
-                <div class="min-w-0">
+                <div class="w-20 flex-shrink-0 min-w-0">
                     <p class="text-[9px] text-novamuted">Partner</p>
                     <p class="text-xs text-novatext truncate mt-0.5">{{ ucfirst($booking->booking_supplier_name ?? 'Manual') }}</p>
                 </div>
             </div>
 
-            <div class="w-24 sm:w-28 flex-shrink-0 text-right">
-                <p class="text-sm font-bold text-novatext">{{ $booking->formatted_amount }}</p>
-                <p class="text-[11px] {{ $statusColor }} font-semibold mt-0.5">{{ ucfirst($booking->booking_status_flag) }}</p>
+            {{-- Full amount/status/payment column — desktop only (mobile's
+                 compact version is in the top line above). --}}
+            <div class="hidden lg:block w-28 flex-shrink-0 text-right lg:ml-auto">
+                <p class="text-sm font-bold text-novatext truncate">{{ $booking->formatted_amount }}</p>
+                <p class="text-[11px] {{ $statusColor }} font-semibold mt-0.5 truncate">{{ ucfirst($booking->booking_status_flag) }}</p>
                 <p class="text-[10px] {{ $paymentColor }} font-medium">{{ ucfirst($booking->booking_payment_state) }}</p>
             </div>
 
-            <div class="flex items-center gap-1 flex-shrink-0">
+            <div class="flex items-center gap-1 flex-shrink-0 self-end lg:self-auto">
                 <a href="{{ route('admin.bookings.edit', ['type' => $type, 'id' => $booking->id]) }}"
-                   class="tt-btn w-8 h-8 rounded-full border border-novaborder flex items-center justify-center hover:bg-novabg" title="Edit booking">
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16.474 5.408 18.592 7.526M4 20l1.11-3.92a2 2 0 0 1 .53-.9l9.9-9.9a1.5 1.5 0 0 1 2.12 0l1.06 1.06a1.5 1.5 0 0 1 0 2.12l-9.9 9.9a2 2 0 0 1-.9.53L4 20Z"/></svg>
+                   class="tt-btn w-7 h-7 lg:w-8 lg:h-8 rounded-full border border-novaborder flex items-center justify-center hover:bg-novabg" title="Edit booking">
+                    <svg class="w-3 h-3 lg:w-3.5 lg:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16.474 5.408 18.592 7.526M4 20l1.11-3.92a2 2 0 0 1 .53-.9l9.9-9.9a1.5 1.5 0 0 1 2.12 0l1.06 1.06a1.5 1.5 0 0 1 0 2.12l-9.9 9.9a2 2 0 0 1-.9.53L4 20Z"/></svg>
                 </a>
                 <a href="{{ $invoiceRoute }}" target="_blank"
-                   class="tt-btn w-8 h-8 rounded-full border border-novaborder flex items-center justify-center hover:bg-novabg" title="View invoice">
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+                   class="tt-btn w-7 h-7 lg:w-8 lg:h-8 rounded-full border border-novaborder flex items-center justify-center hover:bg-novabg" title="View invoice">
+                    <svg class="w-3 h-3 lg:w-3.5 lg:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
                 </a>
                 <button type="button"
-                        class="tt-btn delete-single-btn w-8 h-8 rounded-full border border-red-200 flex items-center justify-center text-novadanger hover:bg-red-50"
+                        class="tt-btn delete-single-btn w-7 h-7 lg:w-8 lg:h-8 rounded-full border border-red-200 flex items-center justify-center text-novadanger hover:bg-red-50"
                         data-id="{{ $booking->id }}" data-type="{{ $type }}" data-ref="{{ $booking->booking_code_ref }}" title="Delete booking">
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/></svg>
+                    <svg class="w-3 h-3 lg:w-3.5 lg:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/></svg>
                 </button>
             </div>
         </div>

@@ -86,6 +86,17 @@
         'tour'   => ['label' => 'Tour',   'badge' => 'bg-amber-50 text-amber-600', 'icon' => 'bg-amber-50 text-amber-600'],
         'umrah'  => ['label' => 'Umrah',  'badge' => 'bg-violet-50 text-violet-600', 'icon' => 'bg-violet-50 text-violet-600'],
     ];
+
+    // Same avatar palette as admin-nova/bookings/_list.blade.php, so the
+    // dashboard's booking rows share the exact same look as the full
+    // bookings pages.
+    $ttAvatarPalette = [
+        ['bg' => '#DBEAFE', 'text' => '#1D4ED8'],
+        ['bg' => '#DCFCE7', 'text' => '#15803D'],
+        ['bg' => '#FEF3C7', 'text' => '#B45309'],
+        ['bg' => '#FCE7F3', 'text' => '#BE185D'],
+        ['bg' => '#EDE9FE', 'text' => '#6D28D9'],
+    ];
 @endphp
 
 <div id="dashTT" class="tt-fade-in font-jakarta">
@@ -93,7 +104,7 @@
     {{-- ============ KPI CARDS ============ --}}
     <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
         @foreach($ttKpis as $kpi)
-            <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4">
+            <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 min-w-0">
                 <div class="flex items-center justify-between mb-2.5">
                     <p class="text-xs font-medium text-novamuted truncate">{{ $kpi['label'] }}</p>
                     <div class="w-8 h-8 rounded-full {{ $kpi['circle'] }} text-white flex items-center justify-center flex-shrink-0">
@@ -113,7 +124,7 @@
                     </div>
                 </div>
                 <div class="flex items-end justify-between gap-2">
-                    <div>
+                    <div class="min-w-0">
                         <span class="block text-lg font-bold text-novatext truncate">{{ $kpi['value'] }}+</span>
                         <span class="inline-flex items-center gap-0.5 text-xs font-semibold text-novasuccess mt-0.5">
                             <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15 12 9l-6 6"/></svg>
@@ -248,6 +259,21 @@
             </button>
         </div>
 
+        {{-- Column headings — same widths/breakpoint as admin-nova/bookings
+             /_list.blade.php's heading row, so both pages line up visually. --}}
+        <div class="hidden lg:flex items-center gap-3 px-3.5 pb-2 mb-1">
+            <span class="w-10 flex-shrink-0"></span>
+            <span class="w-36 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Booking</span>
+            <span class="w-40 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Customer</span>
+            <span class="flex-1 min-w-0 px-3 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Details</span>
+            <span class="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Date / Stay</span>
+            <span class="w-16 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Pax</span>
+            <span class="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Phone</span>
+            <span class="w-20 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Partner</span>
+            <span class="w-28 flex-shrink-0 text-right text-[10px] font-semibold uppercase tracking-wide text-novamuted">Amount / Status</span>
+            <span class="flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted" style="width:112px;">Actions</span>
+        </div>
+
         <div class="space-y-3 max-h-[460px] overflow-y-auto tt-scrollbar pr-1" id="ttBookingList">
             @forelse($recent_bookings as $booking)
                 @php
@@ -264,20 +290,13 @@
                         'umrah' => $booking->umrah_info['name'] ?? 'N/A',
                         default => $booking->flight_route['route'] ?? 'N/A',
                     };
+                    $serviceLocation = match($booking->booking_type) {
+                        'hotel' => $booking->hotel_info['location'] ?? 'N/A',
+                        'tour'  => $booking->tour_info['location'] ?? 'N/A',
+                        default => $booking->flight_route['stops'] ?? 'N/A',
+                    };
 
                     $isFlight = $booking->booking_type === 'flight';
-                    if ($isFlight) {
-                        $routeParts = array_map('trim', explode('→', $booking->flight_route['route'] ?? ''));
-                        $originCode = $routeParts[0] ?? 'N/A';
-                        $destCode   = $routeParts[1] ?? 'N/A';
-                        $stopsLabel = $booking->flight_route['stops'] ?? '';
-                        $depTime    = $booking->travel_date['time'] ?? $booking->created_at->format('g:i A');
-                        // No duration field exists on FlightBooking yet — dummy
-                        // placeholder only, per explicit request, until a real
-                        // flight-duration source is wired up.
-                        $durationOptions = ['13h 40m', '8h 05m', '5h 20m', '2h 15m', '10h 50m'];
-                        $duration = $durationOptions[crc32($booking->booking_code_ref ?? '') % count($durationOptions)];
-                    }
 
                     // Fare class (flight) / room type (hotel) — neither field
                     // exists on the models yet either, so this is dummy data
@@ -313,90 +332,114 @@
 
                     $userData = is_string($booking->booking_user_data) ? json_decode($booking->booking_user_data, true) : $booking->booking_user_data;
                     $phone = (is_array($userData) ? ($userData['user_phone'] ?? null) : ($userData->user_phone ?? null)) ?: 'No number';
+
+                    $ttInitials = collect(explode(' ', $booking->customer_name ?? ''))
+                        ->filter()->map(fn($n) => strtoupper(substr($n, 0, 1)))->take(2)->implode('') ?: '?';
+                    $ttAvatar = $ttAvatarPalette[crc32($booking->customer_name ?? 'guest') % count($ttAvatarPalette)];
                 @endphp
-                <a href="{{ $invoiceRoute }}" target="_blank"
-                   class="tt-row flex items-center gap-3 rounded-xl border border-novaborder p-3 sm:p-3.5"
-                   data-type="{{ $booking->booking_type }}" data-status="{{ $booking->booking_status_flag }}" data-date="{{ $booking->created_at->format('Y-m-d') }}">
-                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full {{ $tc['icon'] }} flex items-center justify-center flex-shrink-0">
-                        @switch($booking->booking_type)
-                            @case('hotel')
-                                <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4M9 7h1M9 11h1M14 7h1M14 11h1"/></svg>
-                                @break
-                            @case('tour')
-                                <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8 6 6 9.5 6 13a6 6 0 0 0 12 0c0-3.5-2-7-6-11Z"/></svg>
-                                @break
-                            @case('umrah')
-                                <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
-                                @break
-                            @default
-                                <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 19.5 21 12 2.5 4.5 5 11l-2.5.5L5 12l-2.5.5Z"/></svg>
-                        @endswitch
-                    </div>
+                {{-- Same row-card structure as admin-nova/bookings/_list.blade.php
+                     (stacked on mobile/tablet, single line from lg: up) — the
+                     one deliberate difference is the flight row's dotted
+                     path/stop visualization below, kept exactly as-is instead
+                     of the plain "Details" line the bookings pages use. --}}
+                <div class="tt-row flex flex-col lg:flex-row lg:items-center gap-2.5 lg:gap-3 rounded-xl border border-novaborder p-3 lg:p-3.5"
+                     data-type="{{ $booking->booking_type }}" data-status="{{ $booking->booking_status_flag }}" data-date="{{ $booking->created_at->format('Y-m-d') }}">
 
-                    {{-- Name + code + booking-type badge in one column... --}}
-                    <div class="min-w-0 w-28 sm:w-36 flex-shrink-0">
-                        <p class="text-sm font-semibold text-novatext truncate">{{ Str::limit($serviceName, 18) }}</p>
-                        <p class="text-xs text-novamuted truncate mt-0.5">#{{ $booking->booking_code_ref }}</p>
-                        <span class="inline-flex mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $tc['badge'] }}">{{ $tc['label'] }}</span>
-                    </div>
-
-                    {{-- ...and fare class / room type gets its own column. --}}
-                    <div class="hidden sm:flex w-20 flex-shrink-0">
-                        @if($fareBadge)
-                            <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $fareBadge['cls'] }}">{{ $fareBadge['label'] }}</span>
-                        @endif
-                    </div>
-
-                    @if($isFlight)
-                        {{-- Real flight path: origin/destination + stop count,
-                             centred, from FlightBooking::flight_route(). --}}
-                        <div class="hidden md:flex items-center justify-center gap-2 flex-1 min-w-0 px-3">
-                            <div class="text-center flex-shrink-0">
-                                <p class="text-xs font-bold text-novatext">{{ $depTime }}</p>
-                                <p class="text-[10px] text-novamuted">{{ $originCode }}</p>
-                            </div>
-                            <span class="w-32 lg:w-52 border-t border-dashed border-black relative flex-shrink-0">
-                                <span class="absolute -top-[3px] left-0 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-black"></span>
-                                <span class="absolute -top-[3px] left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-black"></span>
-                                <span class="absolute -top-[3px] right-0 translate-x-1/2 w-1.5 h-1.5 rounded-full bg-black"></span>
-                                <span class="absolute -top-[19px] left-1/2 -translate-x-1/2 text-[10px] font-medium text-black whitespace-nowrap">{{ $duration }}</span>
-                                <span class="absolute top-[7px] left-1/2 -translate-x-1/2 text-[10px] font-semibold text-novablue whitespace-nowrap">{{ $stopsLabel }}</span>
-                            </span>
-                            <div class="text-center flex-shrink-0">
-                                <p class="text-xs font-bold text-novatext">&nbsp;</p>
-                                <p class="text-[10px] text-novamuted">{{ $destCode }}</p>
-                            </div>
+                    <div class="flex items-center gap-2.5 lg:gap-3">
+                        <div class="w-8 h-8 lg:w-10 lg:h-10 rounded-full {{ $tc['icon'] }} flex items-center justify-center flex-shrink-0">
+                            @switch($booking->booking_type)
+                                @case('hotel')
+                                    <svg class="w-4 h-4 lg:w-4.5 lg:h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4M9 7h1M9 11h1M14 7h1M14 11h1"/></svg>
+                                    @break
+                                @case('tour')
+                                    <svg class="w-4 h-4 lg:w-4.5 lg:h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8 6 6 9.5 6 13a6 6 0 0 0 12 0c0-3.5-2-7-6-11Z"/></svg>
+                                    @break
+                                @case('umrah')
+                                    <svg class="w-4 h-4 lg:w-4.5 lg:h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+                                    @break
+                                @default
+                                    <svg class="w-4 h-4 lg:w-4.5 lg:h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 19.5 21 12 2.5 4.5 5 11l-2.5.5L5 12l-2.5.5Z"/></svg>
+                            @endswitch
                         </div>
-                    @else
-                        <div class="hidden md:block flex-1 min-w-0 px-3 text-center">
-                            <p class="text-xs text-novamuted">{{ $booking->created_at->format('M j, Y') }}</p>
-                        </div>
-                    @endif
 
-                    {{-- Passengers/Guests, Phone, and Partner stacked as one
-                         single column now — label above value, each on its
-                         own line. --}}
-                    <div class="hidden lg:flex flex-col gap-1.5 w-28 flex-shrink-0 px-2">
+                        <a href="{{ $invoiceRoute }}" target="_blank" class="min-w-0 flex-1 lg:flex-none lg:w-36">
+                            <p class="text-xs lg:text-sm font-semibold text-novatext truncate">{{ Str::limit($serviceName, 18) }}</p>
+                            <p class="text-[10px] lg:text-xs text-novamuted truncate mt-0.5">#{{ $booking->booking_code_ref }}</p>
+                            <div class="flex flex-wrap items-center gap-1 mt-1 lg:mt-1.5">
+                                <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $tc['badge'] }}">{{ $tc['label'] }}</span>
+                                @if($fareBadge)
+                                    <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $fareBadge['cls'] }}">{{ $fareBadge['label'] }}</span>
+                                @endif
+                            </div>
+                        </a>
+
+                        <div class="lg:hidden text-right flex-shrink-0">
+                            <p class="text-xs font-bold text-novatext truncate">{{ $booking->formatted_amount }}</p>
+                            <p class="text-[10px] {{ $statusColor }} font-semibold mt-0.5 truncate">{{ ucfirst($booking->booking_status_flag) }}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 lg:w-40 lg:flex-shrink-0">
+                        <div class="w-7 h-7 lg:w-8 lg:h-8 rounded-full flex items-center justify-center text-[10px] lg:text-[11px] font-bold flex-shrink-0"
+                             style="background:{{ $ttAvatar['bg'] }}; color:{{ $ttAvatar['text'] }}">{{ $ttInitials }}</div>
                         <div class="min-w-0">
+                            <p class="text-xs font-semibold text-novatext truncate">{{ $booking->customer_name ?? 'N/A' }}</p>
+                            <p class="text-[11px] text-novamuted truncate">{{ $booking->customer_email ?? 'N/A' }}</p>
+                        </div>
+                    </div>
+
+                    {{-- Details — same plain layout as admin-nova/bookings
+                         /_list.blade.php's Details column for every booking
+                         type, flights included (no more dotted flight-path
+                         visualization here, per explicit request). --}}
+                    <div class="lg:flex-1 min-w-0 lg:px-2">
+                        <p class="text-xs font-semibold text-novatext truncate">{{ Str::limit($serviceName, 28) }}</p>
+                        <p class="text-[11px] text-novamuted truncate mt-0.5">{{ $serviceLocation }}</p>
+                    </div>
+
+                    {{-- Date/Stay, Passengers, Phone, and Partner — wraps
+                         freely on mobile/tablet, one line from lg: up. --}}
+                    <div class="flex flex-wrap items-start gap-x-4 gap-y-1.5 lg:flex-nowrap lg:gap-4">
+                        <div class="w-20 lg:w-24 flex-shrink-0 lg:text-center">
+                            <p class="text-[9px] text-novamuted">Date / Stay</p>
+                            <p class="text-xs font-semibold text-novatext mt-0.5">{{ $booking->created_at->format('M j, Y') }}</p>
+                        </div>
+                        <div class="w-20 lg:w-16 flex-shrink-0 min-w-0">
                             <p class="text-[9px] text-novamuted">{{ $booking->booking_type === 'hotel' ? 'Guests' : 'Passengers' }}</p>
                             <p class="text-xs font-semibold text-novatext truncate mt-0.5">{{ $paxCount }}</p>
                         </div>
-                        <div class="min-w-0">
+                        <div class="w-24 flex-shrink-0 min-w-0">
                             <p class="text-[9px] text-novamuted">Phone</p>
                             <p class="text-xs text-novatext truncate mt-0.5">{{ $phone }}</p>
                         </div>
-                        <div class="min-w-0">
+                        <div class="w-20 flex-shrink-0 min-w-0">
                             <p class="text-[9px] text-novamuted">Partner</p>
-                            <p class="text-xs text-novatext truncate mt-0.5" title="{{ ucfirst($booking->booking_supplier_name ?? 'Manual') }}">{{ ucfirst($booking->booking_supplier_name ?? 'Manual') }}</p>
+                            <p class="text-xs text-novatext truncate mt-0.5">{{ ucfirst($booking->booking_supplier_name ?? 'Manual') }}</p>
                         </div>
                     </div>
 
-                    <div class="text-right flex-shrink-0 ml-auto">
-                        <p class="text-sm font-bold text-novatext">{{ $booking->formatted_amount }}</p>
-                        <p class="text-xs {{ $statusColor }} font-semibold mt-0.5">{{ ucfirst($booking->booking_status_flag) }}</p>
+                    <div class="hidden lg:block w-28 flex-shrink-0 text-right lg:ml-auto">
+                        <p class="text-sm font-bold text-novatext truncate">{{ $booking->formatted_amount }}</p>
+                        <p class="text-[11px] {{ $statusColor }} font-semibold mt-0.5 truncate">{{ ucfirst($booking->booking_status_flag) }}</p>
                         <p class="text-[10px] {{ $paymentColor }} font-medium">{{ ucfirst($booking->booking_payment_state) }}</p>
                     </div>
-                </a>
+
+                    <div class="flex items-center gap-1 flex-shrink-0 self-end lg:self-auto">
+                        <a href="{{ route('admin.bookings.edit', ['type' => $booking->booking_type, 'id' => $booking->id]) }}"
+                           class="tt-btn w-7 h-7 lg:w-8 lg:h-8 rounded-full border border-novaborder flex items-center justify-center hover:bg-novabg" title="Edit booking">
+                            <svg class="w-3 h-3 lg:w-3.5 lg:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16.474 5.408 18.592 7.526M4 20l1.11-3.92a2 2 0 0 1 .53-.9l9.9-9.9a1.5 1.5 0 0 1 2.12 0l1.06 1.06a1.5 1.5 0 0 1 0 2.12l-9.9 9.9a2 2 0 0 1-.9.53L4 20Z"/></svg>
+                        </a>
+                        <a href="{{ $invoiceRoute }}" target="_blank"
+                           class="tt-btn w-7 h-7 lg:w-8 lg:h-8 rounded-full border border-novaborder flex items-center justify-center hover:bg-novabg" title="View invoice">
+                            <svg class="w-3 h-3 lg:w-3.5 lg:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+                        </a>
+                        <button type="button"
+                                class="tt-btn dash-delete-btn w-7 h-7 lg:w-8 lg:h-8 rounded-full border border-red-200 flex items-center justify-center text-novadanger hover:bg-red-50"
+                                data-id="{{ $booking->id }}" data-type="{{ $booking->booking_type }}" data-ref="{{ $booking->booking_code_ref }}" title="Delete booking">
+                            <svg class="w-3 h-3 lg:w-3.5 lg:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/></svg>
+                        </button>
+                    </div>
+                </div>
             @empty
                 <div class="text-center py-14">
                     <svg class="w-8 h-8 text-novaborder mx-auto mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/></svg>
@@ -528,6 +571,32 @@
         // Prevent clicks inside a panel from closing it
         root.querySelectorAll('.tt-dropdown-panel').forEach(function (panel) {
             panel.addEventListener('click', function (e) { e.stopPropagation(); });
+        });
+
+        // Delete booking — same endpoint/payload as admin-nova/bookings
+        // /_scripts.blade.php's single-delete handler.
+        root.querySelectorAll('.dash-delete-btn').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var id = this.dataset.id, type = this.dataset.type, ref = this.dataset.ref;
+                if (confirm('Are you sure you want to delete booking #' + ref + '? This action cannot be undone.')) {
+                    var form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{{ url("admin/bookings") }}/' + type + '/' + id;
+
+                    var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    var csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden'; csrfInput.name = '_token'; csrfInput.value = csrfToken;
+                    form.appendChild(csrfInput);
+
+                    var methodInput = document.createElement('input');
+                    methodInput.type = 'hidden'; methodInput.name = '_method'; methodInput.value = 'DELETE';
+                    form.appendChild(methodInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
         });
     })();
 </script>

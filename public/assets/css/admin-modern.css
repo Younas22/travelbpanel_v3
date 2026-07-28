@@ -156,7 +156,7 @@ body.theme-navbar-fixed .adm-header { position: sticky; top: 0; }
 /* =====================================================
    Base / Typography
 ===================================================== */
-html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: hidden; }
 
 body {
     font-family: var(--font-family);
@@ -165,6 +165,7 @@ body {
     color: var(--text-color);
     background: var(--body-bg);
     margin: 0;
+    overflow-x: hidden;
     letter-spacing: -0.005em;
     transition: background var(--transition-speed) var(--m-ease), color var(--transition-speed) var(--m-ease);
 }
@@ -2703,4 +2704,14 @@ body.design-nova.nova-sidebar-collapsed .sidebar-reopen-btn { display: flex; }
     .content-area { padding: var(--m-space-3); }
     .adm-header { padding: 0 var(--m-space-3); }
     .settings-section, .card-body, .m-card-body { padding: var(--m-space-4); }
+    /* .adm-header-right (avatar + name/role + chevron, all in one un-wrapping
+       flex row) has no narrow-screen treatment at all — on a true phone
+       width this forces the whole page wider than the viewport, causing
+       horizontal overflow/scroll on every page, not just this one. Hiding
+       the name/role text and keeping just the avatar+chevron is the
+       standard mobile pattern and doesn't change how this looks anywhere
+       above this breakpoint. */
+    .adm-user-info { display: none; }
+    .adm-header-left { min-width: 0; }
+    .adm-header-title, .adm-header-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
