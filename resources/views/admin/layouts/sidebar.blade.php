@@ -16,6 +16,18 @@
                 </div>
             @endif
         </a>
+
+        {{-- Desktop sidebar collapse button — Nova only (see .sidebar-collapse-btn
+             in admin-modern.css, display:none by default, shown under
+             body.design-nova). Classic/Modern leave it display:none, so
+             it's inert dead markup for them. This file is Classic's own
+             separate sidebar (not the shared admin-modern one), but Nova
+             still renders through it on every admin.* page it hasn't
+             converted yet, so it needs the same button as admin-modern's
+             sidebar.blade.php for a consistent Nova sidebar everywhere. --}}
+        <button class="sidebar-collapse-btn" type="button" onclick="toggleNovaSidebar()" aria-label="Collapse sidebar">
+            <i class="bi bi-layout-sidebar-inset"></i>
+        </button>
     </div>
 
     {{-- View Website --}}

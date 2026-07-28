@@ -120,13 +120,26 @@ class ThemeSetting extends Model
     }
 
     /**
-     * "classic" -> admin.css (the original design), "modern" -> the new
+     * "classic" -> admin.css (the original design), "modern"/"nova" -> the
      * admin-modern.css design. Both consume the exact same CSS variables,
      * so colors/fonts/radius/layout toggles apply identically to either.
+     *
+     * Nova shares this stylesheet with Modern (see admin-nova/layouts/app
+     * .blade.php, which links it directly) since Nova is still phased-in —
+     * most admin.* pages don't have a Nova-specific view yet and fall back
+     * to rendering through Classic's own layout/sidebar (see
+     * NovaAdminViewFinder's docblock). Classic's sidebar.blade.php happens
+     * to share the exact same .sidebar/.sb-row/etc class names as admin-
+     * modern's, so as long as THIS method also serves admin-modern.css for
+     * "nova" here, Classic's layout re-skins into Nova's light sidebar for
+     * free on every not-yet-converted page — without this, those pages
+     * loaded admin.css instead and silently dropped every Nova override,
+     * which is exactly what made Classic's sidebar look like a completely
+     * different sidebar had swapped in.
      */
     public function designStylesheet(): string
     {
-        return $this->design_style === 'modern'
+        return in_array($this->design_style, ['modern', 'nova'], true)
             ? 'public/assets/css/admin-modern.css'
             : 'public/assets/css/admin.css';
     }
