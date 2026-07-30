@@ -35,7 +35,15 @@
      single-line lg: layout; below that breakpoint every field already
      carries its own small inline label, so a separate heading row would
      just duplicate them. --}}
-<div class="hidden lg:flex items-center gap-3 px-4 pb-2 mb-1">
+{{-- Plain "gap-3"/"px-4" would collide with Bootstrap's own
+     .gap-3{gap:1rem!important} (16px vs Tailwind's 12px) and
+     .px-4{padding:1.5rem!important} (24px vs Tailwind's 16px) — Bootstrap's
+     !important wins on the unprefixed class names, quietly shifting every
+     column right of "Booking" out of alignment with the data rows below.
+     "lg:gap-3"/"lg:px-4" sidestep the collision entirely (Bootstrap has no
+     such classes) and match the data rows, which already use
+     "lg:gap-3"/"lg:p-4" for the same reason. --}}
+<div class="hidden lg:flex lg:items-center lg:gap-3 lg:px-4 pb-2 mb-1">
     <span class="w-4 flex-shrink-0"></span>
     <span class="w-10 flex-shrink-0"></span>
     <span class="w-32 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Booking</span>
