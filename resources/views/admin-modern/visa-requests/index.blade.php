@@ -105,20 +105,17 @@
                             </td>
 
                             <td>
-                                <div class="d-flex align-items-center">
+                                <div class="customer-profile">
                                     @php
                                         $fullName = trim($request->first_name . ' ' . ($request->middle_name ?? '') . ' ' . $request->surname);
-                                        $initials = collect(explode(' ', $fullName))->map(function($name) {
+                                        $initials = collect(explode(' ', $fullName))->filter()->map(function($name) {
                                             return strtoupper(substr($name, 0, 1));
                                         })->take(2)->implode('');
-                                        $colors = ['28a745', 'dc3545', '6f42c1', 'fd7e14', '20c997'];
-                                        $color = $colors[crc32($fullName) % count($colors)];
                                     @endphp
-                                    <img src="https://via.placeholder.com/32x32/{{ $color }}/ffffff?text={{ $initials }}"
-                                         alt="" class="rounded-circle me-2">
-                                    <div>
-                                        <div class="fw-semibold">{{ $fullName }}</div>
-                                        <small class="text-muted">{{ $request->gender }} • {{ $request->marital_status }}</small>
+                                    <div class="customer-avatar" style="background: {{ getRandomColor() }};">{{ $initials }}</div>
+                                    <div class="customer-details">
+                                        <div class="customer-name">{{ $fullName }}</div>
+                                        <div class="customer-email">{{ $request->gender }} • {{ $request->marital_status }}</div>
                                     </div>
                                 </div>
                             </td>

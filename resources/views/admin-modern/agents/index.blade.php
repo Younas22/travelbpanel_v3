@@ -115,26 +115,26 @@
                         <td><span class="ag-meta">{{ $agent->created_at->format('d M Y') }}</span></td>
                         <td>
                             <div class="ag-actions">
-                                <a href="{{ route('admin.agents.show', $agent) }}" class="ag-action-btn" title="View"><i class="bi bi-eye"></i></a>
-                                <a href="{{ route('admin.agents.edit', $agent) }}" class="ag-action-btn" title="Edit"><i class="bi bi-pencil"></i></a>
-                                <a href="{{ route('admin.agents.permissions', $agent) }}" class="ag-action-btn" title="Permissions"><i class="bi bi-shield-check"></i></a>
-                                <a href="{{ route('admin.agents.wallet', $agent) }}" class="ag-action-btn" title="Wallet"><i class="bi bi-wallet2"></i></a>
+                                <a href="{{ route('admin.agents.show', $agent) }}" class="ag-action-btn has-label" title="View"><i class="bi bi-eye"></i><span>View</span></a>
+                                <a href="{{ route('admin.agents.edit', $agent) }}" class="ag-action-btn has-label" title="Edit"><i class="bi bi-pencil"></i><span>Edit</span></a>
+                                <a href="{{ route('admin.agents.permissions', $agent) }}" class="ag-action-btn has-label" title="Permissions"><i class="bi bi-shield-check"></i><span>Permissions</span></a>
+                                <a href="{{ route('admin.agents.wallet', $agent) }}" class="ag-action-btn has-label" title="Wallet"><i class="bi bi-wallet2"></i><span>Wallet</span></a>
 
                                 @if($agent->approval_status === 'pending')
                                     <form method="POST" action="{{ route('admin.agents.approve', $agent) }}" class="d-inline">
                                         @csrf
-                                        <button type="submit" class="ag-action-btn ag-action-approve" title="Approve"><i class="bi bi-check-lg"></i></button>
+                                        <button type="submit" class="ag-action-btn has-label ag-action-approve" title="Approve"><i class="bi bi-check-lg"></i><span>Approve</span></button>
                                     </form>
                                 @elseif($agent->approval_status === 'active')
-                                    <button type="button" class="ag-action-btn ag-action-suspend" title="Suspend" data-bs-toggle="modal" data-bs-target="#suspendModal{{ $agent->id }}"><i class="bi bi-pause-circle"></i></button>
+                                    <button type="button" class="ag-action-btn has-label ag-action-suspend" title="Suspend" data-bs-toggle="modal" data-bs-target="#suspendModal{{ $agent->id }}"><i class="bi bi-pause-circle"></i><span>Suspend</span></button>
                                 @elseif($agent->approval_status === 'suspended')
                                     <form method="POST" action="{{ route('admin.agents.activate', $agent) }}" class="d-inline">
                                         @csrf
-                                        <button type="submit" class="ag-action-btn ag-action-activate" title="Activate"><i class="bi bi-play-circle"></i></button>
+                                        <button type="submit" class="ag-action-btn has-label ag-action-activate" title="Activate"><i class="bi bi-play-circle"></i><span>Activate</span></button>
                                     </form>
                                 @endif
 
-                                <button type="button" class="ag-action-btn ag-action-danger" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $agent->id }}"><i class="bi bi-trash"></i></button>
+                                <button type="button" class="ag-action-btn has-label ag-action-danger" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $agent->id }}"><i class="bi bi-trash"></i><span>Delete</span></button>
                             </div>
                         </td>
                     </tr>

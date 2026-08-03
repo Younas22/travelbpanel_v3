@@ -1074,6 +1074,8 @@ input:checked + .tp-switch-slider:before, input:checked + .tpe-switch-slider:bef
     transition: background .15s var(--m-ease), color .15s var(--m-ease), border-color .15s var(--m-ease);
 }
 .agw-action-btn { width: auto; height: auto; padding: 5px 10px; font-size: 0.75rem; font-weight: 600; }
+.ag-action-btn.has-label { width: auto; height: auto; padding: 5px 10px; font-size: 0.75rem; font-weight: 600; }
+.ag-action-btn.has-label span { white-space: nowrap; }
 .ag-action-btn:hover, .agw-action-btn:hover { background: var(--primary-tint-6); color: var(--primary-color); border-color: color-mix(in srgb, var(--primary-color) 40%, var(--border-color)); text-decoration: none; }
 .ag-action-btn.ag-action-approve, .agw-action-btn.agw-action-approve { color: var(--success-color); border-color: color-mix(in srgb, var(--success-color) 35%, var(--border-color)); }
 .ag-action-btn.ag-action-approve:hover, .agw-action-btn.agw-action-approve:hover { background: color-mix(in srgb, var(--success-color) 10%, transparent); }
@@ -1582,6 +1584,46 @@ input:checked + .tp-switch-slider:before, input:checked + .tpe-switch-slider:bef
 .tpk-action-btn.tpk-action-delete { color: var(--danger-color); border-color: color-mix(in srgb, var(--danger-color) 40%, var(--border-color)); }
 .tpk-action-btn.tpk-action-delete:hover { background: color-mix(in srgb, var(--danger-color) 10%, transparent); }
 .tpk-pagination { padding: var(--m-space-4) var(--m-space-5); border-top: 1px solid var(--border-color); }
+
+/* Labeled variant: same action button, but wide enough to show text next to the icon
+   so the current state (Active/Inactive, Featured/Not featured) is readable without hovering. */
+.tpk-action-btn.has-label { width: auto; height: auto; padding: 5px 10px; gap: 5px; font-size: 0.75rem; font-weight: 650; }
+.tpk-action-btn.has-label span { white-space: nowrap; }
+.tpk-action-btn.tpk-action-featured-on.has-label { background: color-mix(in srgb, var(--warning-color) 12%, transparent); }
+.tpk-action-btn.tpk-action-activate.has-label { background: color-mix(in srgb, var(--success-color) 10%, transparent); }
+
+/* ===== List / Grid view switcher — reusable on any listing page ===== */
+.view-switch { display: inline-flex; align-items: center; background: var(--body-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 3px; gap: 2px; }
+.view-switch button {
+    display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border: none; background: transparent;
+    border-radius: calc(var(--radius-md) - 3px); font-size: 0.8125rem; font-weight: 650;
+    color: color-mix(in srgb, var(--text-color) 55%, transparent); cursor: pointer;
+    transition: background .15s var(--m-ease), color .15s var(--m-ease);
+}
+.view-switch button.active { background: var(--card-bg); color: var(--primary-color); box-shadow: var(--m-shadow-sm); }
+.view-switch button:hover:not(.active) { color: var(--text-color); }
+
+/* ===== Package/listing grid view — reused by Umrah, Tours & Hotels ===== */
+.pkg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--m-space-4); }
+.pkg-card {
+    background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--card-radius);
+    overflow: hidden; box-shadow: var(--m-shadow-sm); display: flex; flex-direction: column;
+    transition: box-shadow .15s var(--m-ease), transform .15s var(--m-ease);
+}
+.pkg-card:hover { box-shadow: var(--m-shadow-md); transform: translateY(-2px); }
+.pkg-card-img { position: relative; height: 160px; background: var(--body-bg); }
+.pkg-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pkg-card-img .pkg-card-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: color-mix(in srgb, var(--text-color) 30%, transparent); font-size: 2rem; }
+.pkg-card-badges { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
+.pkg-card-body { padding: var(--m-space-4); flex: 1; display: flex; flex-direction: column; gap: 5px; }
+.pkg-card-title { font-weight: 650; font-size: 0.875rem; color: var(--text-color); margin: 0; }
+.pkg-card-loc { font-size: 0.75rem; color: color-mix(in srgb, var(--text-color) 55%, transparent); display: flex; align-items: center; gap: 4px; }
+.pkg-card-meta { display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; color: color-mix(in srgb, var(--text-color) 55%, transparent); margin-top: 4px; }
+.pkg-card-price { font-weight: 700; color: var(--primary-color); font-size: 0.9375rem; }
+.pkg-card-footer {
+    padding: var(--m-space-3) var(--m-space-4); border-top: 1px solid color-mix(in srgb, var(--border-color) 60%, transparent);
+    display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap;
+}
 
 /* -- tex-* : Package Types / Inclusions / Exclusions -- */
 .tex-header { display: flex; align-items: center; justify-content: space-between; gap: var(--m-space-3); margin-bottom: var(--m-space-4); flex-wrap: wrap; }

@@ -60,6 +60,13 @@
     #agPage .ag-icon-suspend:hover { background: #FFFBEB; border-color: #F59E0B; color: #F59E0B; }
     #agPage .ag-icon-danger:hover { background: #FEF2F2; border-color: #EF4444; color: #EF4444; }
 
+    /* Labeled variant: same pill, but wide enough to show text next to the
+       icon so each action is legible without hovering for the tooltip. */
+    #agPage .ag-icon-btn.has-label { width: auto; height: 30px; padding: 0 12px; gap: 6px; font-size: 11px; font-weight: 600; }
+    #agPage .ag-icon-approve.has-label { border-color: #BBF7D0; color: #15803D; }
+    #agPage .ag-icon-suspend.has-label { border-color: #FDE68A; color: #B45309; }
+    #agPage .ag-icon-danger.has-label { border-color: #FECACA; color: #DC2626; }
+
     /* Material-style hover tooltip — replaces the native browser title=""
        tooltip (unstyled, slow, inconsistent across browsers). Label goes in
        data-tooltip instead of title so only this custom tooltip shows. Small
@@ -232,13 +239,12 @@
              rows, which already use "lg:gap-3"/"lg:p-4" for the same reason. --}}
         <div class="hidden lg:flex lg:items-center lg:gap-3 lg:px-4 pb-2 mb-1">
             <span class="w-9 flex-shrink-0"></span>
-            <span class="w-48 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Agent</span>
-            <span class="w-32 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Company</span>
-            <span class="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Status</span>
-            <span class="w-28 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Wallet</span>
-            <span class="w-20 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Commission</span>
-            <span class="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Joined</span>
-            <span class="flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted" style="width:220px;">Actions</span>
+            <span class="lg:flex-[2] text-[10px] font-semibold uppercase tracking-wide text-novamuted">Agent</span>
+            <span class="lg:flex-1 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Company</span>
+            <span class="lg:flex-1 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Status</span>
+            <span class="lg:flex-1 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Wallet</span>
+            <span class="lg:flex-1 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Commission</span>
+            <span class="lg:flex-1 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Joined</span>
         </div>
 
         <div class="space-y-3">
@@ -248,7 +254,8 @@
                     $avatar = $avatarPalette[crc32($agent->full_name) % count($avatarPalette)];
                     $st = $statusStyle[$agent->approval_status] ?? ['bg' => 'bg-slate-100', 'text' => 'text-novamuted', 'label' => ucfirst($agent->approval_status)];
                 @endphp
-                <div class="tt-row flex flex-col lg:flex-row lg:items-center gap-2.5 lg:gap-3 rounded-2xl border border-novaborder p-3.5 lg:p-4">
+                <div class="tt-row flex flex-col rounded-2xl border border-novaborder p-3.5 lg:p-4">
+                <div class="flex flex-col lg:flex-row lg:items-center gap-2.5 lg:gap-3">
 
                     {{-- lg:contents "dissolves" this wrapper at desktop width so its
                          three children (avatar / name-block / mobile-status) become
@@ -259,7 +266,7 @@
                     <div class="flex items-center gap-3 lg:contents">
                         <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
                              style="background:{{ $avatar['bg'] }}; color:{{ $avatar['text'] }}">{{ $initials }}</div>
-                        <div class="min-w-0 lg:w-48 lg:flex-shrink-0">
+                        <div class="min-w-0 lg:flex-[2]">
                             <p class="text-sm font-semibold text-novatext truncate">{{ $agent->full_name }}</p>
                             <p class="text-[11px] text-novamuted truncate mt-0.5">{{ $agent->email }}</p>
                             <span class="inline-flex mt-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-novamuted">#{{ $agent->agent_code }}</span>
@@ -267,16 +274,16 @@
                         <span class="lg:hidden ml-auto px-2.5 py-1 rounded-full text-[10px] font-semibold {{ $st['bg'] }} {{ $st['text'] }}">{{ $st['label'] }}</span>
                     </div>
 
-                    <div class="lg:w-32 lg:flex-shrink-0 min-w-0">
+                    <div class="lg:flex-1 min-w-0">
                         <p class="text-[9px] text-novamuted lg:hidden">Company</p>
                         <p class="text-xs text-novatext truncate">{{ $agent->company_name ?? '—' }}</p>
                     </div>
 
-                    <div class="hidden lg:block lg:w-24 lg:flex-shrink-0">
+                    <div class="hidden lg:block lg:flex-1">
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold {{ $st['bg'] }} {{ $st['text'] }}">{{ $st['label'] }}</span>
                     </div>
 
-                    <div class="lg:w-28 lg:flex-shrink-0">
+                    <div class="lg:flex-1">
                         <p class="text-[9px] text-novamuted lg:hidden">Wallet</p>
                         <p class="text-xs font-semibold text-novatext">
                             @if($agent->wallet)
@@ -287,54 +294,63 @@
                         </p>
                     </div>
 
-                    <div class="lg:w-20 lg:flex-shrink-0">
+                    <div class="lg:flex-1">
                         <p class="text-[9px] text-novamuted lg:hidden">Commission</p>
                         <p class="text-xs font-semibold text-novatext">{{ $agent->commission_rate ?? 0 }}%</p>
                     </div>
 
-                    <div class="lg:w-24 lg:flex-shrink-0">
+                    <div class="lg:flex-1">
                         <p class="text-[9px] text-novamuted lg:hidden">Joined</p>
                         <p class="text-xs text-novamuted">{{ $agent->created_at->format('d M Y') }}</p>
                     </div>
+                </div>
 
-                    <div class="flex items-center gap-1.5 flex-wrap lg:flex-nowrap lg:w-[220px] lg:flex-shrink-0">
-                        <a href="{{ route('admin.agents.show', $agent) }}" class="ag-icon-btn" data-tooltip="View">
+                    <div class="flex items-center gap-1.5 flex-wrap mt-3 pt-3 border-t border-novaborder">
+                        <a href="{{ route('admin.agents.show', $agent) }}" class="ag-icon-btn has-label">
                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5 12 5s9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                            View
                         </a>
-                        <a href="{{ route('admin.agents.edit', $agent) }}" class="ag-icon-btn" data-tooltip="Edit">
+                        <a href="{{ route('admin.agents.edit', $agent) }}" class="ag-icon-btn has-label">
                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16.474 5.408 18.592 7.526M4 20l1.11-3.92a2 2 0 0 1 .53-.9l9.9-9.9a1.5 1.5 0 0 1 2.12 0l1.06 1.06a1.5 1.5 0 0 1 0 2.12l-9.9 9.9a2 2 0 0 1-.9.53L4 20Z"/></svg>
+                            Edit
                         </a>
-                        <a href="{{ route('admin.agents.permissions', $agent) }}" class="ag-icon-btn" data-tooltip="Permissions">
+                        <a href="{{ route('admin.agents.permissions', $agent) }}" class="ag-icon-btn has-label">
                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/></svg>
+                            Permissions
                         </a>
-                        <a href="{{ route('admin.agents.wallet', $agent) }}" class="ag-icon-btn" data-tooltip="Wallet">
+                        <a href="{{ route('admin.agents.wallet', $agent) }}" class="ag-icon-btn has-label">
                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14.5h1.5"/></svg>
+                            Wallet
                         </a>
 
                         @if($agent->approval_status === 'pending')
                             <form method="POST" action="{{ route('admin.agents.approve', $agent) }}" class="inline">
                                 @csrf
-                                <button type="submit" class="ag-icon-btn ag-icon-approve" data-tooltip="Approve">
+                                <button type="submit" class="ag-icon-btn has-label ag-icon-approve">
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                                    Approve
                                 </button>
                             </form>
                         @elseif($agent->approval_status === 'active')
-                            <button type="button" class="ag-icon-btn ag-icon-suspend" data-tooltip="Suspend"
+                            <button type="button" class="ag-icon-btn has-label ag-icon-suspend"
                                     data-bs-toggle="modal" data-bs-target="#suspendModal{{ $agent->id }}">
                                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+                                Suspend
                             </button>
                         @elseif($agent->approval_status === 'suspended')
                             <form method="POST" action="{{ route('admin.agents.activate', $agent) }}" class="inline">
                                 @csrf
-                                <button type="submit" class="ag-icon-btn ag-icon-approve" data-tooltip="Activate">
+                                <button type="submit" class="ag-icon-btn has-label ag-icon-approve">
                                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5v15l13-7.5-13-7.5Z"/></svg>
+                                    Activate
                                 </button>
                             </form>
                         @endif
 
-                        <button type="button" class="ag-icon-btn ag-icon-danger" data-tooltip="Delete"
+                        <button type="button" class="ag-icon-btn has-label ag-icon-danger"
                                 data-bs-toggle="modal" data-bs-target="#deleteModal{{ $agent->id }}">
                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/></svg>
+                            Delete
                         </button>
                     </div>
                 </div>

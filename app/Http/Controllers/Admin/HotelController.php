@@ -415,6 +415,10 @@ class HotelController extends Controller
     {
         $hotel->update(['featured' => $hotel->featured == '1' ? '0' : '1']);
 
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Featured status updated successfully!']);
+        }
+
         return redirect()->route('admin.hotels.index')
             ->with('success', 'Featured status updated successfully!');
     }
