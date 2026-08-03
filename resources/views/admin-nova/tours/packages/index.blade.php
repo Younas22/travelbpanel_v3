@@ -29,59 +29,59 @@
     #tpPage .tt-fade-in { animation: tpFadeIn .5s ease both; }
     @keyframes tpFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-    #tpPage .tp-card { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
-    #tpPage .tp-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -14px rgba(37,99,235,.2); border-color: #DBEAFE; }
-    #tpPage .tp-card-img img { transition: transform .4s ease; }
-    #tpPage .tp-card:hover .tp-card-img img { transform: scale(1.06); }
-    #tpPage .tp-card-img::after {
+    #tpPage .tpn-card { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+    #tpPage .tpn-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -14px rgba(37,99,235,.2); border-color: #DBEAFE; }
+    #tpPage .tpn-card-img img { transition: transform .4s ease; }
+    #tpPage .tpn-card:hover .tpn-card-img img { transform: scale(1.06); }
+    #tpPage .tpn-card-img::after {
         content: ''; position: absolute; inset: 0; pointer-events: none;
         background: linear-gradient(180deg, rgba(0,0,0,.28) 0%, rgba(0,0,0,0) 32%, rgba(0,0,0,0) 68%, rgba(0,0,0,.16) 100%);
     }
-    #tpPage .tp-price-row { background: linear-gradient(135deg, #EFF6FF 0%, #F7F8FC 100%); border: 1px solid #DBEAFE; }
+    #tpPage .tpn-price-row { background: linear-gradient(135deg, #EFF6FF 0%, #F7F8FC 100%); border: 1px solid #DBEAFE; }
 
-    #tpPage .tp-btn-nova {
+    #tpPage .tpn-btn-nova {
         display: inline-flex; align-items: center; justify-content: center; gap: 6px;
         border: 1px solid #E5E7EB; border-radius: 9999px; color: #000; background: #fff;
         white-space: nowrap; transition: background .2s ease, border-color .2s ease;
     }
-    #tpPage .tp-btn-nova:hover { background: #F7F8FC; }
-    #tpPage .tp-btn-primary { background: #2563EB; color: #fff; border-color: #2563EB; }
-    #tpPage .tp-btn-primary:hover { background: #1D4ED8; border-color: #1D4ED8; }
-    #tpPage .tp-icon-btn {
+    #tpPage .tpn-btn-nova:hover { background: #F7F8FC; }
+    #tpPage .tpn-btn-primary { background: #2563EB; color: #fff; border-color: #2563EB; }
+    #tpPage .tpn-btn-primary:hover { background: #1D4ED8; border-color: #1D4ED8; }
+    #tpPage .tpn-icon-btn {
         width: 30px; height: 30px; border-radius: 9999px; border: 1px solid #E5E7EB;
         display: inline-flex; align-items: center; justify-content: center; background: #fff;
         transition: background .2s ease, border-color .2s ease;
     }
-    #tpPage .tp-icon-btn:hover { background: #F7F8FC; }
-    #tpPage .tp-icon-warn:hover { background: #FFFBEB; border-color: #F59E0B; color: #F59E0B; }
-    #tpPage .tp-icon-success:hover { background: #ECFDF5; border-color: #22C55E; color: #22C55E; }
-    #tpPage .tp-icon-danger:hover { background: #FEF2F2; border-color: #EF4444; color: #EF4444; }
+    #tpPage .tpn-icon-btn:hover { background: #F7F8FC; }
+    #tpPage .tpn-icon-warn:hover { background: #FFFBEB; border-color: #F59E0B; color: #F59E0B; }
+    #tpPage .tpn-icon-success:hover { background: #ECFDF5; border-color: #22C55E; color: #22C55E; }
+    #tpPage .tpn-icon-danger:hover { background: #FEF2F2; border-color: #EF4444; color: #EF4444; }
 
     /* Labeled variant: same pill, but wide enough to show text next to the
        icon so status/featured is legible without hovering for the tooltip. */
-    #tpPage .tp-icon-btn.has-label { width: auto; height: 30px; padding: 0 12px; gap: 6px; font-size: 11px; font-weight: 600; }
-    #tpPage .tp-icon-warn.has-label { border-color: #FDE68A; color: #B45309; }
-    #tpPage .tp-icon-success.has-label { border-color: #BBF7D0; color: #15803D; }
-    #tpPage .tp-icon-danger.has-label { border-color: #FECACA; color: #DC2626; }
-    #tpPage .tp-icon-featured.has-label { border-color: #FDE68A; color: #B45309; background: #FFFBEB; }
+    #tpPage .tpn-icon-btn.has-label { width: auto; height: 30px; padding: 0 12px; gap: 6px; font-size: 11px; font-weight: 600; }
+    #tpPage .tpn-icon-warn.has-label { border-color: #FDE68A; color: #B45309; }
+    #tpPage .tpn-icon-success.has-label { border-color: #BBF7D0; color: #15803D; }
+    #tpPage .tpn-icon-danger.has-label { border-color: #FECACA; color: #DC2626; }
+    #tpPage .tpn-icon-featured.has-label { border-color: #FDE68A; color: #B45309; background: #FFFBEB; }
 
-    #tpPage .tp-star-btn { color: #E5E7EB; transition: color .2s ease, transform .2s ease; }
-    #tpPage .tp-star-btn:hover { transform: scale(1.15); }
-    #tpPage .tp-star-btn.tp-star-active { color: #F59E0B; }
+    #tpPage .tpn-star-btn { color: #E5E7EB; transition: color .2s ease, transform .2s ease; }
+    #tpPage .tpn-star-btn:hover { transform: scale(1.15); }
+    #tpPage .tpn-star-btn.tpn-star-active { color: #F59E0B; }
 
     /* List / Grid view switch */
-    #tpPage .tp-view-switch { display: inline-flex; align-items: center; background: #F7F8FC; border: 1px solid #E5E7EB; border-radius: 9999px; padding: 3px; gap: 2px; }
-    #tpPage .tp-view-switch button { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 9999px; font-size: 12px; font-weight: 600; color: #000; opacity: .55; transition: background .2s ease, opacity .2s ease; }
-    #tpPage .tp-view-switch button.active { background: #fff; opacity: 1; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    #tpPage .tpn-view-switch { display: inline-flex; align-items: center; background: #F7F8FC; border: 1px solid #E5E7EB; border-radius: 9999px; padding: 3px; gap: 2px; }
+    #tpPage .tpn-view-switch button { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 9999px; font-size: 12px; font-weight: 600; color: #000; opacity: .55; transition: background .2s ease, opacity .2s ease; }
+    #tpPage .tpn-view-switch button.active { background: #fff; opacity: 1; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
 
     /* List view row */
-    #tpPage .tp-list-row { transition: background .2s ease, border-color .2s ease; }
-    #tpPage .tp-list-row:hover { background: #F7F8FC; border-color: #DBEAFE; }
+    #tpPage .tpn-list-row { transition: background .2s ease, border-color .2s ease; }
+    #tpPage .tpn-list-row:hover { background: #F7F8FC; border-color: #DBEAFE; }
 
-    #tpPage .tp-details-panel { display: none; }
-    #tpPage .tp-details-panel.tp-open { display: block; }
-    #tpPage .tp-details-toggle svg { transition: transform .2s ease; }
-    #tpPage .tp-details-toggle.tp-open svg { transform: rotate(180deg); }
+    #tpPage .tpn-details-panel { display: none; }
+    #tpPage .tpn-details-panel.tpn-open { display: block; }
+    #tpPage .tpn-details-toggle svg { transition: transform .2s ease; }
+    #tpPage .tpn-details-toggle.tpn-open svg { transform: rotate(180deg); }
 
     #tpPage [data-tooltip] { position: relative; }
     #tpPage [data-tooltip]::after {
@@ -111,7 +111,7 @@
             <p class="text-xs text-novamuted mt-1">Manage all tour packages</p>
         </div>
         <div class="flex items-center gap-2">
-            <div class="tp-view-switch" id="tpViewSwitch">
+            <div class="tpn-view-switch" id="tpViewSwitch">
                 <button type="button" data-view="grid" class="active">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
                     Grid
@@ -121,7 +121,7 @@
                     List
                 </button>
             </div>
-            <a href="{{ route('admin.tours.packages.create') }}" class="tp-btn-nova tp-btn-primary px-4 py-2.5 text-xs font-semibold">
+            <a href="{{ route('admin.tours.packages.create') }}" class="tpn-btn-nova tpn-btn-primary px-4 py-2.5 text-xs font-semibold">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
                 Add New Package
             </a>
@@ -207,10 +207,10 @@
                     </select>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button type="submit" class="tp-btn-nova tp-btn-primary w-10 h-10" data-tooltip="Apply filters">
+                    <button type="submit" class="tpn-btn-nova tpn-btn-primary w-10 h-10" data-tooltip="Apply filters">
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M7 12h10M10 19h4"/></svg>
                     </button>
-                    <a href="{{ route('admin.tours.packages.index') }}" class="tp-btn-nova w-10 h-10" data-tooltip="Reset filters">
+                    <a href="{{ route('admin.tours.packages.index') }}" class="tpn-btn-nova w-10 h-10" data-tooltip="Reset filters">
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 1 2.64 6.36M3 12v6m0-6h6"/></svg>
                     </a>
                 </div>
@@ -225,8 +225,8 @@
                 $approval = $package->approval_status ?? 'approved';
                 $hasDetails = !empty($package->inclusions) || !empty($package->exclusions);
             @endphp
-            <div class="tp-card bg-white rounded-2xl border border-novaborder shadow-sm overflow-hidden">
-                <div class="tp-card-img relative h-44 bg-novabg overflow-hidden">
+            <div class="tpn-card bg-white rounded-2xl border border-novaborder shadow-sm overflow-hidden">
+                <div class="tpn-card-img relative h-44 bg-novabg overflow-hidden">
                     @if($package->images->first())
                         <img src="{{ asset('public/assets/images/' . $package->images->first()->image) }}" alt="" class="w-full h-full object-cover" style="object-fit:cover; object-position:center; width:100%; height:100%;">
                     @else
@@ -246,7 +246,7 @@
                             <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-red-500 text-white">Rejected</span>
                         @endif
                     </div>
-                    <button type="button" class="tp-star-btn js-toggle-featured w-8 h-8 rounded-full bg-white/90 flex items-center justify-center absolute top-2 right-2 z-10 {{ $package->featured == '1' ? 'tp-star-active' : '' }}"
+                    <button type="button" class="tpn-star-btn js-toggle-featured w-8 h-8 rounded-full bg-white/90 flex items-center justify-center absolute top-2 right-2 z-10 {{ $package->featured == '1' ? 'tpn-star-active' : '' }}"
                             data-id="{{ $package->id }}" data-featured="{{ $package->featured == '1' ? '1' : '0' }}"
                             data-tooltip="{{ $package->featured == '1' ? 'Remove from featured' : 'Mark as featured' }}">
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="{{ $package->featured == '1' ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2.5 3 6.5 7 .8-5.2 4.8L18.2 21 12 17.3 5.8 21l1.4-6.4L2 9.8 9 9l3-6.5Z"/></svg>
@@ -268,7 +268,7 @@
                         </span>
                     </div>
 
-                    <div class="tp-price-row flex items-center justify-between rounded-xl px-3 py-2 mt-3">
+                    <div class="tpn-price-row flex items-center justify-between rounded-xl px-3 py-2 mt-3">
                         <span class="text-[10px] font-semibold uppercase tracking-wide text-novablue">Price</span>
                         <span class="text-base font-bold text-novablue">{{ $package->currceny }} {{ number_format($package->price) }}</span>
                     </div>
@@ -277,14 +277,14 @@
                         <div class="flex items-center gap-1.5 mt-3">
                             <form action="{{ route('admin.tours.packages.approve', $package->id) }}" method="POST" class="flex-1">
                                 @csrf
-                                <button type="submit" class="tp-btn-nova w-full py-1.5 text-[11px] font-semibold" style="background:#22C55E; color:#fff; border-color:#22C55E;">
+                                <button type="submit" class="tpn-btn-nova w-full py-1.5 text-[11px] font-semibold" style="background:#22C55E; color:#fff; border-color:#22C55E;">
                                     <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                                     Approve
                                 </button>
                             </form>
                             <form action="{{ route('admin.tours.packages.reject', $package->id) }}" method="POST" class="flex-1">
                                 @csrf
-                                <button type="submit" class="tp-btn-nova w-full py-1.5 text-[11px] font-semibold" style="color:#EF4444; border-color:#EF4444;">
+                                <button type="submit" class="tpn-btn-nova w-full py-1.5 text-[11px] font-semibold" style="color:#EF4444; border-color:#EF4444;">
                                     <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
                                     Reject
                                 </button>
@@ -293,11 +293,11 @@
                     @endif
 
                     @if($hasDetails)
-                        <button type="button" class="tp-details-toggle mt-3 flex items-center gap-1 text-[11px] font-semibold text-novablue" onclick="tpToggleDetails({{ $package->id }}, this)">
+                        <button type="button" class="tpn-details-toggle mt-3 flex items-center gap-1 text-[11px] font-semibold text-novablue" onclick="tpToggleDetails({{ $package->id }}, this)">
                             <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                             Details
                         </button>
-                        <div id="tpDetails{{ $package->id }}" class="tp-details-panel mt-2 pt-2 border-t border-novaborder space-y-2">
+                        <div id="tpDetails{{ $package->id }}" class="tpn-details-panel mt-2 pt-2 border-t border-novaborder space-y-2">
                             @if(!empty($package->inclusions))
                                 <div>
                                     <p class="text-[10px] font-semibold text-novasuccess mb-1">Inclusions</p>
@@ -326,10 +326,10 @@
                     @endif
 
                     <div class="flex items-center gap-1.5 flex-wrap mt-4 pt-3 border-t border-novaborder">
-                        <a href="{{ route('admin.tours.packages.edit', $package->id) }}" class="tp-icon-btn" data-tooltip="Edit">
+                        <a href="{{ route('admin.tours.packages.edit', $package->id) }}" class="tpn-icon-btn" data-tooltip="Edit">
                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16.474 5.408 18.592 7.526M4 20l1.11-3.92a2 2 0 0 1 .53-.9l9.9-9.9a1.5 1.5 0 0 1 2.12 0l1.06 1.06a1.5 1.5 0 0 1 0 2.12l-9.9 9.9a2 2 0 0 1-.9.53L4 20Z"/></svg>
                         </a>
-                        <button type="button" class="tp-icon-btn has-label js-toggle-status {{ $package->status == '1' ? 'tp-icon-warn' : 'tp-icon-success' }}"
+                        <button type="button" class="tpn-icon-btn has-label js-toggle-status {{ $package->status == '1' ? 'tpn-icon-warn' : 'tpn-icon-success' }}"
                                 data-id="{{ $package->id }}" data-status="{{ $package->status == '1' ? '1' : '0' }}">
                             @if($package->status == '1')
                                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
@@ -338,7 +338,7 @@
                             @endif
                             <span>{{ $package->status == '1' ? 'Deactivate' : 'Activate' }}</span>
                         </button>
-                        <button type="button" class="tp-icon-btn has-label js-toggle-featured tp-icon-featured"
+                        <button type="button" class="tpn-icon-btn has-label js-toggle-featured tpn-icon-featured"
                                 data-id="{{ $package->id }}" data-featured="{{ $package->featured == '1' ? '1' : '0' }}">
                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="{{ $package->featured == '1' ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2.5 3 6.5 7 .8-5.2 4.8L18.2 21 12 17.3 5.8 21l1.4-6.4L2 9.8 9 9l3-6.5Z"/></svg>
                             <span>{{ $package->featured == '1' ? 'Featured' : 'Not featured' }}</span>
@@ -346,7 +346,7 @@
                         <form action="{{ route('admin.tours.packages.destroy', $package->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this package?')" class="ml-auto">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="tp-icon-btn tp-icon-danger" data-tooltip="Delete">
+                            <button type="submit" class="tpn-icon-btn tpn-icon-danger" data-tooltip="Delete">
                                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/></svg>
                             </button>
                         </form>
@@ -374,7 +374,7 @@
         </div>
         <div class="space-y-3">
             @forelse($packages as $package)
-                <div class="tp-list-row flex flex-col rounded-2xl border border-novaborder p-3.5 lg:p-4">
+                <div class="tpn-list-row flex flex-col rounded-2xl border border-novaborder p-3.5 lg:p-4">
                     <div class="flex flex-col lg:flex-row lg:items-center gap-2.5 lg:gap-3">
                         <div class="flex items-center gap-3 lg:contents">
                             <div class="w-14 h-14 rounded-xl bg-novabg flex-shrink-0 overflow-hidden flex items-center justify-center text-novaborder">
@@ -412,10 +412,17 @@
                     </div>
 
                     <div class="flex items-center gap-1.5 flex-wrap mt-3 pt-3 border-t border-novaborder">
-                        <a href="{{ route('admin.tours.packages.edit', $package->id) }}" class="tp-icon-btn" data-tooltip="Edit">
+                        <a href="{{ route('admin.tours.packages.edit', $package->id) }}" class="tpn-icon-btn" data-tooltip="Edit">
                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16.474 5.408 18.592 7.526M4 20l1.11-3.92a2 2 0 0 1 .53-.9l9.9-9.9a1.5 1.5 0 0 1 2.12 0l1.06 1.06a1.5 1.5 0 0 1 0 2.12l-9.9 9.9a2 2 0 0 1-.9.53L4 20Z"/></svg>
                         </a>
-                        <button type="button" class="tp-icon-btn has-label js-toggle-status {{ $package->status == '1' ? 'tp-icon-warn' : 'tp-icon-success' }}"
+                        <form action="{{ route('admin.tours.packages.destroy', $package->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this package?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="tpn-icon-btn tpn-icon-danger" data-tooltip="Delete">
+                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/></svg>
+                            </button>
+                        </form>
+                        <button type="button" class="tpn-icon-btn has-label js-toggle-status {{ $package->status == '1' ? 'tpn-icon-warn' : 'tpn-icon-success' }}"
                                 data-id="{{ $package->id }}" data-status="{{ $package->status == '1' ? '1' : '0' }}">
                             @if($package->status == '1')
                                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
@@ -424,18 +431,11 @@
                             @endif
                             <span>{{ $package->status == '1' ? 'Deactivate' : 'Activate' }}</span>
                         </button>
-                        <button type="button" class="tp-icon-btn has-label js-toggle-featured tp-icon-featured"
+                        <button type="button" class="tpn-icon-btn has-label js-toggle-featured tpn-icon-featured"
                                 data-id="{{ $package->id }}" data-featured="{{ $package->featured == '1' ? '1' : '0' }}">
                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="{{ $package->featured == '1' ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2.5 3 6.5 7 .8-5.2 4.8L18.2 21 12 17.3 5.8 21l1.4-6.4L2 9.8 9 9l3-6.5Z"/></svg>
                             <span>{{ $package->featured == '1' ? 'Featured' : 'Not featured' }}</span>
                         </button>
-                        <form action="{{ route('admin.tours.packages.destroy', $package->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this package?')" class="ml-auto">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="tp-icon-btn tp-icon-danger" data-tooltip="Delete">
-                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/></svg>
-                            </button>
-                        </form>
                     </div>
                 </div>
             @empty
@@ -462,8 +462,8 @@
 <script>
     function tpToggleDetails(id, btn) {
         var panel = document.getElementById('tpDetails' + id);
-        panel.classList.toggle('tp-open');
-        btn.classList.toggle('tp-open');
+        panel.classList.toggle('tpn-open');
+        btn.classList.toggle('tpn-open');
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -511,8 +511,8 @@
                         const nowActive = this.dataset.status !== '1';
                         document.querySelectorAll(`.js-toggle-status[data-id="${id}"]`).forEach(b => {
                             b.dataset.status = nowActive ? '1' : '0';
-                            b.classList.toggle('tp-icon-warn', nowActive);
-                            b.classList.toggle('tp-icon-success', !nowActive);
+                            b.classList.toggle('tpn-icon-warn', nowActive);
+                            b.classList.toggle('tpn-icon-success', !nowActive);
                             const svg = b.querySelector('svg');
                             if (svg) svg.innerHTML = nowActive
                                 ? '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>'
@@ -544,7 +544,7 @@
                             b.dataset.featured = nowFeatured ? '1' : '0';
                             const svg = b.querySelector('svg');
                             if (svg) svg.setAttribute('fill', nowFeatured ? 'currentColor' : 'none');
-                            b.classList.toggle('tp-star-active', nowFeatured);
+                            b.classList.toggle('tpn-star-active', nowFeatured);
                             const label = b.querySelector('span');
                             if (label) label.textContent = nowFeatured ? 'Featured' : 'Not featured';
                             if (b.dataset.tooltip !== undefined) b.setAttribute('data-tooltip', nowFeatured ? 'Remove from featured' : 'Mark as featured');

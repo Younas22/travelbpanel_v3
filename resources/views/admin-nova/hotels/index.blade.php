@@ -372,6 +372,9 @@
                         <a href="{{ route('admin.hotels.edit', $hotel) }}" class="ht-icon-btn" data-tooltip="Edit">
                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16.474 5.408 18.592 7.526M4 20l1.11-3.92a2 2 0 0 1 .53-.9l9.9-9.9a1.5 1.5 0 0 1 2.12 0l1.06 1.06a1.5 1.5 0 0 1 0 2.12l-9.9 9.9a2 2 0 0 1-.9.53L4 20Z"/></svg>
                         </a>
+                        <button type="button" class="ht-icon-btn ht-icon-danger js-delete-hotel" data-id="{{ $hotel->id }}" data-tooltip="Delete">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/></svg>
+                        </button>
                         <button type="button" class="ht-icon-btn has-label js-toggle-status {{ $hotel->status ? 'ht-icon-warn' : 'ht-icon-success' }}"
                                 data-id="{{ $hotel->id }}" data-status="{{ $hotel->status ? '1' : '0' }}">
                             @if($hotel->status)
@@ -385,9 +388,6 @@
                                 data-id="{{ $hotel->id }}" data-featured="{{ $hotel->featured == '1' ? '1' : '0' }}">
                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="{{ $hotel->featured == '1' ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2.5 3 6.5 7 .8-5.2 4.8L18.2 21 12 17.3 5.8 21l1.4-6.4L2 9.8 9 9l3-6.5Z"/></svg>
                             <span>{{ $hotel->featured == '1' ? 'Featured' : 'Not featured' }}</span>
-                        </button>
-                        <button type="button" class="ht-icon-btn ht-icon-danger js-delete-hotel ml-auto" data-id="{{ $hotel->id }}" data-tooltip="Delete">
-                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/></svg>
                         </button>
                     </div>
                 </div>
