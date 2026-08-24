@@ -20,9 +20,13 @@ class TravelPartner extends Model
         'partner_tier',
         'status',
         'commission_rate',
+        'commission_type',
         'discount_rate',
+        'discount_type',
         'b2c_markup',
+        'b2c_markup_type',
         'b2b_markup',
+        'b2b_markup_type',
         'monthly_revenue',
         'integration_date',
         'contract_end_date',
@@ -32,6 +36,17 @@ class TravelPartner extends Model
         'api_credential_4',
         'api_credential_5',
         'api_credential_6',
+        'db_host',
+        'db_port',
+        'db_database',
+        'db_username',
+        'db_password',
+        'last_api_test_status',
+        'last_api_test_message',
+        'last_api_test_at',
+        'last_db_test_status',
+        'last_db_test_message',
+        'last_db_test_at',
         'development_mode',
         'currency_support',
         'payment_integration',
@@ -70,11 +85,15 @@ class TravelPartner extends Model
         'supported_countries' => 'array',
         'last_api_call' => 'datetime',
         'last_revenue_update' => 'datetime',
+        'db_password' => 'encrypted',
+        'last_api_test_at' => 'datetime',
+        'last_db_test_at' => 'datetime',
     ];
 
     protected $hidden = [
         'api_credential_2', // Hide secret keys
         'api_credential_5', // Hide webhook secrets
+        'db_password', // Hide database credentials
     ];
 
         public function module()
@@ -97,6 +116,11 @@ class TravelPartner extends Model
     public function bookings()
     {
         return $this->hasMany(Booking::class, 'partner_id');
+    }
+
+    public function imports()
+    {
+        return $this->hasMany(TravelPartnerImport::class);
     }
 
     // Scopes

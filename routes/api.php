@@ -121,6 +121,15 @@ Route::controller(AgodaController::class)->group(function(){
 | search and retrieve hotel data from WebBeds.
 |
 */
+
+Route::controller(WebbedsController::class)->group(function(){
+    Route::post('webbeds/get_all_cities', 'get_all_cities');
+});
+
+Route::controller(WebbedsController::class)->group(function(){
+    Route::post('webbeds/test_credentials', 'test_credentials');
+});
+
 Route::controller(WebbedsController::class)->group(function(){
     Route::post('webbeds/hotel_search', 'hotel_search');
 });

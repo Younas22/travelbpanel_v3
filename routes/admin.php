@@ -112,6 +112,10 @@ Route::prefix('travel-partners')->name('admin.travel-partners.')->group(function
     Route::patch('/{partner}/suspend', [TravelPartnerController::class, 'suspend'])->name('suspend');
     Route::patch('/{partner}/toggle-status', [TravelPartnerController::class, 'toggleStatus'])->name('toggle-status');
     Route::get('/module/{module}', [TravelPartnerController::class, 'getByModule'])->name('module');
+    Route::post('/{partner}/test-api', [TravelPartnerController::class, 'recordApiTestResult'])->name('test-api');
+    Route::post('/{partner}/import-content', [TravelPartnerController::class, 'importContent'])->name('import-content');
+    Route::get('/{partner}/imports/{import}', [TravelPartnerController::class, 'showImport'])->name('imports.show');
+    Route::delete('/{partner}/imports/{import}', [TravelPartnerController::class, 'destroyImport'])->name('imports.destroy');
 });
 
 // Modules Management

@@ -78,6 +78,9 @@
         transition: background .2s ease, border-color .2s ease, color .2s ease;
     }
     #tpPage .tp-chip { padding: 8px 16px; font-size: 12px; font-weight: 600; }
+    /* Match the module chip icons (Bootstrap Icon font) to the "All" chip's
+       14px inline SVG icon size, so every chip icon reads at the same scale. */
+    #tpPage .tp-chip .bi { font-size: 14px; line-height: 1; }
     #tpPage .tp-filter-chip { padding: 6px 14px; font-size: 12px; font-weight: 600; }
     #tpPage .tp-btn-nova { padding: 10px 16px; font-size: 12px; font-weight: 600; }
     #tpPage .tp-chip:hover, #tpPage .tp-filter-chip:hover, #tpPage .tp-btn-nova:hover { background: #F7F8FC; }
@@ -160,16 +163,6 @@
                 <input type="text" id="tpSearch" placeholder="Search supplier..."
                        class="w-48 sm:w-64 text-sm border border-novaborder rounded-full pl-10 pr-4 py-2.5">
             </div>
-            <button type="button" data-bs-toggle="modal" data-bs-target="#addPartnerModal"
-                    class="tp-btn-nova tp-btn-primary inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-xs font-semibold whitespace-nowrap">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-                Add Integration
-            </button>
-            <button type="button" data-bs-toggle="modal" data-bs-target="#addModuleModal"
-                    class="tp-btn-nova inline-flex items-center gap-1.5 rounded-full border border-novaborder hover:bg-novabg px-4 py-2.5 text-xs font-semibold whitespace-nowrap" title="Create a new integration category">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-                Add Module
-            </button>
         </div>
     </div>
 
@@ -230,7 +223,7 @@
                 <button class="tp-chip tp-tab inline-flex items-center gap-1.5 rounded-full border border-novaborder px-4 py-2 text-xs font-semibold hover:bg-novabg {{ $module->status !== 'active' ? 'opacity-50' : '' }}"
                         data-module-id="{{ $module->id }}"
                         onclick="switchTPTab('mod-{{ $module->id }}', this)">
-                    <span class="tp-drag-grip cursor-grab text-novaborder">⠿</span>
+                    <span class="tp-drag-grip cursor-grab text-novaborder"><span></span><span></span><span></span><span></span><span></span><span></span></span>
                     <i class="bi {{ $tabIcon }}"></i>
                     {{ $module->name }}
                     <span class="tp-tab-count inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-black/10 text-[10px] font-bold">{{ $module->partners_count }}</span>
