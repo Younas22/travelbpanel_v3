@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jul 31, 2026 at 06:54 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: localhost
+-- Generation Time: Aug 25, 2026 at 01:44 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -23075,7 +23075,11 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (34, '2026_07_23_131050_create_theme_settings_table', 21),
 (35, '2026_07_23_085443_widen_color_columns_on_theme_settings_table', 22),
 (36, '2026_07_24_054013_add_user_id_to_theme_settings_table', 23),
-(37, '2026_07_24_070501_add_design_style_to_theme_settings_table', 24);
+(37, '2026_07_24_070501_add_design_style_to_theme_settings_table', 24),
+(38, '2026_08_24_130956_add_api_testing_and_integration_fields_to_travel_partners_table', 25),
+(39, '2026_08_24_151205_create_travel_partner_imports_table', 26),
+(40, '2026_08_24_151205_update_travel_partners_for_stepper_flow', 27),
+(41, '2026_08_24_161202_add_financial_type_fields_to_travel_partners_table', 28);
 
 -- --------------------------------------------------------
 
@@ -23100,9 +23104,9 @@ CREATE TABLE `modules` (
 
 INSERT INTO `modules` (`id`, `name`, `slug`, `description`, `status`, `sort_order`, `created_at`, `updated_at`) VALUES
 (1, 'Stay', 'hotel', NULL, 'active', 3, NULL, '2026-07-14 09:00:12'),
-(2, 'Flight', 'flight', NULL, 'inactive', 1, NULL, '2026-07-14 09:00:12'),
-(3, 'Visa', 'visa', NULL, 'inactive', 4, NULL, '2026-07-28 04:56:33'),
-(4, 'Tours', 'tours', NULL, 'inactive', 2, NULL, '2026-07-14 09:20:42'),
+(2, 'Flight', 'flight', NULL, 'active', 1, NULL, '2026-07-31 19:14:58'),
+(3, 'Visa', 'visa', NULL, 'active', 4, NULL, '2026-07-31 17:54:25'),
+(4, 'Tours', 'tours', NULL, 'active', 2, NULL, '2026-07-31 17:54:19'),
 (5, 'Umrah', 'umrah', NULL, 'active', 5, NULL, '2026-07-14 09:21:30');
 
 -- --------------------------------------------------------
@@ -24295,15 +24299,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('0HZPbLRXkZb0i6S5PQkJa8SYj0CYKG7OubLhJ81E', 6, '127.0.0.1', 'Symfony', 'YTo0OntzOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo2O3M6NjoiX3Rva2VuIjtzOjQwOiJ0UndaOUlYZWYwNDNCRlpBaXMzUWZLTzdLbjlpQWF6MXNBQWI1cUthIjtzOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czozMzoiaHR0cDovL2xvY2FsaG9zdC9hZG1pbi9jdXJyZW5jaWVzIjtzOjU6InJvdXRlIjtzOjIyOiJhZG1pbi5jdXJyZW5jaWVzLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1785514153),
-('cQ55GYbcHMczTpqrMECxyNiSLPVH5SHWYkgRog9t', 6, '127.0.0.1', 'Symfony', 'YTo0OntzOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo2O3M6NjoiX3Rva2VuIjtzOjQwOiIzN1FNdkVpRzFHQ0l2VFBIMjcxYW0yaTgxRmY5NkpyN3RPT3M1MEZYIjtzOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czoyODoiaHR0cDovL2xvY2FsaG9zdC9hZG1pbi9wYWdlcyI7czo1OiJyb3V0ZSI7czoxNzoiYWRtaW4ucGFnZXMuaW5kZXgiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1785515044),
-('gJ40naHGIfMEm4vy7AkEt4HgG693ZqPQWHCgR5lO', 6, '127.0.0.1', 'Symfony', 'YTo0OntzOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo2O3M6NjoiX3Rva2VuIjtzOjQwOiJuV2MzazMxTjRoSnVkUVp4amxEVXFnYnU5TnNDckZGQjJROVhwYlI3IjtzOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czoyODoiaHR0cDovL2xvY2FsaG9zdC9hZG1pbi9tZW51cyI7czo1OiJyb3V0ZSI7czoxNzoiYWRtaW4ubWVudXMuaW5kZXgiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1785514530),
-('Kb3FcKhnWVXaKF9KvZ6cJcwEmC6c2IulLAqZYw4F', 6, '127.0.0.1', 'Symfony', 'YTo0OntzOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo2O3M6NjoiX3Rva2VuIjtzOjQwOiI4Y1ltdEY5MklUVzZ1OG5mTzQzTUdRSDhYVWZnVXZoYnRUa2hnS0hEIjtzOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czoyODoiaHR0cDovL2xvY2FsaG9zdC9hZG1pbi9wYWdlcyI7czo1OiJyb3V0ZSI7czoxNzoiYWRtaW4ucGFnZXMuaW5kZXgiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1785515156),
-('oLnew5XG7pFau7gYM5z9qjM1sdRA41qvA9ld7Xgf', 6, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiczBoYUw5MW1oM1BzdlpiUmNuNmczVFozWGNCWXBHSVhYMmpEekh3MyI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjU1OiJodHRwOi8vbG9jYWxob3N0L3RyYXZlbGJwYW5lbF92My9hZG1pbi9zZXR0aW5ncy93ZWJzaXRlIjtzOjU6InJvdXRlIjtzOjIyOiJhZG1pbi5zZXR0aW5ncy53ZWJzaXRlIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Njt9', 1785516647),
-('pwGMA3tptr4j0dw2f0dbZJeIrvRsTULWI91ST0HK', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiUVhoSkNkR2FqalpaTW5TSmtZN0Y2cVZRNVBKWkJUUHBwbFo2QlcwUCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1785510898),
-('Uiis2B2E5X155mfius7QWpP22pEetwuVy4D6Kfc3', 6, '127.0.0.1', 'Symfony', 'YTo0OntzOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo2O3M6NjoiX3Rva2VuIjtzOjQwOiJmblFuM3BzRkVlOVl2NW8yTlVXRkVKSlJpNVU0WEVVanZBWDNEakdHIjtzOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czo0NToiaHR0cDovL2xvY2FsaG9zdC9hZG1pbi9hZG1pbi9jb250YWN0LW1lc3NhZ2VzIjtzOjU6InJvdXRlIjtzOjI4OiJhZG1pbi5jb250YWN0LW1lc3NhZ2VzLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1785511807),
-('UkzkiQAdo83MvZqVDctHbaZE9ZWpo3yvrOzPDGI7', 6, '127.0.0.1', 'Symfony', 'YTo0OntzOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo2O3M6NjoiX3Rva2VuIjtzOjQwOiJqeXNjTzZPVEt3ckNBWXNzYktyZ2lFZWI0aUU4NjNtSzQ5MkVuWmxHIjtzOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czozNToiaHR0cDovL2xvY2FsaG9zdC9hZG1pbi9jb250ZW50L2Jsb2ciO3M6NToicm91dGUiO3M6MjQ6ImFkbWluLmNvbnRlbnQuYmxvZy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1785515579),
-('VJYM8IIpKJT0GxY71y8bL0maDOiiw5KO5ZHDeV6p', 6, '127.0.0.1', 'Symfony', 'YTo0OntzOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo2O3M6NjoiX3Rva2VuIjtzOjQwOiJwaHB6UkMxOHVTZW95Mzc5cUZ6VTNSTmVndlF3OUtHT0MzRFJPdHh5IjtzOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czoyODoiaHR0cDovL2xvY2FsaG9zdC9hZG1pbi9tZW51cyI7czo1OiJyb3V0ZSI7czoxNzoiYWRtaW4ubWVudXMuaW5kZXgiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1785514642);
+('b1VVLHxlQxuo3rJe5HQtcq9gwNc4Pj3G3n08Uwip', 6, '::1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiTThuVm5xVnFDbkNwNDJpOWlPTVdFRkl0R3JXa3ZmWWFJNlJWMmVkdyI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjQxOiJodHRwOi8vbG9jYWxob3N0L3YzL2FkbWluL3RyYXZlbC1wYXJ0bmVycyI7czo1OiJyb3V0ZSI7czoyNzoiYWRtaW4udHJhdmVsLXBhcnRuZXJzLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Njt9', 1787658224);
 
 -- --------------------------------------------------------
 
@@ -24812,9 +24808,13 @@ CREATE TABLE `travel_partners` (
   `partner_tier` enum('standard','premium','enterprise') NOT NULL DEFAULT 'standard',
   `status` enum('active','pending','suspended','inactive') NOT NULL DEFAULT 'pending',
   `commission_rate` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `commission_type` varchar(255) NOT NULL DEFAULT 'percentage',
   `discount_rate` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `discount_type` varchar(255) NOT NULL DEFAULT 'percentage',
   `b2c_markup` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `b2c_markup_type` varchar(255) NOT NULL DEFAULT 'percentage',
   `b2b_markup` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `b2b_markup_type` varchar(255) NOT NULL DEFAULT 'percentage',
   `monthly_revenue` decimal(12,2) NOT NULL DEFAULT 0.00,
   `integration_date` date DEFAULT NULL,
   `contract_end_date` date DEFAULT NULL,
@@ -24824,6 +24824,17 @@ CREATE TABLE `travel_partners` (
   `api_credential_4` text DEFAULT NULL,
   `api_credential_5` text DEFAULT NULL,
   `api_credential_6` text DEFAULT NULL,
+  `db_host` varchar(255) DEFAULT NULL,
+  `db_port` varchar(255) DEFAULT NULL,
+  `db_database` varchar(255) DEFAULT NULL,
+  `db_username` varchar(255) DEFAULT NULL,
+  `db_password` text DEFAULT NULL,
+  `last_api_test_status` varchar(255) DEFAULT NULL,
+  `last_api_test_message` varchar(255) DEFAULT NULL,
+  `last_api_test_at` timestamp NULL DEFAULT NULL,
+  `last_db_test_status` varchar(255) DEFAULT NULL,
+  `last_db_test_message` varchar(255) DEFAULT NULL,
+  `last_db_test_at` timestamp NULL DEFAULT NULL,
   `development_mode` tinyint(1) NOT NULL DEFAULT 0,
   `currency_support` tinyint(1) NOT NULL DEFAULT 0,
   `payment_integration` tinyint(1) NOT NULL DEFAULT 0,
@@ -24851,17 +24862,40 @@ CREATE TABLE `travel_partners` (
 -- Dumping data for table `travel_partners`
 --
 
-INSERT INTO `travel_partners` (`id`, `company_name`, `module_id`, `profile_image`, `supplier_type`, `api_type`, `partner_tier`, `status`, `commission_rate`, `discount_rate`, `b2c_markup`, `b2b_markup`, `monthly_revenue`, `integration_date`, `contract_end_date`, `api_credential_1`, `api_credential_2`, `api_credential_3`, `api_credential_4`, `api_credential_5`, `api_credential_6`, `development_mode`, `currency_support`, `payment_integration`, `custom_pnr_format`, `api_uptime`, `total_bookings`, `total_revenue`, `revenue_growth`, `admin_notes`, `contract_details`, `contact_email`, `contact_phone`, `contact_person`, `supported_currencies`, `supported_countries`, `last_api_call`, `last_revenue_update`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(1, 'amadeus_enterprise', 2, 'partners/1752853484_687a6bec3a39d.jpg', 'flight', 'a', 'standard', 'inactive', 12.00, 0.00, 0.00, 0.00, 0.00, NULL, NULL, 'client_credentials', '01N6evvhBVAe6w4UX4HeYXwooRobAhsO', 'DRio3duZqFpQczlR', NULL, 'jk', NULL, 1, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, 'adriana.lakin@example.com', '539.839.7319', 'Mr. Curtis Beer I', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-07-14 09:00:01'),
-(8, 'hotelbeds', 1, 'partners/1752853484_687a6bec3a39d.jpg', 'hotel', 'a', 'standard', 'inactive', 12.00, 0.00, 0.00, 0.00, 0.00, NULL, NULL, 'c6070d0561e87fa98758c397205ec912', 'fcbb3cfe02', NULL, NULL, 'jk', NULL, 1, 1, 1, 1, 0.00, 0, 0.00, 0.00, NULL, NULL, 'adriana.lakin@example.com', '539.839.7319', 'Mr. Curtis Beer I', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-07-14 06:41:46'),
-(9, 'agoda', 1, 'partners/1752853484_687a6bec3a39d.jpg', 'hotel', 'a', 'standard', 'active', 12.00, 0.00, 0.00, 0.00, 0.00, NULL, NULL, '1923592', '4a3d9548-eb5e-4235-9f52-16c4baea765c', NULL, NULL, 'jk', NULL, 1, 1, 1, 1, 0.00, 0, 0.00, 0.00, NULL, NULL, 'adriana.lakin@example.com', '539.839.7319', 'Mr. Curtis Beer I', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-07-28 04:49:48'),
-(12, 'amadeus_self', 2, 'partners/1752853484_687a6bec3a39d.jpg', 'flight', 'a', 'standard', 'inactive', 20.00, 0.00, 0.00, 0.00, 0.00, NULL, NULL, 'client_credentials', 'RuAVw6Qtmxm7vc5kRipS6AgnYsSfMxyQ', 'Bxfjj5kMRgvYYZsK', NULL, 'jk', NULL, 1, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, 'adriana.lakin@example.com', '539.839.7319', 'Mr. Curtis Beer I', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-07-14 09:00:01'),
-(13, 'Manual', 5, NULL, 'manual', NULL, 'standard', 'active', 0.00, 0.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 6, NULL, '2026-07-14 09:21:30'),
-(14, 'Manual', 4, NULL, 'manual', NULL, 'standard', 'inactive', 0.00, 0.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-14 09:20:42'),
-(15, 'Manual', 3, NULL, 'manual', NULL, 'standard', 'inactive', 0.00, 0.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-28 04:56:33'),
-(16, 'Manual', 1, NULL, 'manual', NULL, 'standard', 'inactive', 0.00, 0.00, 10.00, 5.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 6, NULL, '2026-07-14 09:21:23'),
-(17, 'sabre', 2, 'partners/1752853484_687a6bec3a39d.jpg', 'flight', '', 'standard', 'inactive', 12.00, 0.00, 0.00, 0.00, 0.00, NULL, NULL, NULL, '', NULL, NULL, '', NULL, 1, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, '', '', '', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-07-14 09:00:01'),
-(18, 'webbeds', 1, 'partners/1752853484_687a6bec3a39d.jpg', 'hotel', '', 'standard', 'active', 12.00, 0.00, 0.00, 0.00, 0.00, NULL, NULL, 'Wisenstay', 'Mogadishu3322$', '2323145', NULL, '', NULL, 1, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, '', '', '', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-07-14 08:46:21');
+INSERT INTO `travel_partners` (`id`, `company_name`, `module_id`, `profile_image`, `supplier_type`, `api_type`, `partner_tier`, `status`, `commission_rate`, `commission_type`, `discount_rate`, `discount_type`, `b2c_markup`, `b2c_markup_type`, `b2b_markup`, `b2b_markup_type`, `monthly_revenue`, `integration_date`, `contract_end_date`, `api_credential_1`, `api_credential_2`, `api_credential_3`, `api_credential_4`, `api_credential_5`, `api_credential_6`, `db_host`, `db_port`, `db_database`, `db_username`, `db_password`, `last_api_test_status`, `last_api_test_message`, `last_api_test_at`, `last_db_test_status`, `last_db_test_message`, `last_db_test_at`, `development_mode`, `currency_support`, `payment_integration`, `custom_pnr_format`, `api_uptime`, `total_bookings`, `total_revenue`, `revenue_growth`, `admin_notes`, `contract_details`, `contact_email`, `contact_phone`, `contact_person`, `supported_currencies`, `supported_countries`, `last_api_call`, `last_revenue_update`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+(1, 'amadeus_enterprise', 2, 'partners/1752853484_687a6bec3a39d.jpg', 'flight', 'a', 'standard', 'inactive', 12.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, 'client_credentials', '01N6evvhBVAe6w4UX4HeYXwooRobAhsO', 'DRio3duZqFpQczlR', NULL, 'jk', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, 'adriana.lakin@example.com', '539.839.7319', 'Mr. Curtis Beer I', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-07-14 09:00:01'),
+(8, 'hotelbeds', 1, 'partners/1752853484_687a6bec3a39d.jpg', 'hotel', 'a', 'standard', 'inactive', 12.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, 'c6070d0561e87fa98758c397205ec912', 'fcbb3cfe02', NULL, NULL, 'jk', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 1, 1, 1, 0.00, 0, 0.00, 0.00, NULL, NULL, 'adriana.lakin@example.com', '539.839.7319', 'Mr. Curtis Beer I', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-07-14 06:41:46'),
+(9, 'agoda', 1, 'partners/1752853484_687a6bec3a39d.jpg', 'hotel', 'a', 'standard', 'active', 12.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, '1923592', '4a3d9548-eb5e-4235-9f52-16c4baea765c', NULL, NULL, 'jk', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 1, 1, 1, 0.00, 0, 0.00, 0.00, NULL, NULL, 'adriana.lakin@example.com', '539.839.7319', 'Mr. Curtis Beer I', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-07-28 04:49:48'),
+(12, 'amadeus_self', 2, 'partners/1752853484_687a6bec3a39d.jpg', 'flight', 'a', 'standard', 'active', 20.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, 'client_credentials', 'RuAVw6Qtmxm7vc5kRipS6AgnYsSfMxyQ', 'Bxfjj5kMRgvYYZsK', NULL, 'jk', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, 'adriana.lakin@example.com', '539.839.7319', 'Mr. Curtis Beer I', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-07-31 19:14:58'),
+(13, 'Manual', 5, NULL, 'manual', NULL, 'standard', 'active', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 6, NULL, '2026-07-14 09:21:30'),
+(14, 'Manual', 4, NULL, 'manual', NULL, 'standard', 'active', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-31 17:54:19'),
+(15, 'Manual', 3, NULL, 'manual', NULL, 'standard', 'active', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-31 17:54:25'),
+(16, 'Manual', 1, NULL, 'manual', NULL, 'standard', 'active', 0.00, 'percentage', 0.00, 'percentage', 10.00, 'percentage', 5.00, 'percentage', 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 6, NULL, '2026-07-31 17:54:22'),
+(17, 'sabre', 2, 'partners/1752853484_687a6bec3a39d.jpg', 'flight', '', 'standard', 'inactive', 12.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, NULL, '', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, '', '', '', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-07-14 09:00:01'),
+(18, 'webbeds', 1, 'partners/1752853484_687a6bec3a39d.jpg', 'hotel', '', 'standard', 'active', 0.00, 'percentage', 0.00, 'fixed', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, 'Wisenstay', 'Mogadishu3322$', '2323145', NULL, '', NULL, 'localhost', NULL, 'supplier_data', 'root', NULL, 'success', 'API Credentials Verified Successfully', '2026-08-24 13:27:05', 'success', 'Connected to \"supplier_data\" successfully', '2026-08-24 10:48:48', 1, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, '', '', '', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-08-24 14:09:08'),
+(19, 'duffel', 2, NULL, 'flight', NULL, 'standard', 'pending', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, 'duffel_test_OQpRE9KPC8rZ0cU5PDCjioLUqB88mjBRu-5UsQMC2CB', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `travel_partner_imports`
+--
+
+CREATE TABLE `travel_partner_imports` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `travel_partner_id` bigint(20) UNSIGNED NOT NULL,
+  `import_type` varchar(255) NOT NULL,
+  `file_format` varchar(255) NOT NULL,
+  `original_filename` varchar(255) NOT NULL,
+  `stored_path` varchar(255) NOT NULL,
+  `status` varchar(255) NOT NULL,
+  `records_count` int(10) UNSIGNED DEFAULT NULL,
+  `preview_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`preview_data`)),
+  `error_message` text DEFAULT NULL,
+  `created_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -25259,7 +25293,7 @@ INSERT INTO `users` (`id`, `user_type`, `first_name`, `last_name`, `company_name
 (3, 'user', 'Royal', 'Koch', NULL, NULL, 'pending', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'bianka.green@example.com', '2025-07-14 15:23:14', NULL, NULL, NULL, NULL, 'bronze', 'active', '$2y$12$bbeZJp6ApHD7So.62/hTgubTtv5cXCXJSfDEAmWKHMrWrql16URee', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'EbUALjxGGB', '2025-07-14 15:23:15', '2025-07-14 15:23:15'),
 (4, 'user', 'Demond', 'Fahey', NULL, NULL, 'pending', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'lubowitz.bradly@example.net', '2025-07-14 15:23:14', NULL, NULL, NULL, NULL, 'bronze', 'active', '$2y$12$Ht6yuT1A0C1khxeg6bJhbOygpx6QQi1lv7Vjmsgmn43c5l5qNZLey', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'iQMz31kHTF', '2025-07-14 15:23:15', '2025-07-14 15:23:15'),
 (5, 'user', 'Ernie', 'Leffler', NULL, NULL, 'pending', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ismael34@example.com', '2025-07-14 15:23:14', NULL, NULL, NULL, NULL, 'bronze', 'active', '$2y$12$J5YDnMlOWLkyoUMqSTehP.LTXVFqQuYJqGlzaS939XDfVoP97ZDYi', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'UqtPVoaxJV', '2025-07-14 15:23:15', '2025-07-14 15:23:15'),
-(6, 'admin', 'Admin', 'User', NULL, NULL, 'pending', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'admin@travelbookingpanel.com', '2025-07-14 15:23:15', NULL, 'profile_images/1784984585_6a64b409d8864.png', NULL, NULL, 'bronze', 'active', '$2y$12$O0ta5fx6F6iBM8GWv7OXGOwKuuQ33rMJAt9YLUSBgUVnkUTRFy3mu', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, '2026-07-31 10:14:46', NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'qxrzqhFWZGV7LIJyC3iKoycu0rWjhnY6EhqjC8YHMJ1eUWr3fs95igCQNZnb', '2025-07-14 15:23:15', '2026-07-31 10:14:46'),
+(6, 'admin', 'Admin', 'User', NULL, NULL, 'pending', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'admin@travelbookingpanel.com', '2025-07-14 15:23:15', NULL, 'profile_images/1784984585_6a64b409d8864.png', NULL, NULL, 'bronze', 'active', '$2y$12$O0ta5fx6F6iBM8GWv7OXGOwKuuQ33rMJAt9YLUSBgUVnkUTRFy3mu', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, '2026-08-25 05:57:41', NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'qxrzqhFWZGV7LIJyC3iKoycu0rWjhnY6EhqjC8YHMJ1eUWr3fs95igCQNZnb', '2025-07-14 15:23:15', '2026-08-25 05:57:41'),
 (7, 'agent', 'Celeste', 'Dickerson', 'Robinson and Oconnor Co', 'AGT-0001', 'active', 6, '2026-03-16 06:45:41', NULL, NULL, NULL, '1773684627_69b84793c8bee_company_logo.jpeg', NULL, NULL, 'hm.younas22@gmail.com', NULL, '+1 (605) 426-5161', NULL, NULL, NULL, 'bronze', 'active', '$2y$12$6JGEA56d4SLspiSNc2pCk.l4WeDFuA.VVCIrON3GwMHgo1andSAya', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, NULL, '2026-03-16 06:38:46', '2026-03-16 13:10:27'),
 (8, 'agent', 'Kareem', 'Peters', 'Bright and Patel Plc', 'AGT-0002', 'active', 6, '2026-03-18 17:05:22', NULL, 'In earum deleniti om', 'Lane and Conner Plc', NULL, '735', NULL, 'gology@mailinator.com', NULL, '+1 (312) 307-1127', NULL, NULL, NULL, 'bronze', 'active', '$2y$12$3V7maKUcLD0st72MIRYs7.UrkGw.jwO0Rp4L4kgXib0CoHO67CX.u', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, 93.00, 0, 0.00, 1, 0, 0, NULL, NULL, '2026-03-18 17:05:23', '2026-05-07 11:25:14'),
 (9, 'user', 'demo', 'user', NULL, NULL, 'pending', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'user@travelbookingpanel.com', NULL, NULL, '1778171014_69fcbc86a266f_avatar.jpg', NULL, NULL, 'bronze', 'active', '$2y$12$knjfkMfg19kBf5BEsjnpHuTsAAnSjZWenpxXJv6ejx/BojwPHvkAK', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, '2026-05-12 03:35:51', NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, NULL, '2026-05-07 06:08:01', '2026-05-12 03:35:51'),
@@ -25725,6 +25759,14 @@ ALTER TABLE `travel_partners`
   ADD KEY `travel_partners_module_id_foreign` (`module_id`);
 
 --
+-- Indexes for table `travel_partner_imports`
+--
+ALTER TABLE `travel_partner_imports`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `travel_partner_imports_travel_partner_id_foreign` (`travel_partner_id`),
+  ADD KEY `travel_partner_imports_created_by_foreign` (`created_by`);
+
+--
 -- Indexes for table `umrah`
 --
 ALTER TABLE `umrah`
@@ -25956,7 +25998,7 @@ ALTER TABLE `menu_items`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `modules`
@@ -26064,7 +26106,13 @@ ALTER TABLE `tour_package_type`
 -- AUTO_INCREMENT for table `travel_partners`
 --
 ALTER TABLE `travel_partners`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT for table `travel_partner_imports`
+--
+ALTER TABLE `travel_partner_imports`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `umrah`
@@ -26285,6 +26333,13 @@ ALTER TABLE `tour_inclusions`
 --
 ALTER TABLE `tour_package_type`
   ADD CONSTRAINT `tour_package_type_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `travel_partner_imports`
+--
+ALTER TABLE `travel_partner_imports`
+  ADD CONSTRAINT `travel_partner_imports_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `travel_partner_imports_travel_partner_id_foreign` FOREIGN KEY (`travel_partner_id`) REFERENCES `travel_partners` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `umrah`
