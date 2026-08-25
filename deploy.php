@@ -17,12 +17,10 @@
  *      and fill in REPO_PATH and DEPLOY_SECRET. deploy-config.php is
  *      gitignored on purpose — it holds a secret and must never be
  *      committed.
- *   2. Make sure this file (deploy.php) lives at the webroot of the app
- *      that Git Version Control cloned, i.e.
- *      /home/USERNAME/travelbpanel_v3/deploy.php, so it ships to
- *      /home/USERNAME/travelbpanel_v3/public/deploy.php only if you
- *      symlink/copy it there — see the README note at the bottom of this
- *      file for the two ways to expose it publicly.
+ *   2. This file lives at the repo root — /home/travsnel/travelbpanel_v3/deploy.php
+ *      — which is outside the public webroot on purpose. See the note at
+ *      the bottom of this file for how to expose it at
+ *      https://demo.travelbookingpanel.com/deploy.php.
  */
 
 $configFile = __DIR__ . '/deploy-config.php';
@@ -99,7 +97,7 @@ echo "Deploy finished.\n\n" . $output;
  * it unless you deliberately expose it). Pick ONE:
  *
  *   A. Symlink it into public/ (recommended):
- *        cd /home/USERNAME/travelbpanel_v3/public
+ *        cd /home/travsnel/travelbpanel_v3/public
  *        ln -s ../deploy.php deploy.php
  *      Then the URL is: https://demo.travelbookingpanel.com/deploy.php
  *

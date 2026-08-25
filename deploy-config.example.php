@@ -5,9 +5,9 @@
  * never commit it, since DEPLOY_SECRET is a real secret.
  */
 
-// Absolute path to the git-cloned app on the server, e.g.:
-// /home/USERNAME/travelbpanel_v3
-define('REPO_PATH', '/home/USERNAME/travelbpanel_v3');
+// Absolute path to the git-cloned app on the server.
+// For demo.travelbookingpanel.com under cPanel user "travsnel" this is:
+define('REPO_PATH', '/home/travsnel/travelbpanel_v3');
 
 // A long random string — used both to verify the GitHub webhook signature
 // and as the ?token= for manual triggering. Generate one with:
