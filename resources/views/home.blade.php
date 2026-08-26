@@ -164,7 +164,7 @@
 <section class="hero-section">
     <div class="hero-content">
         <h1 style="color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">
-            Find Your Perfect Flightfdfffff
+            {{ t('home.hero_title') }}
         </h1>
         <p style="color: white; text-shadow: 0 2px 8px rgba(0,0,0,0.2);">
             {{ t('home.hero_subtitle') }}
