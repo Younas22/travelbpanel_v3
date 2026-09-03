@@ -325,9 +325,17 @@ class TravelPartnerController extends Controller
         $validated['custom_pnr_format'] = $request->input('custom_pnr_format', 0) == 1 ? 1 : 0;
         $validated['updated_by'] = auth()->id();
 
-        // Remove empty credentials
-        if (empty($validated['api_credential_2'])) unset($validated['api_credential_2']);
-        if (empty($validated['api_credential_5'])) unset($validated['api_credential_5']);
+        // API credential fields only reach here at all when the admin actually
+        // typed into them (the edit form disables — and browsers never submit
+        // disabled inputs for — any field still showing its saved, encrypted
+        // value). Guard against an empty string too, so clicking "Change" and
+        // submitting without retyping can't wipe the stored credential.
+        for ($i = 1; $i <= 6; $i++) {
+            $key = "api_credential_{$i}";
+            if (array_key_exists($key, $validated) && ($validated[$key] === '' || $validated[$key] === null)) {
+                unset($validated[$key]);
+            }
+        }
 
         // Password field: only overwrite the stored value when the admin actually typed a new one
         if (!$request->filled('db_password')) {
@@ -455,6 +463,73 @@ class TravelPartnerController extends Controller
 
         return redirect()->route('admin.travel-partners.index')
                         ->with('success', 'Travel partner deleted successfully!');
+    }
+
+    /**
+     * Run a live credential check for this partner without ever exposing its
+     * saved credentials to the browser. The edit form only ever displays the
+     * encrypted value at rest — when a field hasn't been touched, this method
+     * decrypts the stored value server-side and uses it directly; only a
+     * field the admin is actively replacing (not yet saved) travels through
+     * the browser at all, because that's the only place it exists. We proxy
+     * the request server-to-server to the partner's own
+     * /api/{supplier}/test_credentials endpoint and relay its response.
+     */
+    public function testCredentialsLive(Request $request, TravelPartner $partner)
+    {
+        $overrides = $request->validate([
+            'api_credential_1' => 'nullable|string|max:500',
+            'api_credential_2' => 'nullable|string|max:500',
+            'api_credential_3' => 'nullable|string|max:500',
+            'api_credential_4' => 'nullable|string|max:500',
+            'api_credential_5' => 'nullable|string|max:500',
+            'api_credential_6' => 'nullable|string|max:500',
+        ]);
+
+        $payload = [];
+        for ($i = 1; $i <= 6; $i++) {
+            $key = "api_credential_{$i}";
+            // A field the admin is actively replacing wins; otherwise fall
+            // back to the partner's own stored value (decrypted transparently
+            // by the model's "encrypted" cast — never round-tripped to the browser).
+            $value = $overrides[$key] ?? null;
+            if ($value === null || $value === '') {
+                $value = $partner->getAttribute($key);
+            }
+            if ($value !== null && $value !== '') {
+                $payload[$key] = $value;
+            }
+        }
+
+        $supplierSlug = strtolower(trim($partner->company_name));
+        $endpoint = rtrim(url(''), '/') . '/api/' . rawurlencode($supplierSlug) . '/test_credentials';
+
+        try {
+            $response = Http::timeout(20)->acceptJson()->post($endpoint, $payload);
+
+            if ($response->status() === 404) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Credential testing is not available for \"{$partner->company_name}\" yet.",
+                ], 404);
+            }
+
+            $data = $response->json();
+            if (!is_array($data)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Unexpected response (HTTP {$response->status()}).",
+                ], 502);
+            }
+
+            return response()->json($data, $response->status());
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not reach the credential-check endpoint.',
+                'error_detail' => $e->getMessage(),
+            ], 502);
+        }
     }
 
     /**

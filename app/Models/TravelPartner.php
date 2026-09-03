@@ -85,14 +85,24 @@ class TravelPartner extends Model
         'supported_countries' => 'array',
         'last_api_call' => 'datetime',
         'last_revenue_update' => 'datetime',
+        'api_credential_1' => 'encrypted',
+        'api_credential_2' => 'encrypted',
+        'api_credential_3' => 'encrypted',
+        'api_credential_4' => 'encrypted',
+        'api_credential_5' => 'encrypted',
+        'api_credential_6' => 'encrypted',
         'db_password' => 'encrypted',
         'last_api_test_at' => 'datetime',
         'last_db_test_at' => 'datetime',
     ];
 
     protected $hidden = [
-        'api_credential_2', // Hide secret keys
-        'api_credential_5', // Hide webhook secrets
+        'api_credential_1', // Hide API credentials
+        'api_credential_2',
+        'api_credential_3',
+        'api_credential_4',
+        'api_credential_5',
+        'api_credential_6',
         'db_password', // Hide database credentials
     ];
 

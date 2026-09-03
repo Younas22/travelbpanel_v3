@@ -79,7 +79,10 @@
                 // Computed unconditionally: referenced by the page's shared JS below
                 // regardless of which branch (API supplier vs. Manual) renders.
                 $supplierSlug = strtolower(trim($partner->company_name));
-                $credentialCheckEndpoint = rtrim(url(''), '/') . '/api/' . rawurlencode($supplierSlug) . '/test_credentials';
+                // Proxied server-side (see TravelPartnerController::testCredentialsLive) so the
+                // browser never has to be handed the partner's saved, decrypted credentials —
+                // only a value the admin is actively typing (not yet saved) ever reaches it.
+                $credentialCheckEndpoint = route('admin.travel-partners.test-credentials-live', $partner);
                 $financeItems = [
                     ['label' => 'Commission', 'field' => 'commission_rate', 'type_field' => 'commission_type', 'icon' => 'bi-percent', 'color' => 'blue'],
                     ['label' => 'Discount', 'field' => 'discount_rate', 'type_field' => 'discount_type', 'icon' => 'bi-check-circle', 'color' => 'green'],
@@ -151,18 +154,34 @@
                                     <div class="tpe-cred-grid" id="credentialGrid">
                                         @for($i = 1; $i <= 6; $i++)
                                             @php
-                                                $credVal = old("api_credential_{$i}", $partner->getAttribute("api_credential_{$i}"));
-                                                $hasValue = $credVal !== null && $credVal !== '';
+                                                // Never decrypt for display. The raw column is the encrypted
+                                                // ciphertext itself — that's what's shown (and it's all the
+                                                // field submits back unless the admin replaces it), so the
+                                                // real credential never round-trips to the browser just for
+                                                // viewing the page.
+                                                $oldVal = old("api_credential_{$i}");
+                                                $rawStored = $partner->getRawOriginal("api_credential_{$i}");
+                                                $hasStored = $rawStored !== null && $rawStored !== '';
+                                                $isEditing = $oldVal !== null;
+                                                $displayVal = $isEditing ? $oldVal : ($hasStored ? $rawStored : '');
                                             @endphp
-                                            <div class="tpe-field tpe-cred-slot @if($hasValue) tpe-cred-active @endif" data-cred-index="{{ $i }}">
-                                                <label>API Credential {{ $i }}</label>
+                                            <div class="tpe-field tpe-cred-slot @if($hasStored || $isEditing) tpe-cred-active @endif" data-cred-index="{{ $i }}">
+                                                <label>API Credential {{ $i }} <i class="bi bi-lock-fill tpe-cred-lock" title="Encrypted at rest — never shown in plain text"></i></label>
                                                 <div class="tpe-input-icon-wrap">
                                                     <input type="text" name="api_credential_{{ $i }}"
-                                                           class="form-control @error('api_credential_'.$i) is-invalid @enderror"
-                                                           placeholder="Enter credential"
-                                                           value="{{ $credVal }}">
-                                                    @if($hasValue)
+                                                           class="form-control tpe-cred-input @error('api_credential_'.$i) is-invalid @enderror"
+                                                           placeholder="{{ ($hasStored && !$isEditing) ? '' : 'Enter credential' }}"
+                                                           value="{{ $displayVal }}"
+                                                           data-original-value="{{ $hasStored ? $rawStored : '' }}"
+                                                           autocomplete="new-password"
+                                                           {{ ($hasStored && !$isEditing) ? 'disabled' : '' }}>
+                                                    @if($hasStored && !$isEditing)
                                                         <span class="tpe-input-check"><i class="bi bi-check-circle-fill"></i></span>
+                                                    @endif
+                                                    @if($hasStored)
+                                                        <button type="button" class="tpe-cred-change" data-cred-index="{{ $i }}" title="{{ $isEditing ? 'Cancel' : 'Replace this credential' }}">
+                                                            <i class="bi {{ $isEditing ? 'bi-x-lg' : 'bi-pencil-fill' }}"></i>
+                                                        </button>
                                                     @endif
                                                 </div>
                                                 @error('api_credential_'.$i)
@@ -514,6 +533,38 @@
                     });
                 }
 
+                // ===== API CREDENTIAL FIELDS — the field only ever shows the encrypted
+                // value at rest (or is empty); the real credential is never decrypted for
+                // display. "Change" clears it so a genuinely new value can be typed, and
+                // that's the only content these fields ever submit or send for testing.
+                document.querySelectorAll('.tpe-cred-change').forEach(function (changeBtn) {
+                    changeBtn.addEventListener('click', function () {
+                        const wrap = changeBtn.closest('.tpe-input-icon-wrap');
+                        const input = wrap.querySelector('.tpe-cred-input');
+                        const checkIcon = wrap.querySelector('.tpe-input-check');
+                        if (!input) return;
+
+                        if (input.disabled) {
+                            // Enter edit mode — start blank, never prefilled with the old secret.
+                            input.disabled = false;
+                            input.value = '';
+                            input.placeholder = 'Enter new credential to replace the saved one';
+                            if (checkIcon) checkIcon.style.display = 'none';
+                            changeBtn.innerHTML = '<i class="bi bi-x-lg"></i>';
+                            changeBtn.title = 'Cancel';
+                            input.focus();
+                        } else {
+                            // Cancel — restore the disabled, encrypted display.
+                            input.disabled = true;
+                            input.value = input.dataset.originalValue || '';
+                            input.placeholder = '';
+                            if (checkIcon) checkIcon.style.display = '';
+                            changeBtn.innerHTML = '<i class="bi bi-pencil-fill"></i>';
+                            changeBtn.title = 'Replace this credential';
+                        }
+                    });
+                });
+
                 // ===== DYNAMIC API CREDENTIAL CHECK — terminal-style console =====
                 const testCredentialsBtn = document.getElementById('testCredentialsBtn');
                 const terminalBody = document.getElementById('apiTestTerminalBody');
@@ -562,10 +613,13 @@
                     testCredentialsBtn.addEventListener('click', function () {
                         if (credentialTestInFlight) return;
 
+                        // Only a field the admin is actively replacing (enabled, not
+                        // still showing the saved ciphertext) is sent — the server fills
+                        // in everything else from the partner's own stored, decrypted value.
                         const payload = {};
                         for (let i = 1; i <= 6; i++) {
                             const input = document.querySelector(`input[name="api_credential_${i}"]`);
-                            if (input && input.value.trim() !== '') payload[`api_credential_${i}`] = input.value.trim();
+                            if (input && !input.disabled && input.value.trim() !== '') payload[`api_credential_${i}`] = input.value.trim();
                         }
 
                         credentialTestInFlight = true;

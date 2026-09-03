@@ -1994,9 +1994,13 @@ body.theme-midnight .tp-mod-header { background: var(--mod-dbg, var(--primary-ti
 
 .tpe-cred-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--m-space-3); margin-top: var(--m-space-4); margin-bottom: var(--m-space-2); }
 .tpe-cred-slot:not(.tpe-cred-active) { display: none; }
+.tpe-cred-lock { font-size: 11px; color: var(--text-secondary, var(--text-color)); margin-left: 2px; }
 .tpe-input-icon-wrap { position: relative; display: flex; align-items: center; }
-.tpe-input-icon-wrap .form-control { padding-right: 34px; }
-.tpe-input-check { position: absolute; right: 10px; color: var(--success-color); font-size: 15px; pointer-events: none; }
+.tpe-input-icon-wrap .form-control { padding-right: 60px; }
+.tpe-input-check { position: absolute; right: 34px; color: var(--success-color); font-size: 15px; pointer-events: none; }
+.tpe-cred-input:disabled { font-family: var(--m-font-mono, monospace); font-size: 11px; letter-spacing: 0.2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-secondary, var(--text-color)); background: color-mix(in srgb, var(--text-color) 5%, transparent); cursor: default; opacity: 1; }
+.tpe-cred-change { position: absolute; right: 6px; width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; border: none; background: none; color: var(--text-secondary, var(--text-color)); font-size: 14px; border-radius: 6px; cursor: pointer; }
+.tpe-cred-change:hover { background: color-mix(in srgb, var(--text-color) 8%, transparent); color: var(--text-color); }
 
 .tpe-tabs { display: flex; gap: var(--m-space-4); border-bottom: 1px solid var(--border-color); margin-bottom: var(--m-space-4); flex-wrap: wrap; }
 .tpe-tabs .nav-link { border: none; background: none; padding: 10px 2px; margin-bottom: -1px; font-size: 0.8125rem; font-weight: 600; color: color-mix(in srgb, var(--text-color) 55%, transparent); border-bottom: 2px solid transparent; display: inline-flex; align-items: center; gap: 6px; }
