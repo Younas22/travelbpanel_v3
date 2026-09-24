@@ -48,7 +48,7 @@
                 <i class="fas fa-users hotel-info-icon"></i>
                 <div>
                     <div class="hotel-info-label">{{ t('hotellist.guests') }}</div>
-                    <div class="hotel-info-value">{{isset($hotel_search['adults']) && $hotel_search['adults'] ? $hotel_search['adults'] : ""}} {{ t('hotellist.adults') }}, {{isset($hotel_search['rooms']) && $hotel_search['rooms'] ? $hotel_search['rooms'] : ""}} {{ t('hotellist.room') }}</div>
+                    <div class="hotel-info-value">{{isset($hotel_search['adults']) && $hotel_search['adults'] ? $hotel_search['adults'] : ""}} {{ t('hotellist.adults') }}@if(isset($hotel_search['childs']) && $hotel_search['childs'] > 0), {{ $hotel_search['childs'] }} {{ t('hotellist.children') }}@endif, {{isset($hotel_search['rooms']) && $hotel_search['rooms'] ? $hotel_search['rooms'] : ""}} {{ t('hotellist.room') }}</div>
                 </div>
             </div>
         </div>

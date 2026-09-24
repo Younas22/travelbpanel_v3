@@ -245,6 +245,8 @@
                             </div>
                         </div>
 
+                        <div id="hotelChildAgesContainer" class="mb-3 space-y-2" style="display:none;"></div>
+
                         <div class="flex items-center justify-between mb-3">
                             <div>
                                 <div class="font-semibold text-[13px]">{{t('hotel.rooms')}}</div>
@@ -259,6 +261,10 @@
                                     <i class="fas fa-plus text-[#0077BE] text-[10px]"></i>
                                 </button>
                             </div>
+                        </div>
+
+                        <div id="hotelChildAgeError" class="text-[11px] text-red-500 font-medium mb-2" style="display:none;">
+                            {{ t('hotel.selectChildAgeFirst') }}
                         </div>
 
                         <button type="button" id="hotelApplyTravelerBtn" class="w-full py-2.5 bg-[#0077BE] text-white rounded-xl font-semibold text-[13px] hover:bg-[#005f99] transition-all">

@@ -362,7 +362,27 @@
 
     // ========== GLOBAL VARIABLES ==========
     let tripType = "<?=$trip?>";
-    let hotelTravelers = { adult: 2, child: 0, room: 1 };
+    let hotelTravelers = {
+        adult: <?= isset($hotel_search['adults']) && $hotel_search['adults'] ? (int) $hotel_search['adults'] : 2 ?>,
+        child: <?= isset($hotel_search['childs']) && $hotel_search['childs'] ? (int) $hotel_search['childs'] : 0 ?>,
+        room: <?= isset($hotel_search['rooms']) && $hotel_search['rooms'] ? (int) $hotel_search['rooms'] : 1 ?>
+    };
+    // Ages the admin already picked for this session's search, so the Modify
+    // Search form can pre-select them instead of showing blank dropdowns.
+    // hotel_search.child_age is stored as an array (child_age[0] = child 1's
+    // age, etc.) — the isset/is_string branch here is just a defensive
+    // fallback in case an older string-formatted session value is still around.
+    let hotelChildAgesFromSession = <?php
+        $sessionAges = $hotel_search['child_age'] ?? [];
+        if (is_string($sessionAges)) {
+            $sessionAges = array_filter(array_map('trim', explode(',', $sessionAges)));
+        }
+        echo json_encode(array_values(array_map('strval', (array) $sessionAges)));
+    ?>;
+    let hotelDestinationFromSession = "<?= isset($hotel_search['city']) ? addslashes($hotel_search['city']) : '' ?>";
+    let hotelCheckinFromSession = "<?= isset($hotel_search['checkin']) && $hotel_search['checkin'] ? date('d-m-Y', strtotime($hotel_search['checkin'])) : '' ?>";
+    let hotelCheckoutFromSession = "<?= isset($hotel_search['checkout']) && $hotel_search['checkout'] ? date('d-m-Y', strtotime($hotel_search['checkout'])) : '' ?>";
+    let hotelNationalityFromSession = "<?= isset($hotel_search['nationality']) ? addslashes($hotel_search['nationality']) : '' ?>";
     let flightPassengers = { adult: "<?=isset($flight_search['adult']) && $flight_search['adult'] ? $flight_search['adult'] : 1?>", child: <?=isset($flight_search['children']) && $flight_search['children'] ? $flight_search['children'] : 0?>, infant: <?=isset($flight_search['infants']) && $flight_search['infants'] ? $flight_search['infants'] : 0?> };
     let toursTravelers = { adult: {{ isset($tour_search['adult']) ? $tour_search['adult'] : 2 }}, child: {{ isset($tour_search['child']) ? $tour_search['child'] : 0 }} };
 
@@ -575,6 +595,79 @@
         });
     }
 
+    // ========== HOTEL CHILD AGE SELECTORS ==========
+    // Renders one required age dropdown (2-11 years) per selected child,
+    // directly below the child stepper, and removes them when the count drops.
+    function renderHotelChildAges() {
+        const container = document.getElementById('hotelChildAgesContainer');
+        if (!container) return;
+
+        const count = hotelTravelers.child || 0;
+
+        // Preserve any ages already chosen while adjusting the count.
+        const existingAges = Array.from(container.querySelectorAll('select[data-child-age-index]'))
+            .map(select => select.value);
+
+        if (count <= 0) {
+            container.style.display = 'none';
+            container.innerHTML = '';
+            hideChildAgeError();
+            return;
+        }
+
+        let html = '';
+        for (let i = 1; i <= count; i++) {
+            const previousValue = existingAges[i - 1] || hotelChildAgesFromSession[i - 1] || '';
+            let options = '<option value="">{{ t("hotel.selectChildAge") }}</option>';
+            for (let age = 2; age <= 11; age++) {
+                options += `<option value="${age}" ${String(age) === previousValue ? 'selected' : ''}>${age} {{ t("hotel.years") }}</option>`;
+            }
+            html += `
+                <div class="flex items-center justify-between gap-2">
+                    <label class="text-[12px] text-gray-600 font-medium" for="hotelChildAge${i}">{{ t('hotel.child') }} ${i} {{ t('hotel.age') }}</label>
+                    <select id="hotelChildAge${i}" data-child-age-index="${i}" required
+                            class="text-[13px] border border-gray-300 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-[#0077BE]">
+                        ${options}
+                    </select>
+                </div>`;
+        }
+        container.innerHTML = html;
+        container.style.display = 'block';
+
+        // Clear the "please select an age" error as soon as the admin picks one.
+        container.querySelectorAll('select[data-child-age-index]').forEach(select => {
+            select.addEventListener('change', () => {
+                if (validateHotelChildAges(false)) hideChildAgeError();
+            });
+        });
+    }
+
+    function hideChildAgeError() {
+        const errorEl = document.getElementById('hotelChildAgeError');
+        if (errorEl) errorEl.style.display = 'none';
+    }
+
+    // Returns true when every selected child has an age chosen. When
+    // `showError` is true (default), reveals the inline message and focuses
+    // the first empty dropdown so the admin knows exactly what to fix.
+    function validateHotelChildAges(showError = true) {
+        if ((hotelTravelers.child || 0) <= 0) return true;
+
+        const ageSelects = Array.from(document.querySelectorAll('#hotelChildAgesContainer select[data-child-age-index]'));
+        const firstMissing = ageSelects.find(select => !select.value);
+
+        if (firstMissing || ageSelects.length < hotelTravelers.child) {
+            if (showError) {
+                const errorEl = document.getElementById('hotelChildAgeError');
+                if (errorEl) errorEl.style.display = 'block';
+                firstMissing?.focus();
+            }
+            return false;
+        }
+
+        return true;
+    }
+
     // ========== HOTEL FORM INITIALIZATION ==========
     function initializeHotelForm() {
         // Hotel Destination
@@ -584,6 +677,16 @@
         const hotelDestinationValue = document.getElementById('hotelDestinationValue');
         const hotelDestinationSearch = document.getElementById('hotelDestinationSearch');
         const hotelDestinationList = document.getElementById('hotelDestinationList');
+
+        // Pre-fill from the last search stored in session (e.g. Modify Search on the results page).
+        if (hotelDestinationFromSession && hotelDestinationValue) {
+            const readableCity = hotelDestinationFromSession
+                .split('-')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+            hotelDestinationDisplay.textContent = readableCity;
+            hotelDestinationValue.value = hotelDestinationFromSession;
+        }
 
         if (hotelDestinationBtn) {
             hotelDestinationBtn.addEventListener('click', (e) => {
@@ -626,11 +729,15 @@
         const hotelCheckinDate = document.getElementById('hotelCheckinDate');
         const hotelCheckoutDate = document.getElementById('hotelCheckoutDate');
 
+        // Prefer the dates already stored in session (Modify Search) over the defaults.
+        const initialCheckin = hotelCheckinFromSession || checkInDate;
+        const initialCheckout = hotelCheckoutFromSession || checkOutDate;
+
         if (hotelCheckinDate) {
             const hotelCheckinPicker = flatpickr(hotelCheckinDate, {
                 dateFormat: "d-m-Y",
                 minDate: "today",
-                defaultDate: checkInDate,
+                defaultDate: initialCheckin,
                 onChange: function(selectedDates) {
                     if (selectedDates.length > 0) {
                         const checkin = new Date(selectedDates[0]);
@@ -644,8 +751,8 @@
 
             const hotelCheckoutPicker = flatpickr(hotelCheckoutDate, {
                 dateFormat: "d-m-Y",
-                minDate: checkInDate,
-                defaultDate: checkOutDate
+                minDate: initialCheckin,
+                defaultDate: initialCheckout
             });
 
             window.hotelCheckinPicker = hotelCheckinPicker;
@@ -657,6 +764,18 @@
         const hotelTravelerDropdown = document.getElementById('hotelTravelerDropdown');
         const hotelTravelerDisplay = document.getElementById('hotelTravelerDisplay');
         const hotelApplyTravelerBtn = document.getElementById('hotelApplyTravelerBtn');
+
+        // Sync the visible stepper counts + summary text with whatever hotelTravelers
+        // was initialized to above (either the defaults or the session's last search).
+        ['adult', 'child', 'room'].forEach(type => {
+            const countElement = document.getElementById(`hotel${type.charAt(0).toUpperCase() + type.slice(1)}Count`);
+            if (countElement) countElement.textContent = hotelTravelers[type];
+        });
+        if (hotelTravelerDisplay) {
+            const totalTravelers = hotelTravelers.adult + hotelTravelers.child;
+            hotelTravelerDisplay.textContent = `${totalTravelers} Travelers, ${hotelTravelers.room} Room${hotelTravelers.room > 1 ? 's' : ''}`;
+        }
+        renderHotelChildAges();
 
         if (hotelTravelerBtn) {
             hotelTravelerBtn.addEventListener('click', (e) => {
@@ -684,11 +803,21 @@
                     if (countElement) {
                         countElement.textContent = hotelTravelers[type];
                     }
+
+                    if (type === 'child') {
+                        renderHotelChildAges();
+                    }
                 });
             });
 
             hotelApplyTravelerBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+
+                if (!validateHotelChildAges()) {
+                    return;
+                }
+                hideChildAgeError();
+
                 const adults = hotelTravelers.adult;
                 const children = hotelTravelers.child;
                 const rooms = hotelTravelers.room;
@@ -706,6 +835,21 @@
         const hotelNationalityValue = document.getElementById('hotelNationalityValue');
         const hotelCountrySearch = document.getElementById('hotelCountrySearch');
         const hotelCountryList = document.getElementById('hotelCountryList');
+
+        // Pre-fill from session (Modify Search): set the code immediately, then
+        // resolve its flag + display name from the countries list.
+        if (hotelNationalityFromSession && hotelNationalityValue) {
+            hotelNationalityValue.value = hotelNationalityFromSession;
+            fetch(`${API_BASE_URL}/api/countries`)
+                .then(r => r.json())
+                .then(data => {
+                    const match = (data.data || []).find(c => c.country_code === hotelNationalityFromSession);
+                    if (match && hotelNationalityDisplay) {
+                        hotelNationalityDisplay.textContent = `${match.flag} ${match.country}`;
+                    }
+                })
+                .catch(() => {});
+        }
 
         if (hotelNationalityBtn) {
             hotelNationalityBtn.addEventListener('click', (e) => {
@@ -745,6 +889,24 @@
     function submitHotelForm(e) {
         e.preventDefault();
 
+        const child = hotelTravelers.child;
+        let childAges = [];
+
+        if (child > 0) {
+            if (!validateHotelChildAges(false)) {
+                // Open the travelers dropdown first, then reveal the inline message
+                // and focus the empty field now that it's actually visible.
+                closeAllHotelDropdowns();
+                document.getElementById('hotelTravelerDropdown')?.classList.add('active');
+                showOverlay('dropdownOverlay');
+                validateHotelChildAges(true);
+                return false;
+            }
+
+            childAges = Array.from(document.querySelectorAll('#hotelChildAgesContainer select[data-child-age-index]'))
+                .map(select => select.value);
+        }
+
         // Show hotel loader
         showPageLoader('hotel');
 
@@ -762,12 +924,26 @@
             : hotelCheckoutDate.value;
 
         const adult = hotelTravelers.adult;
-        const child = hotelTravelers.child;
         const room = hotelTravelers.room;
         const nationality = hotelNationalityValue.value;
 
         const url = `${API_BASE_URL}/hotels/${country}/${checkinDate}/${checkoutDate}/${adult}/${child}/${room}/${nationality}`;
-        window.location.href = url;
+
+        // Child ages are stored in the session, not the URL. Save them first,
+        // then navigate — search() reads them back out of session.
+        fetch(`${API_BASE_URL}/hotels/store-child-ages`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ child_ages: childAges })
+        })
+            .catch(() => {}) // Navigate regardless — search() just falls back to no ages.
+            .finally(() => {
+                window.location.href = url;
+            });
         return false;
     }
 

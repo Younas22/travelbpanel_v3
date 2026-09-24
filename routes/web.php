@@ -109,6 +109,7 @@ Route::get('/payment/flight/{gateway_name}/{booking_ref}',  [FlightsController::
 Route::get('flight/payment/success',  [FlightsController::class, 'payment_success'])->name('payment_success');
 
 Route::get('/hotels', [HotelController::class, 'index'])->name('hotels.index');
+Route::post('/hotels/store-child-ages', [HotelController::class, 'storeChildAges'])->name('hotels.store-child-ages');
 Route::get('hotels/{country}/{checkin}/{checkout}/{adult}/{child}/{room}/{nationality}', [HotelController::class, 'search']);
 
 Route::get('/umrah', [UmrahController::class, 'index'])->name('umrah.index');

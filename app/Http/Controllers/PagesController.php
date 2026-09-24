@@ -108,7 +108,9 @@ class PagesController extends Controller
                 ->get();
         }
 
-        return view('home', compact('tours', 'umrahPackages', 'featuredHotels'));
+        $hotel_search = session('hotel_search');
+
+        return view('home', compact('tours', 'umrahPackages', 'featuredHotels', 'hotel_search'));
     }
 
 

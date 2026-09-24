@@ -28,7 +28,9 @@ class HotelController extends Controller
             ->limit(9)
             ->get();
 
-        return view('hotel.hotel', compact('featuredHotels'));
+        $hotel_search = session('hotel_search');
+
+        return view('hotel.hotel', compact('featuredHotels', 'hotel_search'));
     }
 
     /**
@@ -43,7 +45,7 @@ class HotelController extends Controller
      * @param string $nationality
      * @return \Illuminate\View\View
      */
-    public function search($destination, $checkin, $checkout, $adult, $child, $room, $nationality)
+    public function search(Request $request, $destination, $checkin, $checkout, $adult, $child, $room, $nationality)
     {
         try {
 
@@ -51,14 +53,26 @@ class HotelController extends Controller
 
             $currency = activeCurrency();
 
+            // The stay form POSTs the freshly-picked ages to /hotels/store-child-ages
+            // right before navigating here, so they normally arrive via this one-time
+            // session flag. But if that request never lands (e.g. the browser fires a
+            // duplicate/prefetch navigation to this same search URL, or the fetch is
+            // interrupted by the page unload) and the child count hasn't changed, fall
+            // back to whatever ages are already on file instead of wiping them out.
+            $childAgesInput = session()->pull('pending_child_ages', []);
+            if (empty($childAgesInput) && (int) $child > 0) {
+                $childAgesInput = session('hotel_search.child_age', []);
+            }
+
             $payload = [
                 'city' => $destination,
                 'checkin' => date('Y-m-d', strtotime($checkin)),
                 'checkout' => date('Y-m-d', strtotime($checkout)),
                 'adults' => $adult,
                 'childs' => $child,
-                'child_age' => '',
+                'child_age' => $this->sanitize_child_ages($childAgesInput, (int) $child),
                 'rooms' => $room,
+                'nationality' => $nationality,
                 'currency' => $currency->currency_name,
                 'env' => 'dev',
             ];
@@ -72,6 +86,7 @@ class HotelController extends Controller
 
             foreach ($suppliers as $supplier) {
                 $endpoint = url('/') . '/api/'.$supplier->company_name.'/hotel_search';
+
                 $supplier_payload = array_merge($payload, [
                     'endpoint' => $endpoint,
                     'api_credential_1' => $supplier->api_credential_1,
@@ -82,7 +97,9 @@ class HotelController extends Controller
                     'api_credential_6' => $supplier->api_credential_6,
                     'commission'=> $supplier->commission_rate,
                 ]);
+
                 $response = Http::post($endpoint, $supplier_payload);
+
                 $data = $response->json();
 
                 if (!empty($data) && isset($data['data']) && is_array($data['data'])) {
@@ -182,12 +199,14 @@ class HotelController extends Controller
                     'status' => false,
                     'message' => 'No hotels found',
                     'hotels' => [],
+                    'hotel_search' => session('hotel_search'),
                 ]);
             }
         } catch (\Exception $exception) {
             return view('hotel.list', [
                 'error' => 'An error occurred while searching for hotels. Please try again.',
                 'debug_error' => $exception->getMessage(),
+                'hotel_search' => session('hotel_search'),
             ]);
         }
     }
@@ -292,6 +311,9 @@ class HotelController extends Controller
             $supplier = TravelPartner::where('status', 'active')->where('company_name', $supplier_name)->first();
             $endpoint = url('/') . '/api/'.strtolower($supplier_name).'/hotel_details';
             $currency = activeCurrency();
+            // Use the real ages captured on the search form (stored in the
+            // hotel_search session during search()) instead of a hardcoded value.
+            $childAge = session('hotel_search.child_age', []);
             $payload = [
                 'endpoint' => $endpoint,
                 'hotel_id' => $hotel_id,
@@ -299,7 +321,7 @@ class HotelController extends Controller
                 'checkout' => date('Y-m-d', strtotime($checkout)),
                 'adults' => $adults,
                 'childs' => $childs,
-                'child_age' => '[{"ages":"5"}]',
+                'child_age' => $childAge,
                 'rooms' => $rooms,
                 'currency' => $currency->currency_name,
                 'api_credential_1' => $supplier->api_credential_1,
@@ -528,6 +550,52 @@ class HotelController extends Controller
      * @param array $params
      * @return array
      */
+    /**
+     * Sanitize the child ages picked on the search form into a clean array
+     * of valid ages (2-11), one per child in order — so `child_age[0]` is
+     * always child 1's age, `child_age[1]` is child 2's age, and so on,
+     * paired positionally with the `childs` count. Accepts either an array
+     * (the normal case, read from session) or a legacy comma-separated
+     * string, for backwards compatibility. WebbedsController::parse_child_ages()
+     * already accepts a plain array, so no further encoding is needed.
+     */
+    private function sanitize_child_ages($raw, int $childCount): array
+    {
+        if ($childCount <= 0 || empty($raw)) {
+            return [];
+        }
+
+        if (is_string($raw)) {
+            $raw = explode(',', $raw);
+        }
+
+        return collect($raw)
+            ->map(fn($age) => (int) trim((string) $age))
+            ->filter(fn($age) => $age >= 2 && $age <= 11)
+            ->take($childCount)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Store the child ages picked on the search form into the session
+     * instead of passing them through the URL. Called via fetch immediately
+     * before the search form navigates to the results page; search() then
+     * reads them back out of session (one-time, via session()->pull()).
+     */
+    public function storeChildAges(Request $request)
+    {
+        $ages = collect($request->input('child_ages', []))
+            ->map(fn($age) => (int) $age)
+            ->filter(fn($age) => $age >= 2 && $age <= 11)
+            ->values()
+            ->all();
+
+        session(['pending_child_ages' => $ages]);
+
+        return response()->json(['success' => true]);
+    }
+
     private function prepare_session_data(array $params): array
     {
         $totalPassengers = $params['adults'] + $params['childs'];
@@ -540,6 +608,7 @@ class HotelController extends Controller
             'childs' => $params['childs'],
             'child_age' => $params['child_age'],
             'rooms' => $params['rooms'],
+            'nationality' => $params['nationality'] ?? '',
             'currency' => $params['currency'],
             'search_timestamp' => now()->toDateTimeString(),
             'passenger_count' => $totalPassengers,
