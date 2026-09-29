@@ -150,7 +150,7 @@
                 <div class="lg:col-span-5">
                     <!-- Logo with Fallback -->
 
-                    <div class="flex items-center mb-6 float-animation">
+                    <div class="flex items-center mb-6">
                         <img
                             src="{{ getSettingImage('business_logo_white', 'branding') }}"
                             alt="Logo"
