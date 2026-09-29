@@ -269,6 +269,14 @@
                             </div>
 
                             <div class="form-group">
+                                <label class="form-label">Agent Signup URL</label>
+                                <div class="form-text mb-2">Where every "Agent Signup" link across the site points to. Leave blank to use the built-in page (/agent/register). Enter a relative path (e.g. agent/signup) or a full URL to point somewhere else.</div>
+                                <input type="text" class="form-control" name="agent_signup_url"
+                                       value="{{ $settings['system']['agent_signup_url'] ?? '' }}"
+                                       placeholder="e.g. agent/signup or https://example.com/agent-signup">
+                            </div>
+
+                            <div class="form-group">
                                 <label class="form-label">Google Analytics Tracking ID</label>
                                 <input type="text" class="form-control" name="google_analytics_id" 
                                        value="{{ $settings['system']['google_analytics_id'] ?? '' }}" 

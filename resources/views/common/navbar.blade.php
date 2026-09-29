@@ -187,7 +187,7 @@
                         <a href="{{ route('user.register') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
                             <i class="fas fa-user w-4 text-center" style="display:inline !important;"></i> Customer Signup
                         </a>
-                        <a href="{{ route('agent.register') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
+                        <a href="{{ agentSignupUrl() }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
                             <i class="fas fa-user-tie w-4 text-center" style="display:inline !important;"></i> Agent Signup
                         </a>
                     </div></div>
@@ -200,7 +200,7 @@
                 </a>
                 @elseif($showAgentSignup)
                 <!-- B2B Only — direct Agent Signup button -->
-                <a href="{{ route('agent.register') }}" class="flex items-center gap-1.5 px-4 py-2 font-semibold rounded-lg border-2 transition duration-300 text-sm" style="border-color:#003580;color:#003580;background:white;text-decoration:none;">
+                <a href="{{ agentSignupUrl() }}" class="flex items-center gap-1.5 px-4 py-2 font-semibold rounded-lg border-2 transition duration-300 text-sm" style="border-color:#003580;color:#003580;background:white;text-decoration:none;">
                     <i class="fas fa-user-tie" style="display:inline !important;"></i>
                     <span>Agent Sign Up</span>
                 </a>
@@ -359,7 +359,7 @@
 
                 @if($showAgentSignup)
                 <!-- Agent Signup (Mobile) -->
-                <a href="{{ route('agent.register') }}" class="w-full px-4 py-2.5 font-semibold rounded-lg border-2 transition text-sm flex items-center justify-center gap-2" style="border-color:#003580;color:#003580;background:white;text-decoration:none;">
+                <a href="{{ agentSignupUrl() }}" class="w-full px-4 py-2.5 font-semibold rounded-lg border-2 transition text-sm flex items-center justify-center gap-2" style="border-color:#003580;color:#003580;background:white;text-decoration:none;">
                     <i class="fas fa-user-tie"></i>
                     <span>Agent Signup</span>
                 </a>

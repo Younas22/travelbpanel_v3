@@ -91,6 +91,42 @@ if (!function_exists('getSetting')) {
 }
 
 
+// Helper function for the Agent Signup link — admin can override it (System
+// Settings > Agent Signup URL) to point at a custom page instead of the
+// built-in /agent/register, and every "Agent Signup" link site-wide follows it.
+if (!function_exists('agentSignupUrl')) {
+    function agentSignupUrl()
+    {
+        $custom = trim((string) getSetting('agent_signup_url', 'system', ''));
+
+        if ($custom === '') {
+            return route('agent.register');
+        }
+
+        return preg_match('#^https?://#i', $custom) ? $custom : url(ltrim($custom, '/'));
+    }
+}
+
+// The raw, app-relative path behind agentSignupUrl() — null when the setting
+// is blank (default /agent/register) or points at an external URL. Used by
+// B2BGateMiddleware to recognize the custom signup page as always-allowed
+// without redirecting it back to itself; kept separate from agentSignupUrl()
+// because that one runs through url(), which prefixes the app's own base
+// path (e.g. a subfolder install) — not comparable to Request::path().
+if (!function_exists('agentSignupRelativePath')) {
+    function agentSignupRelativePath(): ?string
+    {
+        $custom = trim((string) getSetting('agent_signup_url', 'system', ''));
+
+        if ($custom === '' || preg_match('#^https?://#i', $custom)) {
+            return null;
+        }
+
+        return ltrim($custom, '/');
+    }
+}
+
+
 // Helper function for getting setting image URL
 if (!function_exists('getSettingImage')) {
     function getSettingImage($key, $group = null, $default = null)

@@ -205,4 +205,6 @@
     </div>
 
     <!-- <div id="dropdownOverlay" class="dropdown-overlay"></div> -->
-    @include('common.navbar')
+    @unless($hideNavbar ?? false)
+        @include('common.navbar')
+    @endunless

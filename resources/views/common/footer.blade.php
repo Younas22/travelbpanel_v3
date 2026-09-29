@@ -131,6 +131,7 @@
 
 
     <!-- UNIQUE FOOTER WITH TRAVEL BACKGROUND -->
+    @unless($hideFooter ?? false)
     <footer class="relative travel-bg text-white overflow-hidden">
 
         <!-- Decorative Wave -->
@@ -327,20 +328,19 @@
         <div class="absolute bottom-20 left-10 opacity-10">
             <i class="fas fa-globe text-white text-8xl"></i>
         </div>
-
-
-        @php
-            $tour_search = session('tour_search');
-            if (($flight_search['trip_type'] ?? '') === 'round') {
-                $trip = "round";
-            } elseif (($flight_search['trip_type'] ?? '') === 'oneway') {
-                $trip = "oneway";
-            } else {
-                $trip = "oneway";
-            }
-        @endphp
     </footer>
+    @endunless
 
+    @php
+        $tour_search = session('tour_search');
+        if (($flight_search['trip_type'] ?? '') === 'round') {
+            $trip = "round";
+        } elseif (($flight_search['trip_type'] ?? '') === 'oneway') {
+            $trip = "oneway";
+        } else {
+            $trip = "oneway";
+        }
+    @endphp
 
     <script src="{{ url('public/assets/js/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ url('public/assets/libs/select2/js/select2.min.js') }}"></script>

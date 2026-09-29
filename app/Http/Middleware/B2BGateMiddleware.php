@@ -48,16 +48,26 @@ class B2BGateMiddleware
             return $next($request);
         }
 
+        // The Agent Signup destination (System Settings > Agent Signup URL) may
+        // be a custom path outside the built-in /agent/* prefix — always let
+        // that specific page through too, or visitors would be redirected
+        // straight back to the page they were just sent to.
+        $signupUrl = agentSignupUrl();
+        $signupPath = agentSignupRelativePath();
+        if ($signupPath !== null && $path === $signupPath) {
+            return $next($request);
+        }
+
         // B2B mode: require agent or admin login for all other pages
         if (!auth()->check()) {
-            return redirect()->route('agent.register');
+            return redirect()->to($signupUrl);
         }
 
         $user = auth()->user();
 
         // Regular users (non-agent, non-admin) are not allowed in B2B mode
         if (!$user->isAgent() && !$user->isAdmin()) {
-            return redirect()->route('agent.register');
+            return redirect()->to($signupUrl);
         }
 
         return $next($request);

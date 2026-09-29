@@ -5,7 +5,7 @@
     $__loginTheme = app(\App\Services\ThemeService::class)->active(null);
     $__loginPrimary = $__loginTheme->primary_color ?: '#0C6DFD';
 @endphp
-@include('common.header')
+@include('common.header', ['hideNavbar' => true])
 
 <style>
     :root {
@@ -180,12 +180,26 @@
                 </button>
             </form>
 
-            <div class="mf-divider">or</div>
-            <div class="mf-hint">
-                Don't have an account?
-                <a href="{{ route('user.register') }}">User Signup</a> &nbsp;&middot;&nbsp;
-                <a href="{{ route('agent.register') }}">Agent Signup</a>
-            </div>
+            @php
+                $__businessModel   = getSetting('business_model', 'system', 'both');
+                $__showUserSignup  = in_array($__businessModel, ['both', 'b2c']);
+                $__showAgentSignup = in_array($__businessModel, ['both', 'b2b']);
+            @endphp
+            @if($__showUserSignup || $__showAgentSignup)
+                <div class="mf-divider">or</div>
+                <div class="mf-hint">
+                    Don't have an account?
+                    @if($__showUserSignup)
+                        <a href="{{ route('user.register') }}">User Signup</a>
+                    @endif
+                    @if($__showUserSignup && $__showAgentSignup)
+                        &nbsp;&middot;&nbsp;
+                    @endif
+                    @if($__showAgentSignup)
+                        <a href="{{ agentSignupUrl() }}">Agent Signup</a>
+                    @endif
+                </div>
+            @endif
         </div>
     </div>
 </div>
@@ -202,4 +216,4 @@
     });
 </script>
 
-@include('common.footer')
+@include('common.footer', ['hideFooter' => true])

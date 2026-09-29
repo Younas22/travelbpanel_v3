@@ -1,4 +1,4 @@
-@include('common.header')
+@include('common.header', ['hideNavbar' => true])
 
 <style>
     :root {
@@ -166,12 +166,26 @@
                 </button>
             </form>
 
-            <div class="f-divider">or</div>
-            <div class="f-hint">
-                Don't have an account?
-                <a href="{{ route('user.register') }}">User Signup</a> &nbsp;·&nbsp;
-                <a href="{{ route('agent.register') }}">Agent Signup</a>
-            </div>
+            @php
+                $__businessModel   = getSetting('business_model', 'system', 'both');
+                $__showUserSignup  = in_array($__businessModel, ['both', 'b2c']);
+                $__showAgentSignup = in_array($__businessModel, ['both', 'b2b']);
+            @endphp
+            @if($__showUserSignup || $__showAgentSignup)
+                <div class="f-divider">or</div>
+                <div class="f-hint">
+                    Don't have an account?
+                    @if($__showUserSignup)
+                        <a href="{{ route('user.register') }}">User Signup</a>
+                    @endif
+                    @if($__showUserSignup && $__showAgentSignup)
+                        &nbsp;·&nbsp;
+                    @endif
+                    @if($__showAgentSignup)
+                        <a href="{{ agentSignupUrl() }}">Agent Signup</a>
+                    @endif
+                </div>
+            @endif
 
         </div>
     </div>
@@ -189,4 +203,4 @@
     });
 </script>
 
-@include('common.footer')
+@include('common.footer', ['hideFooter' => true])
