@@ -85,11 +85,22 @@
                             
                             <div class="form-group">
                                 <label class="form-label">Business Name</label>
-                                <input type="text" class="form-control" name="business_name" 
-                                       value="{{ $settings['main']['business_name'] ?? 'SkyBooking Travel' }}" 
+                                <input type="text" class="form-control" name="business_name"
+                                       value="{{ $settings['main']['business_name'] ?? 'SkyBooking Travel' }}"
                                        placeholder="Enter your business name">
                             </div>
- 
+
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="show_business_name_with_logo" id="showBusinessNameWithLogo" value="1"
+                                           {{ ($settings['main']['show_business_name_with_logo'] ?? false) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="showBusinessNameWithLogo">
+                                        Show business name next to the logo
+                                    </label>
+                                </div>
+                                <div class="form-text">When enabled, the business name above is shown alongside the logo everywhere it appears — the admin dashboard sidebar and the public website.</div>
+                            </div>
+
                             <div class="form-group">
                                 <label class="form-label">Domain Name</label>
                                 <input type="text" class="form-control" name="domain_name" 

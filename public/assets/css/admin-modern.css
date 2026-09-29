@@ -268,8 +268,9 @@ code, pre, kbd {
 }
 .sidebar-toggle:hover { background: var(--m-sidebar-bg-active); border-color: var(--primary-color); }
 
-.sidebar-brand { display: flex; align-items: center; text-decoration: none; color: inherit; gap: var(--m-space-2); }
-.sidebar-logo { height: 32px; width: auto; object-fit: contain; }
+.sidebar-brand { display: flex; align-items: center; text-decoration: none; color: inherit; gap: var(--m-space-2); min-width: 0; }
+.sidebar-logo { height: 32px; width: auto; object-fit: contain; flex-shrink: 0; }
+.sidebar-brand-name { font-weight: 700; font-size: 0.9375rem; color: var(--m-sidebar-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sidebar-logo-icon {
     width: 36px; height: 36px;
     border-radius: var(--radius-md);

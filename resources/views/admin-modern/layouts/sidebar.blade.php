@@ -15,6 +15,9 @@
                     <i class="bi bi-airplane"></i>
                 </div>
             @endif
+            @if(showBusinessNameWithLogo())
+                <span class="sidebar-brand-name">{{ getSetting('business_name', 'main', 'Default Title') }}</span>
+            @endif
         </a>
 
         {{-- Desktop sidebar collapse button — Nova only (see .sidebar-collapse-btn

@@ -3063,10 +3063,11 @@ input:checked + .status-slider:before {
 .sidebar-toggle:hover { background: var(--bs-tertiary-bg); }
 
 .sidebar-brand {
-    display: flex; align-items: center;
-    text-decoration: none; color: inherit;
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; color: inherit; min-width: 0;
 }
-.sidebar-logo { height: 40px; width: auto; object-fit: contain; }
+.sidebar-logo { height: 40px; width: auto; object-fit: contain; flex-shrink: 0; }
+.sidebar-brand-name { font-weight: 700; font-size: 0.9375rem; color: var(--bs-body-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sidebar-logo-icon {
     width: 30px; height: 30px;
     border-radius: 8px;

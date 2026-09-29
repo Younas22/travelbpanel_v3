@@ -150,13 +150,16 @@
                 <div class="lg:col-span-5">
                     <!-- Logo with Fallback -->
 
-                    <div class="flex items-center mb-6">
+                    <div class="flex items-center gap-3 mb-6">
                         <img
                             src="{{ getSettingImage('business_logo_white', 'branding') }}"
                             alt="Logo"
                             class="w-32 h-32 object-contain"
                             style="max-height: 60px; width: auto; height: auto;"
                         >
+                        @if(showBusinessNameWithLogo())
+                            <span class="text-white font-bold text-xl">{{ getSetting('business_name', 'main', 'TravelBookingPanel') }}</span>
+                        @endif
                     </div>
 
 

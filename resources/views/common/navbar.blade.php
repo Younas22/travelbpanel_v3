@@ -36,11 +36,14 @@
             <div class="text-xl md:text-2xl font-bold" style="color: #003580;">Travel</div>
         </div> -->
 
-        <a class="navbar-brand" href="{{ url('/') }}">
+        <a class="navbar-brand flex items-center gap-2" href="{{ url('/') }}">
             <img src="{{ getSettingImage('business_logo','branding') }}"
                 alt="TravelBookingPanel Logo"
                 class="img-fluid"
                 style="max-height: 45px; height: auto; width: auto;">
+            @if(showBusinessNameWithLogo())
+                <span class="font-bold text-base md:text-lg" style="color:#003580;">{{ getSetting('business_name', 'main', 'TravelBookingPanel') }}</span>
+            @endif
         </a>
 
         <!-- Desktop Menu -->

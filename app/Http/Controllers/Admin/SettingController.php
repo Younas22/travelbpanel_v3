@@ -39,6 +39,13 @@ public function updateWebsite(Request $request)
     // Remove group from validated data
     unset($validated['group']);
 
+    // Checkboxes aren't submitted at all when unchecked, so validate() drops
+    // them from $validated entirely — this one is set explicitly from
+    // $request->has() so unticking it actually persists as "off".
+    if ($group === 'main' && array_key_exists('show_business_name_with_logo', $validationRules)) {
+        $validated['show_business_name_with_logo'] = $request->has('show_business_name_with_logo') ? '1' : '0';
+    }
+
     try {
         foreach ($validated as $key => $value) {
             // Handle file uploads to public folder
@@ -113,7 +120,8 @@ private function getValidationRules($group)
             'business_name' => 'required|string|max:255',
             'domain_name' => 'required|string|max:255',
             'license_key' => 'nullable|string|max:255',
-            'website_offline' => 'nullable|boolean'
+            'website_offline' => 'nullable|boolean',
+            'show_business_name_with_logo' => 'nullable|boolean'
         ],
         'seo' => [
             'meta_title' => 'required|string|max:60',

@@ -127,6 +127,17 @@ if (!function_exists('agentSignupRelativePath')) {
 }
 
 
+// Whether the business name should be shown next to the logo (System
+// Settings > Main > "Show business name next to the logo"). Checked wherever
+// the logo is rendered — admin dashboard sidebar and the public website.
+if (!function_exists('showBusinessNameWithLogo')) {
+    function showBusinessNameWithLogo(): bool
+    {
+        return (bool) getSetting('show_business_name_with_logo', 'main', false);
+    }
+}
+
+
 // Helper function for getting setting image URL
 if (!function_exists('getSettingImage')) {
     function getSettingImage($key, $group = null, $default = null)
