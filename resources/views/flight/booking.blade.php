@@ -18,6 +18,12 @@
 
         <!-- Left Section -->
         <div class="flex-1 space-y-6">
+            {{-- Personal Information is the booker's own contact details.
+                 An agent already has these on their account and is booking
+                 on behalf of a traveller, not themselves, so this section is
+                 skipped for them — FlightsController::flight_booking() fills
+                 it in from the agent's own profile instead. --}}
+            @unless(auth()->check() && auth()->user()->isAgent())
             <!-- Personal Information -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
@@ -70,6 +76,7 @@
                     </div>
                 </div>
             </div>
+            @endunless
 
             <!-- Travellers Information -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -773,6 +780,18 @@
        @endif
 
        <!-- Price Summary -->
+       @php
+           // Shown converted into whichever currency is active site-wide
+           // (System Settings > Currencies / admin/currencies), using the
+           // admin's own configured exchange rates — not just relabeled, so
+           // the number on screen is correct even if the supplier priced the
+           // search in a different currency.
+           $__activeCurrency = activeCurrency();
+           $__activeCurrencyCode = $__activeCurrency->currency_name ?? $routes->segments[0][0]->currency;
+           $__displayedFare = $__activeCurrency
+               ? convertCurrency($routes->segments[0][0]->price, $routes->segments[0][0]->currency, $__activeCurrencyCode)
+               : $routes->segments[0][0]->price;
+       @endphp
        <div class="sidebar-card">
            <div class="sidebar-card-header">
                <div class="sidebar-card-title">{{t('flightbooking.price_summary')}}</div>
@@ -781,15 +800,15 @@
                <div class="price-summary">
                    <div class="price-row">
                        <span class="price-label">{{t('flightbooking.base_fare')}}</span>
-                       <span class="price-value">{{$routes->segments[0][0]->currency}} {{$routes->segments[0][0]->price}}</span>
+                       <span class="price-value">{{$__activeCurrencyCode}} {{number_format($__displayedFare, 2)}}</span>
                    </div>
                    <div class="price-row">
                        <span class="price-label">{{t('flightbooking.taxes_fees')}}</span>
-                       <span class="price-value">{{$routes->segments[0][0]->currency}} 0.00</span>
+                       <span class="price-value">{{$__activeCurrencyCode}} 0.00</span>
                    </div>
                    <div class="price-row">
                        <span class="price-label price-total">{{t('flightbooking.total')}}</span>
-                       <span class="price-value price-total">{{$routes->segments[0][0]->currency}} {{$routes->segments[0][0]->price}}</span>
+                       <span class="price-value price-total">{{$__activeCurrencyCode}} {{number_format($__displayedFare, 2)}}</span>
                    </div>
                </div>
            </div>

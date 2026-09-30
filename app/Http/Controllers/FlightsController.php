@@ -550,13 +550,28 @@ private function toYmdFormat($date)
         // ====================
         // Capture User Details
         // ====================
-        $user = (object) [
-            'first_name'   => $request->user['first_name'],
-            'last_name'    => $request->user['last_name'],
-            'user_email'   => $request->user['email'],
-            'user_phone'   => preg_replace('/\D/', '', $request->user['phone']),
-            'user_address' => $request->user['address'],
-        ];
+        // An agent books on their own account — the "Personal Information"
+        // form section is hidden for them (see flight.booking view), so their
+        // contact details are taken from their own profile instead of the
+        // request, rather than requiring them to re-type it on every booking.
+        $authUserForContact = auth()->user();
+        if ($authUserForContact && $authUserForContact->isAgent()) {
+            $user = (object) [
+                'first_name'   => $authUserForContact->first_name,
+                'last_name'    => $authUserForContact->last_name,
+                'user_email'   => $authUserForContact->email,
+                'user_phone'   => preg_replace('/\D/', '', (string) $authUserForContact->phone),
+                'user_address' => $authUserForContact->address,
+            ];
+        } else {
+            $user = (object) [
+                'first_name'   => $request->input('user.first_name'),
+                'last_name'    => $request->input('user.last_name'),
+                'user_email'   => $request->input('user.email'),
+                'user_phone'   => preg_replace('/\D/', '', (string) $request->input('user.phone')),
+                'user_address' => $request->input('user.address'),
+            ];
+        }
 
         // =============================
         // Capture Guest Traveler Detail
@@ -762,7 +777,7 @@ private function toYmdFormat($date)
 
     public function invoice($booking_ref)
 {
-    $booking = FlightBooking::where('booking_code_ref', $booking_ref)->first();
+    $booking = FlightBooking::with('agent')->where('booking_code_ref', $booking_ref)->first();
 
     if (!$booking) {
         return $this->show_error('invoice', [

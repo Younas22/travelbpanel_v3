@@ -32,6 +32,32 @@
         $segmentData = is_array($booking->booking_flight_segment) ? $booking->booking_flight_segment : json_decode($booking->booking_flight_segment, true);
         $guestData = is_array($booking->booking_guest) ? $booking->booking_guest : json_decode($booking->booking_guest, true);
         $responseError = $booking->booking_response_error ? (is_array($booking->booking_response_error) ? $booking->booking_response_error : json_decode($booking->booking_response_error, true)) : null;
+
+        // When an agent made this booking, the invoice is branded with the
+        // agent's own agency (System > agent/profile — company name, logo,
+        // phone, address) instead of the platform's — this invoice represents
+        // the agent's business to their own client, not ours.
+        $bookingAgent = $booking->booked_via === 'agent' ? $booking->agent : null;
+
+        $invoiceLogo = ($bookingAgent && $bookingAgent->company_logo)
+            ? url('public/assets/images/settings/branding/' . $bookingAgent->company_logo)
+            : getSettingImage('business_logo', 'branding');
+        $invoiceBusinessName = ($bookingAgent && $bookingAgent->company_name)
+            ? $bookingAgent->company_name
+            : getSetting('business_name', 'main', 'Default Title');
+        $invoiceContactPhone = ($bookingAgent && $bookingAgent->company_phone)
+            ? $bookingAgent->company_phone
+            : getSetting('contact_phone', 'contact');
+        $invoiceContactEmail = $bookingAgent ? $bookingAgent->email : getSetting('contact_email', 'contact');
+        $invoiceAddress = $bookingAgent ? $bookingAgent->company_address : null;
+
+        // Price shown converted into whichever currency is active site-wide
+        // (admin/currencies), using the admin's configured exchange rates.
+        $__activeCurrency = activeCurrency();
+        $__invoiceCurrencyCode = $__activeCurrency->currency_name ?? ($segmentData['segments'][0][0]['currency'] ?? 'USD');
+        $__invoiceFare = $__activeCurrency
+            ? convertCurrency($segmentData['segments'][0][0]['price'] ?? 0, $segmentData['segments'][0][0]['currency'] ?? 'USD', $__invoiceCurrencyCode)
+            : ($segmentData['segments'][0][0]['price'] ?? 0);
     @endphp
 
     <!-- Invoice -->
@@ -41,10 +67,21 @@
             <div class="flex justify-between items-start mb-4">
                 <div class="flex items-center gap-3">
                     <a href={{url('/')}}>
-                    <img src="{{ getSettingImage('business_logo','branding') }}"
-                         alt="FlightHub Logo"
+                    <img src="{{ $invoiceLogo }}"
+                         alt="{{ $invoiceBusinessName }} Logo"
                          class="h-16 w-auto object-contain">
                     </a>
+                    @if($bookingAgent)
+                        <div>
+                            <div class="font-bold text-gray-800 text-sm">{{ $invoiceBusinessName }}</div>
+                            @if($invoiceAddress)
+                                <div class="text-[10px] text-gray-600">{{ $invoiceAddress }}</div>
+                            @endif
+                            @if($invoiceContactPhone)
+                                <div class="text-[10px] text-gray-600">{{ $invoiceContactPhone }} @if($invoiceContactEmail) &bull; {{ $invoiceContactEmail }} @endif</div>
+                            @endif
+                        </div>
+                    @endif
                 </div>
 
                 <div class="text-right">
@@ -227,15 +264,15 @@
                     <div class="bg-blue-50 border-2 border-blue-600 rounded-lg p-3" style="border-color: #0077BE;">
                         <div class="flex justify-between items-center text-xs mb-2 pb-2 border-b border-gray-300">
                             <span class="text-gray-700 font-medium">{{t('flightinvoice.flightCharges')}}</span>
-                            <span class="font-semibold text-gray-800">{{$segmentData['segments'][0][0]['currency']}} {{$segmentData['segments'][0][0]['price']}}</span>
+                            <span class="font-semibold text-gray-800">{{$__invoiceCurrencyCode}} {{number_format($__invoiceFare, 2)}}</span>
                         </div>
                         <div class="flex justify-between items-center text-xs mb-2 pb-2 border-b border-gray-300">
                             <span class="text-gray-700 font-medium">{{t('flightinvoice.taxesFees')}}</span>
-                            <span class="font-semibold text-gray-800">{{$segmentData['segments'][0][0]['currency']}} 0.00</span>
+                            <span class="font-semibold text-gray-800">{{$__invoiceCurrencyCode}} 0.00</span>
                         </div>
                         <div class="flex justify-between items-center pt-2 border-t-2 border-blue-600" style="border-color: #0077BE;">
                             <span class="text-sm font-bold text-blue-900">{{t('flightinvoice.total')}}</span>
-                            <span class="text-lg font-bold text-blue-900">{{$segmentData['segments'][0][0]['currency']}} {{$segmentData['segments'][0][0]['price']}}</span>
+                            <span class="text-lg font-bold text-blue-900">{{$__invoiceCurrencyCode}} {{number_format($__invoiceFare, 2)}}</span>
                         </div>
                     </div>
                 </div>
@@ -273,8 +310,8 @@
 
         <!-- Footer -->
         <div class="bg-gray-50 border-t border-gray-200 p-3 text-center">
-            <p class="text-[10px] text-gray-500">© 2025 {{getSetting('business_name', 'main', 'Default Title')}}. All rights reserved. | Computer-generated invoice.</p>
-            <p class="text-[10px] text-gray-500">Support: {{getSetting('contact_email', 'contact')}}| {{getSetting('contact_phone', 'contact')}}</p>
+            <p class="text-[10px] text-gray-500">© {{ date('Y') }} {{ $invoiceBusinessName }}. All rights reserved. | Computer-generated invoice.</p>
+            <p class="text-[10px] text-gray-500">Support: {{ $invoiceContactEmail }} @if($invoiceContactPhone)| {{ $invoiceContactPhone }}@endif</p>
         </div>
     </div>
 </div>

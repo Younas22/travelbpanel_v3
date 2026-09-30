@@ -12,11 +12,18 @@ if (!function_exists('allCurrencies')) {
 if (!function_exists('activeCurrency')) {
     function activeCurrency() {
         $name = session('currency');
-        if($name){
-            return Currencies::where('currency_name', $name)->first();
+        if ($name) {
+            $selected = Currencies::where('currency_name', $name)->where('currency_status', '1')->first();
+            if ($selected) {
+                return $selected;
+            }
+            // The session's chosen currency was switched off since — fall
+            // through to the active default instead of an inactive one.
         }
-        return Currencies::where('currency_default', "1")->first();
 
+        return Currencies::where('currency_status', '1')->where('currency_default', '1')->first()
+            ?? Currencies::where('currency_status', '1')->first()
+            ?? Currencies::where('currency_default', '1')->first();
     }
 }
 
@@ -39,7 +46,7 @@ if (!function_exists('getCurrencyRate')) {
     function getCurrencyRate($currency)
     {
         $rate = Currencies::where('currency_name', $currency)->first();
-        return $rate->currency_rate;
+        return $rate ? (float) $rate->currency_rate : 1.0;
     }
 }
 
