@@ -76,6 +76,23 @@
                         </select>
                     </div>
 
+                    <div class="w-44">
+                        <label class="block text-xs font-semibold text-novamuted mb-1.5">Agent</label>
+                        <select name="agent_id" class="w-full text-sm border border-novaborder rounded-full px-3.5 py-2.5">
+                            <option value="">All agents</option>
+                            @foreach($agents as $agentOption)
+                                <option value="{{ $agentOption->id }}" {{ (string) request('agent_id') === (string) $agentOption->id ? 'selected' : '' }}>
+                                    {{ trim($agentOption->first_name . ' ' . $agentOption->last_name) }}{{ $agentOption->company_name ? ' — ' . $agentOption->company_name : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="w-36">
+                        <label class="block text-xs font-semibold text-novamuted mb-1.5">Month</label>
+                        <input type="month" name="month" value="{{ request('month') }}" class="w-full text-sm border border-novaborder rounded-full px-3.5 py-2.5">
+                    </div>
+
                     <div class="w-36">
                         <label class="block text-xs font-semibold text-novamuted mb-1.5">Date from</label>
                         <input type="date" name="date_from" value="{{ request('date_from') }}" class="w-full text-sm border border-novaborder rounded-full px-3.5 py-2.5">

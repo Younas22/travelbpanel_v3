@@ -28,8 +28,27 @@
 </div>
 
 @php
+    // $booking is the raw Eloquent model for the given $type (agent\BookingController::show()
+    // does not normalize it — unlike the bookings index page, which goes through
+    // formatBooking()). Fields below use each model's own real columns/accessors.
+    $bookingCode = $booking->booking_code_ref ?? ('#' . $booking->id);
     $statusColors = ['confirmed' => 'success', 'pending' => 'warning', 'cancelled' => 'danger'];
-    $statusColor = $statusColors[$booking->status ?? ''] ?? 'secondary';
+    $statusColor = $statusColors[$booking->booking_status_flag ?? ''] ?? 'secondary';
+
+    $hasPaymentInfo = $type !== 'visa';
+    if ($hasPaymentInfo) {
+        $activeCurrency = activeCurrency();
+        $invoiceCurrencyCode = $activeCurrency->currency_name ?? ($booking->booking_currency_origin ?? 'USD');
+        $invoiceAmount = $activeCurrency
+            ? convertCurrency($booking->booking_fare_base ?? 0, $booking->booking_currency_origin ?? 'USD', $invoiceCurrencyCode)
+            : ($booking->booking_fare_base ?? 0);
+    }
+
+    $invoiceRouteNames = ['hotel' => 'hotel.invoice', 'flight' => 'flight.invoice', 'tour' => 'tour.invoice', 'umrah' => 'umrah.invoice'];
+
+    if ($type === 'flight') {
+        $guests = is_array($booking->booking_guest) ? $booking->booking_guest : (json_decode($booking->booking_guest ?? '[]', true) ?: []);
+    }
 @endphp
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -39,16 +58,16 @@
             <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">{{ ucfirst($type) }}</span>
-                    <span class="text-sm font-semibold text-gray-700 font-mono">{{ $booking->booking_code ?? 'N/A' }}</span>
+                    <span class="text-sm font-semibold text-gray-700 font-mono">{{ $bookingCode }}</span>
                 </div>
-                @if(($booking->status ?? '') === 'confirmed')
+                @if(($booking->booking_status_flag ?? '') === 'confirmed')
                     <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">Confirmed</span>
-                @elseif(($booking->status ?? '') === 'pending')
+                @elseif(($booking->booking_status_flag ?? '') === 'pending')
                     <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">Pending</span>
-                @elseif(($booking->status ?? '') === 'cancelled')
+                @elseif(($booking->booking_status_flag ?? '') === 'cancelled')
                     <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs font-medium">Cancelled</span>
-                @else
-                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">{{ ucfirst($booking->status ?? 'N/A') }}</span>
+                @elseif($booking->booking_status_flag ?? null)
+                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">{{ ucfirst($booking->booking_status_flag) }}</span>
                 @endif
             </div>
             <div class="p-5">
@@ -56,87 +75,125 @@
                     @if($type === 'hotel')
                         <div class="grid grid-cols-3 gap-2 py-2.5">
                             <dt class="text-xs font-semibold text-gray-500">Hotel</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->hotel_name }}</dd>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->hotel_info['name'] }} &bull; {{ $booking->hotel_info['location'] }}</dd>
                         </div>
                         <div class="grid grid-cols-3 gap-2 py-2.5">
                             <dt class="text-xs font-semibold text-gray-500">Check-in</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ \Carbon\Carbon::parse($booking->check_in)->format('d M Y') }}</dd>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->stay_dates['check_in'] }}</dd>
                         </div>
                         <div class="grid grid-cols-3 gap-2 py-2.5">
                             <dt class="text-xs font-semibold text-gray-500">Check-out</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ \Carbon\Carbon::parse($booking->check_out)->format('d M Y') }}</dd>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->stay_dates['check_out'] }} ({{ $booking->stay_dates['nights'] }})</dd>
                         </div>
                         <div class="grid grid-cols-3 gap-2 py-2.5">
-                            <dt class="text-xs font-semibold text-gray-500">Rooms / Guests</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->rooms }} room(s) &bull; {{ $booking->adults }} adult(s), {{ $booking->children ?? 0 }} child(ren)</dd>
+                            <dt class="text-xs font-semibold text-gray-500">Guests</dt>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->guest_count }}</dd>
                         </div>
                         <div class="grid grid-cols-3 gap-2 py-2.5">
                             <dt class="text-xs font-semibold text-gray-500">Guest Name</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->guest_name }}</dd>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->customer_name }}</dd>
                         </div>
                         <div class="grid grid-cols-3 gap-2 py-2.5">
                             <dt class="text-xs font-semibold text-gray-500">Guest Email</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->guest_email }}</dd>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->customer_email }}</dd>
                         </div>
+                        @if($booking->booking_hotel_pnr)
                         <div class="grid grid-cols-3 gap-2 py-2.5">
-                            <dt class="text-xs font-semibold text-gray-500">Guest Phone</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->guest_phone }}</dd>
+                            <dt class="text-xs font-semibold text-gray-500">PNR</dt>
+                            <dd class="col-span-2 text-sm text-gray-800 font-mono">{{ $booking->booking_hotel_pnr }}</dd>
                         </div>
+                        @endif
 
                     @elseif($type === 'flight')
                         <div class="grid grid-cols-3 gap-2 py-2.5">
                             <dt class="text-xs font-semibold text-gray-500">Route</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->origin }} &rarr; {{ $booking->destination }}</dd>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->flight_route['route'] }} <span class="text-xs text-gray-400">({{ $booking->flight_route['stops'] }})</span></dd>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 py-2.5">
+                            <dt class="text-xs font-semibold text-gray-500">Airline / Flight</dt>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->flight_details['airline'] }} &bull; {{ $booking->flight_details['flight_number'] }}</dd>
                         </div>
                         <div class="grid grid-cols-3 gap-2 py-2.5">
                             <dt class="text-xs font-semibold text-gray-500">Departure</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ \Carbon\Carbon::parse($booking->departure_date)->format('d M Y') }}</dd>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->travel_date['date'] }} &bull; {{ $booking->travel_date['time'] }}</dd>
                         </div>
-                        @if($booking->return_date)
-                        <div class="grid grid-cols-3 gap-2 py-2.5">
-                            <dt class="text-xs font-semibold text-gray-500">Return</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ \Carbon\Carbon::parse($booking->return_date)->format('d M Y') }}</dd>
-                        </div>
-                        @endif
                         <div class="grid grid-cols-3 gap-2 py-2.5">
                             <dt class="text-xs font-semibold text-gray-500">Passengers</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->adults }} adult(s), {{ $booking->children ?? 0 }} child(ren)</dd>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->passenger_count }}</dd>
                         </div>
+                        @if($booking->booking_air_pnr)
                         <div class="grid grid-cols-3 gap-2 py-2.5">
-                            <dt class="text-xs font-semibold text-gray-500">Airline</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->airline ?? '—' }}</dd>
+                            <dt class="text-xs font-semibold text-gray-500">PNR</dt>
+                            <dd class="col-span-2 text-sm text-gray-800 font-mono">{{ $booking->booking_air_pnr }}</dd>
                         </div>
+                        @endif
+                        @if(!empty($guests))
+                        <div class="py-2.5">
+                            <dt class="text-xs font-semibold text-gray-500 mb-2">Travellers</dt>
+                            <dd class="overflow-x-auto">
+                                <table class="w-full text-xs border-collapse">
+                                    <thead>
+                                        <tr class="bg-gray-50 text-gray-500 uppercase text-[10px]">
+                                            <th class="border border-gray-200 px-2 py-1.5 text-left">Name</th>
+                                            <th class="border border-gray-200 px-2 py-1.5 text-left">Passport No.</th>
+                                            <th class="border border-gray-200 px-2 py-1.5 text-left">Date of Birth</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($guests as $guest)
+                                        <tr>
+                                            <td class="border border-gray-200 px-2 py-1.5">{{ trim(($guest['first_name'] ?? '') . ' ' . ($guest['last_name'] ?? '')) ?: '—' }}</td>
+                                            <td class="border border-gray-200 px-2 py-1.5">{{ $guest['passport'] ?? '—' }}</td>
+                                            <td class="border border-gray-200 px-2 py-1.5">{{ $guest['dob_day'] ?? '—' }}-{{ $guest['dob_month'] ?? '—' }}-{{ $guest['dob_year'] ?? '—' }}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </dd>
+                        </div>
+                        @endif
 
                     @elseif(in_array($type, ['tour', 'umrah']))
+                        @php $packageInfo = $type === 'tour' ? $booking->tour_info : $booking->umrah_info; @endphp
                         <div class="grid grid-cols-3 gap-2 py-2.5">
                             <dt class="text-xs font-semibold text-gray-500">Package</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->tour_name ?? $booking->package_name ?? '—' }}</dd>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $packageInfo['name'] }} &bull; {{ $packageInfo['location'] }}</dd>
                         </div>
                         <div class="grid grid-cols-3 gap-2 py-2.5">
                             <dt class="text-xs font-semibold text-gray-500">Travel Date</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->travel_date ? \Carbon\Carbon::parse($booking->travel_date)->format('d M Y') : '—' }}</dd>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->travel_date['date'] }} &bull; {{ $booking->travel_date['time'] }}</dd>
                         </div>
                         <div class="grid grid-cols-3 gap-2 py-2.5">
-                            <dt class="text-xs font-semibold text-gray-500">Persons</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->persons ?? $booking->adults ?? '—' }}</dd>
+                            <dt class="text-xs font-semibold text-gray-500">Passengers</dt>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->passenger_count }}</dd>
                         </div>
                         <div class="grid grid-cols-3 gap-2 py-2.5">
                             <dt class="text-xs font-semibold text-gray-500">Lead Traveller</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->lead_name ?? $booking->guest_name ?? '—' }}</dd>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->customer_name }} &bull; {{ $booking->customer_email }}</dd>
                         </div>
 
                     @elseif($type === 'visa')
                         <div class="grid grid-cols-3 gap-2 py-2.5">
                             <dt class="text-xs font-semibold text-gray-500">Visa Type</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->visa_type ?? '—' }}</dd>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 py-2.5">
-                            <dt class="text-xs font-semibold text-gray-500">Country</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->country ?? '—' }}</dd>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->visa_type ?? '—' }} @if($booking->visa_plan)&bull; {{ $booking->visa_plan }}@endif</dd>
                         </div>
                         <div class="grid grid-cols-3 gap-2 py-2.5">
                             <dt class="text-xs font-semibold text-gray-500">Applicant</dt>
-                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->applicant_name ?? '—' }}</dd>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ trim(($booking->first_name ?? '') . ' ' . ($booking->middle_name ?? '') . ' ' . ($booking->surname ?? '')) ?: '—' }}</dd>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 py-2.5">
+                            <dt class="text-xs font-semibold text-gray-500">Nationality</dt>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->nationality ?? '—' }}</dd>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 py-2.5">
+                            <dt class="text-xs font-semibold text-gray-500">Passport No.</dt>
+                            <dd class="col-span-2 text-sm text-gray-800">{{ $booking->passport_no ?? '—' }}</dd>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 py-2.5">
+                            <dt class="text-xs font-semibold text-gray-500">Passport Validity</dt>
+                            <dd class="col-span-2 text-sm text-gray-800">
+                                {{ $booking->passport_issue_date?->format('d M Y') ?? '—' }} &rarr; {{ $booking->passport_expiry_date?->format('d M Y') ?? '—' }}
+                            </dd>
                         </div>
                     @endif
 
@@ -150,6 +207,7 @@
     </div>
 
     <div class="space-y-4">
+        @if($hasPaymentInfo)
         <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             <div class="px-5 py-4 border-b border-gray-100 font-semibold text-sm text-gray-700">
                 Payment Summary
@@ -157,21 +215,26 @@
             <div class="p-5 space-y-3">
                 <div class="flex items-center justify-between">
                     <span class="text-xs text-gray-400">Amount</span>
-                    <span class="text-sm font-semibold text-gray-800">PKR {{ number_format($booking->total_fare ?? 0, 2) }}</span>
+                    <span class="text-sm font-semibold text-gray-800">{{ $invoiceCurrencyCode }} {{ number_format($invoiceAmount, 2) }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-xs text-gray-400">Payment</span>
-                    <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">Wallet</span>
+                    @if(($booking->booking_payment_state ?? '') === 'paid')
+                        <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">Paid</span>
+                    @else
+                        <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">{{ ucfirst($booking->booking_payment_state ?? 'Unpaid') }}</span>
+                    @endif
                 </div>
                 <div class="border-t border-gray-100 pt-3 flex items-center justify-between">
-                    <span class="text-sm font-semibold text-gray-700">Total Paid</span>
-                    <span class="text-sm font-bold text-green-600">PKR {{ number_format($booking->total_fare ?? 0, 2) }}</span>
+                    <span class="text-sm font-semibold text-gray-700">Total</span>
+                    <span class="text-sm font-bold text-green-600">{{ $invoiceCurrencyCode }} {{ number_format($invoiceAmount, 2) }}</span>
                 </div>
             </div>
         </div>
+        @endif
 
-        @if($type === 'hotel' && isset($booking->booking_code))
-        <a href="{{ route('agent.hotels.invoice', $booking->booking_code) }}"
+        @if(isset($invoiceRouteNames[$type]) && $booking->booking_code_ref)
+        <a href="{{ route($invoiceRouteNames[$type], $booking->booking_code_ref) }}"
            class="w-full px-5 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-2 ap-solid-accent-btn"
            target="_blank">
             <i class="fas fa-print"></i> Print Invoice

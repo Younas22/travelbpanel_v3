@@ -675,7 +675,7 @@ input:checked + .toggle-slider::before, input:checked + .am-switch-slider::befor
 .dash-welcome h4 { font-size: 1.25rem; margin-bottom: 2px; }
 .dash-welcome p { font-size: 13px; color: color-mix(in srgb, var(--text-color) 55%, transparent); margin: 0; }
 
-.dash-stats-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--am-space-3); margin-bottom: var(--am-space-5); }
+.dash-stats-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: var(--am-space-3); margin-bottom: var(--am-space-5); }
 .dash-stat-card {
     background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--card-radius);
     box-shadow: var(--am-shadow-sm); padding: var(--am-space-3); display: flex; align-items: center; gap: 10px;

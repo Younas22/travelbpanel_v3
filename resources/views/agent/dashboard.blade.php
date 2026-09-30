@@ -18,8 +18,8 @@
     @endif
 </div>
 
-{{-- Stats Cards — all 6 in 1 row --}}
-<div class="grid grid-cols-6 gap-3 mb-5">
+{{-- Stats Cards — all 7 in 1 row --}}
+<div class="grid grid-cols-7 gap-3 mb-5">
 
     <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3 flex items-center gap-2">
         <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
@@ -28,6 +28,16 @@
         <div>
             <div class="text-xs text-gray-400 leading-tight">Hotels</div>
             <div class="text-lg font-bold text-gray-800 leading-tight">{{ $stats['total_hotels'] }}</div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3 flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-plane text-indigo-500 text-sm"></i>
+        </div>
+        <div>
+            <div class="text-xs text-gray-400 leading-tight">Flights</div>
+            <div class="text-lg font-bold text-gray-800 leading-tight">{{ $stats['flights'] }}</div>
         </div>
     </div>
 
@@ -140,11 +150,11 @@
                 <tbody class="divide-y divide-gray-50">
                     @foreach($recentBookings as $booking)
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="px-5 py-3 font-mono text-xs text-blue-600 font-semibold">{{ $booking['booking_code'] ?? 'N/A' }}</td>
+                        <td class="px-5 py-3 font-mono text-xs text-blue-600 font-semibold">{{ $booking['booking_code_ref'] ?? 'N/A' }}</td>
                         <td class="px-5 py-3">
                             <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">{{ ucfirst($booking['booking_type']) }}</span>
                         </td>
-                        <td class="px-5 py-3 font-semibold text-gray-700">PKR {{ number_format($booking['total_fare'] ?? 0, 0) }}</td>
+                        <td class="px-5 py-3 font-semibold text-gray-700">{{ $booking['booking_currency_origin'] ?? 'PKR' }} {{ number_format($booking['booking_fare_base'] ?? 0, 0) }}</td>
                         <td class="px-5 py-3 text-gray-500 text-xs">{{ \Carbon\Carbon::parse($booking['created_at'])->format('d M Y') }}</td>
                     </tr>
                     @endforeach

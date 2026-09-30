@@ -18,6 +18,12 @@
         'tour'   => ['label' => 'Tour',   'badge' => 'bg-amber-50 text-amber-600', 'icon' => 'bg-amber-50 text-amber-600'],
         'umrah'  => ['label' => 'Umrah',  'badge' => 'bg-violet-50 text-violet-600', 'icon' => 'bg-violet-50 text-violet-600'],
     ];
+
+    // Commission is computed on the fly (fare x the booking's own agent's
+    // commission_rate%) — there's no stored per-booking commission column,
+    // and shown converted into whichever currency is active site-wide
+    // (admin/currencies).
+    $__activeCurrencyForCommission = activeCurrency();
 @endphp
 
 <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
@@ -53,6 +59,8 @@
     <span class="w-16 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Pax</span>
     <span class="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Phone</span>
     <span class="w-20 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Partner</span>
+    <span class="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Agent</span>
+    <span class="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Commission</span>
     <span class="w-28 flex-shrink-0 text-right text-[10px] font-semibold uppercase tracking-wide text-novamuted">Amount / Status</span>
     <span class="flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted" style="width:96px;">Actions</span>
 </div>
@@ -103,6 +111,15 @@
 
             $userData = is_string($booking->booking_user_data) ? json_decode($booking->booking_user_data, true) : $booking->booking_user_data;
             $phone = (is_array($userData) ? ($userData['user_phone'] ?? null) : ($userData->user_phone ?? null)) ?: 'No number';
+
+            $bookingAgent = $booking->relationLoaded('agent') ? $booking->agent : null;
+            $commissionAmount = null;
+            if ($bookingAgent && $bookingAgent->commission_rate) {
+                $rawCommission = ($booking->booking_fare_base ?? 0) * ($bookingAgent->commission_rate / 100);
+                $commissionAmount = $__activeCurrencyForCommission
+                    ? convertCurrency($rawCommission, $booking->booking_currency_origin ?? 'USD', $__activeCurrencyForCommission->currency_name)
+                    : $rawCommission;
+            }
         @endphp
         <div class="tt-row flex flex-col lg:flex-row lg:items-center gap-2.5 lg:gap-3 rounded-2xl border border-novaborder p-3 lg:p-4"
              data-type="{{ $type }}" data-status="{{ $booking->booking_status_flag }}">
@@ -178,6 +195,22 @@
                 <div class="w-20 flex-shrink-0 min-w-0">
                     <p class="text-[9px] text-novamuted">Partner</p>
                     <p class="text-xs text-novatext truncate mt-0.5">{{ ucfirst($booking->booking_supplier_name ?? 'Manual') }}</p>
+                </div>
+                <div class="w-24 flex-shrink-0 min-w-0">
+                    <p class="text-[9px] text-novamuted">Agent</p>
+                    @if($bookingAgent)
+                        <p class="text-xs text-novatext truncate mt-0.5">{{ trim($bookingAgent->first_name . ' ' . $bookingAgent->last_name) }}</p>
+                    @else
+                        <p class="text-xs text-novamuted mt-0.5">Direct</p>
+                    @endif
+                </div>
+                <div class="w-24 flex-shrink-0 min-w-0">
+                    <p class="text-[9px] text-novamuted">Commission</p>
+                    @if($commissionAmount !== null)
+                        <p class="text-xs font-semibold text-novatext truncate mt-0.5">{{ $__activeCurrencyForCommission->currency_name ?? $booking->booking_currency_origin }} {{ number_format($commissionAmount, 2) }}</p>
+                    @else
+                        <p class="text-xs text-novamuted mt-0.5">—</p>
+                    @endif
                 </div>
             </div>
 

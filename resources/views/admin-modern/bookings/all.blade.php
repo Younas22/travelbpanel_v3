@@ -27,6 +27,12 @@
             'tour'   => ['icon' => 'bi-map',         'cls' => 'bk-type-tour'],
             'umrah'  => ['icon' => 'bi-moon-stars',  'cls' => 'bk-type-umrah'],
         ];
+
+        // Commission is computed on the fly (fare x the booking's own
+        // agent's commission_rate%) — there's no stored per-booking
+        // commission column, and shown converted into whichever currency
+        // is active site-wide (admin/currencies).
+        $__activeCurrencyForCommission = activeCurrency();
     @endphp
 
     <div class="bk-header">
@@ -78,6 +84,23 @@
                 </div>
 
                 <div class="bk-field">
+                    <label class="form-label">Agent</label>
+                    <select name="agent_id" class="form-select">
+                        <option value="">All agents</option>
+                        @foreach($agents as $agentOption)
+                            <option value="{{ $agentOption->id }}" {{ (string) request('agent_id') === (string) $agentOption->id ? 'selected' : '' }}>
+                                {{ trim($agentOption->first_name . ' ' . $agentOption->last_name) }}{{ $agentOption->company_name ? ' — ' . $agentOption->company_name : '' }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="bk-field">
+                    <label class="form-label">Month</label>
+                    <input type="month" name="month" class="form-control" value="{{ request('month') }}">
+                </div>
+
+                <div class="bk-field">
                     <label class="form-label">Date from</label>
                     <input type="date" name="date_from" class="form-control" value="{{ request('date_from') }}">
                 </div>
@@ -119,6 +142,8 @@
                     <th>Payment</th>
                     <th>Phone</th>
                     <th>Partner</th>
+                    <th>Agent</th>
+                    <th>Commission</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -144,6 +169,15 @@
                             ->map(fn($n) => strtoupper(substr($n, 0, 1)))
                             ->take(2)->implode('');
                         $avatar = $avatarPalette[crc32($booking->customer_name) % count($avatarPalette)];
+
+                        $bookingAgent = $booking->relationLoaded('agent') ? $booking->agent : null;
+                        $commissionAmount = null;
+                        if ($bookingAgent && $bookingAgent->commission_rate) {
+                            $rawCommission = ($booking->booking_fare_base ?? 0) * ($bookingAgent->commission_rate / 100);
+                            $commissionAmount = $__activeCurrencyForCommission
+                                ? convertCurrency($rawCommission, $booking->booking_currency_origin ?? 'USD', $__activeCurrencyForCommission->currency_name)
+                                : $rawCommission;
+                        }
                     @endphp
                     <tr>
                         <td><input type="checkbox" class="form-check-input booking-checkbox" data-id="{{ $booking->id }}" data-type="{{ $type }}"></td>
@@ -200,6 +234,24 @@
                         <td><span class="bk-meta">{{ $get_phone['user_phone'] ?? $get_phone->user_phone ?? 'No number' }}</span></td>
                         <td><span class="bk-meta">{{ ucfirst($booking->booking_supplier_name) }}</span></td>
                         <td>
+                            @if($bookingAgent)
+                                <div class="bk-detail">{{ trim($bookingAgent->first_name . ' ' . $bookingAgent->last_name) }}</div>
+                                @if($bookingAgent->company_name)
+                                    <div class="bk-meta">{{ $bookingAgent->company_name }}</div>
+                                @endif
+                            @else
+                                <span class="bk-meta">Direct</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($commissionAmount !== null)
+                                <div class="bk-detail">{{ $__activeCurrencyForCommission->currency_name ?? $booking->booking_currency_origin }} {{ number_format($commissionAmount, 2) }}</div>
+                                <div class="bk-meta">{{ $bookingAgent->commission_rate }}%</div>
+                            @else
+                                <span class="bk-meta">—</span>
+                            @endif
+                        </td>
+                        <td>
                             <div class="bk-actions">
                                 <a href="{{ route('admin.bookings.edit', ['type' => $type, 'id' => $booking->id]) }}" class="bk-action-btn" title="Edit booking"><i class="bi bi-pencil"></i></a>
                                 <a href="{{ $invoiceRoute }}" class="bk-action-btn" title="View invoice" target="_blank"><i class="bi bi-file-text"></i></a>
@@ -209,7 +261,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="13">
+                        <td colspan="15">
                             <div class="bk-empty">
                                 <i class="bi bi-inbox"></i>
                                 <h5>No bookings found</h5>

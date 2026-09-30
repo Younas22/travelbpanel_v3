@@ -55,6 +55,14 @@ class TourBooking extends Model
         'updated_at' => 'datetime',
     ];
 
+    /**
+     * The agent who made this booking, when booked_via is "agent".
+     */
+    public function agent()
+    {
+        return $this->belongsTo(User::class, 'agent_id');
+    }
+
     public function getCustomerNameAttribute()
     {
         $userData = is_array($this->booking_user_data) ? $this->booking_user_data : json_decode($this->booking_user_data, true);

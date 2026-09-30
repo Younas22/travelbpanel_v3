@@ -58,6 +58,14 @@ class UmrahBooking extends Model
         'updated_at' => 'datetime',
     ];
 
+    /**
+     * The agent who made this booking, when booked_via is "agent".
+     */
+    public function agent()
+    {
+        return $this->belongsTo(User::class, 'agent_id');
+    }
+
     public function getCustomerNameAttribute()
     {
         return trim(($this->user_first_name ?? '') . ' ' . ($this->user_last_name ?? '')) ?: 'N/A';

@@ -8,6 +8,7 @@ use App\Models\HotelBooking;
 use App\Models\TourBooking;
 use App\Models\UmrahBooking;
 use App\Models\Setting;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -39,12 +40,45 @@ class BookingController extends Controller
             $bookings = $this->getAllBookings($request);
         }
 
+        // Commission is computed from each booking's own agent (fare x that
+        // agent's commission_rate%) — load it once here rather than in the
+        // view, and rely on it being the same relation name on every booking
+        // model regardless of which type actually produced the row (the
+        // union query in getAllBookings() always hydrates as FlightBooking,
+        // but all 4 booking models define an identical agent() relation).
+        $bookings->getCollection()->load('agent:id,first_name,last_name,company_name,commission_rate');
 
+        // Agents list for the filter dropdown
+        $agents = User::where('user_type', User::TYPE_AGENT)
+            ->orderBy('first_name')
+            ->get(['id', 'first_name', 'last_name', 'company_name']);
 
         // Calculate statistics
         $stats = $this->getBookingStats($bookingType);
 
-        return view('admin.bookings.all', compact('bookings', 'stats', 'bookingType'));
+        return view('admin.bookings.all', compact('bookings', 'stats', 'bookingType', 'agents'));
+    }
+
+    /**
+     * Resolve the effective [date_from, date_to] filter range. A "month"
+     * filter (YYYY-MM, from a single month picker) takes precedence over the
+     * separate date_from/date_to fields when both are present.
+     */
+    private function resolveDateRange(Request $request): array
+    {
+        if ($request->filled('month')) {
+            $monthStart = Carbon::parse($request->month . '-01')->startOfMonth();
+            return [$monthStart->copy()->startOfDay(), $monthStart->copy()->endOfMonth()->endOfDay()];
+        }
+
+        if ($request->filled('date_from') || $request->filled('date_to')) {
+            return [
+                $request->date_from ? Carbon::parse($request->date_from)->startOfDay() : null,
+                $request->date_to ? Carbon::parse($request->date_to)->endOfDay() : null,
+            ];
+        }
+
+        return [null, null];
     }
 
     /**
@@ -69,10 +103,14 @@ class BookingController extends Controller
             $query->byPaymentState($request->payment_state);
         }
 
-        // Apply date range filter
-        if ($request->filled('date_from') || $request->filled('date_to')) {
-            $dateFrom = $request->date_from ? Carbon::parse($request->date_from)->startOfDay() : null;
-            $dateTo = $request->date_to ? Carbon::parse($request->date_to)->endOfDay() : null;
+        // Apply agent filter
+        if ($request->filled('agent_id')) {
+            $query->where('agent_id', $request->agent_id);
+        }
+
+        // Apply date range filter (a "month" picker takes precedence over date_from/date_to)
+        [$dateFrom, $dateTo] = $this->resolveDateRange($request);
+        if ($dateFrom || $dateTo) {
             $query->byDateRange($dateFrom, $dateTo);
         }
 
@@ -110,10 +148,14 @@ class BookingController extends Controller
             $query->byPaymentState($request->payment_state);
         }
 
-        // Apply date range filter
-        if ($request->filled('date_from') || $request->filled('date_to')) {
-            $dateFrom = $request->date_from ? Carbon::parse($request->date_from)->startOfDay() : null;
-            $dateTo = $request->date_to ? Carbon::parse($request->date_to)->endOfDay() : null;
+        // Apply agent filter
+        if ($request->filled('agent_id')) {
+            $query->where('agent_id', $request->agent_id);
+        }
+
+        // Apply date range filter (a "month" picker takes precedence over date_from/date_to)
+        [$dateFrom, $dateTo] = $this->resolveDateRange($request);
+        if ($dateFrom || $dateTo) {
             $query->byDateRange($dateFrom, $dateTo);
         }
 
@@ -151,10 +193,14 @@ class BookingController extends Controller
             $query->byPaymentState($request->payment_state);
         }
 
-        // Apply date range filter
-        if ($request->filled('date_from') || $request->filled('date_to')) {
-            $dateFrom = $request->date_from ? Carbon::parse($request->date_from)->startOfDay() : null;
-            $dateTo = $request->date_to ? Carbon::parse($request->date_to)->endOfDay() : null;
+        // Apply agent filter
+        if ($request->filled('agent_id')) {
+            $query->where('agent_id', $request->agent_id);
+        }
+
+        // Apply date range filter (a "month" picker takes precedence over date_from/date_to)
+        [$dateFrom, $dateTo] = $this->resolveDateRange($request);
+        if ($dateFrom || $dateTo) {
             $query->byDateRange($dateFrom, $dateTo);
         }
 
@@ -192,10 +238,14 @@ class BookingController extends Controller
             $query->byPaymentState($request->payment_state);
         }
 
-        // Apply date range filter
-        if ($request->filled('date_from') || $request->filled('date_to')) {
-            $dateFrom = $request->date_from ? Carbon::parse($request->date_from)->startOfDay() : null;
-            $dateTo = $request->date_to ? Carbon::parse($request->date_to)->endOfDay() : null;
+        // Apply agent filter
+        if ($request->filled('agent_id')) {
+            $query->where('agent_id', $request->agent_id);
+        }
+
+        // Apply date range filter (a "month" picker takes precedence over date_from/date_to)
+        [$dateFrom, $dateTo] = $this->resolveDateRange($request);
+        if ($dateFrom || $dateTo) {
             $query->byDateRange($dateFrom, $dateTo);
         }
 
@@ -216,9 +266,20 @@ class BookingController extends Controller
      */
     private function getAllBookings(Request $request)
     {
+        [$dateFrom, $dateTo] = $this->resolveDateRange($request);
+
+        $applyCommonFilters = function ($q) use ($request, $dateFrom, $dateTo) {
+            $q->when($request->filled('search'), fn($q) => $q->search($request->search))
+              ->when($request->filled('status'), fn($q) => $q->byStatus($request->status))
+              ->when($request->filled('payment_state'), fn($q) => $q->byPaymentState($request->payment_state))
+              ->when($request->filled('agent_id'), fn($q) => $q->where('agent_id', $request->agent_id))
+              ->when($dateFrom || $dateTo, fn($q) => $q->byDateRange($dateFrom, $dateTo));
+        };
+
         // Flight bookings query
         $flightQuery = FlightBooking::select(
             'id',
+            'agent_id',
             DB::raw('CAST(booking_code_ref AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_code_ref'),
             DB::raw('CAST(booking_status_flag AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_status_flag'),
             DB::raw('CAST(booking_payment_state AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_payment_state'),
@@ -228,19 +289,13 @@ class BookingController extends Controller
             DB::raw('CAST(booking_fare_base AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_fare_base'),
             DB::raw('CAST(booking_supplier_name AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_supplier_name'),
             'created_at'
-        )->when($request->filled('search'), fn($q) => $q->search($request->search))
-        ->when($request->filled('status'), fn($q) => $q->byStatus($request->status))
-        ->when($request->filled('payment_state'), fn($q) => $q->byPaymentState($request->payment_state))
-        ->when($request->filled('date_from') || $request->filled('date_to'), function($q) use ($request) {
-            $dateFrom = $request->date_from ? Carbon::parse($request->date_from)->startOfDay() : null;
-            $dateTo = $request->date_to ? Carbon::parse($request->date_to)->endOfDay() : null;
-            $q->byDateRange($dateFrom, $dateTo);
-        })
+        )->tap($applyCommonFilters)
         ->addSelect(DB::raw("'flight' COLLATE utf8mb4_unicode_ci as booking_type"));
 
         // Hotel bookings query
         $hotelQuery = HotelBooking::select(
             'id',
+            'agent_id',
             DB::raw('CAST(booking_code_ref AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_code_ref'),
             DB::raw('CAST(booking_status_flag AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_status_flag'),
             DB::raw('CAST(booking_payment_state AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_payment_state'),
@@ -250,19 +305,13 @@ class BookingController extends Controller
             DB::raw('CAST(booking_fare_base AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_fare_base'),
             DB::raw('CAST(booking_supplier_name AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_supplier_name'),
             'created_at'
-        )->when($request->filled('search'), fn($q) => $q->search($request->search))
-        ->when($request->filled('status'), fn($q) => $q->byStatus($request->status))
-        ->when($request->filled('payment_state'), fn($q) => $q->byPaymentState($request->payment_state))
-        ->when($request->filled('date_from') || $request->filled('date_to'), function($q) use ($request) {
-            $dateFrom = $request->date_from ? Carbon::parse($request->date_from)->startOfDay() : null;
-            $dateTo = $request->date_to ? Carbon::parse($request->date_to)->endOfDay() : null;
-            $q->byDateRange($dateFrom, $dateTo);
-        })
+        )->tap($applyCommonFilters)
         ->addSelect(DB::raw("'hotel' COLLATE utf8mb4_unicode_ci as booking_type"));
 
         // Tour bookings query
         $tourQuery = TourBooking::select(
             'id',
+            'agent_id',
             DB::raw('CAST(booking_code_ref AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_code_ref'),
             DB::raw('CAST(booking_status_flag AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_status_flag'),
             DB::raw('CAST(booking_payment_state AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_payment_state'),
@@ -272,19 +321,13 @@ class BookingController extends Controller
             DB::raw('CAST(booking_fare_base AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_fare_base'),
             DB::raw('CAST(booking_supplier_name AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_supplier_name'),
             'created_at'
-        )->when($request->filled('search'), fn($q) => $q->search($request->search))
-        ->when($request->filled('status'), fn($q) => $q->byStatus($request->status))
-        ->when($request->filled('payment_state'), fn($q) => $q->byPaymentState($request->payment_state))
-        ->when($request->filled('date_from') || $request->filled('date_to'), function($q) use ($request) {
-            $dateFrom = $request->date_from ? Carbon::parse($request->date_from)->startOfDay() : null;
-            $dateTo = $request->date_to ? Carbon::parse($request->date_to)->endOfDay() : null;
-            $q->byDateRange($dateFrom, $dateTo);
-        })
+        )->tap($applyCommonFilters)
         ->addSelect(DB::raw("'tour' COLLATE utf8mb4_unicode_ci as booking_type"));
 
         // Umrah bookings query
         $umrahQuery = UmrahBooking::select(
             'id',
+            'agent_id',
             DB::raw('CAST(booking_code_ref AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_code_ref'),
             DB::raw('CAST(booking_status_flag AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_status_flag'),
             DB::raw('CAST(booking_payment_state AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_payment_state'),
@@ -294,14 +337,7 @@ class BookingController extends Controller
             DB::raw('CAST(booking_fare_base AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_fare_base'),
             DB::raw('CAST(booking_supplier_name AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci as booking_supplier_name'),
             'created_at'
-        )->when($request->filled('search'), fn($q) => $q->search($request->search))
-        ->when($request->filled('status'), fn($q) => $q->byStatus($request->status))
-        ->when($request->filled('payment_state'), fn($q) => $q->byPaymentState($request->payment_state))
-        ->when($request->filled('date_from') || $request->filled('date_to'), function($q) use ($request) {
-            $dateFrom = $request->date_from ? Carbon::parse($request->date_from)->startOfDay() : null;
-            $dateTo = $request->date_to ? Carbon::parse($request->date_to)->endOfDay() : null;
-            $q->byDateRange($dateFrom, $dateTo);
-        })
+        )->tap($applyCommonFilters)
         ->addSelect(DB::raw("'umrah' COLLATE utf8mb4_unicode_ci as booking_type"));
 
         // Union all and order by created_at

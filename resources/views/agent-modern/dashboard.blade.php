@@ -26,6 +26,14 @@
         </div>
 
         <div class="dash-stat-card">
+            <div class="dash-stat-icon icon-blue"><i class="bi bi-airplane"></i></div>
+            <div>
+                <div class="dash-stat-label">Flight Bookings</div>
+                <div class="dash-stat-value">{{ $stats['flights'] }}</div>
+            </div>
+        </div>
+
+        <div class="dash-stat-card">
             <div class="dash-stat-icon icon-green"><i class="bi bi-map"></i></div>
             <div>
                 <div class="dash-stat-label">Tours</div>
@@ -116,9 +124,9 @@
                 <tbody>
                     @foreach($recentBookings as $booking)
                     <tr>
-                        <td><span style="font-family: monospace; color: var(--primary-color); font-weight: 700;">{{ $booking['booking_code'] ?? 'N/A' }}</span></td>
+                        <td><span style="font-family: monospace; color: var(--primary-color); font-weight: 700;">{{ $booking['booking_code_ref'] ?? 'N/A' }}</span></td>
                         <td><span class="badge bg-secondary">{{ ucfirst($booking['booking_type']) }}</span></td>
-                        <td style="font-weight: 650;">PKR {{ number_format($booking['total_fare'] ?? 0, 0) }}</td>
+                        <td style="font-weight: 650;">{{ $booking['booking_currency_origin'] ?? 'PKR' }} {{ number_format($booking['booking_fare_base'] ?? 0, 0) }}</td>
                         <td style="color: color-mix(in srgb, var(--text-color) 55%, transparent); font-size: 12px;">{{ \Carbon\Carbon::parse($booking['created_at'])->format('d M Y') }}</td>
                     </tr>
                     @endforeach

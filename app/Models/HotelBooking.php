@@ -60,6 +60,14 @@ class HotelBooking extends Model
     ];
 
     /**
+     * The agent who made this booking, when booked_via is "agent".
+     */
+    public function agent()
+    {
+        return $this->belongsTo(User::class, 'agent_id');
+    }
+
+    /**
      * Get the customer name from user data or guest data
      */
     public function getCustomerNameAttribute()

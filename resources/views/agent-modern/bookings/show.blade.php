@@ -24,6 +24,25 @@
         <span>Booking Details</span>
     </div>
 
+    @php
+        // $booking is the raw Eloquent model for the given $type (agent\BookingController::show()
+        // does not normalize it — unlike the bookings index page, which goes through
+        // formatBooking()). Fields below use each model's own real columns/accessors.
+        $bookingCode = $booking->booking_code_ref ?? ('#' . $booking->id);
+        $hasPaymentInfo = $type !== 'visa';
+        if ($hasPaymentInfo) {
+            $activeCurrency = activeCurrency();
+            $invoiceCurrencyCode = $activeCurrency->currency_name ?? ($booking->booking_currency_origin ?? 'USD');
+            $invoiceAmount = $activeCurrency
+                ? convertCurrency($booking->booking_fare_base ?? 0, $booking->booking_currency_origin ?? 'USD', $invoiceCurrencyCode)
+                : ($booking->booking_fare_base ?? 0);
+        }
+        $invoiceRouteNames = ['hotel' => 'hotel.invoice', 'flight' => 'flight.invoice', 'tour' => 'tour.invoice', 'umrah' => 'umrah.invoice'];
+        if ($type === 'flight') {
+            $guests = is_array($booking->booking_guest) ? $booking->booking_guest : (json_decode($booking->booking_guest ?? '[]', true) ?: []);
+        }
+    @endphp
+
     <div class="row g-4">
 
         <div class="col-lg-8">
@@ -31,48 +50,78 @@
                 <div class="am-card-header d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center gap-2">
                         <span class="badge bg-secondary">{{ ucfirst($type) }}</span>
-                        <span style="font-family: monospace; font-weight: 650;">{{ $booking->booking_code ?? 'N/A' }}</span>
+                        <span style="font-family: monospace; font-weight: 650;">{{ $bookingCode }}</span>
                     </div>
-                    @if(($booking->status ?? '') === 'confirmed')
+                    @if(($booking->booking_status_flag ?? '') === 'confirmed')
                         <span class="badge bg-success">Confirmed</span>
-                    @elseif(($booking->status ?? '') === 'pending')
+                    @elseif(($booking->booking_status_flag ?? '') === 'pending')
                         <span class="badge bg-warning">Pending</span>
-                    @elseif(($booking->status ?? '') === 'cancelled')
+                    @elseif(($booking->booking_status_flag ?? '') === 'cancelled')
                         <span class="badge bg-danger">Cancelled</span>
-                    @else
-                        <span class="badge bg-secondary">{{ ucfirst($booking->status ?? 'N/A') }}</span>
+                    @elseif($booking->booking_status_flag ?? null)
+                        <span class="badge bg-secondary">{{ ucfirst($booking->booking_status_flag) }}</span>
                     @endif
                 </div>
                 <div class="am-card-body">
 
                     @if($type === 'hotel')
-                        <div class="bk-detail-row"><div class="bk-detail-label">Hotel</div><div class="bk-detail-value">{{ $booking->hotel_name }}</div></div>
-                        <div class="bk-detail-row"><div class="bk-detail-label">Check-in</div><div class="bk-detail-value">{{ \Carbon\Carbon::parse($booking->check_in)->format('d M Y') }}</div></div>
-                        <div class="bk-detail-row"><div class="bk-detail-label">Check-out</div><div class="bk-detail-value">{{ \Carbon\Carbon::parse($booking->check_out)->format('d M Y') }}</div></div>
-                        <div class="bk-detail-row"><div class="bk-detail-label">Rooms / Guests</div><div class="bk-detail-value">{{ $booking->rooms }} room(s) &bull; {{ $booking->adults }} adult(s), {{ $booking->children ?? 0 }} child(ren)</div></div>
-                        <div class="bk-detail-row"><div class="bk-detail-label">Guest Name</div><div class="bk-detail-value">{{ $booking->guest_name }}</div></div>
-                        <div class="bk-detail-row"><div class="bk-detail-label">Guest Email</div><div class="bk-detail-value">{{ $booking->guest_email }}</div></div>
-                        <div class="bk-detail-row"><div class="bk-detail-label">Guest Phone</div><div class="bk-detail-value">{{ $booking->guest_phone }}</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Hotel</div><div class="bk-detail-value">{{ $booking->hotel_info['name'] }} &bull; {{ $booking->hotel_info['location'] }}</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Check-in</div><div class="bk-detail-value">{{ $booking->stay_dates['check_in'] }}</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Check-out</div><div class="bk-detail-value">{{ $booking->stay_dates['check_out'] }} ({{ $booking->stay_dates['nights'] }})</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Guests</div><div class="bk-detail-value">{{ $booking->guest_count }}</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Guest Name</div><div class="bk-detail-value">{{ $booking->customer_name }}</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Guest Email</div><div class="bk-detail-value">{{ $booking->customer_email }}</div></div>
+                        @if($booking->booking_hotel_pnr)
+                        <div class="bk-detail-row"><div class="bk-detail-label">PNR</div><div class="bk-detail-value" style="font-family: monospace;">{{ $booking->booking_hotel_pnr }}</div></div>
+                        @endif
 
                     @elseif($type === 'flight')
-                        <div class="bk-detail-row"><div class="bk-detail-label">Route</div><div class="bk-detail-value">{{ $booking->origin }} &rarr; {{ $booking->destination }}</div></div>
-                        <div class="bk-detail-row"><div class="bk-detail-label">Departure</div><div class="bk-detail-value">{{ \Carbon\Carbon::parse($booking->departure_date)->format('d M Y') }}</div></div>
-                        @if($booking->return_date)
-                        <div class="bk-detail-row"><div class="bk-detail-label">Return</div><div class="bk-detail-value">{{ \Carbon\Carbon::parse($booking->return_date)->format('d M Y') }}</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Route</div><div class="bk-detail-value">{{ $booking->flight_route['route'] }} <span class="text-muted small">({{ $booking->flight_route['stops'] }})</span></div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Airline / Flight</div><div class="bk-detail-value">{{ $booking->flight_details['airline'] }} &bull; {{ $booking->flight_details['flight_number'] }}</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Departure</div><div class="bk-detail-value">{{ $booking->travel_date['date'] }} &bull; {{ $booking->travel_date['time'] }}</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Passengers</div><div class="bk-detail-value">{{ $booking->passenger_count }}</div></div>
+                        @if($booking->booking_air_pnr)
+                        <div class="bk-detail-row"><div class="bk-detail-label">PNR</div><div class="bk-detail-value" style="font-family: monospace;">{{ $booking->booking_air_pnr }}</div></div>
                         @endif
-                        <div class="bk-detail-row"><div class="bk-detail-label">Passengers</div><div class="bk-detail-value">{{ $booking->adults }} adult(s), {{ $booking->children ?? 0 }} child(ren)</div></div>
-                        <div class="bk-detail-row"><div class="bk-detail-label">Airline</div><div class="bk-detail-value">{{ $booking->airline ?? '—' }}</div></div>
+                        @if(!empty($guests))
+                        <div class="bk-detail-row" style="display: block;">
+                            <div class="bk-detail-label mb-2">Travellers</div>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered mb-0" style="font-size: 12px;">
+                                    <thead>
+                                        <tr class="text-muted text-uppercase" style="font-size: 10px;">
+                                            <th>Name</th>
+                                            <th>Passport No.</th>
+                                            <th>Date of Birth</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($guests as $guest)
+                                        <tr>
+                                            <td>{{ trim(($guest['first_name'] ?? '') . ' ' . ($guest['last_name'] ?? '')) ?: '—' }}</td>
+                                            <td>{{ $guest['passport'] ?? '—' }}</td>
+                                            <td>{{ $guest['dob_day'] ?? '—' }}-{{ $guest['dob_month'] ?? '—' }}-{{ $guest['dob_year'] ?? '—' }}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        @endif
 
                     @elseif(in_array($type, ['tour', 'umrah']))
-                        <div class="bk-detail-row"><div class="bk-detail-label">Package</div><div class="bk-detail-value">{{ $booking->tour_name ?? $booking->package_name ?? '—' }}</div></div>
-                        <div class="bk-detail-row"><div class="bk-detail-label">Travel Date</div><div class="bk-detail-value">{{ $booking->travel_date ? \Carbon\Carbon::parse($booking->travel_date)->format('d M Y') : '—' }}</div></div>
-                        <div class="bk-detail-row"><div class="bk-detail-label">Persons</div><div class="bk-detail-value">{{ $booking->persons ?? $booking->adults ?? '—' }}</div></div>
-                        <div class="bk-detail-row"><div class="bk-detail-label">Lead Traveller</div><div class="bk-detail-value">{{ $booking->lead_name ?? $booking->guest_name ?? '—' }}</div></div>
+                        @php $packageInfo = $type === 'tour' ? $booking->tour_info : $booking->umrah_info; @endphp
+                        <div class="bk-detail-row"><div class="bk-detail-label">Package</div><div class="bk-detail-value">{{ $packageInfo['name'] }} &bull; {{ $packageInfo['location'] }}</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Travel Date</div><div class="bk-detail-value">{{ $booking->travel_date['date'] }} &bull; {{ $booking->travel_date['time'] }}</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Passengers</div><div class="bk-detail-value">{{ $booking->passenger_count }}</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Lead Traveller</div><div class="bk-detail-value">{{ $booking->customer_name }} &bull; {{ $booking->customer_email }}</div></div>
 
                     @elseif($type === 'visa')
-                        <div class="bk-detail-row"><div class="bk-detail-label">Visa Type</div><div class="bk-detail-value">{{ $booking->visa_type ?? '—' }}</div></div>
-                        <div class="bk-detail-row"><div class="bk-detail-label">Country</div><div class="bk-detail-value">{{ $booking->country ?? '—' }}</div></div>
-                        <div class="bk-detail-row"><div class="bk-detail-label">Applicant</div><div class="bk-detail-value">{{ $booking->applicant_name ?? '—' }}</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Visa Type</div><div class="bk-detail-value">{{ $booking->visa_type ?? '—' }} @if($booking->visa_plan)&bull; {{ $booking->visa_plan }}@endif</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Applicant</div><div class="bk-detail-value">{{ trim(($booking->first_name ?? '') . ' ' . ($booking->middle_name ?? '') . ' ' . ($booking->surname ?? '')) ?: '—' }}</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Nationality</div><div class="bk-detail-value">{{ $booking->nationality ?? '—' }}</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Passport No.</div><div class="bk-detail-value">{{ $booking->passport_no ?? '—' }}</div></div>
+                        <div class="bk-detail-row"><div class="bk-detail-label">Passport Validity</div><div class="bk-detail-value">{{ $booking->passport_issue_date?->format('d M Y') ?? '—' }} &rarr; {{ $booking->passport_expiry_date?->format('d M Y') ?? '—' }}</div></div>
                     @endif
 
                     <div class="bk-detail-row"><div class="bk-detail-label">Booked On</div><div class="bk-detail-value">{{ $booking->created_at->format('d M Y, h:i A') }}</div></div>
@@ -81,26 +130,32 @@
         </div>
 
         <div class="col-lg-4">
+            @if($hasPaymentInfo)
             <div class="am-card mb-3">
                 <div class="am-card-header">Payment Summary</div>
                 <div class="am-card-body">
                     <div class="bk-summary-row">
                         <span class="label">Amount</span>
-                        <span style="font-weight: 650;">PKR {{ number_format($booking->total_fare ?? 0, 2) }}</span>
+                        <span style="font-weight: 650;">{{ $invoiceCurrencyCode }} {{ number_format($invoiceAmount, 2) }}</span>
                     </div>
                     <div class="bk-summary-row">
                         <span class="label">Payment</span>
-                        <span class="badge bg-success">Wallet</span>
+                        @if(($booking->booking_payment_state ?? '') === 'paid')
+                            <span class="badge bg-success">Paid</span>
+                        @else
+                            <span class="badge bg-warning">{{ ucfirst($booking->booking_payment_state ?? 'Unpaid') }}</span>
+                        @endif
                     </div>
                     <div class="bk-summary-total">
-                        <span>Total Paid</span>
-                        <span class="amt">PKR {{ number_format($booking->total_fare ?? 0, 2) }}</span>
+                        <span>Total</span>
+                        <span class="amt">{{ $invoiceCurrencyCode }} {{ number_format($invoiceAmount, 2) }}</span>
                     </div>
                 </div>
             </div>
+            @endif
 
-            @if($type === 'hotel' && isset($booking->booking_code))
-            <a href="{{ route('agent.hotels.invoice', $booking->booking_code) }}" class="ap-btn-primary w-100 justify-content-center" target="_blank">
+            @if(isset($invoiceRouteNames[$type]) && $booking->booking_code_ref)
+            <a href="{{ route($invoiceRouteNames[$type], $booking->booking_code_ref) }}" class="ap-btn-primary w-100 justify-content-center" target="_blank">
                 <i class="bi bi-printer"></i> Print Invoice
             </a>
             @endif
