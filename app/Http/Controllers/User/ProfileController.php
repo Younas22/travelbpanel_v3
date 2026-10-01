@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Country;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -11,7 +12,8 @@ class ProfileController extends Controller
     public function index()
     {
         $user = auth()->user();
-        return view('user.profile.index', compact('user'));
+        $countries = Country::orderBy('name')->get();
+        return view('user.profile.index', compact('user', 'countries'));
     }
 
     public function update(Request $request)
@@ -19,16 +21,18 @@ class ProfileController extends Controller
         $user = auth()->user();
 
         $request->validate([
+            'title'      => 'nullable|string|max:10',
             'first_name' => 'required|string|max:100',
             'last_name'  => 'required|string|max:100',
             'phone'      => 'nullable|string|max:30',
             'address'    => 'nullable|string|max:255',
             'city'       => 'nullable|string|max:100',
+            'country'    => 'nullable|string|max:100',
             'state'      => 'nullable|string|max:100',
             'zip_code'   => 'nullable|string|max:20',
         ]);
 
-        $user->update($request->only(['first_name', 'last_name', 'phone', 'address', 'city', 'state', 'zip_code']));
+        $user->update($request->only(['title', 'first_name', 'last_name', 'phone', 'address', 'city', 'country', 'state', 'zip_code']));
 
         return back()->with('success', 'Profile updated successfully.');
     }

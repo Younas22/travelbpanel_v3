@@ -1,5 +1,6 @@
+@php($__activeTheme = app(\App\Services\ThemeService::class)->active(auth()->id()))
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}" dir="{{ in_array(app()->getLocale(), ['ar']) ? 'rtl' : 'ltr' }}">
+<html lang="{{ app()->getLocale() }}" dir="{{ in_array(app()->getLocale(), ['ar']) ? 'rtl' : 'ltr' }}" data-bs-theme="{{ $__activeTheme->isDark() ? 'dark' : 'light' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,6 +16,16 @@
     @else
         <link rel="stylesheet" href="{{ url('public/assets/css/style.css') }}">
     @endif
+    {{-- The sidebar/.agent-* layout shell and every "ap-*" utility class used
+         across this portal (same as the agent panel's) are defined in
+         admin.css — without it this layout was rendering with no real
+         styling at all, just raw Tailwind + browser defaults. --}}
+    <link href="{{ asset('public/assets/css/admin.css') }}" rel="stylesheet">
+    @if($__activeTheme->font_family && !in_array(strtolower($__activeTheme->font_family), ['system font', 'system', 'system-ui']))
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family={{ str_replace(' ', '+', $__activeTheme->font_family) }}:wght@400;500;600;700&display=swap" rel="stylesheet">
+    @endif
+    <style id="theme-vars">{!! app(\App\Services\ThemeService::class)->inlineStyleTag($__activeTheme) !!}</style>
 
     <style>
         /* Sidebar desktop toggle */
@@ -72,7 +83,7 @@
 
     @stack('styles')
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 theme-{{ $__activeTheme->theme_name }} {{ $__activeTheme->layoutBodyClasses() }}">
 
     @include('common.navbar')
 

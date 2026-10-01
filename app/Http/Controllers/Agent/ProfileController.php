@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
+use App\Models\Country;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -11,7 +12,8 @@ class ProfileController extends Controller
     public function index()
     {
         $agent = auth()->user();
-        return view('agent.profile.index', compact('agent'));
+        $countries = Country::orderBy('name')->get();
+        return view('agent.profile.index', compact('agent', 'countries'));
     }
 
     public function update(Request $request)
@@ -22,13 +24,14 @@ class ProfileController extends Controller
             'first_name'      => 'required|string|max:100',
             'last_name'       => 'required|string|max:100',
             'phone'           => 'nullable|string|max:30',
+            'country'         => 'nullable|string|max:100',
             'company_name'    => 'nullable|string|max:255',
             'company_phone'   => 'nullable|string|max:30',
             'company_address' => 'nullable|string',
         ]);
 
         $agent->update($request->only([
-            'first_name', 'last_name', 'phone',
+            'first_name', 'last_name', 'phone', 'country',
             'company_name', 'company_phone', 'company_address',
         ]));
 

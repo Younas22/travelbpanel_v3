@@ -22,57 +22,82 @@
                  An agent already has these on their account and is booking
                  on behalf of a traveller, not themselves, so this section is
                  skipped for them — FlightsController::flight_booking() fills
-                 it in from the agent's own profile instead. --}}
+                 it in from the agent's own profile instead. A logged-in
+                 customer isn't skipped (they still see the confirmation),
+                 but the fields are pre-filled from their own account and
+                 locked read-only rather than asking them to re-type it on
+                 every booking — only a true guest (not logged in) types
+                 this in manually. --}}
+            @php
+                $loggedInCustomer = (auth()->check() && auth()->user()->isCustomer()) ? auth()->user() : null;
+                $lockedFieldClass = 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition'
+                    . ($loggedInCustomer ? ' bg-gray-100 text-gray-600 cursor-not-allowed' : '');
+                $matchedCountry = null;
+                if ($loggedInCustomer && $loggedInCustomer->country) {
+                    $matchedCountry = $countries->first(fn($c) => strcasecmp($c->country, $loggedInCustomer->country) === 0
+                        || strcasecmp($c->country_code, $loggedInCustomer->country) === 0);
+                }
+            @endphp
             @unless(auth()->check() && auth()->user()->isAgent())
             <!-- Personal Information -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <h2 class="text-2xl font-bold text-gray-800 mb-1 flex items-center">
                     <i class="fas fa-user-circle text-blue-600 mr-3" style="color: #0077BE;"></i>
                     {{t('flightbooking.personal_information')}}
                 </h2>
+                @if($loggedInCustomer)
+                    <p class="text-xs text-gray-500 mb-5">Using your account details. To change these, update your <a href="{{ route('user.profile.index') }}" class="text-blue-600 underline">profile</a>.</p>
+                @else
+                    <div class="mb-6"></div>
+                @endif
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{t('flightbooking.first_name')}} *</label>
-                        <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" name="user[first_name]" placeholder="{{t('flightbooking.enter_first_name')}}" required>
+                        <input type="text" class="{{ $lockedFieldClass }}" name="user[first_name]" placeholder="{{t('flightbooking.enter_first_name')}}" value="{{ old('user.first_name', $loggedInCustomer->first_name ?? '') }}" @if($loggedInCustomer) readonly @else required @endif>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{t('flightbooking.last_name')}} *</label>
-                        <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" name="user[last_name]" placeholder="{{t('flightbooking.enter_last_name')}}" required>
+                        <input type="text" class="{{ $lockedFieldClass }}" name="user[last_name]" placeholder="{{t('flightbooking.enter_last_name')}}" value="{{ old('user.last_name', $loggedInCustomer->last_name ?? '') }}" @if($loggedInCustomer) readonly @else required @endif>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{t('flightbooking.email')}} *</label>
-                        <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" name="user[email]" placeholder="example@gmail.com" required>
+                        <input type="email" class="{{ $lockedFieldClass }}" name="user[email]" placeholder="example@gmail.com" value="{{ old('user.email', $loggedInCustomer->email ?? '') }}" @if($loggedInCustomer) readonly @else required @endif>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{t('flightbooking.phone_number')}} *</label>
-                        <input type="tel" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" name="user[phone]" placeholder="" required>
+                        <input type="tel" class="{{ $lockedFieldClass }}" name="user[phone]" placeholder="" value="{{ old('user.phone', $loggedInCustomer->phone ?? '') }}" @if($loggedInCustomer) readonly @else required @endif>
                     </div>
                 </div>
 
                 <div class="mt-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">{{t('flightbooking.address')}} *</label>
-                    <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" name="user[address]" placeholder="{{t('flightbooking.enter_your_address')}}" required>
+                    <input type="text" class="{{ $lockedFieldClass }}" name="user[address]" placeholder="{{t('flightbooking.enter_your_address')}}" value="{{ old('user.address', $loggedInCustomer->address ?? '') }}" @if($loggedInCustomer) readonly @else required @endif>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{t('flightbooking.city')}} *</label>
-                        <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" name="user[city]" placeholder="{{t('flightbooking.enter_city')}}" required>
+                        <input type="text" class="{{ $lockedFieldClass }}" name="user[city]" placeholder="{{t('flightbooking.enter_city')}}" value="{{ old('user.city', $loggedInCustomer->city ?? '') }}" @if($loggedInCustomer) readonly @else required @endif>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{t('flightbooking.country')}} *</label>
-                        <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition" name="user[country]" required>
-                            <option value="">{{t('flightbooking.select_country')}}</option>
-                            @foreach($countries as $country)
-                                <option value="{{ strtolower($country->country_code) }}" {{ old('nationality') == strtolower($country->country_code) ? 'selected' : '' }}>
-                                    {{ $country->country }}
-                                </option>
-                            @endforeach
-                        </select>
+                        @if($loggedInCustomer)
+                            <input type="text" class="{{ $lockedFieldClass }}" value="{{ $matchedCountry->country ?? $loggedInCustomer->country ?? '—' }}" readonly>
+                            <input type="hidden" name="user[country]" value="{{ old('user.country', $matchedCountry ? strtolower($matchedCountry->country_code) : '') }}">
+                        @else
+                            <select class="{{ $lockedFieldClass }}" name="user[country]" required>
+                                <option value="">{{t('flightbooking.select_country')}}</option>
+                                @foreach($countries as $country)
+                                    <option value="{{ strtolower($country->country_code) }}" {{ old('nationality') == strtolower($country->country_code) ? 'selected' : '' }}>
+                                        {{ $country->country }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        @endif
                     </div>
                 </div>
             </div>

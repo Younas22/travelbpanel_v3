@@ -64,9 +64,31 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 mb-1.5">Phone</label>
-                            <input type="text" name="phone"
-                                   class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50"
-                                   value="{{ old('phone', $agent->phone) }}" placeholder="+92 300 0000000">
+                            <div class="flex gap-2">
+                                <select id="phoneCode" class="border border-gray-200 rounded-lg px-2 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50" style="width: 150px; flex-shrink: 0;">
+                                    <option value="">Code</option>
+                                    @foreach($countries as $country)
+                                        @if($country->dial_code)
+                                            <option value="{{ $country->dial_code }}" data-flag="{{ getFlagClass($country->iso2) }}">{{ $country->dial_code }} {{ $country->name }}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <input type="text" name="phone" id="phoneNumber"
+                                       class="flex-1 border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50"
+                                       value="{{ old('phone', $agent->phone) }}" placeholder="300 0000000">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1.5">Country</label>
+                            <select name="country" id="countrySelect" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50">
+                                <option value="">Select Country</option>
+                                @foreach($countries as $country)
+                                    <option value="{{ $country->iso2 }}" data-flag="{{ getFlagClass($country->iso2) }}" {{ ($agent->country ?? '') === $country->iso2 ? 'selected' : '' }}>
+                                        {{ $country->name }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
 
                         <div>
@@ -277,6 +299,81 @@
 
 @endsection
 
+@push('styles')
+<style>
+    /* Country / phone-code selects — scoped to these two fields only
+       (admin.css's own select2 rules are sized for a tiny chip-style
+       picker and would otherwise squash these to an 11px/34px field). */
+    #countrySelect + .select2-container {
+        width: 100% !important;
+    }
+    /* phoneCode sits next to the phone number input in a flex row — a fixed
+       width (not 100%) keeps it from fighting that sibling for space. */
+    #phoneCode + .select2-container {
+        width: 150px !important;
+        flex-shrink: 0;
+    }
+    #countrySelect + .select2-container .select2-selection--single,
+    #phoneCode + .select2-container .select2-selection--single {
+        height: 42px !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 0.5rem !important;
+        background: #f9fafb !important;
+        display: flex;
+        align-items: center;
+    }
+    #countrySelect + .select2-container.select2-container--focus .select2-selection--single,
+    #phoneCode + .select2-container.select2-container--focus .select2-selection--single {
+        border-color: #60a5fa !important;
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, .25);
+    }
+    #countrySelect + .select2-container .select2-selection__rendered,
+    #phoneCode + .select2-container .select2-selection__rendered {
+        line-height: 40px !important;
+        padding-left: 12px !important;
+        padding-right: 28px !important;
+        font-size: 0.875rem !important;
+        color: #374151 !important;
+    }
+    /* The default select2 arrow sits inside a cell with its own left
+       border, drawn as a tall vertical divider — slim it down to a small
+       centered caret instead. */
+    #countrySelect + .select2-container .select2-selection__arrow,
+    #phoneCode + .select2-container .select2-selection__arrow {
+        height: 40px !important;
+        right: 6px !important;
+        border-left: none !important;
+    }
+    #countrySelect + .select2-container .select2-selection__arrow b,
+    #phoneCode + .select2-container .select2-selection__arrow b {
+        border-width: 5px 4px 0 4px !important;
+        border-color: #9ca3af transparent transparent transparent !important;
+    }
+    .select2-dropdown {
+        border: 1px solid #e5e7eb !important;
+        border-radius: 0.5rem !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, .1);
+        overflow: hidden;
+    }
+    .select2-search--dropdown {
+        padding: 8px !important;
+    }
+    .select2-search--dropdown .select2-search__field {
+        border: 1px solid #e5e7eb !important;
+        border-radius: 0.375rem !important;
+        padding: 6px 10px !important;
+        font-size: 0.8125rem !important;
+    }
+    .select2-results__option {
+        padding: 8px 12px !important;
+        font-size: 0.8125rem !important;
+    }
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: var(--primary-color, #0077BE) !important;
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script>
 document.getElementById('photoInput').addEventListener('change', function () {
@@ -297,6 +394,53 @@ function togglePw(fid, iid) {
     const f = document.getElementById(fid), i = document.getElementById(iid);
     f.type = f.type === 'password' ? 'text' : 'password';
     i.className = f.type === 'password' ? 'fas fa-eye text-sm' : 'fas fa-eye-slash text-sm';
+}
+
+// Country + phone-code dropdowns: searchable, with each option's flag
+// (same templateResult/templateSelection pattern as the site's currency
+// switcher — flag class comes from each <option data-flag="...">).
+if (typeof jQuery !== 'undefined' && jQuery.fn.select2) {
+    function formatCountryOption(state) {
+        if (!state.id) return state.text;
+        const flagClass = jQuery(state.element).data('flag');
+        if (!flagClass) return state.text;
+        return jQuery('<span style="display: inline-flex; align-items: center;"><span class="' + flagClass + '" style="margin-right: 8px; flex-shrink: 0;"></span>' + state.text + '</span>');
+    }
+
+    // The list (while searching) still shows "+92 Pakistan" so multiple
+    // countries sharing one dial code are easy to tell apart — but once
+    // picked, the closed field only needs the code itself, not the name.
+    function formatPhoneCodeSelection(state) {
+        if (!state.id) return state.text;
+        const flagClass = jQuery(state.element).data('flag');
+        if (!flagClass) return state.id;
+        return jQuery('<span style="display: inline-flex; align-items: center;"><span class="' + flagClass + '" style="margin-right: 6px; flex-shrink: 0;"></span>' + state.id + '</span>');
+    }
+
+    jQuery('#countrySelect').select2({
+        templateResult: formatCountryOption,
+        templateSelection: formatCountryOption,
+        width: '100%',
+    });
+
+    jQuery('#phoneCode').select2({
+        templateResult: formatCountryOption,
+        templateSelection: formatPhoneCodeSelection,
+        width: '150px',
+    });
+
+    // The number is stored as one plain string (no separate dial-code
+    // column), so picking a code just prepends it onto the phone field's
+    // own value, replacing any leading "+NN " / "+N-NNN " it already had
+    // rather than stacking another one on top. Bound via select2's own
+    // event (not plain "change") since that's what reliably fires here.
+    const phoneNumberInput = document.getElementById('phoneNumber');
+    jQuery('#phoneCode').on('select2:select', function (e) {
+        const dial = e.params.data.id;
+        if (!dial || !phoneNumberInput) return;
+        const withoutCode = phoneNumberInput.value.replace(/^\+\d+(-\d+)?\s*/, '').trim();
+        phoneNumberInput.value = `${dial} ${withoutCode}`.trim();
+    });
 }
 </script>
 @endpush

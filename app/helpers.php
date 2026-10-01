@@ -18,10 +18,10 @@ if (!function_exists('getRandomColor')) {
     function getRandomColor(): string
     {
         $colors = [
-            '#20c997', '#0d6efd', '#6f42c1', '#d63384', 
+            '#20c997', '#0d6efd', '#6f42c1', '#d63384',
             '#fd7e14', '#ffc107', '#198754', '#0dcaf0'
         ];
-        
+
         return $colors[array_rand($colors)];
     }
 }
@@ -85,7 +85,7 @@ if (!function_exists('getSetting')) {
                                       ->where('key', $key)
                                       ->where('is_active', true)
                                       ->first();
-        
+
         return $setting ? $setting->value : $default;
     }
 }
@@ -146,7 +146,7 @@ if (!function_exists('getSettingImage')) {
         if ($imagePath && file_exists(public_path('assets/images/' . $imagePath))) {
             return asset('public/assets/images/' . $imagePath);
         }
-        
+
         return $default ? asset($default) : null;
     }
 }
@@ -201,4 +201,3 @@ if (!function_exists('t')) {
         return \App\Helpers\TranslationHelper::translate($key, $locale);
     }
 }
-
