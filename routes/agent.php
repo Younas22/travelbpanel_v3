@@ -49,6 +49,14 @@ Route::prefix('agent')->name('agent.')->group(function () {
             Route::post('/photo',    [ProfileController::class, 'uploadPhoto'])->name('photo');
         });
 
+        // Support tickets
+        Route::prefix('support')->name('support.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Agent\SupportController::class, 'index'])->name('index');
+            Route::post('/', [\App\Http\Controllers\Agent\SupportController::class, 'store'])->name('store');
+            Route::get('/{ticket}', [\App\Http\Controllers\Agent\SupportController::class, 'show'])->name('show');
+            Route::post('/{ticket}/reply', [\App\Http\Controllers\Agent\SupportController::class, 'reply'])->name('reply');
+        });
+
         // Theme / appearance settings (personal — each agent has their own)
         Route::prefix('settings')->name('settings.')->group(function () {
             Route::get('/theme', [ThemeSettingController::class, 'edit'])->name('theme');

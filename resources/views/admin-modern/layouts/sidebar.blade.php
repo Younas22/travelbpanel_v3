@@ -75,6 +75,13 @@
             </div>
         </div>
 
+        {{-- Support Tickets --}}
+        <a href="{{ route('admin.support.index') }}"
+           class="sb-row {{ request()->routeIs('admin.support*') ? 'sb-on' : '' }}">
+            <i class="bi bi-headset sb-ico"></i>
+            <span>Support Tickets</span>
+        </a>
+
         {{-- Suppliers --}}
         <a href="{{ route('admin.travel-partners.index') }}"
            class="sb-row {{ request()->routeIs('admin.travel-partners*') ? 'sb-on' : '' }}">

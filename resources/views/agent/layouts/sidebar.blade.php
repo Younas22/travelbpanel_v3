@@ -65,6 +65,13 @@
         </a>
         @endif
 
+        {{-- Support --}}
+        <a href="{{ route('agent.support.index') }}"
+           class="agent-nav-link {{ request()->routeIs('agent.support*') ? 'active' : '' }}">
+            <i class="fas fa-headset w-5 text-center"></i>
+            <span>Support</span>
+        </a>
+
         {{-- My Properties --}}
         @if($agent->hasPermission('hotels.add') || $agent->hasPermission('tours.add') || $agent->hasPermission('umrah.add'))
         <span class="agent-nav-section-title">My Properties</span>

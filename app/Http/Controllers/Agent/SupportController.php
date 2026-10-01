@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
 use App\Models\SupportTicket;
@@ -10,8 +10,8 @@ class SupportController extends Controller
 {
     public function index()
     {
-        $tickets = SupportTicket::where('user_id', auth()->id())->latest()->get();
-        return view('user.support.index', compact('tickets'));
+        $tickets = SupportTicket::where('agent_id', auth()->id())->latest()->get();
+        return view('agent.support.index', compact('tickets'));
     }
 
     public function store(Request $request)
@@ -37,7 +37,7 @@ class SupportController extends Controller
 
         $ticket = SupportTicket::create([
             'ticket_number'     => 'TKT-' . now()->format('Ymd') . '-' . strtoupper(substr(uniqid(), -5)),
-            'user_id'           => auth()->id(),
+            'agent_id'          => auth()->id(),
             'subject'           => $request->subject,
             'description'       => $request->description,
             'priority'          => $request->priority,
@@ -51,16 +51,16 @@ class SupportController extends Controller
 
     public function show(SupportTicket $ticket)
     {
-        abort_unless($ticket->user_id === auth()->id(), 403);
+        abort_unless($ticket->agent_id === auth()->id(), 403);
 
         $ticket->load('replies.sender');
 
-        return view('user.support.show', compact('ticket'));
+        return view('agent.support.show', compact('ticket'));
     }
 
     public function reply(Request $request, SupportTicket $ticket)
     {
-        abort_unless($ticket->user_id === auth()->id(), 403);
+        abort_unless($ticket->agent_id === auth()->id(), 403);
 
         $request->validate([
             'message' => 'required|string',
@@ -71,7 +71,6 @@ class SupportController extends Controller
             'message'   => $request->message,
         ]);
 
-        // A customer replying re-opens a resolved/closed ticket for the admin to see again.
         $ticket->update([
             'status'            => in_array($ticket->status, ['resolved', 'closed']) ? 'open' : $ticket->status,
             'last_activity_at'  => now(),

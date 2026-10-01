@@ -38,6 +38,8 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::get('/bookings',            [UserBookingController::class, 'index'])->name('bookings.index');
         Route::get('/support',             [UserSupportController::class, 'index'])->name('support.index');
         Route::post('/support',            [UserSupportController::class, 'store'])->name('support.store');
+        Route::get('/support/{ticket}',    [UserSupportController::class, 'show'])->name('support.show');
+        Route::post('/support/{ticket}/reply', [UserSupportController::class, 'reply'])->name('support.reply');
         Route::get('/profile',             [UserProfileController::class, 'index'])->name('profile.index');
         Route::post('/profile/update',     [UserProfileController::class, 'update'])->name('profile.update');
         Route::post('/profile/password',   [UserProfileController::class, 'changePassword'])->name('profile.password');

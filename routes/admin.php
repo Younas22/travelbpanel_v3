@@ -69,6 +69,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::delete('/bulk-delete', [BookingController::class, 'bulkDestroy'])->name('bulk-delete');
     });
 
+    // Support Tickets (from both customers and agents)
+    Route::prefix('support')->name('admin.support.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\SupportController::class, 'index'])->name('index');
+        Route::get('/{ticket}', [\App\Http\Controllers\Admin\SupportController::class, 'show'])->name('show');
+        Route::post('/{ticket}/reply', [\App\Http\Controllers\Admin\SupportController::class, 'reply'])->name('reply');
+        Route::patch('/{ticket}/status', [\App\Http\Controllers\Admin\SupportController::class, 'updateStatus'])->name('update-status');
+    });
+
     // Visa Requests Routes
     Route::prefix('visa-requests')->name('admin.visa-requests.')->group(function () {
         Route::get('/', [VisaController::class, 'visaindex'])->name('visaindex');

@@ -55,6 +55,11 @@
         </a>
         @endif
 
+        <a href="{{ route('agent.support.index') }}" class="am-nav-row {{ request()->routeIs('agent.support*') ? 'am-nav-on' : '' }}">
+            <i class="bi bi-headset am-nav-ico"></i>
+            <span>Support</span>
+        </a>
+
         @if($agent->hasPermission('hotels.add') || $agent->hasPermission('tours.add') || $agent->hasPermission('umrah.add'))
         <span class="am-nav-section-label">My Properties</span>
 
