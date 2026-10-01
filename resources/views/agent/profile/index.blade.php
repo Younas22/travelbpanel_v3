@@ -64,8 +64,8 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 mb-1.5">Phone</label>
-                            <div class="flex gap-2">
-                                <select id="phoneCode" class="border border-gray-200 rounded-lg px-2 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50" style="width: 150px; flex-shrink: 0;">
+                            <div class="phone-input-group flex items-stretch border border-gray-200 rounded-lg bg-gray-50 overflow-hidden">
+                                <select id="phoneCode" class="phone-code-select" data-target="phoneNumber">
                                     <option value="">Code</option>
                                     @foreach($countries as $country)
                                         @if($country->dial_code)
@@ -74,7 +74,7 @@
                                     @endforeach
                                 </select>
                                 <input type="text" name="phone" id="phoneNumber"
-                                       class="flex-1 border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50"
+                                       class="flex-1 min-w-0 border-0 bg-transparent px-3 py-2.5 text-sm focus:outline-none"
                                        value="{{ old('phone', $agent->phone) }}" placeholder="300 0000000">
                             </div>
                         </div>
@@ -100,9 +100,19 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 mb-1.5">Company Phone</label>
-                            <input type="text" name="company_phone"
-                                   class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50"
-                                   value="{{ old('company_phone', $agent->company_phone) }}" placeholder="+92 21 0000000">
+                            <div class="phone-input-group flex items-stretch border border-gray-200 rounded-lg bg-gray-50 overflow-hidden">
+                                <select id="companyPhoneCode" class="phone-code-select" data-target="companyPhoneNumber">
+                                    <option value="">Code</option>
+                                    @foreach($countries as $country)
+                                        @if($country->dial_code)
+                                            <option value="{{ $country->dial_code }}" data-flag="{{ getFlagClass($country->iso2) }}">{{ $country->dial_code }} {{ $country->name }}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <input type="text" name="company_phone" id="companyPhoneNumber"
+                                       class="flex-1 min-w-0 border-0 bg-transparent px-3 py-2.5 text-sm focus:outline-none"
+                                       value="{{ old('company_phone', $agent->company_phone) }}" placeholder="21 0000000">
+                            </div>
                         </div>
 
                         <div class="lg:col-span-2">
@@ -301,20 +311,13 @@
 
 @push('styles')
 <style>
-    /* Country / phone-code selects — scoped to these two fields only
-       (admin.css's own select2 rules are sized for a tiny chip-style
-       picker and would otherwise squash these to an 11px/34px field). */
+    /* Country select — its own full-width bordered box (admin.css's own
+       select2 rules are sized for a tiny chip-style picker and would
+       otherwise squash this to an 11px/34px field). */
     #countrySelect + .select2-container {
         width: 100% !important;
     }
-    /* phoneCode sits next to the phone number input in a flex row — a fixed
-       width (not 100%) keeps it from fighting that sibling for space. */
-    #phoneCode + .select2-container {
-        width: 150px !important;
-        flex-shrink: 0;
-    }
-    #countrySelect + .select2-container .select2-selection--single,
-    #phoneCode + .select2-container .select2-selection--single {
+    #countrySelect + .select2-container .select2-selection--single {
         height: 42px !important;
         border: 1px solid #e5e7eb !important;
         border-radius: 0.5rem !important;
@@ -322,16 +325,41 @@
         display: flex;
         align-items: center;
     }
-    #countrySelect + .select2-container.select2-container--focus .select2-selection--single,
-    #phoneCode + .select2-container.select2-container--focus .select2-selection--single {
+    #countrySelect + .select2-container.select2-container--focus .select2-selection--single {
         border-color: #60a5fa !important;
         box-shadow: 0 0 0 3px rgba(96, 165, 250, .25);
     }
+
+    /* Phone code — lives *inside* .phone-input-group's own border alongside
+       the number input, as one combined box, not a separate field next to
+       it: no border/background/radius of its own, just a thin divider on
+       the right, and only as wide as a code actually needs. Shared by both
+       the personal Phone and Company Phone fields. */
+    .phone-input-group {
+        transition: border-color .15s, box-shadow .15s;
+    }
+    .phone-input-group:focus-within {
+        border-color: #60a5fa !important;
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, .25);
+    }
+    .phone-code-select + .select2-container {
+        width: 92px !important;
+        flex-shrink: 0;
+    }
+    .phone-code-select + .select2-container .select2-selection--single {
+        height: 42px !important;
+        border: none !important;
+        border-right: 1px solid #e5e7eb !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        display: flex;
+        align-items: center;
+    }
     #countrySelect + .select2-container .select2-selection__rendered,
-    #phoneCode + .select2-container .select2-selection__rendered {
+    .phone-code-select + .select2-container .select2-selection__rendered {
         line-height: 40px !important;
         padding-left: 12px !important;
-        padding-right: 28px !important;
+        padding-right: 22px !important;
         font-size: 0.875rem !important;
         color: #374151 !important;
     }
@@ -339,15 +367,21 @@
        border, drawn as a tall vertical divider — slim it down to a small
        centered caret instead. */
     #countrySelect + .select2-container .select2-selection__arrow,
-    #phoneCode + .select2-container .select2-selection__arrow {
+    .phone-code-select + .select2-container .select2-selection__arrow {
         height: 40px !important;
-        right: 6px !important;
+        right: 4px !important;
         border-left: none !important;
     }
     #countrySelect + .select2-container .select2-selection__arrow b,
-    #phoneCode + .select2-container .select2-selection__arrow b {
+    .phone-code-select + .select2-container .select2-selection__arrow b {
         border-width: 5px 4px 0 4px !important;
         border-color: #9ca3af transparent transparent transparent !important;
+    }
+    /* Each phone-code select's own box is a narrow 92px — the dropdown
+       list needs real width so flag + code + country name sit on one
+       line, not wrapped across several. */
+    .phone-code-dropdown {
+        min-width: 240px !important;
     }
     .select2-dropdown {
         border: 1px solid #e5e7eb !important;
@@ -423,23 +457,30 @@ if (typeof jQuery !== 'undefined' && jQuery.fn.select2) {
         width: '100%',
     });
 
-    jQuery('#phoneCode').select2({
+    // Shared by both the personal Phone and Company Phone code pickers.
+    jQuery('.phone-code-select').select2({
         templateResult: formatCountryOption,
         templateSelection: formatPhoneCodeSelection,
-        width: '150px',
+        width: '92px',
+        // The select itself is a narrow 92px (just the code) — without this
+        // the dropdown list inherits that same width and wraps every
+        // country name onto several lines instead of showing it properly.
+        dropdownAutoWidth: true,
+        dropdownCssClass: 'phone-code-dropdown',
     });
 
     // The number is stored as one plain string (no separate dial-code
-    // column), so picking a code just prepends it onto the phone field's
-    // own value, replacing any leading "+NN " / "+N-NNN " it already had
-    // rather than stacking another one on top. Bound via select2's own
-    // event (not plain "change") since that's what reliably fires here.
-    const phoneNumberInput = document.getElementById('phoneNumber');
-    jQuery('#phoneCode').on('select2:select', function (e) {
+    // column), so picking a code just prepends it onto its own phone
+    // field's value (named via data-target), replacing any leading
+    // "+NN " / "+N-NNN " it already had rather than stacking another one
+    // on top. Bound via select2's own event (not plain "change") since
+    // that's what reliably fires here.
+    jQuery('.phone-code-select').on('select2:select', function (e) {
         const dial = e.params.data.id;
-        if (!dial || !phoneNumberInput) return;
-        const withoutCode = phoneNumberInput.value.replace(/^\+\d+(-\d+)?\s*/, '').trim();
-        phoneNumberInput.value = `${dial} ${withoutCode}`.trim();
+        const target = document.getElementById(jQuery(this).data('target'));
+        if (!dial || !target) return;
+        const withoutCode = target.value.replace(/^\+\d+(-\d+)?\s*/, '').trim();
+        target.value = `${dial} ${withoutCode}`.trim();
     });
 }
 </script>
