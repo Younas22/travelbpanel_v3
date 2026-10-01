@@ -17,8 +17,8 @@
             Become a Travel <span>Agent</span> &amp;<br>Start Your Business Today
         </h1>
         <p class="reg-hero-sub">
-            Access global flights, hotels &amp; Umrah packages —
-            earn commission on every booking, from day one. No upfront costs.
+            Sell flights, hotels, tours, Umrah packages &amp; visa services —
+            all from one dashboard, earning commission on every booking. No upfront costs.
         </p>
         <div class="reg-hero-btns">
             <button class="btn-reg-white" onclick="openAmModal()">
@@ -33,6 +33,37 @@
             <div class="reg-stat"><div class="reg-stat-n">50K+</div><div class="reg-stat-l">Bookings</div></div>
             <div class="reg-stat"><div class="reg-stat-n">Worldwide</div><div class="reg-stat-l">Presence</div></div>
             <div class="reg-stat"><div class="reg-stat-n">24/7</div><div class="reg-stat-l">Support</div></div>
+        </div>
+    </div>
+</section>
+
+{{-- ══ MODULES ══ --}}
+<section class="reg-sec-sm" style="background: var(--card-bg);">
+    <div class="reg-inner">
+        <div class="text-center mb-4">
+            <div class="reg-eyebrow justify-content-center">What You Can Sell</div>
+            <h2 class="reg-h">One Account, <span>Every Travel Product</span></h2>
+            <p class="reg-p mx-auto text-center">Sell across all our modules from a single dashboard — no separate signups.</p>
+        </div>
+        <div class="row g-3">
+            @php
+                $mod_cards = [
+                    ['fas fa-plane',    'Flights', 'Domestic & international flight bookings.'],
+                    ['fas fa-hotel',    'Hotels',  'Thousands of hotels worldwide, best rates.'],
+                    ['fas fa-suitcase', 'Tours',   'Curated tour packages for every budget.'],
+                    ['fas fa-mosque',   'Umrah',   'Umrah packages with flights & stay included.'],
+                    ['fas fa-passport', 'Visa',    'Visa processing & documentation support.'],
+                ];
+            @endphp
+            @foreach($mod_cards as [$ico, $title, $desc])
+            <div class="col-6 col-md">
+                <div class="reg-benefit-card" style="text-align:center;">
+                    <div class="reg-benefit-ico" style="margin:0 auto 12px;"><i class="{{ $ico }}"></i></div>
+                    <h6>{{ $title }}</h6>
+                    <p>{{ $desc }}</p>
+                </div>
+            </div>
+            @endforeach
         </div>
     </div>
 </section>
@@ -53,12 +84,12 @@
                 <div class="row g-3">
                     @php
                         $benefits = [
-                            ['fas fa-plane',            'Flights & Hotels',      'Real-time inventory from global suppliers. Book and confirm in seconds.'],
-                            ['fas fa-globe-americas',   'Global Inventory',      'Thousands of destinations, hotels and packages in one dashboard.'],
-                            ['fas fa-chart-line',       'Earn Commission',       'Set your markup and earn on every flight, hotel, and package sold.'],
+                            ['fas fa-globe-americas',   'All-in-One Platform',   'Flights, hotels, tours, Umrah & visa — one login, one dashboard.'],
+                            ['fas fa-chart-line',       'Earn Commission',       'Set your markup and earn on every booking across every module.'],
                             ['fas fa-tachometer-alt',   'Ready-to-Use System',   'Log in and start selling immediately — no technical setup needed.'],
                             ['fas fa-lock',             'Secure Payments',       'Enterprise-grade security on every transaction, always.'],
                             ['fas fa-file-invoice',     'Instant Invoices',      'Auto-generate professional invoices and e-tickets for clients.'],
+                            ['fas fa-headset',          'Dedicated Support',     '24/7 agent support whenever you need help closing a sale.'],
                         ];
                     @endphp
                     @foreach($benefits as [$ico, $title, $desc])
