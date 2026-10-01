@@ -37,7 +37,7 @@ class AgentWalletController extends Controller
             paymentMethod: $request->payment_method,
         );
 
-        return back()->with('success', 'PKR ' . number_format($request->amount, 2) . ' added to wallet.');
+        return back()->with('success', $wallet->currency . ' ' . number_format($request->amount, 2) . ' added to wallet.');
     }
 
     public function debit(Request $request, User $agent)
@@ -59,7 +59,7 @@ class AgentWalletController extends Controller
             performedBy: auth()->id(),
         );
 
-        return back()->with('success', 'PKR ' . number_format($request->amount, 2) . ' deducted from wallet.');
+        return back()->with('success', $wallet->currency . ' ' . number_format($request->amount, 2) . ' deducted from wallet.');
     }
 
     public function transactions(Request $request, User $agent)

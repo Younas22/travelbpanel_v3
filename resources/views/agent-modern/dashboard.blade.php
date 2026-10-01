@@ -9,8 +9,16 @@
             <p>{{ auth()->user()->company_name }} &bull; {{ auth()->user()->agent_code }}</p>
         </div>
         @if(auth()->user()->hasPermission('wallet.view'))
+            @php
+                $dhActiveCurrency = activeCurrency();
+                $dhWalletCurrency = $wallet?->currency ?? 'PKR';
+                $dhDisplayCurrency = $dhActiveCurrency->currency_name ?? $dhWalletCurrency;
+                $dhWalletBalance = $dhActiveCurrency
+                    ? convertCurrency($wallet?->balance ?? 0, $dhWalletCurrency, $dhDisplayCurrency)
+                    : ($wallet?->balance ?? 0);
+            @endphp
             <a href="{{ route('agent.wallet.index') }}" class="am-topbar-wallet">
-                <i class="bi bi-wallet2"></i> Wallet: <strong>PKR {{ number_format($wallet?->balance ?? 0, 0) }}</strong>
+                <i class="bi bi-wallet2"></i> Wallet: <strong>{{ $dhDisplayCurrency }} {{ number_format($dhWalletBalance, 0) }}</strong>
             </a>
         @endif
     </div>

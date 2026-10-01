@@ -3,6 +3,13 @@
 
 @section('content')
 
+@php
+    $activeCurrency = activeCurrency();
+    $walletCurrency = $wallet?->currency ?? 'PKR';
+    $displayCurrency = $activeCurrency->currency_name ?? $walletCurrency;
+    $toDisplay = fn($amt) => $activeCurrency ? convertCurrency($amt ?? 0, $walletCurrency, $displayCurrency) : ($amt ?? 0);
+@endphp
+
     <div class="ap-page-header">
         <div class="ap-page-header-left">
             <div class="ap-icon-badge"><i class="bi bi-plus-circle"></i></div>
@@ -31,7 +38,7 @@
                     <div class="wal-pending-icon"><i class="bi bi-clock-history"></i></div>
                     <div>
                         <p style="font-weight: 650;">Pending Request</p>
-                        <p>You have a pending top-up request of <strong>PKR {{ number_format($pendingRequest->amount, 2) }}</strong>
+                        <p>You have a pending top-up request of <strong>{{ $displayCurrency }} {{ number_format($toDisplay($pendingRequest->amount), 2) }}</strong>
                            submitted on {{ $pendingRequest->created_at->format('d M Y') }}. Please wait for admin review.</p>
                     </div>
                 </div>
@@ -44,10 +51,13 @@
                     @csrf
 
                     <div class="mb-3">
-                        <label class="form-label">Amount (PKR) <span style="color: var(--primary-color);">*</span></label>
+                        <label class="form-label">Amount ({{ $displayCurrency }}) <span style="color: var(--primary-color);">*</span></label>
                         <input type="number" name="amount" class="form-control @error('amount') is-invalid @enderror"
                                placeholder="e.g. 50000" min="100" step="1" value="{{ old('amount') }}" required>
                         @error('amount') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        @if($displayCurrency !== $walletCurrency)
+                        <div class="form-text">Will be converted to {{ $walletCurrency }} for your wallet.</div>
+                        @endif
                     </div>
 
                     <div class="mb-3">

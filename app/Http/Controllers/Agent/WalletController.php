@@ -40,9 +40,10 @@ class WalletController extends Controller
     public function topupForm()
     {
         $agent = auth()->user();
+        $wallet = $agent->wallet;
         $pendingRequest = AgentTopupRequest::byAgent($agent->id)->pending()->latest()->first();
 
-        return view('agent.wallet.topup', compact('agent', 'pendingRequest'));
+        return view('agent.wallet.topup', compact('agent', 'wallet', 'pendingRequest'));
     }
 
     public function topupSubmit(Request $request)
@@ -65,9 +66,21 @@ class WalletController extends Controller
             $proofPath = $request->file('payment_proof')->store('topup-proofs', 'public');
         }
 
+        // The form collects the amount in whatever currency the site is
+        // currently showing (activeCurrency()), but the wallet itself — and
+        // admin's approve flow, which credits $topupRequest->amount as-is —
+        // always deals in the wallet's own currency. Convert once here so
+        // storage stays consistent no matter what currency was on screen.
+        $walletCurrency  = $agent->wallet?->currency ?? 'PKR';
+        $activeCurrency  = activeCurrency();
+        $enteredCurrency = $activeCurrency->currency_name ?? $walletCurrency;
+        $amount = $enteredCurrency !== $walletCurrency
+            ? convertCurrency($request->amount, $enteredCurrency, $walletCurrency)
+            : (float) $request->amount;
+
         AgentTopupRequest::create([
             'agent_id'       => $agent->id,
-            'amount'         => $request->amount,
+            'amount'         => $amount,
             'payment_method' => $request->payment_method,
             'payment_proof'  => $proofPath,
             'note'           => $request->note,

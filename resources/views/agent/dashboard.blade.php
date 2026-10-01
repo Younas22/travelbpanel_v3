@@ -10,10 +10,18 @@
         <p class="text-sm text-gray-500 mt-0.5">{{ auth()->user()->company_name }} &bull; {{ auth()->user()->agent_code }}</p>
     </div>
     @if(auth()->user()->hasPermission('wallet.view'))
+    @php
+        $dhActiveCurrency = activeCurrency();
+        $dhWalletCurrency = $wallet?->currency ?? 'PKR';
+        $dhDisplayCurrency = $dhActiveCurrency->currency_name ?? $dhWalletCurrency;
+        $dhWalletBalance = $dhActiveCurrency
+            ? convertCurrency($wallet?->balance ?? 0, $dhWalletCurrency, $dhDisplayCurrency)
+            : ($wallet?->balance ?? 0);
+    @endphp
     <a href="{{ route('agent.wallet.index') }}"
        class="hidden sm:flex items-center gap-2 px-4 py-2 border border-green-300 rounded-lg text-green-700 bg-green-50 hover:bg-green-100 transition text-sm font-semibold ap-no-underline">
         <i class="fas fa-wallet"></i>
-        Wallet: <strong>PKR {{ number_format($wallet?->balance ?? 0, 0) }}</strong>
+        Wallet: <strong>{{ $dhDisplayCurrency }} {{ number_format($dhWalletBalance, 0) }}</strong>
     </a>
     @endif
 </div>

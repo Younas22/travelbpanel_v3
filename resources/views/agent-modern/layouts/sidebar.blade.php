@@ -43,7 +43,15 @@
             <i class="bi bi-wallet2 am-nav-ico"></i>
             <span>My Wallet</span>
             @if($agent->wallet)
-                <span class="am-nav-badge">PKR {{ number_format($agent->wallet->balance, 0) }}</span>
+                @php
+                    $sbActiveCurrency = activeCurrency();
+                    $sbWalletCurrency = $agent->wallet->currency ?? 'PKR';
+                    $sbDisplayCurrency = $sbActiveCurrency->currency_name ?? $sbWalletCurrency;
+                    $sbWalletBalance = $sbActiveCurrency
+                        ? convertCurrency($agent->wallet->balance, $sbWalletCurrency, $sbDisplayCurrency)
+                        : $agent->wallet->balance;
+                @endphp
+                <span class="am-nav-badge">{{ $sbDisplayCurrency }} {{ number_format($sbWalletBalance, 0) }}</span>
             @endif
         </a>
         @endif

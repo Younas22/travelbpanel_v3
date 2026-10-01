@@ -3,6 +3,13 @@
 
 @section('content')
 
+@php
+    $activeCurrency = activeCurrency();
+    $walletCurrency = $wallet?->currency ?? 'PKR';
+    $displayCurrency = $activeCurrency->currency_name ?? $walletCurrency;
+    $toDisplay = fn($amt) => $activeCurrency ? convertCurrency($amt ?? 0, $walletCurrency, $displayCurrency) : ($amt ?? 0);
+@endphp
+
     <div class="ap-page-header">
         <div class="ap-page-header-left">
             <div class="ap-icon-badge"><i class="bi bi-clock-history"></i></div>
@@ -30,21 +37,21 @@
             <div class="wal-stat-icon wal-accent"><i class="bi bi-wallet2"></i></div>
             <div>
                 <div class="wal-stat-label">Current Balance</div>
-                <div class="wal-stat-value">PKR {{ number_format($wallet->balance, 2) }}</div>
+                <div class="wal-stat-value">{{ $displayCurrency }} {{ number_format($toDisplay($wallet->balance), 2) }}</div>
             </div>
         </div>
         <div class="wal-stat-card">
             <div class="wal-stat-icon wal-accent"><i class="bi bi-arrow-down-circle"></i></div>
             <div>
                 <div class="wal-stat-label">Total Credited</div>
-                <div class="wal-stat-value">PKR {{ number_format($wallet->total_credited, 2) }}</div>
+                <div class="wal-stat-value">{{ $displayCurrency }} {{ number_format($toDisplay($wallet->total_credited), 2) }}</div>
             </div>
         </div>
         <div class="wal-stat-card">
             <div class="wal-stat-icon wal-danger"><i class="bi bi-arrow-up-circle"></i></div>
             <div>
                 <div class="wal-stat-label">Total Spent</div>
-                <div class="wal-stat-value">PKR {{ number_format($wallet->total_debited, 2) }}</div>
+                <div class="wal-stat-value">{{ $displayCurrency }} {{ number_format($toDisplay($wallet->total_debited), 2) }}</div>
             </div>
         </div>
     </div>
@@ -116,9 +123,9 @@
                         <td>{{ $txn->note }}</td>
                         <td style="font-family: monospace; font-size: 12px; color: color-mix(in srgb, var(--text-color) 50%, transparent);">{{ $txn->reference ?? '—' }}</td>
                         <td class="text-end" style="font-weight: 650; color: {{ $txn->type === 'credit' ? 'var(--success-color)' : 'var(--danger-color)' }};">
-                            {{ $txn->type === 'credit' ? '+' : '-' }} PKR {{ number_format($txn->amount, 2) }}
+                            {{ $txn->type === 'credit' ? '+' : '-' }} {{ $displayCurrency }} {{ number_format($toDisplay($txn->amount), 2) }}
                         </td>
-                        <td class="text-end">PKR {{ number_format($txn->balance_after, 2) }}</td>
+                        <td class="text-end">{{ $displayCurrency }} {{ number_format($toDisplay($txn->balance_after), 2) }}</td>
                     </tr>
                     @endforeach
                 </tbody>

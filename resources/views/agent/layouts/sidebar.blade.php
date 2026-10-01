@@ -49,8 +49,16 @@
             <i class="fas fa-wallet w-5 text-center"></i>
             <span>My Wallet</span>
             @if($agent->wallet)
+                @php
+                    $sbActiveCurrency = activeCurrency();
+                    $sbWalletCurrency = $agent->wallet->currency ?? 'PKR';
+                    $sbDisplayCurrency = $sbActiveCurrency->currency_name ?? $sbWalletCurrency;
+                    $sbWalletBalance = $sbActiveCurrency
+                        ? convertCurrency($agent->wallet->balance, $sbWalletCurrency, $sbDisplayCurrency)
+                        : $agent->wallet->balance;
+                @endphp
                 <span class="ml-auto text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-semibold whitespace-nowrap">
-                    PKR {{ number_format($agent->wallet->balance, 0) }}
+                    {{ $sbDisplayCurrency }} {{ number_format($sbWalletBalance, 0) }}
                 </span>
             @endif
         </a>

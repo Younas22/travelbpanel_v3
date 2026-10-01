@@ -3,6 +3,13 @@
 
 @section('content')
 
+@php
+    $activeCurrency = activeCurrency();
+    $walletCurrency = $wallet?->currency ?? 'PKR';
+    $displayCurrency = $activeCurrency->currency_name ?? $walletCurrency;
+    $toDisplay = fn($amt) => $activeCurrency ? convertCurrency($amt ?? 0, $walletCurrency, $displayCurrency) : ($amt ?? 0);
+@endphp
+
 <div class="flex items-center gap-3 mb-5">
     <div class="w-9 h-9 rounded-lg flex items-center justify-center ap-tint-bg">
         <i class="fas fa-plus-circle ap-accent"></i>
@@ -36,7 +43,7 @@
                 <div>
                     <p class="text-sm font-semibold text-yellow-800 mb-0.5">Pending Request</p>
                     <p class="text-xs text-yellow-700">
-                        You have a pending top-up request of <strong>PKR {{ number_format($pendingRequest->amount, 2) }}</strong>
+                        You have a pending top-up request of <strong>{{ $displayCurrency }} {{ number_format($toDisplay($pendingRequest->amount), 2) }}</strong>
                         submitted on {{ $pendingRequest->created_at->format('d M Y') }}. Please wait for admin review.
                     </p>
                 </div>
@@ -51,7 +58,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1.5">
-                        Amount (PKR) <span class="ap-accent">*</span>
+                        Amount ({{ $displayCurrency }}) <span class="ap-accent">*</span>
                     </label>
                     <input type="number" name="amount"
                            class="w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50 @error('amount') border-red-400 @else border-gray-200 @enderror"
@@ -59,6 +66,9 @@
                     @error('amount')
                     <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                     @enderror
+                    @if($displayCurrency !== $walletCurrency)
+                    <p class="text-xs text-gray-400 mt-1">Will be converted to {{ $walletCurrency }} for your wallet.</p>
+                    @endif
                 </div>
 
                 <div>

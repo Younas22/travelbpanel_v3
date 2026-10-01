@@ -2,6 +2,13 @@
      variables AgentWalletController::index() passes to the Classic partial.
      Shared by show.blade.php's Wallet tab and the standalone wallet.blade.php page. --}}
 
+@php
+    $activeCurrency = activeCurrency();
+    $walletCurrency = $wallet->currency ?? 'PKR';
+    $displayCurrency = $activeCurrency->currency_name ?? $walletCurrency;
+    $toDisplay = fn($amt) => $activeCurrency ? convertCurrency($amt ?? 0, $walletCurrency, $displayCurrency) : ($amt ?? 0);
+@endphp
+
 {{-- ===== BALANCE STATS ===== --}}
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
     <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 flex items-center gap-3">
@@ -9,7 +16,7 @@
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14.5h1.5"/></svg>
         </div>
         <div>
-            <p class="text-lg font-bold text-novatext">{{ number_format($wallet->balance, 2) }}</p>
+            <p class="text-lg font-bold text-novatext">{{ $displayCurrency }} {{ number_format($toDisplay($wallet->balance), 2) }}</p>
             <p class="text-[11px] text-novamuted">Current Balance</p>
         </div>
     </div>
@@ -18,7 +25,7 @@
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M18 13l-6 6-6-6"/></svg>
         </div>
         <div>
-            <p class="text-lg font-bold text-novatext">{{ number_format($wallet->total_credited, 2) }}</p>
+            <p class="text-lg font-bold text-novatext">{{ $displayCurrency }} {{ number_format($toDisplay($wallet->total_credited), 2) }}</p>
             <p class="text-[11px] text-novamuted">Total Credited</p>
         </div>
     </div>
@@ -27,7 +34,7 @@
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
         </div>
         <div>
-            <p class="text-lg font-bold text-novatext">{{ number_format($wallet->total_debited, 2) }}</p>
+            <p class="text-lg font-bold text-novatext">{{ $displayCurrency }} {{ number_format($toDisplay($wallet->total_debited), 2) }}</p>
             <p class="text-[11px] text-novamuted">Total Debited</p>
         </div>
     </div>
@@ -45,7 +52,7 @@
         <form method="POST" action="{{ route('admin.agents.wallet.credit', $agent) }}">
             @csrf
             <div class="mb-3">
-                <label class="ag-label">Amount</label>
+                <label class="ag-label">Amount ({{ $walletCurrency }})</label>
                 <input type="number" name="amount" class="ag-input" min="1" step="1" required>
             </div>
             <div class="mb-3">
@@ -72,7 +79,7 @@
         <form method="POST" action="{{ route('admin.agents.wallet.debit', $agent) }}" onsubmit="return confirm('Deduct from wallet?')">
             @csrf
             <div class="mb-3">
-                <label class="ag-label">Amount</label>
+                <label class="ag-label">Amount ({{ $walletCurrency }})</label>
                 <input type="number" name="amount" class="ag-input" min="1" step="1" required>
             </div>
             <div class="mb-4">
@@ -115,7 +122,7 @@
             @forelse($topupRequests as $req)
                 <tr>
                     <td class="text-novamuted whitespace-nowrap">{{ $req->created_at->format('d M Y, h:i A') }}</td>
-                    <td class="font-semibold text-novatext">{{ number_format($req->amount, 2) }}</td>
+                    <td class="font-semibold text-novatext">{{ $displayCurrency }} {{ number_format($toDisplay($req->amount), 2) }}</td>
                     <td>{{ $req->payment_method ?? '—' }}</td>
                     <td>
                         @if($req->proof_url)
@@ -207,7 +214,7 @@
                     <td>
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold {{ $txn->type === 'credit' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-novadanger' }}">{{ ucfirst($txn->type) }}</span>
                     </td>
-                    <td class="font-semibold {{ $txn->type === 'credit' ? 'text-novasuccess' : 'text-novadanger' }}">{{ $txn->formatted_amount }}</td>
+                    <td class="font-semibold {{ $txn->type === 'credit' ? 'text-novasuccess' : 'text-novadanger' }}">{{ $txn->type === 'credit' ? '+' : '-' }} {{ $displayCurrency }} {{ number_format($toDisplay($txn->amount), 2) }}</td>
                     <td class="text-novamuted">{{ $txn->note ?? '—' }}</td>
                     <td class="text-novamuted whitespace-nowrap">{{ $txn->created_at->format('d M Y, h:i A') }}</td>
                 </tr>

@@ -3,6 +3,13 @@
 
 @section('content')
 
+@php
+    $activeCurrency = activeCurrency();
+    $walletCurrency = $wallet?->currency ?? 'PKR';
+    $displayCurrency = $activeCurrency->currency_name ?? $walletCurrency;
+    $toDisplay = fn($amt) => $activeCurrency ? convertCurrency($amt ?? 0, $walletCurrency, $displayCurrency) : ($amt ?? 0);
+@endphp
+
 <div class="flex items-center justify-between mb-5">
     <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-lg flex items-center justify-center ap-tint-bg">
@@ -35,7 +42,7 @@
         </div>
         <div>
             <p class="text-xs text-gray-400">Current Balance</p>
-            <p class="text-xl font-bold text-gray-800">PKR {{ number_format($wallet->balance, 2) }}</p>
+            <p class="text-xl font-bold text-gray-800">{{ $displayCurrency }} {{ number_format($toDisplay($wallet->balance), 2) }}</p>
         </div>
     </div>
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
@@ -44,7 +51,7 @@
         </div>
         <div>
             <p class="text-xs text-gray-400">Total Credited</p>
-            <p class="text-xl font-bold text-gray-800">PKR {{ number_format($wallet->total_credited, 2) }}</p>
+            <p class="text-xl font-bold text-gray-800">{{ $displayCurrency }} {{ number_format($toDisplay($wallet->total_credited), 2) }}</p>
         </div>
     </div>
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
@@ -53,7 +60,7 @@
         </div>
         <div>
             <p class="text-xs text-gray-400">Total Spent</p>
-            <p class="text-xl font-bold text-gray-800">PKR {{ number_format($wallet->total_debited, 2) }}</p>
+            <p class="text-xl font-bold text-gray-800">{{ $displayCurrency }} {{ number_format($toDisplay($wallet->total_debited), 2) }}</p>
         </div>
     </div>
 </div>
@@ -137,9 +144,9 @@
                     <td class="px-4 py-3 text-sm text-gray-600">{{ $txn->note }}</td>
                     <td class="px-4 py-3 text-xs text-gray-500 font-mono">{{ $txn->reference ?? '—' }}</td>
                     <td class="px-4 py-3 text-sm font-semibold text-right {{ $txn->type === 'credit' ? 'text-green-600' : 'text-red-500' }}">
-                        {{ $txn->type === 'credit' ? '+' : '-' }} PKR {{ number_format($txn->amount, 2) }}
+                        {{ $txn->type === 'credit' ? '+' : '-' }} {{ $displayCurrency }} {{ number_format($toDisplay($txn->amount), 2) }}
                     </td>
-                    <td class="px-4 py-3 text-sm text-gray-700 text-right">PKR {{ number_format($txn->balance_after, 2) }}</td>
+                    <td class="px-4 py-3 text-sm text-gray-700 text-right">{{ $displayCurrency }} {{ number_format($toDisplay($txn->balance_after), 2) }}</td>
                 </tr>
                 @endforeach
             </tbody>

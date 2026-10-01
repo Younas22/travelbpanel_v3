@@ -3,7 +3,13 @@
 
 @section('content')
 
-    @php $wallet = $agent->wallet; @endphp
+    @php
+        $wallet = $agent->wallet;
+        $activeCurrency = activeCurrency();
+        $walletCurrency = $wallet?->currency ?? 'PKR';
+        $displayCurrency = $activeCurrency->currency_name ?? $walletCurrency;
+        $toDisplay = fn($amt) => $activeCurrency ? convertCurrency($amt ?? 0, $walletCurrency, $displayCurrency) : ($amt ?? 0);
+    @endphp
 
         <!-- ===== PAGE HEADER ===== -->
     <div class="wt-header">
@@ -21,21 +27,21 @@
         <div class="wt-stat">
             <div class="wt-stat-icon wt-icon-accent"><i class="bi bi-wallet2"></i></div>
             <div>
-                <div class="wt-stat-value"> {{ number_format($wallet?->balance ?? 0, 2) }}</div>
+                <div class="wt-stat-value">{{ $displayCurrency }} {{ number_format($toDisplay($wallet?->balance), 2) }}</div>
                 <div class="wt-stat-label">Current Balance</div>
             </div>
         </div>
         <div class="wt-stat">
             <div class="wt-stat-icon wt-icon-accent"><i class="bi bi-arrow-down-circle"></i></div>
             <div>
-                <div class="wt-stat-value"> {{ number_format($wallet?->total_credited ?? 0, 2) }}</div>
+                <div class="wt-stat-value">{{ $displayCurrency }} {{ number_format($toDisplay($wallet?->total_credited), 2) }}</div>
                 <div class="wt-stat-label">Total Credited</div>
             </div>
         </div>
         <div class="wt-stat">
             <div class="wt-stat-icon wt-icon-red"><i class="bi bi-arrow-up-circle"></i></div>
             <div>
-                <div class="wt-stat-value"> {{ number_format($wallet?->total_debited ?? 0, 2) }}</div>
+                <div class="wt-stat-value">{{ $displayCurrency }} {{ number_format($toDisplay($wallet?->total_debited), 2) }}</div>
                 <div class="wt-stat-label">Total Debited</div>
             </div>
         </div>
@@ -86,11 +92,11 @@
                         </td>
                         <td>
                                 <span class="wt-amount wt-amount-{{ $txn->type }}">
-                                    {{ $txn->formatted_amount }}
+                                    {{ $txn->type === 'credit' ? '+' : '-' }} {{ $displayCurrency }} {{ number_format($toDisplay($txn->amount), 2) }}
                                 </span>
                         </td>
-                        <td><span class="wt-meta"> {{ number_format($txn->balance_before, 2) }}</span></td>
-                        <td><span class="wt-meta"> {{ number_format($txn->balance_after, 2) }}</span></td>
+                        <td><span class="wt-meta">{{ $displayCurrency }} {{ number_format($toDisplay($txn->balance_before), 2) }}</span></td>
+                        <td><span class="wt-meta">{{ $displayCurrency }} {{ number_format($toDisplay($txn->balance_after), 2) }}</span></td>
                         <td>{{ $txn->note ?? '—' }}</td>
                         <td>{{ $txn->performedBy?->full_name ?? '—' }}</td>
                         <td><span class="wt-meta">{{ $txn->created_at->format('d M Y, h:i A') }}</span></td>
