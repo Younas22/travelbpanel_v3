@@ -15,6 +15,7 @@ class B2BGateMiddleware
         'agent',
         'license',
         'up',        // health check
+        'track-ticket', // public support-ticket lookup — no account needed
     ];
 
     private const ALLOWED_EXACT = [

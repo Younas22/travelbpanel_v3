@@ -32,6 +32,31 @@
         z-index: 1;
     }
 
+    .hero-track-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 18px;
+        padding: 10px 22px;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+        text-decoration: none;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1.5px solid rgba(255, 255, 255, 0.55);
+        backdrop-filter: blur(4px);
+        transition: all 0.25s ease;
+    }
+
+    .hero-track-btn:hover {
+        background: #fff;
+        color: #0077BE;
+        border-color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    }
+
     .form-container {
         background-color: white;
         border-radius: 12px;
@@ -169,6 +194,9 @@
         <p style="color: white; text-shadow: 0 2px 8px rgba(0,0,0,0.2);">
             {{ t('home.hero_subtitle') }}
         </p>
+        <a href="{{ route('ticket.track') }}" class="hero-track-btn">
+            <i class="fas fa-ticket"></i> {{ t('footer.Track Booking') }}
+        </a>
     </div>
 
     <!-- Search Form Container -->

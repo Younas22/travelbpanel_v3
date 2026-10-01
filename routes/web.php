@@ -25,6 +25,15 @@ use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\User\BookingController as UserBookingController;
 use App\Http\Controllers\User\SupportController as UserSupportController;
 use App\Http\Controllers\User\ProfileController as UserProfileController;
+use App\Http\Controllers\TicketLookupController;
+
+// Support ticket tracking — public, no login required. A visitor (customer,
+// agent, or anyone else) looks their own ticket up by ticket number + the
+// email it was raised with, same as "track my order" on most sites.
+Route::get('/track-ticket',                    [TicketLookupController::class, 'index'])->name('ticket.track');
+Route::post('/track-ticket',                   [TicketLookupController::class, 'lookup'])->name('ticket.lookup');
+Route::get('/track-ticket/{ticket:ticket_number}',        [TicketLookupController::class, 'show'])->name('ticket.show');
+Route::post('/track-ticket/{ticket:ticket_number}/reply',  [TicketLookupController::class, 'reply'])->name('ticket.reply');
 
 // User Auth Routes
 Route::prefix('user')->name('user.')->group(function () {
