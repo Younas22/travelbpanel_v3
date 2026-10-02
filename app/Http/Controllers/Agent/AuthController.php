@@ -101,7 +101,7 @@ class AuthController extends Controller
             $senderEmail  = getSetting('sender_email', 'email', 'contact@travelbookingpanel.com');
             $senderName   = getSetting('sender_name',  'email', 'Travel Booking Panel');
             $businessName = getSetting('business_name', 'main', 'Travel Booking Panel');
-            $loginUrl     = url('/agent/login');
+            $loginUrl     = url('/login');
 
             $html = "
             <div style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;'>

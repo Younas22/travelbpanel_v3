@@ -12,6 +12,7 @@ use App\Models\TourBooking;
 use App\Models\UmrahBooking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use App\Models\Setting;
 use Resend\Laravel\Facades\Resend;
 
@@ -146,8 +147,15 @@ class AgentController extends Controller
     {
         $this->ensureAgent($agent);
         $agent->approveAgent(auth()->id());
-        $this->sendAgentApprovalEmail($agent);
-        return back()->with('success', 'Agent approved successfully.');
+
+        // Issue a fresh, known password so the credentials we email are
+        // guaranteed to work, rather than assuming the agent still
+        // remembers whatever they typed at self-registration.
+        $plainPassword = Str::password(12, symbols: false);
+        $agent->update(['password' => Hash::make($plainPassword)]);
+
+        $this->sendAgentApprovalEmail($agent, $plainPassword);
+        return back()->with('success', 'Agent approved successfully. Login credentials emailed to ' . $agent->email . '.');
     }
 
     public function reject(Request $request, User $agent)
@@ -190,24 +198,35 @@ class AgentController extends Controller
 
     // ─── Private Helpers ──────────────────────────────────────────────────────
 
-    private function sendAgentApprovalEmail(User $agent): void
+    private function sendAgentApprovalEmail(User $agent, string $plainPassword): void
     {
         try {
             $senderEmail  = getSetting('sender_email', 'email', 'contact@travelbookingpanel.com');
             $senderName   = getSetting('sender_name',  'email', 'Travel Booking Panel');
             $businessName = getSetting('business_name', 'main', 'Travel Booking Panel');
-            $loginUrl     = url('/agent/login');
+            $businessLogo = getSettingImage('business_logo_white', 'branding');
+            $loginUrl     = url('/login');
+
+            $logoHtml = $businessLogo
+                ? "<img src='{$businessLogo}' alt='{$businessName}' style='max-height:40px;margin-bottom:10px;'><br>"
+                : '';
 
             $html = "
             <div style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;'>
                 <div style='background:#0077BE;padding:24px 32px;text-align:center;'>
+                    {$logoHtml}
                     <h1 style='color:#fff;margin:0;font-size:22px;'>Account Approved</h1>
                 </div>
                 <div style='padding:32px;'>
                     <p style='font-size:15px;color:#333;'>Dear <strong>{$agent->full_name}</strong>,</p>
                     <p style='font-size:15px;color:#333;'>We are pleased to inform you that your agent account with <strong>{$businessName}</strong> has been <strong style='color:#28a745;'>approved</strong>.</p>
                     <p style='font-size:15px;color:#333;'>Your agent code is: <strong style='font-size:18px;color:#0077BE;'>{$agent->agent_code}</strong></p>
-                    <p style='font-size:15px;color:#333;'>You can now log in to your agent portal and start managing your bookings.</p>
+                    <div style='background:#f6fbff;border:1px solid #cfe9fb;border-radius:6px;padding:18px 20px;margin:20px 0;'>
+                        <p style='font-size:14px;color:#333;margin:0 0 8px;'><strong>Your login credentials:</strong></p>
+                        <p style='font-size:14px;color:#333;margin:4px 0;'>Email: <strong>{$agent->email}</strong></p>
+                        <p style='font-size:14px;color:#333;margin:4px 0;'>Password: <strong style='font-family:monospace;font-size:15px;'>{$plainPassword}</strong></p>
+                        <p style='font-size:12px;color:#888;margin:10px 0 0;'>For your security, please log in and change this password as soon as possible.</p>
+                    </div>
                     <div style='text-align:center;margin:32px 0;'>
                         <a href='{$loginUrl}' style='background:#0077BE;color:#fff;padding:12px 32px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:15px;'>Login to Agent Portal</a>
                     </div>
@@ -253,11 +272,17 @@ class AgentController extends Controller
             $senderEmail  = getSetting('sender_email', 'email', 'contact@travelbookingpanel.com');
             $senderName   = getSetting('sender_name',  'email', 'Travel Booking Panel');
             $businessName = getSetting('business_name', 'main', 'Travel Booking Panel');
+            $businessLogo = getSettingImage('business_logo_white', 'branding');
             $contactEmail = getSetting('contact_email', 'contact', 'support@travelbookingpanel.com');
+
+            $logoHtml = $businessLogo
+                ? "<img src='{$businessLogo}' alt='{$businessName}' style='max-height:40px;margin-bottom:10px;'><br>"
+                : '';
 
             $html = "
             <div style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;'>
                 <div style='background:#dc3545;padding:24px 32px;text-align:center;'>
+                    {$logoHtml}
                     <h1 style='color:#fff;margin:0;font-size:22px;'>Application Update</h1>
                 </div>
                 <div style='padding:32px;'>
