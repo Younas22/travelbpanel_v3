@@ -795,6 +795,11 @@
                     const action = btn.dataset.action;
 
                     if (action === 'plus') {
+                        // WebBeds: multi-room bookings are not supported on the Credit
+                        // Card integration — keep this capped at 1, matching the
+                        // backend's hard "rooms" max:1 validation, so the user can
+                        // never build a search WebBeds will reject.
+                        if (type === 'room' && hotelTravelers[type] >= 1) return;
                         hotelTravelers[type]++;
                     } else if (action === 'minus' && hotelTravelers[type] > 0) {
                         if (type === 'adult' && hotelTravelers[type] === 1) return;
