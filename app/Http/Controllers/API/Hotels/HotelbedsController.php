@@ -73,7 +73,9 @@ class HotelbedsController extends BaseController
             'checkin' => 'required|date|after_or_equal:today',
             'checkout' => 'required|date|after:checkin',
             'adults' => 'required|integer|min:1',
-            'children' => 'nullable|integer|min:0',
+            'childs' => 'nullable|integer|min:0',
+            'child_age' => 'nullable|array',
+            'child_age.*' => 'integer|min:0|max:17',
             'rooms' => 'required|integer|min:1',
             'currency' => 'required|string|size:3',
             'env' => 'required|in:dev,pro',
@@ -165,7 +167,7 @@ class HotelbedsController extends BaseController
                 [
                     'rooms' => intval($validated['rooms']),
                     'adults' => intval($validated['adults']),
-                    'children' => intval($validated['children'] ?? 0),
+                    'children' => intval($validated['childs'] ?? 0),
                     'paxes' => $paxes,
                 ]
             ],
@@ -187,19 +189,11 @@ class HotelbedsController extends BaseController
             $paxes[] = ['type' => 'AD'];
         }
 
-        // Add children with ages
-        if (!empty($validated['children']) && isset($validated['child_ages'])) {
-            $childAges = is_string($validated['child_ages'])
-                ? json_decode($validated['child_ages'], true)
-                : $validated['child_ages'];
-
-            if (is_array($childAges)) {
-                foreach ($childAges as $ageData) {
-                    $age = $ageData['ages'] ?? $ageData['age'] ?? null;
-                    if ($age !== null) {
-                        $paxes[] = ['type' => 'CH', 'age' => intval($age)];
-                    }
-                }
+        // Add children with ages — child_age is a flat array of ages (one per
+        // child, same shape WebBeds uses), e.g. [8, 9].
+        if (!empty($validated['childs']) && !empty($validated['child_age'])) {
+            foreach ($validated['child_age'] as $age) {
+                $paxes[] = ['type' => 'CH', 'age' => intval($age)];
             }
         }
 
@@ -243,6 +237,7 @@ class HotelbedsController extends BaseController
                 'original_currency' => $hotel['currency'],
                 'room_name' => $hotel['rooms'][0]['name'] ?? '',
                 'images' => $this->format_image($hotelDetails->images ?? ''),
+                'all_images' => $this->format_all_images($hotelDetails->images ?? ''),
                 'supplier_name' => "hotelbeds",
                 'redirect' => "",
             ];
@@ -301,12 +296,30 @@ class HotelbedsController extends BaseController
     }
 
     /**
+     * Format the full list of image URLs (mirrors WebbedsController's all_images).
+     */
+    private function format_all_images(?string $images): array
+    {
+        if (!$images) {
+            return [];
+        }
+
+        return collect(explode(',', $images))
+            ->map(fn($img) => trim($img))
+            ->filter()
+            ->map(fn($img) => self::HOTEL_IMAGE_BASE_URL . $img)
+            ->take(20)
+            ->values()
+            ->toArray();
+    }
+
+    /**
      * Success response
      */
     private function success_response(array $data = [], string $message = 'Success'): JsonResponse
     {
         return response()->json([
-            'status' => true,
+            'success' => true,
             'message' => $message,
             ...$data,
         ]);
@@ -318,7 +331,7 @@ class HotelbedsController extends BaseController
     private function error_response(string $message, array $details = []): JsonResponse
     {
         return response()->json([
-            'status' => false,
+            'success' => false,
             'message' => $message,
             ...$details,
         ], 400);
@@ -337,7 +350,8 @@ class HotelbedsController extends BaseController
                 'checkout'        => 'required|date|after:checkin',
                 'adults'          => 'required|integer|min:1',
                 'childs'          => 'nullable|integer|min:0',
-                'child_age'       => 'nullable|string',
+                'child_age'       => 'nullable|array',
+                'child_age.*'     => 'integer|min:0|max:17',
                 'rooms'           => 'required|integer|min:1',
                 'currency'        => 'required|string|size:3',
                 'env'             => 'required|in:dev,pro',
@@ -348,7 +362,7 @@ class HotelbedsController extends BaseController
             ]);
 
             if ($validator->fails()) {
-                return $this->error_response("Validation Error", $validator->errors());
+                return $this->error_response("Validation Error", ['errors' => $validator->errors()->toArray()]);
             }
 
             $paxes = [];
@@ -358,14 +372,15 @@ class HotelbedsController extends BaseController
                 $paxes[] = ["type" => "AD", "age" => null];
             }
 
-            // Children (if available)
+            // Children (if available) — child_age is a flat array of ages, one
+            // per child (same shape WebBeds uses), e.g. [8, 9].
             if ($request->filled('childs') && $request->filled('child_age')) {
-                $child_ages = json_decode($request->child_age, true);
+                $child_ages = $request->input('child_age', []);
 
                 for ($i = 0; $i < $request->childs; $i++) {
                     $paxes[] = [
                         "type" => "CH",
-                        "age"  => $child_ages[$i]['ages'] ?? 5
+                        "age"  => $child_ages[$i] ?? 5
                     ];
                 }
             }
@@ -409,10 +424,12 @@ class HotelbedsController extends BaseController
                 ]);
             }
 
+            $formattedHotels = collect();
+
             if (!empty($data['hotels']['hotels'])) {
                 $currency = $request->currency;
                 $commission = $request->commission;
-                $response = collect($data['hotels']['hotels'])->map(function ($rec) use ($currency,$commission) {
+                $formattedHotels = collect($data['hotels']['hotels'])->map(function ($rec) use ($currency,$commission) {
 
                     $hdata = DB::connection('hotelbeds')->table('hotels')->where('hotel_code', $rec['code'])->first();
 
@@ -460,15 +477,54 @@ class HotelbedsController extends BaseController
                             "amenities"   => $room_facilities,
                             "options"     => collect($room['rates'])->map(function ($opt) use ($rec,$currency,$commission) {
                                 $price = convertCurrency( $opt['net'], $rec['currency'],$currency);
+
+                                // Same cancellation_rules shape as WebbedsController::parse_cancellation_rules()
+                                // so the checkout page can render one rate-policy UI for every supplier.
+                                $cancelRules = collect($opt['cancellationPolicies'] ?? [])->map(function ($cp) {
+                                    $amount = (float) ($cp['amount'] ?? 0);
+                                    return [
+                                        'type'          => $amount == 0 ? 'free' : 'penalty',
+                                        'from_date'     => $cp['from'] ?? null,
+                                        'to_date'       => null,
+                                        'cancel_charge' => $amount,
+                                        'amend_charge'  => $amount,
+                                        'description'   => $amount == 0 ? 'Free cancellation' : 'Cancellation charge: ' . $amount,
+                                    ];
+                                })->values()->toArray();
+                                $isRefundable = collect($cancelRules)->contains(fn($r) => $r['type'] === 'free');
+
                                 return [
-                                    "id"       => $opt['rateKey'],
+                                    "id"                  => $opt['rateKey'],
+                                    "rate_basis_id"       => $opt['rateKey'],
+                                    "allocation_details"  => $opt['rateKey'],
                                     "price"    => $this->commission($price,$commission),
                                     "actual_price"    => $price,
                                     "per_day"  => $price,
                                     "actual_per_day"  => $opt['net'],
+                                    "currency_id"         => $currency,
                                     "adults"   => $opt['adults'],
                                     "child"    => $opt['children'],
                                     "children_ages" => collect($opt['paxes'] ?? [])->pluck('age')->toArray(),
+                                    "passengers_required" => (int) ($opt['adults'] ?? 0) + (int) ($opt['children'] ?? 0),
+                                    "is_refundable"       => $isRefundable,
+                                    "non_refundable"      => !$isRefundable,
+                                    "refundable"          => $cancelRules[0]['cancel_charge'] ?? 0,
+                                    "refund_date"         => $cancelRules[0]['from_date'] ?? null,
+                                    "cancellation_rules"  => $cancelRules,
+                                    "meal_included"       => false,
+                                    "left_to_sell"        => (int) ($opt['allotment'] ?? 0),
+                                    "on_request"          => 0,
+                                    "min_stay"            => '',
+                                    "date_apply_min_stay" => '',
+                                    "tariff_notes"        => '',
+                                    "taxes_fees"          => [],
+                                    "taxes_included"      => [],
+                                    "taxes_at_property"   => [],
+                                    "changed_occupancy"   => false,
+                                    "cancel_restricted"       => false,
+                                    "amend_restricted"        => false,
+                                    "cancel_restricted_note"  => null,
+                                    "specials"            => [],
                                 ];
                             }),
                             "room_data" =>[]
@@ -497,9 +553,16 @@ class HotelbedsController extends BaseController
                 });
             }
 
+            if ($formattedHotels->isEmpty()) {
+                return response()->json([
+                    "success" => false,
+                    "message" => "No hotels found for the given criteria.",
+                ], 404);
+            }
+
             return response()->json([
-                "success"      => true,
-                "response" => $response,
+                "success"  => true,
+                "response" => $formattedHotels,
             ], 200);
 
         } catch (Exception $e) {

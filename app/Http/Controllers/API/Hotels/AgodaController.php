@@ -74,7 +74,7 @@ class AgodaController extends BaseController
                     'minimumStarRating' => 0,
                     'occupancy' => [
                         'numberOfAdult' => (int)$validated['adults'],
-                        'numberOfChildren' => (int)($validated['children'] ?? 0),
+                        'numberOfChildren' => (int)($validated['childs'] ?? 0),
                     ],
                     'sortBy' => 'PriceAsc',
                 ],
@@ -156,8 +156,15 @@ class AgodaController extends BaseController
             try {
                 $hotels[] = $this->format_hotel_data($hotel, $validated);
             } catch (Exception $e) {
-                // Log individual hotel parsing error but continue processing
-                \Log::warning('Error parsing hotel data: ' . $e->getMessage(), ['hotel' => $hotel]);
+                // Log individual hotel parsing error but continue processing. The
+                // logging call itself must never be allowed to fail the whole
+                // search (e.g. a storage-permission issue) — that would turn one
+                // malformed hotel entry into a complete outage for every user.
+                try {
+                    \Log::warning('Error parsing hotel data: ' . $e->getMessage(), ['hotel' => $hotel]);
+                } catch (\Throwable $logException) {
+                    // Swallow — logging is best-effort here.
+                }
                 continue;
             }
         }
@@ -171,17 +178,24 @@ class AgodaController extends BaseController
     private function format_hotel_data(array $hotel, array $validated): object
     {
 
-        $price = isset($hotel['dailyRate']) ? round($hotel['dailyRate']) : null;
+        $price = isset($hotel['dailyRate']) ? round($hotel['dailyRate']) : 0;
 
+        // Field set mirrors WebbedsController::hotel_search()'s hotel row shape so
+        // HotelController::search()'s aggregation across suppliers can treat every
+        // result uniformly regardless of which API it came from.
         return (object)[
             'hotel_id' => $hotel['hotelId'] ?? null,
-            'name' => $hotel['hotelName'] ?? null,
-            'images' => $hotel['imageURL'],
+            'name' => $hotel['hotelName'] ?? '',
+            'images' => $hotel['imageURL'] ?? '',
+            'all_images' => !empty($hotel['imageURL']) ? [$hotel['imageURL']] : [],
             'stars' => (int)($hotel['starRating'] ?? 0),
             'latitude' => (float)($hotel['latitude'] ?? 0),
             'longitude' => (float)($hotel['longitude'] ?? 0),
             'minRate' => $price,
+            'real_price' => $price,
+            'actual_price' => $price,
             'currency' => $hotel['currency'] ?? $validated['currency'],
+            'original_currency' => $hotel['currency'] ?? $validated['currency'],
             'redirect' => $hotel['landingURL'] ?? null,
             'supplier_name' => 'agoda',
             'address' => ucfirst($validated['city'] ?? ''),
@@ -218,7 +232,7 @@ class AgodaController extends BaseController
             'checkin' => 'required|date_format:Y-m-d|after_or_equal:today',
             'checkout' => 'required|date_format:Y-m-d|after:checkin',
             'adults' => 'required|integer|min:1|max:20',
-            'children' => 'nullable|integer|min:0|max:20',
+            'childs' => 'nullable|integer|min:0|max:20',
             'rooms' => 'required|integer|min:1|max:10',
             'currency' => 'required|string|size:3|regex:/^[A-Z]{3}$/',
             'env' => 'required|in:dev,pro',
@@ -245,7 +259,7 @@ class AgodaController extends BaseController
         array $details = []
     ): JsonResponse {
         return response()->json([
-            'status' => false,
+            'success' => false,
             'message' => $message,
             ...$details,
         ], $statusCode);
@@ -259,7 +273,7 @@ class AgodaController extends BaseController
         string $message = 'Success'
     ): JsonResponse {
         return response()->json([
-            'status' => true,
+            'success' => true,
             'message' => $message,
             ...$data,
         ]);

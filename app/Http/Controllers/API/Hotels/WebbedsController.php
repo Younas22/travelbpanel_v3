@@ -48,29 +48,7 @@ class WebbedsController extends BaseController
             // Static data (noPrice=true) must NOT be part of booking flow
             $priceXml      = $this->build_search_params($validated, $destination);
 
-            // TC1: 2 adults, 0 children — log session
-            $adults   = (int) ($validated['adults'] ?? 0);
-            $children = $validated['child_age'] ?? [];
-
-            $logSession = null;
-            if ($adults === 2 && empty($children)) {
-                $logSession = 'TC1_2adults_' . date('Ymd_His');
-            } elseif ($adults === 2 && count($children) === 1 && (int)($children[0] ?? 0) === 11) {
-                $logSession = 'TC2_2adults_1child_' . date('Ymd_His');
-            } elseif ($adults === 2 && count($children) === 2) {
-                $ages = array_map('intval', array_values($children));
-                sort($ages);
-                $logSession = 'TC3_2adults_2children_' . date('Ymd_His');
-            }
-            // Always log the flow (even for non-TC occupancies) so the evidence
-            // set is complete and a session id can be threaded to later steps.
-            if ($logSession === null) {
-                $logSession = 'SEARCH_' . date('Ymd_His') . '_' . substr(bin2hex(random_bytes(3)), 0, 6);
-            }
-
             $priceResponse = $this->make_curl_request($priceXml, self::CURL_TIMEOUT_PRICE);
-
-            $this->log_booking_step($logSession, 'step1_searchhotels', $priceXml, $priceResponse['body'] ?? $priceResponse['message'], $priceResponse['success']);
 
             if (!$priceResponse['success']) {
                 return response()->json(['success' => false, 'message' => $priceResponse['message']], 500);
@@ -146,7 +124,6 @@ class WebbedsController extends BaseController
 
             return response()->json([
                 'success'        => true,
-                'log_session_id' => $logSession,
                 'data'           => $result,
             ]);
 
@@ -181,7 +158,6 @@ class WebbedsController extends BaseController
                 'supplier_name'        => 'required|string',
                 'nationality'          => 'nullable|string',
                 'country_of_residence' => 'nullable|string',
-                'log_session_id'       => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
@@ -197,12 +173,8 @@ class WebbedsController extends BaseController
             $childAges = $this->parse_child_ages($v['child_age'] ?? '');
 
             $cachedListing  = $this->get_cached_hotel_listing($hotelId);
-            $logSession     = $this->resolve_log_session($v['log_session_id'] ?? null, 'GETROOMS');
             $detailXml      = $this->build_hotel_detail_params($v, $hotelId, $childAges);
             $detailResponse = $this->make_curl_request($detailXml, self::CURL_TIMEOUT_PRICE);
-
-            // getrooms (simple) — always logged as booking evidence
-            $this->log_booking_step($logSession, 'step2_getrooms', $detailXml, $detailResponse['body'] ?? $detailResponse['message'], $detailResponse['success']);
 
             if (!$detailResponse['success']) {
                 return response()->json(['success' => false, 'message' => $detailResponse['message']], 500);
@@ -452,7 +424,6 @@ class WebbedsController extends BaseController
 
             return response()->json([
                 'success'        => true,
-                'log_session_id' => $logSession,
                 'response'       => [[
                     'h_id'          => $hotelId,
                     'h_name'        => $hotelNameRaw  ?? '',
@@ -495,7 +466,6 @@ class WebbedsController extends BaseController
                 'booking_data'     => 'required',
                 'device_payload'   => 'nullable|string',
                 'env'              => 'nullable|in:dev,pro',
-                'log_session_id'   => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
@@ -529,7 +499,6 @@ class WebbedsController extends BaseController
             $passengersFromOpt = (int) ($optionData->passengers_required ?? $roomData->room_data->passengers_required ?? 1);
 
             $customerReference = strtoupper('WB-' . $productId . '-' . date('Ymd', strtotime($checkin)) . '-' . substr(bin2hex(random_bytes(3)), 0, 6));
-            $logSession        = $v['log_session_id'] ?? $customerReference;
 
             $guest              = json_decode($v['guest']);
             $childCount         = count($children);
@@ -593,7 +562,6 @@ class WebbedsController extends BaseController
 
             $blockXml      = $this->build_getrooms_block_xml($blockParams, $childAgesForBlock);
             $blockResponse = $this->make_curl_request($blockXml, self::CURL_TIMEOUT_PRICE);
-            $this->log_booking_step($logSession, 'step3_getroomsblock', $blockXml, $blockResponse['body'] ?? $blockResponse['message'], $blockResponse['success']);
 
             if (!$blockResponse['success']) {
                 return response()->json(['success' => false, 'booking_pnr' => null, 'step' => 'getroomsblock', 'message' => 'getrooms with blocking failed: ' . $blockResponse['message'], 'response' => $blockResponse['body'] ?? null], 500);
@@ -666,7 +634,6 @@ class WebbedsController extends BaseController
             // ── Step 1: savebooking ───────────────────────────────────────────
             $xml      = $this->build_save_booking_xml($normalised);
             $response = $this->make_curl_request($xml, self::CURL_TIMEOUT_PRICE);
-            $this->log_booking_step($logSession, 'step4_savebooking', $xml, $response['body'] ?? $response['message'], $response['success']);
 
             if (!$response['success']) {
                 return response()->json(['success' => false, 'booking_pnr' => null, 'step' => 'savebooking', 'message' => $response['message'], 'response' => $response['body'] ?? null], 500);
@@ -707,7 +674,6 @@ class WebbedsController extends BaseController
 
             $itinXml1      = $this->build_book_itinerary_xml($itinParams1, null);
             $itinResponse1 = $this->make_curl_request($itinXml1, self::CURL_TIMEOUT_PRICE);
-            $this->log_booking_step($logSession, 'step5_bookitinerary_no', $itinXml1, $itinResponse1['body'] ?? $itinResponse1['message'], $itinResponse1['success']);
 
             if (!$itinResponse1['success']) {
                 return response()->json(['success' => false, 'booking_pnr' => $bookingCode, 'step' => 'bookitinerary_no', 'message' => 'bookitinerary(no) failed: ' . $itinResponse1['message'], 'response' => $itinResponse1['body'] ?? null], 500);
@@ -791,7 +757,6 @@ class WebbedsController extends BaseController
 
             $itinXml2      = $this->build_book_itinerary_xml($itinParams2, $testServices);
             $itinResponse2 = $this->make_curl_request($itinXml2, self::CURL_TIMEOUT_PRICE);
-            $this->log_booking_step($logSession, 'step6_bookitinerary_preauth', $itinXml2, $itinResponse2['body'] ?? $itinResponse2['message'], $itinResponse2['success']);
 
             if (!$itinResponse2['success']) {
                 return response()->json(['success' => false, 'booking_pnr' => $bookingCode, 'step' => 'bookitinerary_preauth', 'message' => 'bookitinerary(preauth) failed: ' . $itinResponse2['message'], 'response' => $itinResponse2['body'] ?? null], 500);
@@ -862,7 +827,6 @@ class WebbedsController extends BaseController
 
             $itinXml3      = $this->build_book_itinerary_xml($itinParams3, $yesServices);
             $itinResponse3 = $this->make_curl_request($itinXml3, self::CURL_TIMEOUT_PRICE);
-            $this->log_booking_step($logSession, 'step7_bookitinerary_yes', $itinXml3, $itinResponse3['body'] ?? $itinResponse3['message'], $itinResponse3['success']);
 
             if (!$itinResponse3['success']) {
                 return response()->json(['success' => false, 'booking_pnr' => $bookingCode, 'step' => 'bookitinerary_yes', 'message' => 'bookitinerary(yes) failed: ' . $itinResponse3['message'], 'response' => $itinResponse3['body'] ?? null], 500);
@@ -946,7 +910,6 @@ class WebbedsController extends BaseController
                 'api_credential_2'     => 'required|string',
                 'api_credential_3'     => 'required|string',
                 'env'                  => 'nullable|in:dev,pro',
-                'log_session_id'       => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
@@ -956,12 +919,8 @@ class WebbedsController extends BaseController
             $v         = $validator->validated();
             $childAges = $this->parse_child_ages($v['child_age'] ?? '');
 
-            $logSession    = $this->resolve_log_session($v['log_session_id'] ?? null, 'GETROOMSBLOCK');
             $blockXml      = $this->build_getrooms_block_xml($v, $childAges);
             $blockResponse = $this->make_curl_request($blockXml, self::CURL_TIMEOUT_PRICE);
-
-            // getrooms with blocking — always logged as booking evidence
-            $this->log_booking_step($logSession, 'step3_getroomsblock', $blockXml, $blockResponse['body'] ?? $blockResponse['message'], $blockResponse['success']);
 
             if (!$blockResponse['success']) {
                 return response()->json(['success' => false, 'message' => $blockResponse['message']], 500);
@@ -1023,7 +982,6 @@ class WebbedsController extends BaseController
 
             return response()->json([
                 'success'            => true,
-                'log_session_id'     => $logSession,
                 'allocation_details' => $blockedAllocation,
                 'status'             => 'checked',
                 'message'            => 'Room successfully blocked. Proceed to booking.',
@@ -1053,7 +1011,6 @@ class WebbedsController extends BaseController
                 'api_credential_1' => 'required|string',
                 'api_credential_2' => 'required|string',
                 'api_credential_3' => 'required|string',
-                'log_session_id'   => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
@@ -1064,7 +1021,6 @@ class WebbedsController extends BaseController
             $password    = md5($v['api_credential_2']);
             $bookingCode = $v['booking_code'];
             $confirm     = $v['confirm'];
-            $logSession  = $this->resolve_log_session($v['log_session_id'] ?? null, 'CANCEL_' . $bookingCode);
 
             // Always probe WebBeds with confirm=no first to get the authoritative,
             // full-precision cancellation charge — never trust a client-supplied
@@ -1077,7 +1033,6 @@ class WebbedsController extends BaseController
             // impossible regardless of what the caller passes.
             $noXml      = $this->build_cancelbooking_xml($v, $bookingCode, $password, 'no');
             $noResponse = $this->make_curl_request($noXml, self::CURL_TIMEOUT_PRICE);
-            $this->log_booking_step($logSession, 'cancelbooking_confirm_no', $noXml, $noResponse['body'] ?? $noResponse['message'], $noResponse['success']);
 
             if (!$noResponse['success']) {
                 return response()->json(['success' => false, 'message' => $noResponse['message']], 500);
@@ -1117,7 +1072,6 @@ class WebbedsController extends BaseController
             // ourselves, never a value the caller might have cached or rounded.
             $yesXml      = $this->build_cancelbooking_xml($v, $bookingCode, $password, 'yes', $serviceCode, $charge, $paymentBal);
             $yesResponse = $this->make_curl_request($yesXml, self::CURL_TIMEOUT_PRICE);
-            $this->log_booking_step($logSession, 'cancelbooking_confirm_yes', $yesXml, $yesResponse['body'] ?? $yesResponse['message'], $yesResponse['success']);
 
             if (!$yesResponse['success']) {
                 return response()->json(['success' => false, 'message' => 'Step2(yes) failed: ' . $yesResponse['message']], 500);
@@ -2538,44 +2492,5 @@ XML;
         }
     }
 
-
-    // -------------------------------------------------------------------------
-    // PRIVATE — LOGGING (TC1/TC2/TC3 certification evidence)
-    // -------------------------------------------------------------------------
-
-    /**
-     * Resolve the session folder id for logging.
-     * Uses the id threaded from the client (so every step of one booking lands
-     * in the SAME folder); if none was passed, generates a deterministic fallback
-     * so the step is still captured as evidence rather than silently skipped.
-     */
-    private function resolve_log_session(?string $passed, string $prefix): string
-    {
-        $passed = trim((string) ($passed ?? ''));
-        if ($passed !== '') return $passed;
-        return $prefix . '_' . date('Ymd_His') . '_' . substr(bin2hex(random_bytes(3)), 0, 6);
-    }
-
-    private function log_booking_step(string $sessionId, string $step, mixed $request, mixed $response, bool $success = true): void
-    {
-        try {
-            $dir = base_path('webbeds/' . $sessionId . '/');
-            if (!is_dir($dir)) mkdir($dir, 0755, true);
-
-            $ts      = date('His');
-            $reqFile = $dir . $ts . '_' . $step . '_request.xml';
-            $resFile = $dir . $ts . '_' . $step . '_response.xml';
-
-            file_put_contents($reqFile, is_string($request)  ? $request  : json_encode($request,  JSON_PRETTY_PRINT));
-            file_put_contents($resFile, is_string($response) ? $response : json_encode($response, JSON_PRETTY_PRINT));
-
-            $indexFile = $dir . 'index.json';
-            $index     = file_exists($indexFile) ? json_decode(file_get_contents($indexFile), true) : [];
-            $index[]   = ['step' => $step, 'time' => date('Y-m-d H:i:s'), 'success' => $success];
-            file_put_contents($indexFile, json_encode($index, JSON_PRETTY_PRINT));
-        } catch (\Exception $e) {
-            // Never break booking flow
-        }
-    }
 
 }

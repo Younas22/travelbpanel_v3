@@ -181,8 +181,12 @@ class HotelController extends Controller
             }
 
             if (!empty($all_hotels)) {
+                // Each aggregated row only carries 'minRate' (see the normalisation
+                // above) — 'actual_price' doesn't exist on any of them, so sorting
+                // by it was a no-op (every row ties on null) and results stayed in
+                // whatever order suppliers happened to respond in.
                 $sorted_hotels = collect($all_hotels)
-                    ->sortBy('actual_price')
+                    ->sortBy('minRate')
                     ->values()
                     ->toArray();
 
@@ -271,11 +275,41 @@ class HotelController extends Controller
                         "refund_date" => null,
                         'options'   => [
                             [
-                                'id'      => 'RT-' . $roomType->id . '-' . $adults . '-' . $childs,
-                                'adults'  => (int) $adults,
-                                'child'   => (int) $childs,
-                                'price'   => $price,
-                                'per_day' => round($roomType->price_per_night, 2),
+                                'id'                  => 'RT-' . $roomType->id . '-' . $adults . '-' . $childs,
+                                'rate_basis_id'       => (string) $roomType->id,
+                                'allocation_details'  => '',
+                                'adults'              => (int) $adults,
+                                'child'               => (int) $childs,
+                                'children_ages'       => [],
+                                'price'               => $price,
+                                'actual_price'        => $price,
+                                'per_day'             => round($roomType->price_per_night, 2),
+                                'actual_per_day'      => round($roomType->price_per_night, 2),
+                                'currency_id'         => $currency->currency_name,
+                                'passengers_required' => (int) $adults + (int) $childs,
+                                // Manually added hotels have no external supplier
+                                // cancellation policy — treat as freely refundable
+                                // with no restrictions, rather than leaving these
+                                // fields absent (same parameter set as WebBeds).
+                                'is_refundable'       => true,
+                                'non_refundable'      => false,
+                                'refundable'          => 0,
+                                'refund_date'         => null,
+                                'cancellation_rules'  => [],
+                                'meal_included'       => false,
+                                'left_to_sell'        => 0,
+                                'on_request'          => 0,
+                                'min_stay'            => '',
+                                'date_apply_min_stay' => '',
+                                'tariff_notes'        => '',
+                                'taxes_fees'          => [],
+                                'taxes_included'      => [],
+                                'taxes_at_property'   => [],
+                                'changed_occupancy'   => false,
+                                'cancel_restricted'      => false,
+                                'amend_restricted'       => false,
+                                'cancel_restricted_note' => null,
+                                'specials'            => [],
                             ],
                         ],
                         "room_data" =>[]
