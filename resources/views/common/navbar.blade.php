@@ -1,3 +1,75 @@
+<style>
+    /* ---------- Language / Currency / Sign In pill controls ---------- */
+    .nav-util-pill-group {
+        display: flex;
+        align-items: stretch;
+        border: 1px solid #d7dbe3;
+        border-radius: 999px;
+        background: #fff;
+        overflow: hidden;
+    }
+    .nav-util-pill-item {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0 8px 0 16px;
+        position: relative;
+    }
+    .nav-util-pill-item:first-child { border-right: 1px solid #e5e7eb; }
+    .nav-util-icon { color: #0346FA; font-size: 13px; flex-shrink: 0; }
+
+    /* Restyle the Select2 widget these icons sit next to, so it reads as
+       part of the same pill instead of a bordered box of its own. */
+    .nav-util-pill-item .select2-container { min-width: 78px; }
+    .nav-util-pill-item .select2-selection--single {
+        border: none !important;
+        background: transparent !important;
+        height: 38px !important;
+        display: flex !important;
+        align-items: center;
+    }
+    .nav-util-pill-item .select2-selection__rendered {
+        padding: 0 20px 0 2px !important;
+        font-weight: 600;
+        font-size: 13px;
+        color: #1f2430;
+        line-height: 38px !important;
+    }
+    .nav-util-pill-item .select2-selection__arrow {
+        height: 38px !important;
+        right: 2px !important;
+    }
+    .nav-util-pill-item .select2-selection__arrow b { display: none !important; }
+    .nav-util-pill-item .select2-selection__arrow::after {
+        content: '\f078';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        font-size: 9px;
+        color: #8a8f98;
+    }
+
+    .btn-signin-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1.5px solid #0346FA;
+        color: #0346FA;
+        background: #fff;
+        font-weight: 700;
+        font-size: 13.5px;
+        padding: 9px 20px;
+        border-radius: 999px;
+        text-decoration: none;
+        transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+    }
+    .btn-signin-pill:hover {
+        background: #0346FA;
+        color: #fff;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(3, 70, 250, .25);
+    }
+</style>
+
 <!-- NAVIGATION BAR -->
 <nav class="nav-bar sticky top-0 z-50">
     @php
@@ -82,34 +154,36 @@
         <!-- Desktop: Currency + Language + Auth Buttons -->
         <div class="hidden md:flex gap-3 items-center">
 
-            <!-- Currency Dropdown -->
-            <div class="relative">
-                <select id="currency-select" class="currency-select border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white">
-                    @foreach($currencies as $currency)
-                        <option value="{{ $currency->currency_name }}" data-flag="{{ getFlagClass($currency->currency_name) }}"
-                            {{ $active_currency->currency_name == $currency->currency_name ? 'selected' : '' }}>
-                            {{ $currency->currency_name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Language Dropdown -->
-            <div class="relative">
-                <select id="language-select" class="language-select border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white">
-                    @if(isset($activeLanguages))
-                        @foreach($activeLanguages as $language)
-                            <option value="{{ $language->code }}"
-                                    data-flag="{{ getFlagClass(strtoupper($language->code)) }}"
-                                    {{ app()->getLocale() == $language->code ? 'selected' : '' }}>
-                                {{ $language->name }}
+            <!-- Language + Currency pill group -->
+            <div class="nav-util-pill-group">
+                <div class="nav-util-pill-item relative">
+                    <i class="fas fa-globe nav-util-icon"></i>
+                    <select id="language-select" class="language-select">
+                        @if(isset($activeLanguages))
+                            @foreach($activeLanguages as $language)
+                                <option value="{{ $language->code }}"
+                                        data-flag="{{ getFlagClass(strtoupper($language->code)) }}"
+                                        {{ app()->getLocale() == $language->code ? 'selected' : '' }}>
+                                    {{ $language->name }}
+                                </option>
+                            @endforeach
+                        @else
+                            <option value="en" data-flag="{{ getFlagClass('GB') }}" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>English</option>
+                            <option value="nl" data-flag="{{ getFlagClass('NL') }}" {{ app()->getLocale() == 'nl' ? 'selected' : '' }}>Dutch</option>
+                        @endif
+                    </select>
+                </div>
+                <div class="nav-util-pill-item relative">
+                    <i class="fas fa-coins nav-util-icon"></i>
+                    <select id="currency-select" class="currency-select">
+                        @foreach($currencies as $currency)
+                            <option value="{{ $currency->currency_name }}" data-flag="{{ getFlagClass($currency->currency_name) }}"
+                                {{ $active_currency->currency_name == $currency->currency_name ? 'selected' : '' }}>
+                                {{ $currency->currency_name }}
                             </option>
                         @endforeach
-                    @else
-                        <option value="en" data-flag="{{ getFlagClass('GB') }}" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>English</option>
-                        <option value="nl" data-flag="{{ getFlagClass('NL') }}" {{ app()->getLocale() == 'nl' ? 'selected' : '' }}>Dutch</option>
-                    @endif
-                </select>
+                    </select>
+                </div>
             </div>
 
             @if(auth()->check())
@@ -172,9 +246,9 @@
                 </div>
             @else
                 <!-- Login Button -->
-                <a href="{{ route('login') }}" class="btn-signin px-4 py-2 font-semibold rounded-lg transition duration-300 text-sm flex items-center gap-1.5" style="text-decoration:none;">
+                <a href="{{ route('login') }}" class="btn-signin-pill">
                     <i class="fas fa-right-to-bracket"></i>
-                    <span>Login</span>
+                    <span>{{ t('header.Sign In') }}</span>
                 </a>
 
                 @if($showUserSignup && $showAgentSignup)
@@ -471,6 +545,15 @@
             if (menu) menu.classList.toggle('active');
             if (hamburger) hamburger.classList.toggle('active');
         }
+
+        // Elevate the header with a shadow once the page scrolls past the hero.
+        (function() {
+            const navBar = document.querySelector('.nav-bar');
+            if (!navBar) return;
+            const toggle = () => navBar.classList.toggle('is-scrolled', window.scrollY > 12);
+            toggle();
+            window.addEventListener('scroll', toggle, { passive: true });
+        })();
 
         // Currency change helper function
         function handleCurrencyChange(currencyCode) {

@@ -110,7 +110,14 @@ class PagesController extends Controller
 
         $hotel_search = session('hotel_search');
 
-        return view('home', compact('tours', 'umrahPackages', 'featuredHotels', 'hotel_search'));
+        // Latest published posts for the homepage "Travel Guides" section
+        $latestBlogPosts = BlogPost::with('category')
+            ->where('status', 'published')
+            ->latest('published_at')
+            ->limit(4)
+            ->get();
+
+        return view('home', compact('tours', 'umrahPackages', 'featuredHotels', 'hotel_search', 'latestBlogPosts'));
     }
 
 

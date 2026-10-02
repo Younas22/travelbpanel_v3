@@ -42,6 +42,16 @@
     "hotel": "Hotel",
     "view_details": "View Details",
     "explore_all_packages": "Explore All Packages",
-    "no_featured_hotels": "No featured hotels available at the moment. Please check back later."
-
+    "no_featured_hotels": "No featured hotels available at the moment. Please check back later.",
+    "hero_eyebrow": "Trusted by travelers worldwide",
+    "stay_eyebrow": "Stay",
+    "tours_eyebrow": "Experiences",
+    "umrah_eyebrow": "Sacred Journey",
+    "guides_eyebrow": "Resources",
+    "guides_title": "Travel Guides & Tips",
+    "see_all": "See all",
+    "min_read": "min read",
+    "read_more": "Read more",
+    "cta_title": "Ready to plan your next trip?",
+    "cta_subtitle": "Search hotels, tours and Umrah packages in one place and book in minutes."
 }

@@ -47,7 +47,7 @@
     }
 
     .airport-search:focus {
-        border-color: #0077BE;
+        border-color: #0346FA;
     }
 
     .airport-item,
@@ -144,8 +144,8 @@
 
     .trip-type-btn.active {
         background: #E6F3FB;
-        color: #0077BE;
-        border-color: #0077BE;
+        color: #0346FA;
+        border-color: #0346FA;
     }
 
     .loading {
@@ -280,8 +280,8 @@
                                     <i class="fas fa-minus text-gray-600 text-[10px]"></i>
                                 </button>
                                 <span id="flightAdultCount" class="w-6 text-center font-semibold text-[13px]">{{ isset($flight_search['adult']) && $flight_search['adult'] ? $flight_search['adult'] : 1 }}</span>
-                                <button type="button" class="passenger-btn w-7 h-7 rounded-full border-2 border-[#0077BE] bg-[#E6F3FB] flex items-center justify-center" data-type="adult" data-action="plus">
-                                    <i class="fas fa-plus text-[#0077BE] text-[10px]"></i>
+                                <button type="button" class="passenger-btn w-7 h-7 rounded-full border-2 border-[#0346FA] bg-[#E6F3FB] flex items-center justify-center" data-type="adult" data-action="plus">
+                                    <i class="fas fa-plus text-[#0346FA] text-[10px]"></i>
                                 </button>
                             </div>
                         </div>
@@ -296,8 +296,8 @@
                                     <i class="fas fa-minus text-gray-600 text-[10px]"></i>
                                 </button>
                                 <span id="flightChildCount" class="w-6 text-center font-semibold text-[13px]">{{ isset($flight_search['children']) && $flight_search['children'] ? $flight_search['children'] : 0 }}</span>
-                                <button type="button" class="passenger-btn w-7 h-7 rounded-full border-2 border-[#0077BE] bg-[#E6F3FB] flex items-center justify-center" data-type="child" data-action="plus">
-                                    <i class="fas fa-plus text-[#0077BE] text-[10px]"></i>
+                                <button type="button" class="passenger-btn w-7 h-7 rounded-full border-2 border-[#0346FA] bg-[#E6F3FB] flex items-center justify-center" data-type="child" data-action="plus">
+                                    <i class="fas fa-plus text-[#0346FA] text-[10px]"></i>
                                 </button>
                             </div>
                         </div>
@@ -312,13 +312,13 @@
                                     <i class="fas fa-minus text-gray-600 text-[10px]"></i>
                                 </button>
                                 <span id="flightInfantCount" class="w-6 text-center font-semibold text-[13px]">{{ isset($flight_search['infants']) && $flight_search['infants'] ? $flight_search['infants'] : 0 }}</span>
-                                <button type="button" class="passenger-btn w-7 h-7 rounded-full border-2 border-[#0077BE] bg-[#E6F3FB] flex items-center justify-center" data-type="infant" data-action="plus">
-                                    <i class="fas fa-plus text-[#0077BE] text-[10px]"></i>
+                                <button type="button" class="passenger-btn w-7 h-7 rounded-full border-2 border-[#0346FA] bg-[#E6F3FB] flex items-center justify-center" data-type="infant" data-action="plus">
+                                    <i class="fas fa-plus text-[#0346FA] text-[10px]"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <button type="button" id="flightApplyPassengerBtn" class="w-full py-2.5 bg-[#0077BE] text-white rounded-xl font-semibold text-[13px] hover:bg-[#005f99] transition-all">
+                        <button type="button" id="flightApplyPassengerBtn" class="w-full py-2.5 bg-[#0346FA] text-white rounded-xl font-semibold text-[13px] hover:bg-[#005f99] transition-all">
                             {{t('flightform.apply')}}
                         </button>
                     </div>
@@ -363,7 +363,7 @@
             </div>
 
             <!-- Search Button -->
-            <button type="submit" id="flightSearchBtn" class="w-full py-2.5 px-6 bg-[#0077BE] text-white rounded-lg font-bold text-sm hover:bg-[#005f99] transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
+            <button type="submit" id="flightSearchBtn" class="w-full py-2.5 px-6 bg-[#0346FA] text-white rounded-lg font-bold text-sm hover:bg-[#005f99] transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
                 {{t('flightform.search_flights')}}
                 <i class="fas fa-search text-xs"></i>
             </button>

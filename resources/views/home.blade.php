@@ -32,31 +32,6 @@
         z-index: 1;
     }
 
-    .hero-track-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 18px;
-        padding: 10px 22px;
-        border-radius: 50px;
-        font-size: 14px;
-        font-weight: 600;
-        color: #fff;
-        text-decoration: none;
-        background: rgba(255, 255, 255, 0.12);
-        border: 1.5px solid rgba(255, 255, 255, 0.55);
-        backdrop-filter: blur(4px);
-        transition: all 0.25s ease;
-    }
-
-    .hero-track-btn:hover {
-        background: #fff;
-        color: #0077BE;
-        border-color: #fff;
-        transform: translateY(-1px);
-        box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-    }
-
     .form-container {
         background-color: white;
         border-radius: 12px;
@@ -115,19 +90,45 @@
     }
 
     .tab-btn:hover {
-        color: #0077BE;
+        color: #0346FA;
         background: white;
-        border-color: #0077BE;
+        border-color: #0346FA;
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0,119,190,0.15);
+        box-shadow: 0 4px 12px rgba(3,70,250,0.15);
     }
 
     .tab-btn.active {
         color: white;
-        background: linear-gradient(135deg, #0077BE, #005a8e);
+        background: #0346FA;
         border-color: transparent;
-        box-shadow: 0 4px 14px rgba(0,119,190,0.35);
+        box-shadow: 0 4px 14px rgba(3,70,250,0.35);
         transform: translateY(-1px);
+    }
+
+    /* Primary-action color override, scoped to the homepage only — .cta-button,
+       .view-deal-btn, .view-deal-btn-umrah and .step-number are shared global
+       classes also used on the Tours/Umrah listing pages. */
+    #homeRedesign .cta-button,
+    #homeRedesign .view-deal-btn,
+    #homeRedesign .view-deal-btn-umrah {
+        background: #0346FA;
+    }
+
+    #homeRedesign .view-deal-btn:hover,
+    #homeRedesign .view-deal-btn-umrah:hover {
+        box-shadow: 0 4px 12px rgba(3,70,250,0.3);
+    }
+
+    #homeRedesign .step-number {
+        background: #0346FA;
+    }
+
+    #homeRedesign .step-card:hover .step-number {
+        box-shadow: 0 8px 20px rgba(3,70,250,0.3);
+    }
+
+    #homeRedesign .connector {
+        background: linear-gradient(90deg, transparent, #0346FA 50%, transparent);
     }
 
     .tab-content {
@@ -186,6 +187,7 @@
     }
 </style>
 
+<div id="homeRedesign">
 <section class="hero-section">
     <div class="hero-content">
         <h1 style="color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">
@@ -194,9 +196,6 @@
         <p style="color: white; text-shadow: 0 2px 8px rgba(0,0,0,0.2);">
             {{ t('home.hero_subtitle') }}
         </p>
-        <a href="{{ route('ticket.track') }}" class="hero-track-btn">
-            <i class="fas fa-ticket"></i> {{ t('footer.Track Booking') }}
-        </a>
     </div>
 
     <!-- Search Form Container -->
@@ -228,6 +227,10 @@
                     @php $first = false; @endphp
                 @endif
             @endforeach
+            <a href="{{ route('ticket.track') }}" class="tab-btn" style="text-decoration: none;">
+                <i class="fas fa-ticket"></i>
+                {{ t('footer.Track Booking') }}
+            </a>
         </div>
         </div>
 
@@ -493,7 +496,7 @@
                                     <p style="font-size: 14px; color: #6B7280; margin: 0;">{{ t('home.contact_for_price') }}</p>
                                 @endif
                             </div>
-                            <button style="background-color: #0077BE; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#0066A1'" onmouseout="this.style.backgroundColor='#0077BE'">{{ t('home.view') }}</button>
+                            <button style="background-color: #0346FA; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#0233C9'" onmouseout="this.style.backgroundColor='#0346FA'">{{ t('home.view') }}</button>
                         </div>
                     </div>
                 </div>
@@ -787,6 +790,7 @@
                 <button class="cta-button" id="start_booking_now">{{t('home.start_booking_now')}} →</button>
             </div>
     </section>
+</div>
 
 <script>
     // Scroll to hero-section when start_booking_now button is clicked
