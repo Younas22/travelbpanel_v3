@@ -5,18 +5,34 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        /* Sophisticated dark footer — flat near-navy surface with #0346FA as
-           the sole accent, rather than a loud brand-colored gradient. Reads
-           as a premium tech-platform footer, not a travel-agency template. */
         .travel-bg {
-            background: #0B0F1E;
+            background-image:
+                linear-gradient(135deg, rgba(3, 70, 250, 0.95) 0%, rgba(2, 48, 173, 0.92) 100%),
+                url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
 
-        .footer-accent-bar { background: #0346FA !important; }
+        /* Brand color pass — #0346FA replaces the previous lighter-blue
+           accents; layout/structure unchanged. */
+        footer.travel-bg .bg-blue-400,
+        footer.travel-bg .bg-blue-500 {
+            background-color: #0346FA !important;
+        }
+
+        #newsletterBtn {
+            color: #0346FA !important;
+        }
+
+        #newsletterEmail:focus {
+            --tw-ring-color: #0346FA;
+        }
 
         .glass-effect {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .hover-lift {
@@ -24,8 +40,27 @@
         }
 
         .hover-lift:hover {
-            transform: translateY(-3px);
-            border-color: rgba(3, 70, 250, .4) !important;
+            transform: translateY(-5px);
+        }
+
+        .wave {
+            position: absolute;
+            top: -2px;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
+
+        .wave svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 80px;
+        }
+
+        .wave .shape-fill {
+            fill: #EFF4F9;
         }
 
         .footer-link {
@@ -113,7 +148,14 @@
     @unless($hideFooter ?? false)
     <footer class="relative travel-bg text-white overflow-hidden">
 
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
+        <!-- Decorative Wave -->
+        <div class="wave">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+            </svg>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
 
             <!-- Main Footer Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 mb-12">
@@ -221,7 +263,7 @@
                 <!-- Quick Links -->
                 <div class="lg:col-span-2">
                     <h4 class="text-lg font-bold mb-4 flex items-center gap-2">
-                        <span class="w-1 h-6 rounded footer-accent-bar"></span>
+                        <span class="w-1 h-6 bg-blue-400 rounded"></span>
                         {{t('footer.quick_links')}}
                     </h4>
                     <ul class="space-y-2">
@@ -234,7 +276,7 @@
                 <!-- Our Services — driven by active modules -->
                 <div class="lg:col-span-2">
                     <h4 class="text-lg font-bold mb-4 flex items-center gap-2">
-                        <span class="w-1 h-6 rounded footer-accent-bar"></span>
+                        <span class="w-1 h-6 bg-blue-400 rounded"></span>
                         {{t('footer.our_services')}}
                     </h4>
                     @php
@@ -255,7 +297,7 @@
                 <!-- Newsletter - Compact Design -->
                 <div class="lg:col-span-3">
                     <h4 class="text-lg font-bold mb-4 flex items-center gap-2">
-                        <span class="w-1 h-6 rounded footer-accent-bar"></span>{{t('footer.newsletter')}}
+                        <span class="w-1 h-6 bg-blue-400 rounded"></span>{{t('footer.newsletter')}}
                     </h4>
                     <p class="text-blue-100 text-xs mb-4">{{t('footer.newsletter_desc')}}</p>
                     <form id="newsletterForm" class="space-y-2">
@@ -268,7 +310,7 @@
                             required
                             class="w-full px-4 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white placeholder-blue-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white/15 transition-all"
                         >
-                        <button type="submit" id="newsletterBtn" class="w-full bg-white font-bold py-2.5 rounded-lg hover:bg-blue-50 transition-all hover:shadow-xl flex items-center justify-center gap-2 text-sm" style="color:#0346FA;">
+                        <button type="submit" id="newsletterBtn" class="w-full bg-white text-blue-600 font-bold py-2.5 rounded-lg hover:bg-blue-50 transition-all hover:shadow-xl flex items-center justify-center gap-2 text-sm">
                             <i class="fas fa-paper-plane"></i>
                             <span id="newsletterBtnText">{{t('footer.subscribe_now')}}</span>
                         </button>
@@ -294,6 +336,14 @@
                 </div>
             </div>
 
+        </div>
+
+        <!-- Decorative Elements -->
+        <div class="absolute top-20 right-10 opacity-10">
+            <i class="fas fa-plane text-white text-9xl transform rotate-45"></i>
+        </div>
+        <div class="absolute bottom-20 left-10 opacity-10">
+            <i class="fas fa-globe text-white text-8xl"></i>
         </div>
     </footer>
     @endunless
