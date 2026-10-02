@@ -43,5 +43,10 @@
     "nights": "박",
     "location": "위치",
     "hotel_rating": "호텔 등급",
-    "starting_from": "최저가"
+    "starting_from": "최저가",
+    "changed_occupancy_note": "이 요금은 요청하신 인원 구성과 다르게 표시됩니다. 예약 전에 확인해 주세요.",
+    "min_stay_note": "이 요금은 최소 :nights박 숙박이 필요합니다.",
+    "taxes_and_fees": "세금 및 수수료",
+    "included_in_price": "가격에 포함됨",
+    "payable_at_property": "현지 지불"
 }

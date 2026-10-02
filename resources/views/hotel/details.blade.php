@@ -387,6 +387,71 @@
             width: 16px;
         }
 
+        .option-notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .option-notice i { margin-top: 2px; }
+
+        .option-notice.restricted {
+            background: #fee2e2;
+            color: #991b1b;
+            font-weight: 600;
+        }
+
+        .option-notice.min-stay {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .option-notice.occupancy {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .option-notice.rate-notes {
+            background: #eff6ff;
+            color: #1e40af;
+        }
+
+        .option-taxes {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            font-size: 12px;
+        }
+
+        .option-taxes-title {
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .option-taxes-row {
+            display: flex;
+            justify-content: space-between;
+            color: #6b7280;
+            padding: 2px 0;
+        }
+
+        .option-taxes-row .tag {
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+        }
+
+        .option-taxes-row .tag.included { background: #dcfce7; color: #166534; }
+        .option-taxes-row .tag.at-property { background: #fef3c7; color: #92400e; }
+
         .option-price-section {
             display: flex;
             justify-content: space-between;
@@ -703,7 +768,7 @@
                                             <div class="room-option-card">
                                                 <div class="option-header">
                                                     <div class="option-title">{{ t('hoteldetails.option') }} {{ $optionIndex + 1 }}</div>
-                                                    @if(strpos($option['id'], 'NRF') !== false)
+                                                    @if(!empty($option['non_refundable']))
                                                         <span class="option-badge non-refundable">
                                         <i class="fas fa-times-circle"></i> {{ t('hoteldetails.non_refundable') }}
                                     </span>
@@ -713,6 +778,52 @@
                                     </span>
                                                     @endif
                                                 </div>
+
+                                                @if(!empty($option['cancel_restricted']))
+                                                    <div class="option-notice restricted">
+                                                        <i class="fas fa-ban"></i>
+                                                        <span>{{ $option['cancel_restricted_note'] ?? 'Cancellation not allowed' }}</span>
+                                                    </div>
+                                                @endif
+
+                                                @if(!empty($option['changed_occupancy']))
+                                                    <div class="option-notice occupancy">
+                                                        <i class="fas fa-exclamation-triangle"></i>
+                                                        <span>{{ t('hoteldetails.changed_occupancy_note') }}</span>
+                                                    </div>
+                                                @endif
+
+                                                @if(!empty($option['min_stay']) && (int) $option['min_stay'] > 0)
+                                                    <div class="option-notice min-stay">
+                                                        <i class="fas fa-calendar-day"></i>
+                                                        <span>{{ str_replace(':nights', $option['min_stay'], t('hoteldetails.min_stay_note')) }}</span>
+                                                    </div>
+                                                @endif
+
+                                                @if(!empty($option['tariff_notes']))
+                                                    <div class="option-notice rate-notes">
+                                                        <i class="fas fa-info-circle"></i>
+                                                        <span>{{ $option['tariff_notes'] }}</span>
+                                                    </div>
+                                                @endif
+
+                                                @if(!empty($option['taxes_included']) || !empty($option['taxes_at_property']))
+                                                    <div class="option-taxes">
+                                                        <div class="option-taxes-title">{{ t('hoteldetails.taxes_and_fees') }}</div>
+                                                        @foreach(($option['taxes_included'] ?? []) as $tax)
+                                                            <div class="option-taxes-row">
+                                                                <span>{{ $tax['description'] ?: $tax['type'] }} <span class="tag included">{{ t('hoteldetails.included_in_price') }}</span></span>
+                                                                <span>{{ number_format($tax['amount'], 2) }} {{ $tax['currency'] }}</span>
+                                                            </div>
+                                                        @endforeach
+                                                        @foreach(($option['taxes_at_property'] ?? []) as $tax)
+                                                            <div class="option-taxes-row">
+                                                                <span>{{ $tax['description'] ?: $tax['type'] }} <span class="tag at-property">{{ t('hoteldetails.payable_at_property') }}</span></span>
+                                                                <span>{{ number_format($tax['amount'], 2) }} {{ $tax['currency'] }}</span>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
 
                                                 <div class="option-details-list">
                                                     <div class="option-detail-item">

@@ -19,6 +19,13 @@ class WebbedsController extends BaseController
     private const CACHE_TTL_MINUTES  = 60;
     private const CACHE_PREFIX       = 'webbeds_hotel_';
 
+    // Salutation (title) IDs — from DOTW's getsalutationsids method.
+    // 3801 = Mr, 3802 = Mrs/Ms (confirmed valid; "3803" is NOT valid in DOTW).
+    // TODO: confirm the correct CHILD title id via get_salutations_ids() and set it here.
+    private const SALUTATION_MR      = '3801';
+    private const SALUTATION_MRS     = '3802';
+    private const CHILD_SALUTATION_ID = '3801'; // placeholder — replace with the real child title id
+
     // -------------------------------------------------------------------------
     // PUBLIC — HOTEL SEARCH
     // -------------------------------------------------------------------------
@@ -27,21 +34,50 @@ class WebbedsController extends BaseController
     {
         try {
             $validated   = $this->validate_input($request);
+
+            // Drop any spurious 0/invalid child age so occupancy is accurate
+            $validated['child_age'] = $this->parse_child_ages($validated['child_age'] ?? []);
+
             $destination = $this->get_destination($validated['city']);
 
             if (!$destination) {
                 return $this->error_response('Destination not found.', 404);
             }
 
-            $searchXml      = $this->build_search_params($validated, $destination);
-            $searchResponse = $this->make_curl_request($searchXml, self::CURL_TIMEOUT_LIST);
+            // Per WebBeds: only use searchhotels with rateBasis=1 (price search)
+            // Static data (noPrice=true) must NOT be part of booking flow
+            $priceXml      = $this->build_search_params($validated, $destination);
 
-            if (!$searchResponse['success']) {
-                return response()->json(['success' => false, 'message' => $searchResponse['message']], 500);
+            // TC1: 2 adults, 0 children — log session
+            $adults   = (int) ($validated['adults'] ?? 0);
+            $children = $validated['child_age'] ?? [];
+
+            $logSession = null;
+            if ($adults === 2 && empty($children)) {
+                $logSession = 'TC1_2adults_' . date('Ymd_His');
+            } elseif ($adults === 2 && count($children) === 1 && (int)($children[0] ?? 0) === 11) {
+                $logSession = 'TC2_2adults_1child_' . date('Ymd_His');
+            } elseif ($adults === 2 && count($children) === 2) {
+                $ages = array_map('intval', array_values($children));
+                sort($ages);
+                $logSession = 'TC3_2adults_2children_' . date('Ymd_His');
+            }
+            // Always log the flow (even for non-TC occupancies) so the evidence
+            // set is complete and a session id can be threaded to later steps.
+            if ($logSession === null) {
+                $logSession = 'SEARCH_' . date('Ymd_His') . '_' . substr(bin2hex(random_bytes(3)), 0, 6);
             }
 
-            $searchData = $this->parseXmlToArray($searchResponse['body']);
-            $hotels     = $searchData['hotels']['hotel'] ?? [];
+            $priceResponse = $this->make_curl_request($priceXml, self::CURL_TIMEOUT_PRICE);
+
+            $this->log_booking_step($logSession, 'step1_searchhotels', $priceXml, $priceResponse['body'] ?? $priceResponse['message'], $priceResponse['success']);
+
+            if (!$priceResponse['success']) {
+                return response()->json(['success' => false, 'message' => $priceResponse['message']], 500);
+            }
+
+            $priceData = $this->parseXmlToArray($priceResponse['body']);
+            $hotels    = $priceData['hotels']['hotel'] ?? [];
 
             if (empty($hotels)) {
                 return $this->error_response('No hotels found for the given criteria.', 404);
@@ -52,17 +88,7 @@ class WebbedsController extends BaseController
             }
 
             $hotels   = array_slice($hotels, 0, self::HOTEL_BATCH_SIZE);
-            $hotelIds = array_map(fn($h) => $h['@attributes']['hotelid'], $hotels);
-
-            $priceXml      = $this->build_price_batch_params($validated, $hotelIds);
-            $priceResponse = $this->make_curl_request($priceXml, self::CURL_TIMEOUT_PRICE);
-
-            if (!$priceResponse['success']) {
-                return response()->json(['success' => false, 'message' => $priceResponse['message']], 500);
-            }
-
-            $priceData = $this->parseXmlToArray($priceResponse['body']);
-            $priceMap  = $this->build_price_map($priceData);
+            $priceMap = $this->build_price_map($priceData);
 
             $result = [];
 
@@ -74,26 +100,34 @@ class WebbedsController extends BaseController
 
                 $roundedPrice = round($price['minRate'], 2);
 
-                $images = [];
-                foreach (array_slice($hotel['images']['hotelImages']['image'] ?? [], 0, 20) as $value) {
-                    if (!empty($value['url'])) $images[] = $value['url'];
-                }
+                // get_hotelDetails() is a lookup against our LOCAL static-data cache
+                // (for mapping/display only — name, images, rating) and can be null
+                // for a hotel WebBeds returns live rates for but we haven't cached
+                // yet. That must never break the live search/booking response.
+                $staticHotelsDetails = $this->get_hotelDetails($hotelId);
 
-                $hotelNameRaw    = $hotel['hotelName'] ?? '';
-                $hotelAddressRaw = $hotel['address']   ?? '';
+                $html = (string) ($staticHotelsDetails->hotelImages ?? '');
+                preg_match('/<thumb>(.*?)<\/thumb>/s', $html, $thumb);
+                preg_match_all('/<url>(.*?)<\/url>/s', $html, $matches);
+                $thumb = trim($thumb[1] ?? '');
+                $images = array_slice( array_map('trim', $matches[1] ?? []), 0, 20 );
+
+
+                $hotelNameRaw    = $staticHotelsDetails->hotelName ?? '';
+                $hotelAddressRaw = $staticHotelsDetails->address  ?? '';
 
                 $hotelRow = [
                     'hotel_id'          => $hotelId,
                     'name'              => $this->sanitize_name(is_array($hotelNameRaw) ? '' : $hotelNameRaw),
                     'address'           => is_array($hotelAddressRaw) ? '' : $hotelAddressRaw,
-                    'stars'             => $this->convert_rating($hotel['rating'] ?? 0),
+                    'stars'             => $this->convert_rating( $staticHotelsDetails->rating ?? 0),
                     'minRate'           => $roundedPrice,
                     'real_price'        => $roundedPrice,
                     'actual_price'      => $roundedPrice,
                     'currency'          => $price['currencyId'],
                     'original_currency' => $price['currencyId'],
                     'room_name'         => $price['roomName'],
-                    'images'            => $hotel['images']['hotelImages']['thumb'] ?? '',
+                    'images'            => $thumb ?? '',
                     'all_images'        => $images,
                     'supplier_name'     => 'Webbeds',
                     'location'          => $destination->name,
@@ -110,7 +144,11 @@ class WebbedsController extends BaseController
 
             usort($result, fn($a, $b) => $a['minRate'] <=> $b['minRate']);
 
-            return response()->json(['success' => true, 'data' => $result]);
+            return response()->json([
+                'success'        => true,
+                'log_session_id' => $logSession,
+                'data'           => $result,
+            ]);
 
         } catch (Exception $e) {
             return $this->error_response('Server Error', 500, ['exception' => $e->getMessage()]);
@@ -130,8 +168,10 @@ class WebbedsController extends BaseController
                 'checkout'             => 'required|date|after:checkin',
                 'adults'               => 'required|integer|min:1',
                 'childs'               => 'nullable|integer|min:0',
-                'child_age'            => 'nullable|string',
-                'rooms'                => 'required|integer|min:1',
+                'child_age'            => 'nullable|array',
+                'child_age.*'          => 'integer|min:0|max:17',
+                // CC integration: multiroom bookings are not supported — single room only
+                'rooms'                => 'required|integer|min:1|max:1',
                 'currency'             => 'required|string|size:3',
                 'env'                  => 'required|in:dev,pro',
                 'api_credential_1'     => 'required|string',
@@ -141,6 +181,7 @@ class WebbedsController extends BaseController
                 'supplier_name'        => 'required|string',
                 'nationality'          => 'nullable|string',
                 'country_of_residence' => 'nullable|string',
+                'log_session_id'       => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
@@ -153,14 +194,15 @@ class WebbedsController extends BaseController
             $currency   = $v['currency'];
             $nights     = max(1, (int) ((strtotime($v['checkout']) - strtotime($v['checkin'])) / 86400));
 
-            $childAges = [];
-            if (!empty($v['child_age'])) {
-                $childAges = array_map('intval', explode(',', $v['child_age']));
-            }
+            $childAges = $this->parse_child_ages($v['child_age'] ?? '');
 
             $cachedListing  = $this->get_cached_hotel_listing($hotelId);
+            $logSession     = $this->resolve_log_session($v['log_session_id'] ?? null, 'GETROOMS');
             $detailXml      = $this->build_hotel_detail_params($v, $hotelId, $childAges);
             $detailResponse = $this->make_curl_request($detailXml, self::CURL_TIMEOUT_PRICE);
+
+            // getrooms (simple) — always logged as booking evidence
+            $this->log_booking_step($logSession, 'step2_getrooms', $detailXml, $detailResponse['body'] ?? $detailResponse['message'], $detailResponse['success']);
 
             if (!$detailResponse['success']) {
                 return response()->json(['success' => false, 'message' => $detailResponse['message']], 500);
@@ -226,9 +268,13 @@ class WebbedsController extends BaseController
                         $allocationDetails = (string) ($rateBasis['allocationDetails'] ?? '');
                         $isBookable        = (string) ($rateBasis['isBookable'] ?? 'yes');
 
-                        // Cert #19: filter out changedOccupancy rates
-                        $changedOccupancy  = (string) ($rateBasis['changedOccupancy'] ?? '');
-                        if (!empty($changedOccupancy) && strtolower($changedOccupancy) !== 'false') continue;
+                        // Cert #19: changedOccupancy means WebBeds is returning this rate
+                        // for a DIFFERENT occupancy split than requested (e.g. it can't
+                        // fit the child in this room type) — it is still a valid, bookable
+                        // rate. Previously this was filtered out entirely, incorrectly
+                        // hiding legitimate rates from the room selection page. Surface it
+                        // instead with a flag so the frontend can show an occupancy note.
+                        $changedOccupancy = strtolower((string) ($rateBasis['changedOccupancy'] ?? '')) === 'true';
 
                         if ($total <= 0 || $isBookable !== 'yes' || empty($allocationDetails)) continue;
 
@@ -241,19 +287,29 @@ class WebbedsController extends BaseController
                         $firstPenalty = collect($cancelRules)->firstWhere('type', 'penalty');
                         $passengersRequired = (int) ($rateBasis['passengerNamesRequiredForBooking'] ?? 1);
 
-                        // Cert #21: Taxes & Fees
-                        $taxesFees = [];
-                        $rawTaxes  = $rateBasis['taxesFees']['tax'] ?? [];
+                        // Cert #21: Taxes & Fees — per WebBeds format
+                        // Display separately: included in price vs payable at property
+                        $taxesFees          = [];
+                        $taxesIncluded      = [];
+                        $taxesAtProperty    = [];
+                        $rawTaxes           = $rateBasis['taxesFees']['tax'] ?? [];
                         if (!empty($rawTaxes)) {
                             if (isset($rawTaxes['@attributes'])) $rawTaxes = [$rawTaxes];
                             foreach ($rawTaxes as $tax) {
-                                $taxesFees[] = [
+                                $isIncluded = strtolower((string) ($tax['@attributes']['included'] ?? 'false')) === 'true';
+                                $taxEntry   = [
                                     'type'        => (string) ($tax['@attributes']['type']     ?? ''),
                                     'description' => (string) ($tax['description']             ?? ''),
                                     'amount'      => (float)  ($tax['amount']                  ?? 0),
                                     'currency'    => (string) ($tax['@attributes']['currency'] ?? ''),
-                                    'included'    => strtolower((string) ($tax['@attributes']['included'] ?? 'false')) === 'true',
+                                    'included'    => $isIncluded,
                                 ];
+                                $taxesFees[] = $taxEntry;
+                                if ($isIncluded) {
+                                    $taxesIncluded[]   = $taxEntry;
+                                } else {
+                                    $taxesAtProperty[] = $taxEntry;
+                                }
                             }
                         }
 
@@ -277,6 +333,7 @@ class WebbedsController extends BaseController
                             'description'         => $rateBasisDesc,
                             'status'              => $rateBasisStatus,
                             'passengers_required' => $passengersRequired,
+                            'changed_occupancy'   => $changedOccupancy,
                             'price'               => $sellTotal,
                             'actual_price'        => $netTotal,
                             'per_day'             => $sellPerDay,
@@ -297,12 +354,19 @@ class WebbedsController extends BaseController
                             // Cert #1: minStay
                             'min_stay'            => trim($this->xml_str($rateBasis['minStay']          ?? '')),
                             'date_apply_min_stay' => trim($this->xml_str($rateBasis['dateApplyMinStay'] ?? '')),
-                            // Cert #21: taxes & fees
+                            // Cert #21: taxes & fees — split per WebBeds display requirement
                             'taxes_fees'          => $taxesFees,
+                            'taxes_included'      => $taxesIncluded,
+                            'taxes_at_property'   => $taxesAtProperty,
                             // Cert #22: restricted flags
                             'non_refundable'      => strtolower($this->xml_str($rateBasis['nonRefundable']    ?? 'no'))   === 'yes',
-                            'cancel_restricted'   => strtolower($this->xml_str($rateBasis['cancelRestricted'] ?? ''))     === 'true',
-                            'amend_restricted'    => strtolower($this->xml_str($rateBasis['amendRestricted']  ?? ''))     === 'true',
+                            // Cert #22: Per WebBeds — when cancelRestricted=true
+                            // display "Cancellation not allowed" and disable cancel
+                            'cancel_restricted'       => strtolower($this->xml_str($rateBasis['cancelRestricted'] ?? '')) === 'true',
+                            'amend_restricted'        => strtolower($this->xml_str($rateBasis['amendRestricted']  ?? '')) === 'true',
+                            'cancel_restricted_note'  => strtolower($this->xml_str($rateBasis['cancelRestricted'] ?? '')) === 'true'
+                                ? 'Cancellation not allowed'
+                                : null,
                             // Cert #20: special promotions
                             'specials'            => $specials,
                         ];
@@ -370,20 +434,37 @@ class WebbedsController extends BaseController
 
             usort($roomsList, fn($a, $b) => $a['price'] <=> $b['price']);
 
+
+            // See the same null-guard note in hotel_search() above — a hotel WebBeds
+            // returns live rates for may not yet exist in our static-data cache.
+            $staticHotelsDetails = $this->get_hotelDetails($hotelId);
+
+            $html = (string) ($staticHotelsDetails->hotelImages ?? '');
+            preg_match('/<thumb>(.*?)<\/thumb>/s', $html, $thumb);
+            preg_match_all('/<url>(.*?)<\/url>/s', $html, $matches);
+            $thumb = trim($thumb[1] ?? '');
+            $images = array_slice( array_map('trim', $matches[1] ?? []), 0, 20 );
+
+
+            $hotelNameRaw    = $staticHotelsDetails->hotelName ?? '';
+            $hotelAddressRaw = $staticHotelsDetails->address  ?? '';
+
+
             return response()->json([
-                'success'  => true,
-                'response' => [[
+                'success'        => true,
+                'log_session_id' => $logSession,
+                'response'       => [[
                     'h_id'          => $hotelId,
-                    'h_name'        => $cachedListing['h_name']  ?? '',
-                    'address'       => $cachedListing['address'] ?? '',
-                    'stars'         => $cachedListing['stars']   ?? 0,
-                    'imgs'          => $cachedListing['images']  ?? [],
+                    'h_name'        => $hotelNameRaw  ?? '',
+                    'address'       => $hotelAddressRaw ?? '',
+                    'stars'         => $this->convert_rating( $staticHotelsDetails->rating ?? 0),
+                    'imgs'          => $images  ?? [],
                     'lat'           => '',
                     'lng'           => '',
                     'agent_id'      => '',
                     'city'          => '',
                     'country'       => $cachedListing['location'] ?? '',
-                    'rating'        => $cachedListing['stars']   ?? 0,
+                    'rating'        => $this->convert_rating( $staticHotelsDetails->rating ?? 0),
                     'desc'          => '',
                     'amenities'     => [],
                     'checkin'       => $v['checkin'],
@@ -414,6 +495,7 @@ class WebbedsController extends BaseController
                 'booking_data'     => 'required',
                 'device_payload'   => 'nullable|string',
                 'env'              => 'nullable|in:dev,pro',
+                'log_session_id'   => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
@@ -423,8 +505,9 @@ class WebbedsController extends BaseController
             $v = $validator->validated();
 
             $salutationMap = [
-                'male' => '3801', 'female' => '3802', 'mr'   => '3801',
-                'mrs'  => '3802', 'miss'   => '3803', 'ms'   => '3802', 'dr' => '3804',
+                'male' => self::SALUTATION_MR,  'female' => self::SALUTATION_MRS,
+                'mr'   => self::SALUTATION_MR,  'mrs'    => self::SALUTATION_MRS,
+                'ms'   => self::SALUTATION_MRS, 'miss'   => self::SALUTATION_MRS,
             ];
 
             $roomData  = json_decode($v['booking_data']);
@@ -434,7 +517,7 @@ class WebbedsController extends BaseController
             $checkout     = $roomData->room_data->checkout;
             $productId    = $roomData->room_data->product_id;
             $adults       = (int) $roomData->room_data->adults;
-            $children     = $roomData->room_data->children ?? [];
+            $children     = $this->parse_child_ages($roomData->room_data->children ?? []);
             $roomTypeCode = $roomData->room_data->room_type_code;
             $nationality  = '167';
             $residence    = '167';
@@ -446,33 +529,117 @@ class WebbedsController extends BaseController
             $passengersFromOpt = (int) ($optionData->passengers_required ?? $roomData->room_data->passengers_required ?? 1);
 
             $customerReference = strtoupper('WB-' . $productId . '-' . date('Ymd', strtotime($checkin)) . '-' . substr(bin2hex(random_bytes(3)), 0, 6));
+            $logSession        = $v['log_session_id'] ?? $customerReference;
 
             $guest              = json_decode($v['guest']);
-            $passengersRequired = max($passengersFromOpt, $adults);
+            $childCount         = count($children);
+            // DOTW needs a name per occupant (adults + children)
+            $passengersRequired = max($passengersFromOpt, $adults + $childCount);
 
-            // Build adult passengers from guest input
+            // Build passengers from guest input. Each guest may flag itself as a
+            // child (type/is_child); otherwise it's treated as an adult.
             $passengers = [];
-            foreach ($guest as $i => $traveller) {
-                $titleKey   = strtolower(trim($traveller->title ?? ''));
-                $salutation = $salutationMap[$titleKey] ?? '3801';
+            foreach ($guest as $traveller) {
+                $titleKey = strtolower(trim($traveller->title ?? ''));
+                $type     = strtolower(trim($traveller->type ?? ''));
+                $isChild  = !empty($traveller->is_child) || $type === 'child';
                 $passengers[] = [
-                    'salutation' => $salutation,
+                    'salutation' => $isChild ? self::CHILD_SALUTATION_ID : ($salutationMap[$titleKey] ?? self::SALUTATION_MR),
                     'first_name' => $this->sanitize_name($traveller->first_name ?? 'Guest'),
                     'last_name'  => $this->sanitize_name($traveller->last_name  ?? 'Guest'),
-                    'leading'    => ($i === 0),
+                    'is_child'   => $isChild,
                 ];
             }
 
-            $leadPassenger = $passengers[0] ?? ['salutation' => '3801', 'first_name' => 'Guest', 'last_name' => 'Guest'];
+            // Pad up to the required count with DISTINCT names (never duplicate an
+            // existing passenger). Padded slots are adults unless children remain.
+            $childrenSoFar = count(array_filter($passengers, fn($p) => !empty($p['is_child'])));
             while (count($passengers) < $passengersRequired) {
+                $needChild    = $childrenSoFar < $childCount;
                 $passengers[] = [
-                    'salutation' => $leadPassenger['salutation'],
-                    'first_name' => $leadPassenger['first_name'],
-                    'last_name'  => $leadPassenger['last_name'],
-                    'leading'    => false,
+                    'salutation' => $needChild ? self::CHILD_SALUTATION_ID : self::SALUTATION_MR,
+                    'first_name' => $needChild ? 'Child' : 'Guest',
+                    'last_name'  => 'Traveller',
+                    'is_child'   => $needChild,
                 ];
+                if ($needChild) $childrenSoFar++;
             }
             $passengers = array_slice($passengers, 0, $passengersRequired);
+            $passengers = $this->ensure_unique_passenger_names($passengers);
+
+            // ── Pre-book: getrooms with blocking (logged as step3_getroomsblock) ──
+            // WebBeds requires the allocation to be re-validated/blocked immediately
+            // before savebooking. Run it here so it is ALWAYS executed and logged as
+            // part of the booking, and use its freshly blocked allocationDetails for
+            // savebooking. This gates the booking: if the block fails, we stop.
+            // $children is already sanitized to real ages (1..17)
+            $childAgesForBlock = $children;
+
+            $blockParams = [
+                'api_credential_1'     => $v['api_credential_1'],
+                'api_credential_2'     => $v['api_credential_2'],
+                'api_credential_3'     => $v['api_credential_3'],
+                'checkin'              => $checkin,
+                'checkout'             => $checkout,
+                'rooms'                => 1,
+                'adults'               => $adults,
+                'nationality'          => $nationality,
+                'country_of_residence' => $residence,
+                'hotel_id'             => $productId,
+                'room_type_code'       => $roomTypeCode,
+                'rate_basis_id'        => $selectedRateBasis,
+                'allocation_details'   => $allocationDetails,
+            ];
+
+            $blockXml      = $this->build_getrooms_block_xml($blockParams, $childAgesForBlock);
+            $blockResponse = $this->make_curl_request($blockXml, self::CURL_TIMEOUT_PRICE);
+            $this->log_booking_step($logSession, 'step3_getroomsblock', $blockXml, $blockResponse['body'] ?? $blockResponse['message'], $blockResponse['success']);
+
+            if (!$blockResponse['success']) {
+                return response()->json(['success' => false, 'booking_pnr' => null, 'step' => 'getroomsblock', 'message' => 'getrooms with blocking failed: ' . $blockResponse['message'], 'response' => $blockResponse['body'] ?? null], 500);
+            }
+
+            $blockData = $this->parseXmlToArray($blockResponse['body']);
+
+            if (strtoupper($blockData['successful'] ?? '') !== 'TRUE') {
+                $blockErr = $blockData['error']['details'] ?? ($blockData['errorMessage'] ?? 'Room no longer available for booking.');
+                return response()->json(['success' => false, 'booking_pnr' => null, 'step' => 'getroomsblock', 'message' => is_array($blockErr) ? implode(', ', $blockErr) : (string) $blockErr, 'response' => $blockData], 409);
+            }
+
+            // Extract the fresh (blocked) allocation for the selected room type + rate basis
+            $blockHotelNode = $blockData['hotel'] ?? $blockData['hotels']['hotel'] ?? null;
+            if (!isset($blockHotelNode['@attributes'])) {
+                $blockHotelNode = $blockHotelNode[0] ?? $blockHotelNode;
+            }
+            $blockRooms = $blockHotelNode['rooms']['room'] ?? [];
+            if (isset($blockRooms['@attributes'])) $blockRooms = [$blockRooms];
+
+            $freshAllocation = '';
+            $blockChecked    = false;
+            foreach ((array) $blockRooms as $bRoom) {
+                $bRoomTypes = $bRoom['roomType'] ?? [];
+                if (isset($bRoomTypes['@attributes'])) $bRoomTypes = [$bRoomTypes];
+                foreach ($bRoomTypes as $bRt) {
+                    if (($bRt['@attributes']['roomtypecode'] ?? '') !== $roomTypeCode) continue;
+                    $bRateBases = $bRt['rateBases']['rateBasis'] ?? [];
+                    if (isset($bRateBases['@attributes'])) $bRateBases = [$bRateBases];
+                    foreach ($bRateBases as $bRb) {
+                        if ((string) ($bRb['@attributes']['id'] ?? '') !== (string) $selectedRateBasis) continue;
+                        if (strtolower($bRb['status'] ?? '') === 'checked') {
+                            $blockChecked    = true;
+                            $freshAllocation = (string) ($bRb['allocationDetails'] ?? '');
+                        }
+                        break 3;
+                    }
+                }
+            }
+
+            if (!$blockChecked || empty($freshAllocation)) {
+                return response()->json(['success' => false, 'booking_pnr' => null, 'step' => 'getroomsblock', 'message' => 'Room could not be blocked (status not checked). Please re-search and try again.', 'response' => $blockData], 409);
+            }
+
+            // Use the freshly blocked allocation for savebooking
+            $allocationDetails = $freshAllocation;
 
             $normalised = [
                 'api_credential_1'   => $v['api_credential_1'],
@@ -499,6 +666,7 @@ class WebbedsController extends BaseController
             // ── Step 1: savebooking ───────────────────────────────────────────
             $xml      = $this->build_save_booking_xml($normalised);
             $response = $this->make_curl_request($xml, self::CURL_TIMEOUT_PRICE);
+            $this->log_booking_step($logSession, 'step4_savebooking', $xml, $response['body'] ?? $response['message'], $response['success']);
 
             if (!$response['success']) {
                 return response()->json(['success' => false, 'booking_pnr' => null, 'step' => 'savebooking', 'message' => $response['message'], 'response' => $response['body'] ?? null], 500);
@@ -539,6 +707,7 @@ class WebbedsController extends BaseController
 
             $itinXml1      = $this->build_book_itinerary_xml($itinParams1, null);
             $itinResponse1 = $this->make_curl_request($itinXml1, self::CURL_TIMEOUT_PRICE);
+            $this->log_booking_step($logSession, 'step5_bookitinerary_no', $itinXml1, $itinResponse1['body'] ?? $itinResponse1['message'], $itinResponse1['success']);
 
             if (!$itinResponse1['success']) {
                 return response()->json(['success' => false, 'booking_pnr' => $bookingCode, 'step' => 'bookitinerary_no', 'message' => 'bookitinerary(no) failed: ' . $itinResponse1['message'], 'response' => $itinResponse1['body'] ?? null], 500);
@@ -622,6 +791,7 @@ class WebbedsController extends BaseController
 
             $itinXml2      = $this->build_book_itinerary_xml($itinParams2, $testServices);
             $itinResponse2 = $this->make_curl_request($itinXml2, self::CURL_TIMEOUT_PRICE);
+            $this->log_booking_step($logSession, 'step6_bookitinerary_preauth', $itinXml2, $itinResponse2['body'] ?? $itinResponse2['message'], $itinResponse2['success']);
 
             if (!$itinResponse2['success']) {
                 return response()->json(['success' => false, 'booking_pnr' => $bookingCode, 'step' => 'bookitinerary_preauth', 'message' => 'bookitinerary(preauth) failed: ' . $itinResponse2['message'], 'response' => $itinResponse2['body'] ?? null], 500);
@@ -692,6 +862,7 @@ class WebbedsController extends BaseController
 
             $itinXml3      = $this->build_book_itinerary_xml($itinParams3, $yesServices);
             $itinResponse3 = $this->make_curl_request($itinXml3, self::CURL_TIMEOUT_PRICE);
+            $this->log_booking_step($logSession, 'step7_bookitinerary_yes', $itinXml3, $itinResponse3['body'] ?? $itinResponse3['message'], $itinResponse3['success']);
 
             if (!$itinResponse3['success']) {
                 return response()->json(['success' => false, 'booking_pnr' => $bookingCode, 'step' => 'bookitinerary_yes', 'message' => 'bookitinerary(yes) failed: ' . $itinResponse3['message'], 'response' => $itinResponse3['body'] ?? null], 500);
@@ -761,8 +932,10 @@ class WebbedsController extends BaseController
                 'checkin'              => 'required|date|after_or_equal:today',
                 'checkout'             => 'required|date|after:checkin',
                 'adults'               => 'required|integer|min:1',
-                'child_age'            => 'nullable|string',
-                'rooms'                => 'required|integer|min:1',
+                'child_age'            => 'nullable|array',
+                'child_age.*'          => 'integer|min:0|max:17',
+                // CC integration: multiroom bookings are not supported — single room only
+                'rooms'                => 'required|integer|min:1|max:1',
                 'room_type_code'       => 'required|string',
                 'rate_basis_id'        => 'required|string',
                 'allocation_details'   => 'required|string',
@@ -773,6 +946,7 @@ class WebbedsController extends BaseController
                 'api_credential_2'     => 'required|string',
                 'api_credential_3'     => 'required|string',
                 'env'                  => 'nullable|in:dev,pro',
+                'log_session_id'       => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
@@ -780,19 +954,22 @@ class WebbedsController extends BaseController
             }
 
             $v         = $validator->validated();
-            $childAges = [];
-            if (!empty($v['child_age'])) {
-                $childAges = array_map('intval', explode(',', $v['child_age']));
-            }
+            $childAges = $this->parse_child_ages($v['child_age'] ?? '');
 
+            $logSession    = $this->resolve_log_session($v['log_session_id'] ?? null, 'GETROOMSBLOCK');
             $blockXml      = $this->build_getrooms_block_xml($v, $childAges);
             $blockResponse = $this->make_curl_request($blockXml, self::CURL_TIMEOUT_PRICE);
+
+            // getrooms with blocking — always logged as booking evidence
+            $this->log_booking_step($logSession, 'step3_getroomsblock', $blockXml, $blockResponse['body'] ?? $blockResponse['message'], $blockResponse['success']);
 
             if (!$blockResponse['success']) {
                 return response()->json(['success' => false, 'message' => $blockResponse['message']], 500);
             }
 
-            $blockData = $this->parseXmlToArray($blockResponse['body']);
+            $blockData      = $this->parseXmlToArray($blockResponse['body']);
+            $blockXmlNative = @simplexml_load_string($blockResponse['body'], 'SimpleXMLElement', LIBXML_NOCDATA);
+            if ($blockXmlNative === false) $blockXmlNative = null;
 
             if (strtoupper($blockData['successful'] ?? '') !== 'TRUE') {
                 return $this->error_response('Getrooms block failed — hotel not available.', 404);
@@ -808,6 +985,15 @@ class WebbedsController extends BaseController
 
             $blockedAllocation = null;
             $checkedStatus     = false;
+            // Taxes & property fees can change during the getrooms-with-blocking
+            // validation, so capture the fresh values from the checked rate basis
+            $taxesAndFees      = [
+                'total_taxes'         => 0.0,
+                'currency'            => $v['currency'],
+                'property_fees'       => [],
+                'included_in_price'   => [],
+                'payable_at_property' => [],
+            ];
 
             foreach ($rawRooms as $room) {
                 $roomTypes = $room['roomType'] ?? [];
@@ -823,6 +1009,8 @@ class WebbedsController extends BaseController
                         if (strtolower($rb['status'] ?? '') === 'checked') {
                             $checkedStatus     = true;
                             $blockedAllocation = (string) ($rb['allocationDetails'] ?? '');
+                            $nativeRateBasis   = $this->find_native_rate_basis($blockXmlNative, $v['room_type_code'], (string) $v['rate_basis_id']);
+                            $taxesAndFees      = $this->extract_taxes_and_property_fees($rb, $nativeRateBasis);
                         }
                         break 3;
                     }
@@ -835,9 +1023,14 @@ class WebbedsController extends BaseController
 
             return response()->json([
                 'success'            => true,
+                'log_session_id'     => $logSession,
                 'allocation_details' => $blockedAllocation,
                 'status'             => 'checked',
                 'message'            => 'Room successfully blocked. Proceed to booking.',
+                // Checkout breakdown — display before confirming the booking.
+                // Amounts reflect the latest getrooms-with-blocking values and are
+                // split into what is already included in price vs payable at the property.
+                'taxes_and_fees'     => $taxesAndFees,
             ]);
 
         } catch (Exception $e) {
@@ -855,12 +1048,12 @@ class WebbedsController extends BaseController
             $validator = Validator::make($request->all(), [
                 'booking_code'     => 'required|string',
                 'confirm'          => 'required|in:no,yes',
-                'penalty_charge'   => 'nullable|numeric',
                 'payment_balance'  => 'required|numeric',
                 'service_code'     => 'nullable|string',
                 'api_credential_1' => 'required|string',
                 'api_credential_2' => 'required|string',
                 'api_credential_3' => 'required|string',
+                'log_session_id'   => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
@@ -871,26 +1064,120 @@ class WebbedsController extends BaseController
             $password    = md5($v['api_credential_2']);
             $bookingCode = $v['booking_code'];
             $confirm     = $v['confirm'];
+            $logSession  = $this->resolve_log_session($v['log_session_id'] ?? null, 'CANCEL_' . $bookingCode);
 
-            // confirm=no  → no testPricesAndAllocation
-            // confirm=yes → testPricesAndAllocation with penaltyApplied + paymentBalance
-            $testBlock = '';
-            if ($confirm === 'yes') {
-                $serviceCode    = $v['service_code']   ?? $bookingCode;
-                $penaltyValue   = $v['penalty_charge'];
-                $paymentBalance = $v['payment_balance'];
+            // Always probe WebBeds with confirm=no first to get the authoritative,
+            // full-precision cancellation charge — never trust a client-supplied
+            // penalty value. WebBeds' <charge> element carries 4 decimal places
+            // (e.g. 75.6721) while its <formatted> sibling is rounded for display
+            // (75.67); feeding the rounded value back into a confirm=yes request
+            // leaves a non-zero <paymentBalance> residual and WebBeds rejects the
+            // cancellation. Deriving the charge ourselves on every call — even when
+            // the caller asks for confirm=yes directly — makes that class of bug
+            // impossible regardless of what the caller passes.
+            $noXml      = $this->build_cancelbooking_xml($v, $bookingCode, $password, 'no');
+            $noResponse = $this->make_curl_request($noXml, self::CURL_TIMEOUT_PRICE);
+            $this->log_booking_step($logSession, 'cancelbooking_confirm_no', $noXml, $noResponse['body'] ?? $noResponse['message'], $noResponse['success']);
 
-                $testBlock = <<<TESTBLOCK
+            if (!$noResponse['success']) {
+                return response()->json(['success' => false, 'message' => $noResponse['message']], 500);
+            }
+
+            $noData = $this->parseXmlToArray($noResponse['body']);
+
+            if (strtoupper($noData['successful'] ?? '') !== 'TRUE') {
+                $errMsg = $noData['error']['details'] ?? ($noData['errorMessage'] ?? 'Cancel booking failed.');
+                return $this->error_response((string) $errMsg, 422);
+            }
+
+            $serviceNode  = $noData['services']['service'] ?? [];
+            if (isset($serviceNode['@attributes'])) $serviceNode = [$serviceNode];
+            $firstService = $serviceNode[0] ?? [];
+            $serviceCode  = (string) ($firstService['@attributes']['code'] ?? $v['service_code'] ?? $bookingCode);
+            $chargeNode   = $firstService['cancellationPenalty']['charge']  ?? 0;
+            $charge       = (float) (is_array($chargeNode) ? ($chargeNode[0] ?? 0) : $chargeNode);
+            $paymentBal   = (float) $v['payment_balance'] - $charge;
+
+            if ($confirm === 'no') {
+                // Preview only — nothing has been cancelled yet. Lets the caller
+                // show the customer the exact charge before they confirm.
+                return response()->json([
+                    'success'         => true,
+                    'booking_code'    => $bookingCode,
+                    'service_code'    => $serviceCode,
+                    'penalty_charge'  => $charge,
+                    'payment_balance' => $paymentBal,
+                    'status'          => 'preview',
+                    'message'         => 'Cancellation charge retrieved. Call again with confirm=yes to finalize.',
+                    'raw'             => $noData,
+                ]);
+            }
+
+            // confirm=yes — finalize using the charge we just fetched from WebBeds
+            // ourselves, never a value the caller might have cached or rounded.
+            $yesXml      = $this->build_cancelbooking_xml($v, $bookingCode, $password, 'yes', $serviceCode, $charge, $paymentBal);
+            $yesResponse = $this->make_curl_request($yesXml, self::CURL_TIMEOUT_PRICE);
+            $this->log_booking_step($logSession, 'cancelbooking_confirm_yes', $yesXml, $yesResponse['body'] ?? $yesResponse['message'], $yesResponse['success']);
+
+            if (!$yesResponse['success']) {
+                return response()->json(['success' => false, 'message' => 'Step2(yes) failed: ' . $yesResponse['message']], 500);
+            }
+
+            $yesData      = $this->parseXmlToArray($yesResponse['body']);
+            $yesSuccess   = strtoupper($yesData['successful'] ?? '') === 'TRUE';
+            $productsLeft = (int) ($yesData['productsLeftOnItinerary'] ?? 0);
+
+            return response()->json([
+                'success'                    => $yesSuccess,
+                'booking_code'               => $bookingCode,
+                'service_code'               => $serviceCode,
+                'penalty_charge'             => $charge,
+                'payment_balance'            => $paymentBal,
+                'products_left_on_itinerary' => $productsLeft,
+                'partial_cancellation'       => $productsLeft > 0,
+                'status'                     => $yesSuccess ? 'cancelled' : 'failed',
+                'message'                    => $yesSuccess
+                    ? ($productsLeft > 0
+                        ? "Partially cancelled. {$productsLeft} service(s) still active."
+                        : 'Booking cancelled successfully.')
+                    : 'Cancellation confirmation failed.',
+                'step1_raw' => $noData,
+                'step2_raw' => $yesData,
+            ]);
+
+        } catch (Exception $e) {
+            return $this->error_response('Server Error', 500, ['exception' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Build a WebBeds cancelbooking XML request. For confirm=yes, $serviceCode/
+     * $penalty/$paymentBalance must be supplied (sourced from our own confirm=no
+     * probe — see hotel_cancel_booking()) to populate the testPricesAndAllocation
+     * block; for confirm=no they're omitted and no such block is sent.
+     */
+    private function build_cancelbooking_xml(
+        array $v,
+        string $bookingCode,
+        string $password,
+        string $confirm,
+        ?string $serviceCode = null,
+        ?float $penalty = null,
+        ?float $paymentBalance = null
+    ): string {
+        $testBlock = '';
+        if ($confirm === 'yes' && $serviceCode !== null && $penalty !== null && $paymentBalance !== null) {
+            $testBlock = <<<TESTBLOCK
             <testPricesAndAllocation>
                 <service referencenumber="{$serviceCode}">
-                    <penaltyApplied>{$penaltyValue}</penaltyApplied>
+                    <penaltyApplied>{$penalty}</penaltyApplied>
                     <paymentBalance>{$paymentBalance}</paymentBalance>
                 </service>
             </testPricesAndAllocation>
 TESTBLOCK;
-            }
+        }
 
-            $xml = <<<XMLREQ
+        return <<<XMLREQ
 <?xml version="1.0" encoding="UTF-8"?>
 <customer>
     <username>{$v['api_credential_1']}</username>
@@ -907,109 +1194,6 @@ TESTBLOCK;
     </request>
 </customer>
 XMLREQ;
-
-            $response = $this->make_curl_request($xml, self::CURL_TIMEOUT_PRICE);
-
-            if (!$response['success']) {
-                return response()->json(['success' => false, 'message' => $response['message']], 500);
-            }
-
-            $data = $this->parseXmlToArray($response['body']);
-
-            if (strtoupper($data['successful'] ?? '') !== 'TRUE') {
-                $errMsg = $data['error']['details'] ?? ($data['errorMessage'] ?? 'Cancel booking failed.');
-                return $this->error_response((string) $errMsg, 422);
-            }
-
-            if ($confirm === 'no') {
-                // Step 1: extract charge
-                $serviceNode  = $data['services']['service'] ?? [];
-                if (isset($serviceNode['@attributes'])) $serviceNode = [$serviceNode];
-                $firstService = $serviceNode[0] ?? [];
-                $serviceCode  = (string) ($firstService['@attributes']['code'] ?? $bookingCode);
-                $chargeNode   = $firstService['cancellationPenalty']['charge']  ?? 0;
-                $charge       = (float) (is_array($chargeNode) ? ($chargeNode[0] ?? 0) : $chargeNode);
-                $paymentBal   = (float) $v['payment_balance'];
-
-                // Auto-call confirm=yes with extracted values
-                $penaltyFmt     = $charge;
-                $paymentFmt     = $paymentBal;
-                $paymentBal = $paymentFmt - $penaltyFmt;
-                $yesServiceCode = $bookingCode;
-
-                $yesTestBlock = <<<TESTBLOCK
-            <testPricesAndAllocation>
-                <service referencenumber="{$yesServiceCode}">
-                    <penaltyApplied>{$penaltyFmt}</penaltyApplied>
-                    <paymentBalance>{$paymentBal}</paymentBalance>
-                </service>
-            </testPricesAndAllocation>
-TESTBLOCK;
-
-                $yesXml = <<<YESXML
-<?xml version="1.0" encoding="UTF-8"?>
-<customer>
-    <username>{$v['api_credential_1']}</username>
-    <password>{$password}</password>
-    <id>{$v['api_credential_3']}</id>
-    <source>1</source>
-    <request command="cancelbooking">
-        <bookingDetails>
-            <bookingType>1</bookingType>
-            <bookingCode>{$bookingCode}</bookingCode>
-            <confirm>yes</confirm>
-            {$yesTestBlock}
-        </bookingDetails>
-    </request>
-</customer>
-YESXML;
-
-                $yesResponse = $this->make_curl_request($yesXml, self::CURL_TIMEOUT_PRICE);
-
-                if (!$yesResponse['success']) {
-                    return response()->json(['success' => false, 'message' => 'Step2(yes) failed: ' . $yesResponse['message']], 500);
-                }
-
-                $yesData      = $this->parseXmlToArray($yesResponse['body']);
-                $yesSuccess   = strtoupper($yesData['successful'] ?? '') === 'TRUE';
-                $productsLeft = (int) ($yesData['productsLeftOnItinerary'] ?? 0);
-
-                return response()->json([
-                    'success'                    => $yesSuccess,
-                    'booking_code'               => $bookingCode,
-                    'service_code'               => $serviceCode,
-                    'penalty_charge'             => $charge,
-                    'payment_balance'            => $paymentBal,
-                    'products_left_on_itinerary' => $productsLeft,
-                    'partial_cancellation'       => $productsLeft > 0,
-                    'status'                     => $yesSuccess ? 'cancelled' : 'failed',
-                    'message'                    => $yesSuccess
-                        ? ($productsLeft > 0
-                            ? "Partially cancelled. {$productsLeft} service(s) still active."
-                            : 'Booking cancelled successfully.')
-                        : 'Cancellation confirmation failed.',
-                    'step1_raw' => $data,
-                    'step2_raw' => $yesData,
-                ]);
-            }
-
-            // confirm=yes called directly
-            $productsLeft = (int) ($data['productsLeftOnItinerary'] ?? 0);
-            return response()->json([
-                'success'                    => true,
-                'booking_code'               => $bookingCode,
-                'products_left_on_itinerary' => $productsLeft,
-                'partial_cancellation'       => $productsLeft > 0,
-                'status'                     => 'cancelled',
-                'message'                    => $productsLeft > 0
-                    ? "Partially cancelled. {$productsLeft} service(s) still active."
-                    : 'Booking cancelled successfully.',
-                'raw' => $data,
-            ]);
-
-        } catch (Exception $e) {
-            return $this->error_response('Server Error', 500, ['exception' => $e->getMessage()]);
-        }
     }
 
     // -------------------------------------------------------------------------
@@ -1051,16 +1235,11 @@ YESXML;
 
     private function build_search_params(array $validated, object $destination): string
     {
-        $password     = md5($validated['api_credential_2']);
-        $childrenXml  = $this->build_children_xml($validated['children'] ?? []);
-        $nationality  = $validated['nationality'] ?? '167';
-        $residence    = $validated['country_of_residence'] ?? '167';
-        $roomsCount   = (int) ($validated['rooms'] ?? 1);
-        $conditionXml = '';
-
-        if (!empty($validated['rating'])) {
-            $conditionXml = '<c:condition><a:condition><fieldName>rating</fieldName><fieldTest>equals</fieldTest><fieldValues><fieldValue>' . $validated['rating'] . '</fieldValue></fieldValues></a:condition></c:condition>';
-        }
+        $password    = md5($validated['api_credential_2']);
+        $childrenXml = $this->build_children_xml($validated['child_age'] ?? []);
+        $nationality = '167' ;
+        $residence   = '167';
+        $roomsCount  = (int) ($validated['rooms'] ?? 1);
 
         return <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
@@ -1070,7 +1249,6 @@ YESXML;
     <id>{$validated['api_credential_3']}</id>
     <source>1</source>
     <product>hotel</product>
-    <language>en</language>
     <request command="searchhotels">
         <bookingDetails>
             <fromDate>{$validated['checkin']}</fromDate>
@@ -1080,24 +1258,16 @@ YESXML;
                 <room runno="0">
                     <adultsCode>{$validated['adults']}</adultsCode>
                     {$childrenXml}
-                    <rateBasis>-1</rateBasis>
+                    <rateBasis>1</rateBasis>
                     <passengerNationality>{$nationality}</passengerNationality>
                     <passengerCountryOfResidence>{$residence}</passengerCountryOfResidence>
                 </room>
             </rooms>
         </bookingDetails>
         <return>
-            <filters xmlns:a="http://us.dotwconnect.com/xsd/atomicCondition" xmlns:c="http://us.dotwconnect.com/xsd/complexCondition">
+            <filters>
                 <city>{$destination->code}</city>
-                <noPrice>true</noPrice>
-                {$conditionXml}
             </filters>
-            <fields>
-                <field>hotelName</field>
-                <field>address</field>
-                <field>rating</field>
-                <field>images</field>
-            </fields>
         </return>
     </request>
 </customer>
@@ -1107,9 +1277,9 @@ XML;
     private function build_price_batch_params(array $validated, array $hotelIds): string
     {
         $password    = md5($validated['api_credential_2']);
-        $childrenXml = $this->build_children_xml($validated['children'] ?? []);
-        $nationality = $validated['nationality'] ?? '167';
-        $residence   = $validated['country_of_residence'] ?? '167';
+        $childrenXml = $this->build_children_xml($validated['child_age'] ?? []);
+        $nationality = '167';
+        $residence   =  '167';
         $roomsCount  = (int) ($validated['rooms'] ?? 1);
         $fieldValues = implode('', array_map(fn($id) => "<fieldValue>{$id}</fieldValue>", $hotelIds));
 
@@ -1121,7 +1291,6 @@ XML;
     <id>{$validated['api_credential_3']}</id>
     <source>1</source>
     <product>hotel</product>
-    <language>en</language>
     <request command="searchhotels">
         <bookingDetails>
             <fromDate>{$validated['checkin']}</fromDate>
@@ -1155,21 +1324,44 @@ XML;
 
     private function build_children_xml(array $children): string
     {
+        // Keep only real child ages (1..17); a stray 0/invalid entry must NOT
+        // become a phantom child in the occupancy.
+        $children = $this->parse_child_ages($children);
         $count = count($children);
         if ($count === 0) return '<children no="0"/>';
         $xml = "<children no=\"{$count}\">";
-        foreach ($children as $index => $age) {
+        foreach (array_values($children) as $index => $age) {
             $xml .= "<child runno=\"{$index}\">{$age}</child>";
         }
         return $xml . '</children>';
+    }
+
+    /**
+     * Normalise a child-age input (comma string "5,8" or an array) into a clean
+     * list of real child ages. Non-numeric values and ages outside 1..17 (which
+     * includes the spurious "0" the frontend sometimes sends for no-children
+     * bookings) are dropped, so occupancy never contains a phantom child.
+     */
+    private function parse_child_ages(mixed $raw): array
+    {
+        if (is_string($raw)) {
+            $raw = trim($raw) === '' ? [] : explode(',', $raw);
+        }
+        $ages = [];
+        foreach ((array) $raw as $age) {
+            if (!is_numeric($age)) continue;
+            $age = (int) $age;
+            if ($age >= 1 && $age <= 17) $ages[] = $age;
+        }
+        return array_values($ages);
     }
 
     private function build_hotel_detail_params(array $v, string $hotelId, array $childAges): string
     {
         $password    = md5($v['api_credential_2']);
         $childrenXml = $this->build_children_xml($childAges);
-        $nationality = $v['nationality'] ?? '167';
-        $residence   = $v['country_of_residence'] ?? '167';
+        $nationality = '167';
+        $residence   =  '167';
         $roomsCount  = (int) ($v['rooms'] ?? 1);
 
         return <<<XML
@@ -1209,7 +1401,7 @@ XML;
         $roomsXml  = '';
 
         foreach ($v['rooms'] as $index => $room) {
-            $children     = (array) ($room['children'] ?? []);
+            $children     = $this->parse_child_ages($room['children'] ?? []);
             $childCount   = count($children);
             $adultsCode   = (int) $room['adults'];
             $actualAdults = (int) ($room['actual_adults'] ?? $adultsCode);
@@ -1221,12 +1413,12 @@ XML;
             $requiredPassengers = $adultsCode + $childCount;
 
             if ($childCount === 0) {
-                $childrenXml       = '<children no="0"/>';
-                $actualChildrenXml = '<actualChildren no="0"/>';
+                $childrenXml       = '<children no="0"></children>';
+                $actualChildrenXml = '<actualChildren no="0"></actualChildren>';
             } else {
                 $childrenXml       = '<children no="' . $childCount . '">';
                 $actualChildrenXml = '<actualChildren no="' . $childCount . '">';
-                foreach ($children as $ci => $age) {
+                foreach (array_values($children) as $ci => $age) {
                     $childrenXml       .= '<child runno="' . $ci . '">' . $age . '</child>';
                     $actualChildrenXml .= '<actualChild runno="' . $ci . '">' . $age . '</actualChild>';
                 }
@@ -1234,32 +1426,43 @@ XML;
                 $actualChildrenXml .= '</actualChildren>';
             }
 
-            // Adult passengers only (filter salutation 3803)
-            $adultGuests = array_values(array_filter(
-                $room['passengers'] ?? [],
-                fn($p) => ($p['salutation'] ?? '') !== '3803'
-            ));
+            // Split incoming guests into adults vs children by the explicit
+            // is_child flag (never by salutation — DOTW has no "3803" title).
+            $allGuests    = $room['passengers'] ?? [];
+            $adultGuests  = array_values(array_filter($allGuests, fn($p) => empty($p['is_child'])));
+            $childGuests  = array_values(array_filter($allGuests, fn($p) => !empty($p['is_child'])));
 
-            $lead = $adultGuests[0] ?? ['salutation' => '3801', 'first_name' => 'Guest', 'last_name' => 'Guest'];
-
-            // Build final passenger list: adults first, then child slots
+            // Assemble the final passenger list with UNIQUE names (DOTW rejects
+            // duplicate names in the same room). Adults first, then children.
             $finalPassengers = [];
             for ($i = 0; $i < $adultsCode; $i++) {
-                $finalPassengers[] = $adultGuests[$i] ?? $lead;
+                $finalPassengers[] = $adultGuests[$i] ?? [
+                    'salutation' => '3801',
+                    'first_name' => 'Guest',
+                    'last_name'  => 'Guest',
+                    'is_child'   => false,
+                ];
             }
             for ($i = 0; $i < $childCount; $i++) {
-                $finalPassengers[] = ['salutation' => '3803', 'first_name' => $lead['first_name'], 'last_name' => $lead['last_name']];
+                $finalPassengers[] = $childGuests[$i] ?? [
+                    'salutation' => self::CHILD_SALUTATION_ID,
+                    'first_name' => 'Child',
+                    'last_name'  => 'Guest',
+                    'is_child'   => true,
+                ];
             }
             $finalPassengers = array_slice($finalPassengers, 0, $requiredPassengers);
-            while (count($finalPassengers) < $requiredPassengers) {
-                $finalPassengers[] = $lead;
-            }
+
+            // Guarantee no two passengers share the same first+last name.
+            $finalPassengers = $this->ensure_unique_passenger_names($finalPassengers);
 
             $passengersXml = '<passengersDetails>';
             foreach ($finalPassengers as $i => $p) {
                 $leadAttr       = ($i === 0) ? ' leading="yes"' : '';
+                $isChild        = !empty($p['is_child']);
+                $salutation     = $isChild ? self::CHILD_SALUTATION_ID : ($p['salutation'] ?? '3801');
                 $passengersXml .= '<passenger' . $leadAttr . '>'
-                    . '<salutation>' . ($p['salutation'] ?? '3801') . '</salutation>'
+                    . '<salutation>' . $salutation . '</salutation>'
                     . '<firstName>'  . $this->sanitize_name($p['first_name'] ?? 'Guest') . '</firstName>'
                     . '<lastName>'   . $this->sanitize_name($p['last_name']  ?? 'Guest') . '</lastName>'
                     . '</passenger>';
@@ -1512,6 +1715,92 @@ XML;
         return (string) ($value ?? '');
     }
 
+    /**
+     * Locate the SimpleXMLElement for a specific rateBasis (by roomtypecode + rate
+     * basis id) directly in the parsed XML tree — used so property fees can be read
+     * natively instead of through the lossy array round-trip (see extract_taxes_and_property_fees).
+     */
+    private function find_native_rate_basis(?\SimpleXMLElement $xml, string $roomTypeCode, string $rateBasisId): ?\SimpleXMLElement
+    {
+        if ($xml === null) return null;
+
+        foreach ($xml->xpath('//roomType') as $rtNode) {
+            $rtAttrs = $rtNode->attributes();
+            if ((string) ($rtAttrs['roomtypecode'] ?? '') !== $roomTypeCode) continue;
+
+            if (!isset($rtNode->rateBases->rateBasis)) continue;
+            foreach ($rtNode->rateBases->rateBasis as $rbNode) {
+                $rbAttrs = $rbNode->attributes();
+                if ((string) ($rbAttrs['id'] ?? '') !== $rateBasisId) continue;
+                return $rbNode;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Extract taxes & property fees from a rate basis node (getrooms-with-blocking).
+     *
+     * propertyFee elements carry BOTH attributes (name, includedinprice, ...) and
+     * mixed text+<formatted> content. SimpleXML's json round-trip used by
+     * parseXmlToArray() drops the attributes AND the <formatted> child on nodes
+     * shaped like this, keeping only the raw leading text — so every fee silently
+     * failed the is_array() check below and was skipped. We read them natively
+     * off $nativeRateBasis instead, which preserves everything. totalTaxes has no
+     * attributes so it survives the array round-trip fine and is read from $rateBasis.
+     * Each property fee carries includedinprice="Yes|No" — Yes = already in price,
+     * No = payable at the property. Returns the breakdown for the checkout page.
+     */
+    private function extract_taxes_and_property_fees(array $rateBasis, ?\SimpleXMLElement $nativeRateBasis = null): array
+    {
+        $totalTaxesNode = $rateBasis['totalTaxes'] ?? null;
+        if (is_array($totalTaxesNode)) {
+            $totalTaxes = (float) ($totalTaxesNode['formatted'] ?? 0);
+        } else {
+            $totalTaxes = (float) ($totalTaxesNode ?? 0);
+        }
+
+        $all        = [];
+        $included   = [];
+        $atProperty = [];
+        $currency   = '';
+
+        if ($nativeRateBasis !== null && isset($nativeRateBasis->propertyFees->propertyFee)) {
+            foreach ($nativeRateBasis->propertyFees->propertyFee as $fee) {
+                $attr       = $fee->attributes();
+                $amount     = isset($fee->formatted) ? (float) $fee->formatted : (float) trim((string) $fee);
+                $isIncluded = strtolower((string) ($attr['includedinprice'] ?? 'no')) === 'yes';
+                $currency   = $currency ?: (string) ($attr['currencyshort'] ?? '');
+
+                $entry = [
+                    'name'              => (string) ($attr['name']          ?? ''),
+                    'description'       => (string) ($attr['description']   ?? ''),
+                    'amount'            => $amount,
+                    'currency'          => (string) ($attr['currencyshort'] ?? ''),
+                    'currency_id'       => (string) ($attr['currencyid']    ?? ''),
+                    'included_in_price' => $isIncluded,
+                    'payable'           => $isIncluded ? 'included_in_price' : 'payable_at_property',
+                ];
+
+                $all[] = $entry;
+                if ($isIncluded) {
+                    $included[]   = $entry;
+                } else {
+                    $atProperty[] = $entry;
+                }
+            }
+        }
+
+        return [
+            'total_taxes'         => $totalTaxes,
+            'currency'            => $currency,
+            'property_fees'       => $all,
+            'included_in_price'   => $included,
+            'payable_at_property' => $atProperty,
+        ];
+    }
+
     private function parse_cancellation_rules(array $rules): array
     {
         if (empty($rules)) return [];
@@ -1553,6 +1842,33 @@ XML;
         return $name;
     }
 
+    /**
+     * Ensure no two passengers in the same room share an identical first+last
+     * name (DOTW rejects duplicates). When a clash is found, a distinct
+     * alphabetic suffix (A, B, C, …) is appended to the last name. Letters only,
+     * so the value still passes sanitize_name and stays within length.
+     */
+    private function ensure_unique_passenger_names(array $passengers): array
+    {
+        $used = [];
+        foreach ($passengers as &$p) {
+            $first = $this->sanitize_name($p['first_name'] ?? 'Guest');
+            $last  = $this->sanitize_name($p['last_name']  ?? 'Guest');
+            $base  = $last;
+            $i     = 0;
+            while (isset($used[strtolower($first . '|' . $last)])) {
+                $suffix = chr(65 + ($i % 26)); // A, B, C, ...
+                $last   = substr($base, 0, 24) . $suffix;
+                $i++;
+            }
+            $used[strtolower($first . '|' . $last)] = true;
+            $p['first_name'] = $first;
+            $p['last_name']  = $last;
+        }
+        unset($p);
+        return $passengers;
+    }
+
     private function cache_hotel_listing(string $hotelId, array $hotelRow): void
     {
         $cacheKey = self::CACHE_PREFIX . $hotelId;
@@ -1581,6 +1897,18 @@ XML;
         }
     }
 
+    private function get_hotelDetails(string $hotel_id): ?object
+    {
+        try {
+            return DB::connection('sqlite_webbeds')
+                ->table('hotels')
+                ->where('hotel_id', $hotel_id)
+                ->first();
+        } catch (Exception $e) {
+            throw new Exception('Database error: ' . $e->getMessage());
+        }
+    }
+
     private function validate_input(Request $request): array
     {
         $rules = [
@@ -1588,9 +1916,12 @@ XML;
             'checkin'              => 'required|date_format:Y-m-d|after_or_equal:today',
             'checkout'             => 'required|date_format:Y-m-d|after:checkin',
             'adults'               => 'required|integer|min:1|max:20',
-            'children'             => 'nullable|array',
+            'childs'             => 'nullable|integer|min:0|max:20',
             'children.*'           => 'integer|min:0|max:17',
-            'rooms'                => 'required|integer|min:1|max:10',
+            'child_age'            => 'nullable|array',
+            'child_age.*'          => 'integer|min:0|max:17',
+            // CC integration: multiroom bookings are not supported — single room only
+            'rooms'                => 'required|integer|min:1|max:1',
             'currency'             => 'required|string|size:3|regex:/^[A-Z]{3}$/',
             'env'                  => 'required|in:dev,pro',
             'api_credential_1'     => 'required|string|min:5',
@@ -1984,6 +2315,7 @@ XML;
                 'api_credential_3' => 'required|string',
                 'country_code'     => 'nullable|string',
                 'country_name'     => 'nullable|string',
+                'developer_mode'   => 'nullable|boolean',
             ]);
 
             if ($validator->fails()) {
@@ -1998,9 +2330,10 @@ XML;
             $password    = md5($v['api_credential_2']);
             $countryCode = $v['country_code'] ?? '';
             $countryName = $v['country_name'] ?? '';
+            $devMode     = !empty($v['developer_mode']);
 
             // Static data endpoint — always use production URL
-            $staticEndpoint = self::API_ENDPOINT;
+            $staticEndpoint = 'https://us.dotwconnect.com/gateway.dotw';
 
             $xml = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
@@ -2011,13 +2344,9 @@ XML;
     <source>1</source>
     <request command="getallcities">
         <return>
-            <filters>
-                <countryCode>{$countryCode}</countryCode>
-                <countryName>{$countryName}</countryName>
-            </filters>
             <fields>
-                <field>{$countryCode}</field>
-                <field>{$countryName}</field>
+                <field>countryName</field>
+                <field>countryCode</field>
             </fields>
         </return>
     </request>
@@ -2030,6 +2359,8 @@ XML;
                 CURLOPT_POST           => true,
                 CURLOPT_POSTFIELDS     => $xml,
                 CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_MAXREDIRS      => 5,
                 CURLOPT_HTTPHEADER     => [
                     'Content-Type: text/xml; charset=UTF-8',
                     'Accept-Encoding: gzip, deflate',
@@ -2037,6 +2368,7 @@ XML;
                 CURLOPT_TIMEOUT        => 60,
                 CURLOPT_CONNECTTIMEOUT => 15,
                 CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => false,
                 CURLOPT_ENCODING       => 'gzip, deflate',
             ]);
 
@@ -2052,7 +2384,7 @@ XML;
                 ], 500);
             }
 
-            if ($httpCode !== 200) {
+            if (!in_array($httpCode, [200, 201])) {
                 return response()->json([
                     'success'   => false,
                     'message'   => "HTTP error: {$httpCode}",
@@ -2076,33 +2408,68 @@ XML;
             }
 
             // Parse cities
-            $rawCities = $parsed['city'] ?? [];
-            if (empty($rawCities)) {
+            // Debug — show raw parsed keys to identify correct node
+            if ($devMode ?? false) {
                 return response()->json([
-                    'success' => false,
-                    'message' => 'No cities found.',
-                    'data'    => [],
+                    'success'     => true,
+                    'debug_keys'  => array_keys($parsed),
+                    'debug_first' => array_slice($parsed, 0, 2),
+                    'raw_body'    => substr($body, 0, 500),
                 ]);
             }
 
-            // Normalize single city vs multiple
+            // DOTW wraps cities inside 'request' node
+            $requestNode = $parsed['request'] ?? [];
+            $rawCities   = $requestNode['city']
+                ?? $requestNode['cities']['city']
+                ?? $parsed['city']
+                ?? $parsed['cities']['city']
+                ?? [];
+
+            if (empty($rawCities)) {
+                return response()->json([
+                    'success'     => true,
+                    'message'     => 'No cities found for the given filter.',
+                    'total'       => 0,
+                    'parsed_keys' => array_keys($parsed),
+                    'data'        => [],
+                ]);
+            }
+
+            // Normalize single city (assoc) vs multiple (indexed)
             if (isset($rawCities['@attributes'])) {
                 $rawCities = [$rawCities];
             }
 
-            $cities = array_map(fn($city) => [
-                'city_id'      => (string) ($city['@attributes']['id']   ?? ''),
-                'city_name'    => (string) ($city['cityName']             ?? ''),
-                'country_code' => (string) ($city['countryCode']          ?? ''),
-                'country_name' => (string) ($city['countryName']          ?? ''),
-            ], $rawCities);
+            $cities = [];
+            foreach ($rawCities as $city) {
+                $cityCountryCode = (string) ($city['countryCode'] ?? $city['country_code'] ?? '');
+                $cityCountryName = (string) ($city['countryName'] ?? $city['country_name'] ?? '');
+                $cityId          = (string) ($city['@attributes']['id'] ?? $city['id'] ?? '');
+                $cityName        = (string) ($city['cityName'] ?? $city['city_name'] ?? $city['name'] ?? '');
+
+                // PHP-level filter as fallback if DOTW filter did not apply
+                if (!empty($countryCode) && strtoupper($cityCountryCode) !== strtoupper($countryCode)) {
+                    continue;
+                }
+                if (!empty($countryName) && stripos($cityCountryName, $countryName) === false) {
+                    continue;
+                }
+
+                $cities[] = [
+                    'city_id'      => $cityId,
+                    'city_name'    => $cityName,
+                    'country_code' => $cityCountryCode,
+                    'country_name' => $cityCountryName,
+                ];
+            }
 
             return response()->json([
-                'success'      => true,
-                'message'      => 'Cities retrieved successfully.',
-                'total'        => count($cities),
-                'endpoint'     => $staticEndpoint,
-                'data'         => $cities,
+                'success'  => true,
+                'message'  => 'Cities retrieved successfully.',
+                'total'    => count($cities),
+                'endpoint' => $staticEndpoint,
+                'data'     => $cities,
             ]);
 
         } catch (Exception $e) {
@@ -2110,6 +2477,104 @@ XML;
                 'success' => false,
                 'message' => 'Server Error: ' . $e->getMessage(),
             ], 500);
+        }
+    }
+
+
+    // -------------------------------------------------------------------------
+    // PUBLIC — GET SALUTATION IDS (title codes)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Fetch the valid salutation (title) IDs from DOTW via the getsalutationsids
+     * method. Use the returned numeric ids to confirm the adult titles and the
+     * correct CHILD title id (the code currently uses SALUTATION_MR/MRS for
+     * adults; "3803" is NOT valid).
+     */
+    public function get_salutations_ids(Request $request): JsonResponse
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'api_credential_1' => 'required|string',
+                'api_credential_2' => 'required|string',
+                'api_credential_3' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->error_response('Validation Error', 422, ['errors' => $validator->errors()->toArray()]);
+            }
+
+            $v        = $validator->validated();
+            $password = md5($v['api_credential_2']);
+
+            $xml = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<customer>
+    <username>{$v['api_credential_1']}</username>
+    <password>{$password}</password>
+    <id>{$v['api_credential_3']}</id>
+    <source>1</source>
+    <request command="getsalutationsids"></request>
+</customer>
+XML;
+
+            $response = $this->make_curl_request($xml, self::CURL_TIMEOUT_PRICE);
+
+            if (!$response['success']) {
+                return response()->json(['success' => false, 'message' => $response['message']], 500);
+            }
+
+            $parsed = $this->parseXmlToArray($response['body']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Salutation IDs retrieved. Use these to confirm adult and child title codes.',
+                'data'    => $parsed,
+                'raw'     => $response['body'],
+            ]);
+
+        } catch (Exception $e) {
+            return $this->error_response('Server Error', 500, ['exception' => $e->getMessage()]);
+        }
+    }
+
+
+    // -------------------------------------------------------------------------
+    // PRIVATE — LOGGING (TC1/TC2/TC3 certification evidence)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Resolve the session folder id for logging.
+     * Uses the id threaded from the client (so every step of one booking lands
+     * in the SAME folder); if none was passed, generates a deterministic fallback
+     * so the step is still captured as evidence rather than silently skipped.
+     */
+    private function resolve_log_session(?string $passed, string $prefix): string
+    {
+        $passed = trim((string) ($passed ?? ''));
+        if ($passed !== '') return $passed;
+        return $prefix . '_' . date('Ymd_His') . '_' . substr(bin2hex(random_bytes(3)), 0, 6);
+    }
+
+    private function log_booking_step(string $sessionId, string $step, mixed $request, mixed $response, bool $success = true): void
+    {
+        try {
+            $dir = base_path('webbeds/' . $sessionId . '/');
+            if (!is_dir($dir)) mkdir($dir, 0755, true);
+
+            $ts      = date('His');
+            $reqFile = $dir . $ts . '_' . $step . '_request.xml';
+            $resFile = $dir . $ts . '_' . $step . '_response.xml';
+
+            file_put_contents($reqFile, is_string($request)  ? $request  : json_encode($request,  JSON_PRETTY_PRINT));
+            file_put_contents($resFile, is_string($response) ? $response : json_encode($response, JSON_PRETTY_PRINT));
+
+            $indexFile = $dir . 'index.json';
+            $index     = file_exists($indexFile) ? json_decode(file_get_contents($indexFile), true) : [];
+            $index[]   = ['step' => $step, 'time' => date('Y-m-d H:i:s'), 'success' => $success];
+            file_put_contents($indexFile, json_encode($index, JSON_PRETTY_PRINT));
+        } catch (\Exception $e) {
+            // Never break booking flow
         }
     }
 

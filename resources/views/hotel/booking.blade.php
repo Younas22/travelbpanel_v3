@@ -243,6 +243,54 @@
                         </div>
                     </div>
 
+                    @php
+                        // Prefer the fresh, GetRooms-With-Blocking-derived taxes/fees
+                        // (re-validated for THIS booking attempt); fall back to the
+                        // figures captured at search time if that re-check didn't run.
+                        $taxesIncluded   = $fresh_taxes_and_fees['included_in_price']   ?? ($booking_option['taxes_included']    ?? []);
+                        $taxesAtProperty = $fresh_taxes_and_fees['payable_at_property'] ?? ($booking_option['taxes_at_property'] ?? []);
+                    @endphp
+
+                    @if(!empty($booking_option['non_refundable']) || !empty($booking_option['cancel_restricted']) || (!empty($booking_option['min_stay']) && (int) $booking_option['min_stay'] > 0))
+                        <div class="space-y-2 mb-5 pb-5 border-b border-gray-200">
+                            @if(!empty($booking_option['cancel_restricted']))
+                                <div class="flex items-start gap-2 text-xs font-semibold text-red-700 bg-red-50 rounded-lg px-3 py-2">
+                                    <i class="fas fa-ban mt-0.5"></i>
+                                    <span>{{ $booking_option['cancel_restricted_note'] ?? 'Cancellation not allowed' }}</span>
+                                </div>
+                            @elseif(!empty($booking_option['non_refundable']))
+                                <div class="flex items-start gap-2 text-xs font-semibold text-red-700 bg-red-50 rounded-lg px-3 py-2">
+                                    <i class="fas fa-times-circle mt-0.5"></i>
+                                    <span>{{ t('hoteldetails.non_refundable') }}</span>
+                                </div>
+                            @endif
+                            @if(!empty($booking_option['min_stay']) && (int) $booking_option['min_stay'] > 0)
+                                <div class="flex items-start gap-2 text-xs text-amber-800 bg-amber-50 rounded-lg px-3 py-2">
+                                    <i class="fas fa-calendar-day mt-0.5"></i>
+                                    <span>{{ str_replace(':nights', $booking_option['min_stay'], t('hoteldetails.min_stay_note')) }}</span>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
+                    @if(!empty($taxesIncluded) || !empty($taxesAtProperty))
+                        <div class="space-y-1 mb-5 pb-5 border-b border-gray-200">
+                            <div class="text-sm font-semibold text-gray-700 mb-1">{{ t('hoteldetails.taxes_and_fees') }}</div>
+                            @foreach($taxesIncluded as $tax)
+                                <div class="flex justify-between text-xs text-gray-600">
+                                    <span>{{ $tax['description'] ?: ($tax['name'] ?? $tax['type'] ?? '') }} <span class="text-green-700">({{ t('hoteldetails.included_in_price') }})</span></span>
+                                    <span>{{ number_format($tax['amount'], 2) }} {{ $tax['currency'] ?? '' }}</span>
+                                </div>
+                            @endforeach
+                            @foreach($taxesAtProperty as $tax)
+                                <div class="flex justify-between text-xs text-gray-600">
+                                    <span>{{ $tax['description'] ?: ($tax['name'] ?? $tax['type'] ?? '') }} <span class="text-amber-700">({{ t('hoteldetails.payable_at_property') }})</span></span>
+                                    <span>{{ number_format($tax['amount'], 2) }} {{ $tax['currency'] ?? '' }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
                     <div class="flex justify-between items-center">
                         <span class="text-lg font-bold text-gray-800">{{t('hotelbooking.total_amount')}}</span>
                         <span class="text-2xl font-bold" style="color: #0077BE;">{{$booking_option['price']}}</span>

@@ -43,5 +43,10 @@
     "nights": "泊",
     "location": "場所",
     "hotel_rating": "ホテルランク",
-    "starting_from": "最低価格"
+    "starting_from": "最低価格",
+    "changed_occupancy_note": "このレートはご希望と異なる人数構成で表示されています。ご予約前にご確認ください。",
+    "min_stay_note": "このレートには最低 :nights 泊の滞在が必要です。",
+    "taxes_and_fees": "税金・手数料",
+    "included_in_price": "料金に含まれる",
+    "payable_at_property": "現地払い"
 }

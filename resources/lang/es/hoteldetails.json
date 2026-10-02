@@ -43,5 +43,10 @@
     "nights": "Noches",
     "location": "Ubicación",
     "hotel_rating": "Clasificación del Hotel",
-    "starting_from": "Desde"
+    "starting_from": "Desde",
+    "changed_occupancy_note": "Esta tarifa se muestra para una ocupación diferente a la solicitada. Revísela antes de reservar.",
+    "min_stay_note": "Esta tarifa requiere una estancia mínima de :nights noche(s).",
+    "taxes_and_fees": "Impuestos y tasas",
+    "included_in_price": "Incluido en el precio",
+    "payable_at_property": "Pagadero en el establecimiento"
 }

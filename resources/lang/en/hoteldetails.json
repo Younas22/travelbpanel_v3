@@ -43,5 +43,10 @@
     "nights": "Nights",
     "location": "Location",
     "hotel_rating": "Hotel Rating",
-    "starting_from": "Starting From"
+    "starting_from": "Starting From",
+    "changed_occupancy_note": "This rate is shown for a different room occupancy than requested — please review before booking.",
+    "min_stay_note": "A minimum stay of :nights night(s) is required for this rate.",
+    "taxes_and_fees": "Taxes & Fees",
+    "included_in_price": "Included in price",
+    "payable_at_property": "Payable at property"
 }

@@ -257,11 +257,12 @@
                                     <i class="fas fa-minus text-gray-600 text-[10px]"></i>
                                 </button>
                                 <span id="hotelRoomCount" class="w-6 text-center font-semibold text-[13px]">1</span>
-                                <button type="button" class="traveler-btn w-7 h-7 rounded-full border-2 border-[#0077BE] bg-[#E6F3FB] flex items-center justify-center" data-type="room" data-action="plus">
-                                    <i class="fas fa-plus text-[#0077BE] text-[10px]"></i>
+                                <button type="button" disabled title="{{ t('hotel.multiRoomNotSupported') }}" class="traveler-btn w-7 h-7 rounded-full border-2 border-gray-300 bg-gray-100 flex items-center justify-center cursor-not-allowed opacity-50" data-type="room" data-action="plus">
+                                    <i class="fas fa-plus text-gray-400 text-[10px]"></i>
                                 </button>
                             </div>
                         </div>
+                        <div class="text-[11px] text-gray-400 -mt-2 mb-3">{{ t('hotel.multiRoomNotSupported') }}</div>
 
                         <div id="hotelChildAgeError" class="text-[11px] text-red-500 font-medium mb-2" style="display:none;">
                             {{ t('hotel.selectChildAgeFirst') }}

@@ -43,5 +43,10 @@
     "nights": "Gece",
     "location": "Konum",
     "hotel_rating": "Otel Puanı",
-    "starting_from": "Başlangıç Fiyatı"
+    "starting_from": "Başlangıç Fiyatı",
+    "changed_occupancy_note": "Bu fiyat, talep edilenden farklı bir doluluk için gösterilmektedir — lütfen rezervasyon yapmadan önce kontrol edin.",
+    "min_stay_note": "Bu fiyat için en az :nights gece konaklama gereklidir.",
+    "taxes_and_fees": "Vergi ve Ücretler",
+    "included_in_price": "Fiyata dahil",
+    "payable_at_property": "Tesiste ödenir"
 }

@@ -338,7 +338,7 @@ class HotelController extends Controller
             $response = Http::post($endpoint, $payload);
             $data = $response->json();
 
-            if (isset($data['status']) && $data['status'] === false) {
+            if (isset($data['success']) && $data['success'] === false) {
                 $message = $data['message'] ?? 'No hotel found for selected criteria.';
 
                 return view('hotel.details', [
@@ -378,6 +378,48 @@ class HotelController extends Controller
             $booking_option = json_decode(decrypt($encrypted_option), true);
             $booking_data = json_decode(decrypt($encrypted_booking), true);
 
+            // Taxes & property fees can change between the initial search and the
+            // final booking, so re-validate via GetRooms-With-Blocking here and show
+            // the checkout page the FRESH figures — not the stale ones from search.
+            // Credentials stay server-side; never exposed to the browser. Non-fatal
+            // on failure: the page falls back to $booking_option's own tax fields.
+            $fresh_taxes_and_fees = null;
+            if (strtolower($encrypted_room_data->supplier_name ?? '') === 'webbeds') {
+                $supplier = TravelPartner::where('status', 'active')
+                    ->where('company_name', 'webbeds')
+                    ->first();
+
+                if ($supplier) {
+                    try {
+                        $blockResponse = Http::post(url('/') . '/api/webbeds/hotel_getrooms_block', [
+                            'hotel_id'             => $encrypted_room_data->product_id          ?? '',
+                            'checkin'              => $encrypted_room_data->checkin             ?? '',
+                            'checkout'             => $encrypted_room_data->checkout            ?? '',
+                            'adults'               => $encrypted_room_data->adults              ?? 1,
+                            'child_age'            => $encrypted_room_data->children            ?? [],
+                            'rooms'                => $encrypted_room_data->rooms               ?? 1,
+                            'room_type_code'       => $encrypted_room_data->room_type_code      ?? '',
+                            'rate_basis_id'        => $encrypted_room_data->selected_rate_basis ?? '',
+                            'allocation_details'   => $encrypted_room_data->allocation_details   ?? '',
+                            'currency'             => $encrypted_room_data->currency ?? activeCurrency()->currency_name,
+                            'nationality'          => $encrypted_room_data->nationality          ?? '',
+                            'country_of_residence' => $encrypted_room_data->country_of_residence ?? '',
+                            'api_credential_1'     => $supplier->api_credential_1,
+                            'api_credential_2'     => $supplier->api_credential_2,
+                            'api_credential_3'     => $supplier->api_credential_3,
+                            'env'                  => 'dev',
+                        ]);
+
+                        $blockData = $blockResponse->json();
+                        if (($blockData['success'] ?? false) === true) {
+                            $fresh_taxes_and_fees = $blockData['taxes_and_fees'] ?? null;
+                        }
+                    } catch (\Exception $blockException) {
+                        $fresh_taxes_and_fees = null;
+                    }
+                }
+            }
+
             return view('hotel.booking', [
                 'room' => $room,
                 'room_data' => $encrypted_room_data,
@@ -387,6 +429,7 @@ class HotelController extends Controller
                 'countries' => $countries,
                 'hotel_search' => session('hotel_search'),
                 'agentWallet' => auth()->check() && auth()->user()->isAgent() ? auth()->user()->wallet : null,
+                'fresh_taxes_and_fees' => $fresh_taxes_and_fees,
             ]);
         } catch (\Exception $exception) {
             return abort(400, 'Invalid booking data provided.');

@@ -43,5 +43,10 @@
     "nights": "Nachten",
     "location": "Locatie",
     "hotel_rating": "Hotelclassificatie",
-    "starting_from": "Vanaf"
+    "starting_from": "Vanaf",
+    "changed_occupancy_note": "Dit tarief wordt getoond voor een andere bezetting dan aangevraagd — controleer dit voor het boeken.",
+    "min_stay_note": "Voor dit tarief is een minimumverblijf van :nights nacht(en) vereist.",
+    "taxes_and_fees": "Belastingen & kosten",
+    "included_in_price": "Inbegrepen in de prijs",
+    "payable_at_property": "Te betalen bij het verblijf"
 }

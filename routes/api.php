@@ -143,6 +143,10 @@ Route::controller(WebbedsController::class)->group(function(){
 });
 
 Route::controller(WebbedsController::class)->group(function(){
+    Route::post('webbeds/hotel_getrooms_block', 'hotel_getrooms_block');
+});
+
+Route::controller(WebbedsController::class)->group(function(){
     Route::post('webbeds/cancel_booking', 'hotel_cancel_booking');
 });
 

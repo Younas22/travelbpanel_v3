@@ -43,5 +43,10 @@
     "nights": "ليالٍ",
     "location": "الموقع",
     "hotel_rating": "تقييم الفندق",
-    "starting_from": "يبدأ من"
+    "starting_from": "يبدأ من",
+    "changed_occupancy_note": "يتم عرض هذا السعر لعدد إشغال مختلف عن المطلوب — يرجى المراجعة قبل الحجز.",
+    "min_stay_note": "يتطلب هذا السعر حدًا أدنى للإقامة قدره :nights ليلة/ليالٍ.",
+    "taxes_and_fees": "الضرائب والرسوم",
+    "included_in_price": "مشمول في السعر",
+    "payable_at_property": "يُدفع في الفندق"
 }

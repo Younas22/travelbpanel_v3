@@ -43,5 +43,10 @@
     "nights": "晚",
     "location": "位置",
     "hotel_rating": "酒店评级",
-    "starting_from": "起价"
+    "starting_from": "起价",
+    "changed_occupancy_note": "此价格显示的入住人数与您的请求不同 — 请在预订前仔细查看。",
+    "min_stay_note": "此价格要求至少入住 :nights 晚。",
+    "taxes_and_fees": "税费",
+    "included_in_price": "已含在价格中",
+    "payable_at_property": "入住时支付"
 }

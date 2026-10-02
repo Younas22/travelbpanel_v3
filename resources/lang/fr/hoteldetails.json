@@ -43,5 +43,10 @@
     "nights": "Nuits",
     "location": "Localisation",
     "hotel_rating": "Classement de l'Hôtel",
-    "starting_from": "À Partir de"
+    "starting_from": "À Partir de",
+    "changed_occupancy_note": "Ce tarif est affiché pour une occupation différente de celle demandée — veuillez vérifier avant de réserver.",
+    "min_stay_note": "Ce tarif nécessite un séjour minimum de :nights nuit(s).",
+    "taxes_and_fees": "Taxes et frais",
+    "included_in_price": "Inclus dans le prix",
+    "payable_at_property": "Payable sur place"
 }
