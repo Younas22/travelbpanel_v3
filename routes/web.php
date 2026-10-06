@@ -60,6 +60,8 @@ Route::prefix('user')->name('user.')->group(function () {
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login'); // Laravel expects 'login' route
 Route::get('/admin/login', [AuthController::class, 'showLogin'])->name('admin.login'); // Keep admin.login for backward compatibility
 Route::post('/signin', [AuthController::class, 'login'])->name('admin.signin.post');
+Route::get('/signin/verify', [AuthController::class, 'showTwoFactor'])->name('admin.2fa.show');
+Route::post('/signin/verify', [AuthController::class, 'verifyTwoFactor'])->name('admin.2fa.verify');
 Route::post('/set-currency', [CurrencyController::class, 'setCurrency'])->name('set.currency');
 
 

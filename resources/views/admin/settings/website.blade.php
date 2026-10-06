@@ -71,6 +71,11 @@
                     <i class="bi bi-share me-2"></i>Social Links
                 </button>
             </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link modern-btn" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab">
+                    <i class="bi bi-shield-lock me-2"></i>Security
+                </button>
+            </li>
         </ul>
 
         <!-- Tab Content -->
@@ -624,6 +629,49 @@
                     </form>
                 </div>
             </div>
+
+            <!-- Security Tab -->
+            <div class="tab-pane fade" id="security" role="tabpanel">
+                <div class="settings-content">
+                    <form id="securitySettingsForm" onsubmit="saveSettingsGroup(event, 'security')">
+                        <div class="settings-section">
+                            <div class="section-title">Admin Login Verification (Google Authenticator)</div>
+                            <div class="section-description">When enabled, admin accounts must enter a 6-digit code from Google Authenticator after their password.</div>
+
+                            <div class="form-group">
+                                <div class="form-check form-switch">
+                                    <input type="checkbox" class="form-check-input" name="admin_2fa_enabled" id="admin2faEnabled" value="1"
+                                           {{ ($settings['security']['admin_2fa_enabled'] ?? '0') === '1' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="admin2faEnabled">
+                                        Require Google Authenticator code for admin login
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Authenticator Key</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control font-monospace" name="admin_2fa_secret" id="admin2faSecret"
+                                           value="{{ $settings['security']['admin_2fa_secret'] ?? '' }}"
+                                           placeholder="e.g. JBSWY3DPEHPK3PXP" autocomplete="off">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="generateAuthenticatorKey()">
+                                        <i class="bi bi-arrow-repeat"></i> Generate
+                                    </button>
+                                </div>
+                                <div class="form-text">
+                                    In Google Authenticator tap <strong>+ → Enter a setup key</strong>, use any name, paste this key, and choose <em>Time based</em>. Save the settings after adding it to the app.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="save-section">
+                            <button type="submit" class="btn btn-primary modern-btn">
+                                <i class="bi bi-check-lg"></i> Save Security Settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -712,6 +760,23 @@ function saveAllSettings() {
             }
         });
     });
+}
+
+// Random Base32 key (RFC 4648) for Google Authenticator's manual setup
+function generateAuthenticatorKey() {
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    const bytes = crypto.getRandomValues(new Uint8Array(20));
+    let bits = 0, value = 0, key = '';
+    for (const byte of bytes) {
+        value = (value << 8) | byte;
+        bits += 8;
+        while (bits >= 5) {
+            key += alphabet[(value >>> (bits - 5)) & 31];
+            bits -= 5;
+        }
+    }
+    if (bits > 0) key += alphabet[(value << (5 - bits)) & 31];
+    document.getElementById('admin2faSecret').value = key;
 }
 
 // Show notification

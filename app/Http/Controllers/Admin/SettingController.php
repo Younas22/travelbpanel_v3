@@ -46,6 +46,10 @@ public function updateWebsite(Request $request)
         $validated['show_business_name_with_logo'] = $request->has('show_business_name_with_logo') ? '1' : '0';
     }
 
+    if ($group === 'security') {
+        $validated['admin_2fa_enabled'] = $request->has('admin_2fa_enabled') ? '1' : '0';
+    }
+
     try {
         foreach ($validated as $key => $value) {
             // Handle file uploads to public folder
@@ -81,7 +85,7 @@ public function updateWebsite(Request $request)
             }
 
             // Handle checkboxes (convert to boolean)
-            if (in_array($key, ['website_offline', 'guest_booking', 'user_registration', 'supplier_registration', 'agent_registration'])) {
+            if (in_array($key, ['website_offline', 'guest_booking', 'user_registration', 'supplier_registration', 'agent_registration', 'admin_2fa_enabled'])) {
                 $value = $request->has($key) ? '1' : '0';
             }
 
@@ -159,6 +163,16 @@ private function getValidationRules($group)
             'cover_image' => 'nullable|image|max:5120',
             'cover_title' => 'nullable|string|max:255',
             'cover_subtitle' => 'nullable|string|max:500'
+        ],
+        'security' => [
+            'admin_2fa_enabled' => 'nullable|boolean',
+            'admin_2fa_secret' => [
+                'required_if:admin_2fa_enabled,1',
+                'nullable',
+                'string',
+                'max:64',
+                'regex:/^[A-Za-z2-7 ]+$/',
+            ],
         ],
         'social' => [
             'facebook_url' => 'nullable|url',
