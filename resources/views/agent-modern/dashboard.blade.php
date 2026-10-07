@@ -68,7 +68,7 @@
             <div class="dash-stat-icon icon-amber"><i class="bi bi-wallet2"></i></div>
             <div>
                 <div class="dash-stat-label">Wallet</div>
-                <div class="dash-stat-value">{{ $dhDisplayCurrency }} {{ number_format($dhWalletBalance, 0) }}</div>
+                <div class="dash-stat-value" title="{{ $dhDisplayCurrency }} {{ number_format($dhWalletBalance, 0) }}">{{ $dhDisplayCurrency }} {{ number_format($dhWalletBalance, 0) }}</div>
             </div>
         </div>
 
@@ -76,7 +76,7 @@
             <div class="dash-stat-icon icon-cyan"><i class="bi bi-graph-up"></i></div>
             <div>
                 <div class="dash-stat-label">Spent</div>
-                <div class="dash-stat-value">{{ $dhDisplayCurrency }} {{ number_format($dhToDisplay($wallet?->total_debited), 0) }}</div>
+                <div class="dash-stat-value" title="{{ $dhDisplayCurrency }} {{ number_format($dhToDisplay($wallet?->total_debited), 0) }}">{{ $dhDisplayCurrency }} {{ number_format($dhToDisplay($wallet?->total_debited), 0) }}</div>
             </div>
         </div>
 

@@ -32,9 +32,9 @@
         <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
             <i class="fas fa-building text-blue-500 text-sm"></i>
         </div>
-        <div>
+        <div class="min-w-0 flex-1">
             <div class="text-xs text-gray-400 leading-tight">Hotels</div>
-            <div class="text-lg font-bold text-gray-800 leading-tight">{{ $stats['total_hotels'] }}</div>
+            <div class="text-lg font-bold text-gray-800 leading-tight truncate" title="{{ $stats['total_hotels'] }}">{{ $stats['total_hotels'] }}</div>
         </div>
     </div>
 
@@ -42,9 +42,9 @@
         <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center flex-shrink-0">
             <i class="fas fa-plane text-indigo-500 text-sm"></i>
         </div>
-        <div>
+        <div class="min-w-0 flex-1">
             <div class="text-xs text-gray-400 leading-tight">Flights</div>
-            <div class="text-lg font-bold text-gray-800 leading-tight">{{ $stats['flights'] }}</div>
+            <div class="text-lg font-bold text-gray-800 leading-tight truncate" title="{{ $stats['flights'] }}">{{ $stats['flights'] }}</div>
         </div>
     </div>
 
@@ -52,9 +52,9 @@
         <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0">
             <i class="fas fa-map-location-dot text-green-500 text-sm"></i>
         </div>
-        <div>
+        <div class="min-w-0 flex-1">
             <div class="text-xs text-gray-400 leading-tight">Tours</div>
-            <div class="text-lg font-bold text-gray-800 leading-tight">{{ $stats['total_tours'] }}</div>
+            <div class="text-lg font-bold text-gray-800 leading-tight truncate" title="{{ $stats['total_tours'] }}">{{ $stats['total_tours'] }}</div>
         </div>
     </div>
 
@@ -62,9 +62,9 @@
         <div class="w-8 h-8 rounded-full bg-yellow-50 flex items-center justify-center flex-shrink-0">
             <i class="fas fa-moon text-yellow-500 text-sm"></i>
         </div>
-        <div>
+        <div class="min-w-0 flex-1">
             <div class="text-xs text-gray-400 leading-tight">Umrah</div>
-            <div class="text-lg font-bold text-gray-800 leading-tight">{{ $stats['total_umrah'] }}</div>
+            <div class="text-lg font-bold text-gray-800 leading-tight truncate" title="{{ $stats['total_umrah'] }}">{{ $stats['total_umrah'] }}</div>
         </div>
     </div>
 
@@ -72,9 +72,9 @@
         <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
             <i class="fas fa-calendar-check text-blue-500 text-sm"></i>
         </div>
-        <div>
+        <div class="min-w-0 flex-1">
             <div class="text-xs text-gray-400 leading-tight">Bookings</div>
-            <div class="text-lg font-bold text-gray-800 leading-tight">{{ $stats['total'] }}</div>
+            <div class="text-lg font-bold text-gray-800 leading-tight truncate" title="{{ $stats['total'] }}">{{ $stats['total'] }}</div>
         </div>
     </div>
 
@@ -82,9 +82,9 @@
         <div class="w-8 h-8 rounded-full bg-yellow-50 flex items-center justify-center flex-shrink-0">
             <i class="fas fa-wallet text-yellow-500 text-sm"></i>
         </div>
-        <div>
+        <div class="min-w-0 flex-1">
             <div class="text-xs text-gray-400 leading-tight">Wallet</div>
-            <div class="text-sm font-bold text-gray-800 leading-tight">{{ $dhDisplayCurrency }} {{ number_format($dhWalletBalance, 0) }}</div>
+            <div class="text-sm font-bold text-gray-800 leading-tight truncate" title="{{ $dhDisplayCurrency }} {{ number_format($dhWalletBalance, 0) }}">{{ $dhDisplayCurrency }} {{ number_format($dhWalletBalance, 0) }}</div>
         </div>
     </div>
 
@@ -92,9 +92,9 @@
         <div class="w-8 h-8 rounded-full bg-cyan-50 flex items-center justify-center flex-shrink-0">
             <i class="fas fa-chart-line text-cyan-500 text-sm"></i>
         </div>
-        <div>
+        <div class="min-w-0 flex-1">
             <div class="text-xs text-gray-400 leading-tight">Spent</div>
-            <div class="text-sm font-bold text-gray-800 leading-tight">{{ $dhDisplayCurrency }} {{ number_format($dhToDisplay($wallet?->total_debited), 0) }}</div>
+            <div class="text-sm font-bold text-gray-800 leading-tight truncate" title="{{ $dhDisplayCurrency }} {{ number_format($dhToDisplay($wallet?->total_debited), 0) }}">{{ $dhDisplayCurrency }} {{ number_format($dhToDisplay($wallet?->total_debited), 0) }}</div>
         </div>
     </div>
 
