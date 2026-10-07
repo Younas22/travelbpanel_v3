@@ -27,7 +27,7 @@
             <p>Enter the 6-digit code from Google Authenticator</p>
         </div>
         <div class="tf-body">
-            <form method="POST" action="{{ route('admin.2fa.verify') }}" autocomplete="off">
+            <form method="POST" action="{{ route('2fa.verify') }}" autocomplete="off">
                 @csrf
                 <label class="tf-label" for="code">Verification code</label>
                 <input type="text" id="code" name="code" class="tf-input" inputmode="numeric" pattern="\d{6}" maxlength="6"
@@ -35,7 +35,7 @@
                 @error('code')<span class="tf-err">{{ $message }}</span>@enderror
                 <button type="submit" class="tf-btn"><i class="fas fa-check"></i> Verify &amp; Sign In</button>
             </form>
-            <div class="tf-hint"><a href="{{ route('admin.login') }}">Back to login</a></div>
+            <div class="tf-hint"><a href="{{ route('login') }}">Back to login</a></div>
         </div>
     </div>
 </div>

@@ -47,7 +47,9 @@ public function updateWebsite(Request $request)
     }
 
     if ($group === 'security') {
-        $validated['admin_2fa_enabled'] = $request->has('admin_2fa_enabled') ? '1' : '0';
+        foreach (['admin_2fa_enabled', 'agent_2fa_enabled', 'user_2fa_enabled'] as $toggle) {
+            $validated[$toggle] = $request->has($toggle) ? '1' : '0';
+        }
     }
 
     try {
@@ -85,7 +87,7 @@ public function updateWebsite(Request $request)
             }
 
             // Handle checkboxes (convert to boolean)
-            if (in_array($key, ['website_offline', 'guest_booking', 'user_registration', 'supplier_registration', 'agent_registration', 'admin_2fa_enabled'])) {
+            if (in_array($key, ['website_offline', 'guest_booking', 'user_registration', 'supplier_registration', 'agent_registration', 'admin_2fa_enabled', 'agent_2fa_enabled', 'user_2fa_enabled'])) {
                 $value = $request->has($key) ? '1' : '0';
             }
 
@@ -166,13 +168,8 @@ private function getValidationRules($group)
         ],
         'security' => [
             'admin_2fa_enabled' => 'nullable|boolean',
-            'admin_2fa_secret' => [
-                'required_if:admin_2fa_enabled,1',
-                'nullable',
-                'string',
-                'max:64',
-                'regex:/^[A-Za-z2-7 ]+$/',
-            ],
+            'agent_2fa_enabled' => 'nullable|boolean',
+            'user_2fa_enabled'  => 'nullable|boolean',
         ],
         'social' => [
             'facebook_url' => 'nullable|url',

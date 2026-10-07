@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Agent;
 
+use App\Http\Controllers\Concerns\HandlesTwoFactorLogin;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use App\Models\User;
@@ -13,6 +14,8 @@ use Resend\Laravel\Facades\Resend;
 
 class AuthController extends Controller
 {
+    use HandlesTwoFactorLogin;
+
     public function showLogin()
     {
         if (auth()->check() && auth()->user()->isAgent()) {
@@ -76,15 +79,18 @@ class AuthController extends Controller
             return back()->withErrors(['email' => 'Too many attempts. Try again in ' . RateLimiter::availableIn($key) . ' seconds.']);
         }
 
-        if (!Auth::attempt(['email' => $request->email, 'password' => $request->password, 'user_type' => 'agent'], $request->remember)) {
+        $credentials = ['email' => $request->email, 'password' => $request->password, 'user_type' => 'agent'];
+
+        if (!Auth::validate($credentials)) {
             RateLimiter::hit($key, 60);
             return back()->withErrors(['email' => 'Invalid credentials or not an agent account.'])->withInput();
         }
 
         RateLimiter::clear($key);
-        $request->session()->regenerate();
 
-        return redirect()->route('agent.dashboard');
+        $candidate = User::where('email', $request->email)->where('user_type', 'agent')->first();
+
+        return $this->proceedAfterPassword($request, $candidate, (bool) $request->remember);
     }
 
     public function logout(Request $request)

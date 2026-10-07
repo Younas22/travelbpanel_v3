@@ -635,31 +635,38 @@
                 <div class="settings-content">
                     <form id="securitySettingsForm" onsubmit="saveSettingsGroup(event, 'security')">
                         <div class="settings-section">
-                            <div class="section-title">Admin Login Verification (Google Authenticator)</div>
-                            <div class="section-description">When enabled, admin accounts must enter a 6-digit code from Google Authenticator after their password.</div>
+                            <div class="section-title">Google Authenticator Login</div>
+                            <div class="section-description">
+                                Turn this on per account type below. The first time it applies to an account, that person gets a QR code to scan into Google Authenticator right after their password — every login after that just asks for the 6-digit code. Each account has its own key; there's nothing to configure per-user here.
+                            </div>
 
                             <div class="form-group">
                                 <div class="form-check form-switch">
                                     <input type="checkbox" class="form-check-input" name="admin_2fa_enabled" id="admin2faEnabled" value="1"
                                            {{ ($settings['security']['admin_2fa_enabled'] ?? '0') === '1' ? 'checked' : '' }}>
                                     <label class="form-check-label" for="admin2faEnabled">
-                                        Require Google Authenticator code for admin login
+                                        Require for <strong>Admin</strong> accounts
                                     </label>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label">Authenticator Key</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control font-monospace" name="admin_2fa_secret" id="admin2faSecret"
-                                           value="{{ $settings['security']['admin_2fa_secret'] ?? '' }}"
-                                           placeholder="e.g. JBSWY3DPEHPK3PXP" autocomplete="off">
-                                    <button type="button" class="btn btn-outline-secondary" onclick="generateAuthenticatorKey()">
-                                        <i class="bi bi-arrow-repeat"></i> Generate
-                                    </button>
+                                <div class="form-check form-switch">
+                                    <input type="checkbox" class="form-check-input" name="agent_2fa_enabled" id="agent2faEnabled" value="1"
+                                           {{ ($settings['security']['agent_2fa_enabled'] ?? '0') === '1' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="agent2faEnabled">
+                                        Require for <strong>Agent</strong> accounts
+                                    </label>
                                 </div>
-                                <div class="form-text">
-                                    In Google Authenticator tap <strong>+ → Enter a setup key</strong>, use any name, paste this key, and choose <em>Time based</em>. Save the settings after adding it to the app.
+                            </div>
+
+                            <div class="form-group">
+                                <div class="form-check form-switch">
+                                    <input type="checkbox" class="form-check-input" name="user_2fa_enabled" id="user2faEnabled" value="1"
+                                           {{ ($settings['security']['user_2fa_enabled'] ?? '0') === '1' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="user2faEnabled">
+                                        Require for <strong>Customer</strong> accounts
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -760,23 +767,6 @@ function saveAllSettings() {
             }
         });
     });
-}
-
-// Random Base32 key (RFC 4648) for Google Authenticator's manual setup
-function generateAuthenticatorKey() {
-    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-    const bytes = crypto.getRandomValues(new Uint8Array(20));
-    let bits = 0, value = 0, key = '';
-    for (const byte of bytes) {
-        value = (value << 8) | byte;
-        bits += 8;
-        while (bits >= 5) {
-            key += alphabet[(value >>> (bits - 5)) & 31];
-            bits -= 5;
-        }
-    }
-    if (bits > 0) key += alphabet[(value << (5 - bits)) & 31];
-    document.getElementById('admin2faSecret').value = key;
 }
 
 // Show notification

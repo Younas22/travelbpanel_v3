@@ -51,11 +51,13 @@ class User extends Authenticatable
         'company_name', 'agent_code', 'approval_status',
         'approved_by', 'approved_at', 'rejection_reason',
         'company_address', 'company_phone', 'company_logo', 'cnic_or_reg_number',
+        'two_factor_secret', 'two_factor_confirmed_at',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
     ];
 
     protected $casts = [

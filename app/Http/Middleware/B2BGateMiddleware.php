@@ -21,7 +21,8 @@ class B2BGateMiddleware
     private const ALLOWED_EXACT = [
         'login',
         'signin',           // login form POST handler
-        'signin/verify',    // admin 2FA code step
+        'signin/enroll',    // first-time 2FA QR setup
+        'signin/verify',    // 2FA code step
         'admin/login',
         'set-currency',
         'user/register',
