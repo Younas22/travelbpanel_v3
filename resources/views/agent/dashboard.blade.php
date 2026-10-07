@@ -9,15 +9,14 @@
         <h4 class="text-xl font-bold text-gray-800">Welcome back, {{ auth()->user()->first_name }}!</h4>
         <p class="text-sm text-gray-500 mt-0.5">{{ auth()->user()->company_name }} &bull; {{ auth()->user()->agent_code }}</p>
     </div>
-    @if(auth()->user()->hasPermission('wallet.view'))
     @php
         $dhActiveCurrency = activeCurrency();
         $dhWalletCurrency = $wallet?->currency ?? 'PKR';
         $dhDisplayCurrency = $dhActiveCurrency->currency_name ?? $dhWalletCurrency;
-        $dhWalletBalance = $dhActiveCurrency
-            ? convertCurrency($wallet?->balance ?? 0, $dhWalletCurrency, $dhDisplayCurrency)
-            : ($wallet?->balance ?? 0);
+        $dhToDisplay = fn($amt) => $dhActiveCurrency ? convertCurrency($amt ?? 0, $dhWalletCurrency, $dhDisplayCurrency) : ($amt ?? 0);
+        $dhWalletBalance = $dhToDisplay($wallet?->balance);
     @endphp
+    @if(auth()->user()->hasPermission('wallet.view'))
     <a href="{{ route('agent.wallet.index') }}"
        class="hidden sm:flex items-center gap-2 px-4 py-2 border border-green-300 rounded-lg text-green-700 bg-green-50 hover:bg-green-100 transition text-sm font-semibold ap-no-underline">
         <i class="fas fa-wallet"></i>
@@ -85,7 +84,7 @@
         </div>
         <div>
             <div class="text-xs text-gray-400 leading-tight">Wallet</div>
-            <div class="text-sm font-bold text-gray-800 leading-tight">{{ number_format($wallet?->balance ?? 0, 0) }}</div>
+            <div class="text-sm font-bold text-gray-800 leading-tight">{{ $dhDisplayCurrency }} {{ number_format($dhWalletBalance, 0) }}</div>
         </div>
     </div>
 
@@ -95,7 +94,7 @@
         </div>
         <div>
             <div class="text-xs text-gray-400 leading-tight">Spent</div>
-            <div class="text-sm font-bold text-gray-800 leading-tight">{{ number_format($wallet?->total_debited ?? 0, 0) }}</div>
+            <div class="text-sm font-bold text-gray-800 leading-tight">{{ $dhDisplayCurrency }} {{ number_format($dhToDisplay($wallet?->total_debited), 0) }}</div>
         </div>
     </div>
 
@@ -194,7 +193,7 @@
                     <div class="text-xs text-gray-400 mt-0.5">{{ $txn->created_at->format('d M Y') }}</div>
                 </div>
                 <span class="{{ $txn->type === 'credit' ? 'text-green-600 bg-green-50' : 'text-red-500 bg-red-50' }} text-xs font-semibold px-2 py-1 rounded-lg whitespace-nowrap flex-shrink-0">
-                    {{ $txn->type === 'credit' ? '+' : '-' }} {{ number_format($txn->amount, 0) }}
+                    {{ $txn->type === 'credit' ? '+' : '-' }} {{ $dhDisplayCurrency }} {{ number_format($dhToDisplay($txn->amount), 0) }}
                 </span>
             </li>
             @endforeach

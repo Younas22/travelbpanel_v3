@@ -8,15 +8,14 @@
             <h4>Welcome back, {{ auth()->user()->first_name }}!</h4>
             <p>{{ auth()->user()->company_name }} &bull; {{ auth()->user()->agent_code }}</p>
         </div>
+        @php
+            $dhActiveCurrency = activeCurrency();
+            $dhWalletCurrency = $wallet?->currency ?? 'PKR';
+            $dhDisplayCurrency = $dhActiveCurrency->currency_name ?? $dhWalletCurrency;
+            $dhToDisplay = fn($amt) => $dhActiveCurrency ? convertCurrency($amt ?? 0, $dhWalletCurrency, $dhDisplayCurrency) : ($amt ?? 0);
+            $dhWalletBalance = $dhToDisplay($wallet?->balance);
+        @endphp
         @if(auth()->user()->hasPermission('wallet.view'))
-            @php
-                $dhActiveCurrency = activeCurrency();
-                $dhWalletCurrency = $wallet?->currency ?? 'PKR';
-                $dhDisplayCurrency = $dhActiveCurrency->currency_name ?? $dhWalletCurrency;
-                $dhWalletBalance = $dhActiveCurrency
-                    ? convertCurrency($wallet?->balance ?? 0, $dhWalletCurrency, $dhDisplayCurrency)
-                    : ($wallet?->balance ?? 0);
-            @endphp
             <a href="{{ route('agent.wallet.index') }}" class="am-topbar-wallet">
                 <i class="bi bi-wallet2"></i> Wallet: <strong>{{ $dhDisplayCurrency }} {{ number_format($dhWalletBalance, 0) }}</strong>
             </a>
@@ -69,7 +68,7 @@
             <div class="dash-stat-icon icon-amber"><i class="bi bi-wallet2"></i></div>
             <div>
                 <div class="dash-stat-label">Wallet</div>
-                <div class="dash-stat-value">{{ number_format($wallet?->balance ?? 0, 0) }}</div>
+                <div class="dash-stat-value">{{ $dhDisplayCurrency }} {{ number_format($dhWalletBalance, 0) }}</div>
             </div>
         </div>
 
@@ -77,7 +76,7 @@
             <div class="dash-stat-icon icon-cyan"><i class="bi bi-graph-up"></i></div>
             <div>
                 <div class="dash-stat-label">Spent</div>
-                <div class="dash-stat-value">{{ number_format($wallet?->total_debited ?? 0, 0) }}</div>
+                <div class="dash-stat-value">{{ $dhDisplayCurrency }} {{ number_format($dhToDisplay($wallet?->total_debited), 0) }}</div>
             </div>
         </div>
 
@@ -164,7 +163,7 @@
                     <div class="wallet-activity-date">{{ $txn->created_at->format('d M Y') }}</div>
                 </div>
                 <span class="wallet-activity-amt {{ $txn->type === 'credit' ? 'credit' : 'debit' }}">
-                    {{ $txn->type === 'credit' ? '+' : '-' }} {{ number_format($txn->amount, 0) }}
+                    {{ $txn->type === 'credit' ? '+' : '-' }} {{ $dhDisplayCurrency }} {{ number_format($dhToDisplay($txn->amount), 0) }}
                 </span>
             </li>
             @endforeach
