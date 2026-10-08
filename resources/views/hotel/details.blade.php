@@ -421,6 +421,12 @@
             color: #1e40af;
         }
 
+        .option-notice.promotion {
+            background: #ecfdf5;
+            color: #065f46;
+            font-weight: 600;
+        }
+
         .option-taxes {
             border: 1px solid #e5e7eb;
             border-radius: 8px;
@@ -784,6 +790,17 @@
                                                         <i class="fas fa-ban"></i>
                                                         <span>{{ $option['cancel_restricted_note'] ?? 'Cancellation not allowed' }}</span>
                                                     </div>
+                                                @endif
+
+                                                @if(!empty($option['specials']))
+                                                    @foreach($option['specials'] as $special)
+                                                        @if(!empty($special['name']))
+                                                            <div class="option-notice promotion">
+                                                                <i class="fas fa-tag"></i>
+                                                                <span>{{ $special['name'] }}{{ !empty($special['discount']) ? ' (' . $special['discount'] . '% off)' : '' }}</span>
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
                                                 @endif
 
                                                 @if(!empty($option['changed_occupancy']))
