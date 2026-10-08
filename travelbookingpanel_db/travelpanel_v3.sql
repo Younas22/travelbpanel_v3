@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 02, 2026 at 07:02 AM
+-- Generation Time: Oct 08, 2026 at 01:43 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -18,8 +18,192 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `travelpanel_v2`
+-- Database: `travelpanel_v3`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `agent_permissions`
+--
+
+CREATE TABLE `agent_permissions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `agent_id` bigint(20) UNSIGNED NOT NULL,
+  `permission_key` varchar(100) NOT NULL,
+  `is_enabled` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `agent_permissions`
+--
+
+INSERT INTO `agent_permissions` (`id`, `agent_id`, `permission_key`, `is_enabled`, `created_at`, `updated_at`) VALUES
+(1, 7, 'module.hotels', 1, '2026-03-16 06:41:23', '2026-03-16 06:41:23'),
+(2, 7, 'module.flights', 0, '2026-03-16 06:41:23', '2026-03-16 06:41:23'),
+(3, 7, 'module.tours', 0, '2026-03-16 06:41:23', '2026-03-16 06:41:23'),
+(4, 7, 'module.umrah', 0, '2026-03-16 06:41:23', '2026-03-16 06:41:23'),
+(5, 7, 'module.visa', 0, '2026-03-16 06:41:23', '2026-03-16 06:41:23'),
+(6, 7, 'hotels.api', 1, '2026-03-16 06:41:23', '2026-03-16 07:06:06'),
+(7, 7, 'hotels.manual', 0, '2026-03-16 06:41:23', '2026-03-16 06:41:23'),
+(8, 7, 'flights.api', 0, '2026-03-16 06:41:23', '2026-03-16 06:41:23'),
+(9, 7, 'flights.manual', 0, '2026-03-16 06:41:23', '2026-03-16 06:41:23'),
+(10, 7, 'tours.manual', 0, '2026-03-16 06:41:23', '2026-03-16 06:41:23'),
+(11, 7, 'umrah.manual', 0, '2026-03-16 06:41:23', '2026-03-16 06:41:23'),
+(12, 7, 'visa.submit', 0, '2026-03-16 06:41:23', '2026-03-16 06:41:23'),
+(13, 7, 'wallet.view', 1, '2026-03-16 06:41:23', '2026-05-07 02:50:50'),
+(14, 7, 'wallet.request', 1, '2026-03-16 06:41:23', '2026-05-07 02:50:50'),
+(15, 7, 'bookings.view', 1, '2026-03-16 06:41:23', '2026-05-07 02:50:50'),
+(16, 7, 'bookings.make', 1, '2026-03-16 07:56:44', '2026-05-07 02:50:50'),
+(17, 7, 'hotels.add', 1, '2026-03-16 07:56:44', '2026-03-16 07:56:51'),
+(18, 7, 'tours.add', 1, '2026-03-16 07:56:44', '2026-05-07 02:50:50'),
+(19, 7, 'umrah.add', 1, '2026-03-16 07:56:44', '2026-05-07 02:50:50'),
+(20, 8, 'wallet.view', 1, '2026-05-07 02:50:03', '2026-05-07 02:50:03'),
+(21, 8, 'wallet.request', 1, '2026-05-07 02:50:03', '2026-05-07 02:51:14'),
+(22, 8, 'bookings.make', 1, '2026-05-07 02:50:03', '2026-05-07 02:51:04'),
+(23, 8, 'bookings.view', 0, '2026-05-07 02:50:03', '2026-05-07 02:52:02'),
+(24, 8, 'hotels.add', 1, '2026-05-07 02:50:03', '2026-05-07 02:51:14'),
+(25, 8, 'tours.add', 1, '2026-05-07 02:50:03', '2026-05-07 02:51:21'),
+(26, 8, 'umrah.add', 1, '2026-05-07 02:50:03', '2026-05-07 02:51:21'),
+(27, 10, 'wallet.view', 1, '2026-05-07 10:13:28', '2026-05-07 10:13:28'),
+(28, 10, 'wallet.request', 1, '2026-05-07 10:13:28', '2026-05-07 10:13:28'),
+(29, 10, 'bookings.make', 1, '2026-05-07 10:13:28', '2026-05-07 10:13:28'),
+(30, 10, 'bookings.view', 1, '2026-05-07 10:13:28', '2026-05-07 10:13:28'),
+(31, 10, 'hotels.add', 1, '2026-05-07 10:13:28', '2026-05-07 10:15:16'),
+(32, 10, 'tours.add', 1, '2026-05-07 10:13:28', '2026-05-07 10:15:16'),
+(33, 10, 'umrah.add', 1, '2026-05-07 10:13:28', '2026-05-07 10:15:16');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `agent_topup_requests`
+--
+
+CREATE TABLE `agent_topup_requests` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `agent_id` bigint(20) UNSIGNED NOT NULL,
+  `amount` decimal(12,2) NOT NULL,
+  `payment_method` varchar(100) DEFAULT NULL,
+  `payment_proof` varchar(255) DEFAULT NULL,
+  `note` text DEFAULT NULL,
+  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  `reviewed_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `reviewed_at` timestamp NULL DEFAULT NULL,
+  `rejection_note` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `agent_topup_requests`
+--
+
+INSERT INTO `agent_topup_requests` (`id`, `agent_id`, `amount`, `payment_method`, `payment_proof`, `note`, `status`, `reviewed_by`, `reviewed_at`, `rejection_note`, `created_at`, `updated_at`) VALUES
+(1, 10, 100000.00, 'Cash', 'topup-proofs/2fKCtzNPF0ZzmTUh3okPoNz2kxaueEeY53WawkTg.jpg', NULL, 'approved', 6, '2026-05-07 11:59:41', NULL, '2026-05-07 11:48:52', '2026-05-07 11:59:41');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `agent_wallets`
+--
+
+CREATE TABLE `agent_wallets` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `agent_id` bigint(20) UNSIGNED NOT NULL,
+  `balance` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `currency` varchar(10) NOT NULL DEFAULT 'PKR',
+  `total_credited` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `total_debited` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `agent_wallets`
+--
+
+INSERT INTO `agent_wallets` (`id`, `agent_id`, `balance`, `currency`, `total_credited`, `total_debited`, `created_at`, `updated_at`) VALUES
+(1, 7, 0.00, 'PKR', 0.00, 0.00, '2026-03-16 06:38:46', '2026-10-07 11:38:59'),
+(2, 8, 0.00, 'PKR', 0.00, 0.00, '2026-03-18 17:05:23', '2026-03-18 17:05:23'),
+(3, 10, 89124.93, 'PKR', 100000.00, 10875.07, '2026-05-07 10:11:13', '2026-09-30 09:45:41'),
+(5, 13, 0.00, 'PKR', 0.00, 0.00, '2026-06-21 00:08:48', '2026-06-21 00:08:48');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `agent_wallet_transactions`
+--
+
+CREATE TABLE `agent_wallet_transactions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `agent_id` bigint(20) UNSIGNED NOT NULL,
+  `type` enum('credit','debit') NOT NULL,
+  `amount` decimal(12,2) NOT NULL,
+  `balance_before` decimal(12,2) NOT NULL,
+  `balance_after` decimal(12,2) NOT NULL,
+  `reference` varchar(100) DEFAULT NULL,
+  `booking_type` varchar(50) DEFAULT NULL,
+  `booking_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `note` text DEFAULT NULL,
+  `payment_method` varchar(100) DEFAULT NULL,
+  `performed_by` bigint(20) UNSIGNED NOT NULL,
+  `status` enum('completed','pending','reversed') NOT NULL DEFAULT 'completed',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `agent_wallet_transactions`
+--
+
+INSERT INTO `agent_wallet_transactions` (`id`, `agent_id`, `type`, `amount`, `balance_before`, `balance_after`, `reference`, `booking_type`, `booking_id`, `note`, `payment_method`, `performed_by`, `status`, `created_at`, `updated_at`) VALUES
+(1, 10, 'credit', 100000.00, 0.00, 100000.00, 'TOPUP-1', NULL, NULL, 'Top-up request #1 approved', 'Cash', 6, 'completed', '2026-05-07 11:59:41', '2026-05-07 11:59:41'),
+(2, 10, 'debit', 10776.00, 100000.00, 89224.00, '20260507171523', 'hotel', 5, 'Hotel booking #20260507171523', NULL, 10, 'completed', '2026-05-07 12:15:23', '2026-05-07 12:15:23'),
+(3, 10, 'debit', 99.07, 89224.00, 89124.93, '20260930144541', 'flight', 7, 'Flight booking #20260930144541', NULL, 10, 'completed', '2026-09-30 09:45:41', '2026-09-30 09:45:41');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `all_amenities`
+--
+
+CREATE TABLE `all_amenities` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `agent_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  `icon` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `all_amenities`
+--
+
+INSERT INTO `all_amenities` (`id`, `agent_id`, `name`, `icon`, `created_at`) VALUES
+(1, NULL, 'WiFi', 'bi bi-wifi', NULL),
+(2, NULL, 'Parking', 'bi bi-car-front', NULL),
+(3, NULL, 'Air Conditioning', 'bi bi-snow', NULL),
+(4, NULL, 'TV', 'bi bi-tv', NULL),
+(5, NULL, 'Swimming Pool', 'bi bi-water', NULL),
+(6, NULL, 'Gym', 'bi bi-bicycle', NULL),
+(7, NULL, 'Restaurant', 'bi bi-shop', NULL),
+(8, NULL, 'Room Service', 'bi bi-bell', NULL),
+(9, NULL, 'Laundry', 'bi bi-droplet', NULL),
+(10, NULL, 'Elevator', 'bi bi-arrow-up-square', NULL),
+(11, NULL, 'Bar', 'bi bi-cup-straw', NULL),
+(12, NULL, 'Spa', 'bi bi-heart-pulse', NULL),
+(13, NULL, 'Conference Room', 'bi bi-people', NULL),
+(14, NULL, '24/7 Reception', 'bi bi-clock', NULL),
+(15, NULL, 'Breakfast Included', 'bi bi-egg-fried', NULL),
+(16, NULL, 'Mini Bar', 'bi bi-cup-hot', NULL),
+(17, NULL, 'Safe', 'bi bi-shield-lock', NULL),
+(18, NULL, 'Balcony', 'bi bi-door-open', NULL),
+(19, NULL, 'Airport Shuttle', 'bi bi-bus-front', NULL),
+(20, NULL, 'Concierge', 'bi bi-person-badge', NULL),
+(21, 7, 'Bruno Huber1', 'Provident qui aut q', NULL),
+(22, 7, 'Ainsley Higgins2', 'Unde commodi non aut', NULL);
 
 -- --------------------------------------------------------
 
@@ -114,7 +298,8 @@ CREATE TABLE `blog_posts` (
 INSERT INTO `blog_posts` (`id`, `title`, `slug`, `content`, `excerpt`, `featured_image`, `author_id`, `category_id`, `status`, `views_count`, `likes_count`, `comments_count`, `shares_count`, `seo_title`, `meta_description`, `reading_time`, `seo_score`, `scheduled_at`, `published_at`, `is_featured`, `allow_comments`, `social_shares`, `created_at`, `updated_at`) VALUES
 (1, 'How to Book Affordable Flights from Germany with AMD Global', 'how-to-book-affordable-flights-from-germany-with-amd-global', '<h3>Introduction</h3><p>Everyone loves to travel — but finding <strong>affordable flight tickets</strong> can sometimes feel like an impossible task. Whether you’re flying for business, study, or leisure, ticket prices often fluctuate dramatically, and comparing dozens of websites can be frustrating.</p><p>That’s where <strong>AMD Global</strong> comes in. Based in Germany, <strong>AMD Global</strong> offers <strong>the most convenient and budget-friendly flight booking experience</strong> for travelers who value both comfort and savings.</p><p>In this blog, we’ll guide you through <strong>how to find cheap flights from Germany</strong>, how AMD Global helps travelers save money, and why it has become one of the most trusted flight booking platforms in the country.</p><h3>1. Why Flight Prices Are So Unpredictable</h3><p>Before learning how to save money, it’s important to understand <strong>why flight prices change so frequently</strong>.</p><p>Here are a few key reasons:</p><p>🕒 <strong>Timing:</strong> Ticket prices increase closer to the departure date.</p><p>📅 <strong>Seasonal Demand:</strong> Holidays and summer months often mean higher prices.</p><p>✈️ <strong>Airline Policies:</strong> Each airline uses its own algorithm to set prices dynamically.</p><p>🧳 <strong>Seat Availability:</strong> As seats fill up, remaining tickets get more expensive.</p><p>So how can you overcome these challenges? The answer is simple — by using a <strong>smart booking system</strong> like AMD Global that constantly searches for <strong>the best possible prices in real-time</strong>.</p><h3>2. AMD Global – Germany’s Trusted Flight Booking Partner</h3><p>For years, <strong>AMD Global</strong> has been helping travelers across Germany find <strong>affordable international and domestic flights</strong> with just a few clicks.</p><p>The platform combines powerful search technology, verified airline partnerships, and user-friendly tools to ensure that you never overpay for a ticket again.</p><p>✅ <strong>Key Advantages of Booking Flights via AMD Global:</strong></p><p>Real-time flight comparison from top airlines</p><p>Transparent pricing (no hidden charges)</p><p>24/7 customer support for German travelers</p><p>Easy rebooking and cancellation options</p><p>Discounts on round-trip and multi-city bookings</p><p>Whether you’re flying from <strong>Berlin, Frankfurt, Munich, or Hamburg</strong>, AMD Global helps you find <strong>budget-friendly flights worldwide</strong> — all from one dashboard.</p><h3>3. Step-by-Step Guide to Booking Cheap Flights on AMD Global</h3><p>Here’s how easy it is to book your flight on AMD Global:</p><h4><strong>Step 1: Visit the Official Website</strong></h4><p>Go to <a href=\"https://amdglobal.de\">amdglobal.de</a> and click on the <strong>Flights</strong> section.</p><h4><strong>Step 2: Enter Your Travel Details</strong></h4><p>Add your <strong>departure city (e.g., Berlin)</strong>, <strong>destination</strong>, <strong>travel dates</strong>, and <strong>number of passengers</strong>.</p><h4><strong>Step 3: Compare Flights</strong></h4><p>AMD Global’s system instantly compares flight options from multiple airlines — showing the <strong>best available fares</strong> and travel times.</p><h4><strong>Step 4: Choose Your Ticket</strong></h4><p>Select your preferred flight based on <strong>price, time, or airline preference</strong>.</p><h4><strong>Step 5: Confirm and Pay Securely</strong></h4><p>Make your payment through secure online channels. You’ll receive your <strong>e-ticket</strong> instantly via email or WhatsApp.</p><p>It’s that simple — <strong>no hidden costs, no long wait times, and no technical confusion</strong>.</p><h3>4. How AMD Global Finds the Cheapest Flights for You</h3><p>AMD Global uses a <strong>smart fare aggregation system</strong> that continuously scans thousands of airline databases to identify <strong>real-time discounts, flash sales, and seasonal offers</strong>.</p><p>This means that even if you search for the same flight multiple times a day, AMD Global ensures you see <strong>the most accurate and updated price</strong> every time.</p><p>💡 <strong>Pro Tip:</strong> Booking your flight <strong>4–6 weeks in advance</strong> often gets you the best prices — and AMD Global can even send you price alerts when your chosen route drops in cost.</p><h3>5. Exclusive Offers and Discounts for German Travelers</h3><p>One of AMD Global’s biggest advantages is that it offers <strong>exclusive local deals</strong> for people living in Germany.</p><p>These deals often include:</p><p>✈️ <strong>Special discounts for students</strong> studying abroad</p><p>👪 <strong>Family travel packages</strong> with cheaper group rates</p><p>💼 <strong>Corporate travel offers</strong> for business professionals</p><p>💳 <strong>Promotional codes</strong> for first-time customers</p><p>By signing up on AMD Global’s newsletter, you can receive <strong>weekly flight deals</strong> directly in your inbox — helping you plan your next trip at the lowest possible cost.</p><h3>6. Combine Flight and Visa Booking for Extra Savings</h3><p>If you’re traveling internationally, you’ll likely need both a <strong>visa</strong> and a <strong>flight</strong> — and AMD Global makes it easy to handle both in one place.</p><p>The platform offers <strong>bundle deals</strong> where customers booking both flight and visa services together receive:</p><p>Lower combined service charges</p><p>Priority processing</p><p>Dedicated travel agent assistance</p><p>This not only saves money but also saves time by reducing communication between multiple service providers.</p><h3>7. Customer Support That Truly Helps</h3><p>Unlike many online booking sites that rely entirely on automation, <strong>AMD Global provides personalized customer support</strong>.</p><p>You can contact their team directly through <strong>email, phone, or WhatsApp</strong>, and receive quick help in English, German, or Urdu.</p><p>Their support covers:</p><p>Changing flight dates</p><p>Rebooking after visa delays</p><p>Canceling and refund tracking</p><p>Handling special travel requests</p><p>With AMD Global, you always have a <strong>real person to assist you</strong>, making travel stress-free and human-centered.</p><h3>8. Tips for Finding the Best Flight Deals</h3><p>Here are some insider strategies to make sure you’re always flying at the best price:</p><p>🕕 <strong>Book Early:</strong> Prices increase rapidly within the last 2 weeks before departure.<br>📆 <strong>Be Flexible:</strong> Flying mid-week (Tuesday or Wednesday) is usually cheaper than weekends.<br>🛫 <strong>Use Nearby Airports:</strong> Consider flying from alternate airports like Cologne or Stuttgart if they offer lower fares.<br>📧 <strong>Sign Up for Alerts:</strong> AMD Global can notify you when flight prices drop for your favorite routes.<br>🎫 <strong>Round Trips:</strong> Buying a return ticket is often cheaper than two one-way tickets.</p><p>These small adjustments can help you save <strong>hundreds of euros per trip</strong>.</p><h3>9. Why People in Germany Prefer AMD Global</h3><p>Over the years, AMD Global has earned an excellent reputation among travelers in Germany for being <strong>fast, affordable, and reliable</strong>.</p><p>Here’s what makes users love AMD Global:</p><p>Transparent pricing (no hidden booking fees)</p><p>Quick response time</p><p>Easy website and mobile experience</p><p>Trusted by frequent travelers and students alike</p><p>⭐ <strong>Customer Testimonial:</strong></p><blockquote><p>“AMD Global helped me find a round-trip flight from Frankfurt to Dubai at almost half the price compared to other websites. The process was smooth and customer service was amazing!”</p></blockquote><p>This level of trust and satisfaction is what makes AMD Global <strong>Germany’s preferred choice for flight booking</strong>.</p><h3>10. AMD Global – Your One-Stop Travel Solution</h3><p>Whether you’re traveling for leisure or business, <strong>AMD Global</strong> simplifies every step of your journey — from flight search to visa assistance and beyond.</p><p>With a focus on <strong>transparency, affordability, and convenience</strong>, AMD Global ensures you never waste time or money while planning your travels.</p><p>You can count on AMD Global for:</p><p>Best flight deals from Germany</p><p>Expert visa guidance</p><p>Real human customer support</p><p>Safe and secure online transactions</p><h3>Conclusion</h3><p>In today’s fast-moving world, finding a reliable and affordable flight booking partner is essential. <strong>AMD Global</strong> stands out in Germany’s travel industry for offering <strong>top-quality services at unbeatable prices</strong>.</p><p>So, before you book your next trip — whether to <strong>Europe, Asia, or anywhere in the world</strong> — make sure you visit <a href=\"https://amdglobal.de\"><strong>amdglobal.de</strong></a>.</p><p>You’ll discover not just cheap tickets, but <strong>a smarter, smoother, and more personalized travel experience</strong>.</p><p>✈️ <strong>Book your next flight today with AMD Global — and travel the world for less!</strong></p>', 'Everyone loves to travel — but finding affordable flight tickets can sometimes feel like an impossible task. Whether you’re flying for business', 'blog_images/1YXImOO2LuQsLkP6j5nALKrCvdXiVWiQSvbtT4aq.jpg', 6, 1, 'published', 12620, 234, 67, 0, 'How to Book Affordable Flights from Germany with AMD Global', 'Everyone loves to travel — but finding affordable flight tickets can sometimes feel like an impossible task. Whether you’re flying for business', 1, 65, NULL, '2025-07-18 09:41:15', 0, 1, NULL, '2025-07-14 05:23:15', '2025-11-07 06:55:59'),
 (6, 'A Complete Guide to Visa Booking and Travel Assistance in Germany', 'a-complete-guide-to-visa-booking-and-travel-assistance-in-germany', '<h3>Introduction</h3><p>Applying for a visa can often feel complicated — from filling out forms and collecting documents to waiting for approvals. But for travelers in Germany, <strong>AMD Global</strong> has made this process easier than ever.</p><p>As one of Germany’s leading <strong>flight and visa booking platforms</strong>, <strong>AMD Global</strong> provides complete assistance for travelers who want to apply for <strong>tourist, business, student, or family visit visas</strong>.</p><p>Whether you are planning a short vacation, visiting relatives, or traveling abroad for work, this guide will walk you through everything you need to know about <strong>visa booking and travel assistance in Germany</strong> — and how AMD Global can make it simple and stress-free.</p><h3>1. Why Visa Assistance Is Important</h3><p>Getting a visa is one of the most crucial steps before international travel. Unfortunately, many travelers face problems due to:</p><p>Missing documents</p><p>Incorrect application forms</p><p>Confusing embassy procedures</p><p>Rejection due to small mistakes</p><p>That’s why visa assistance services are becoming increasingly popular in Germany. Platforms like <strong>AMD Global</strong> offer professional help, ensuring that your visa application is <strong>accurate, complete, and approved quickly</strong>.</p><p>With AMD Global, you no longer have to deal with embassy confusion — their team manages everything efficiently.</p><h3>2. AMD Global – Simplifying Visa Applications in Germany</h3><p>AMD Global is trusted by hundreds of customers across Germany for <strong>reliable and affordable visa support</strong>.</p><p>The platform offers a <strong>step-by-step visa booking system</strong>, helping travelers from the moment they plan their trip until their visa is approved.</p><p>✅ <strong>Key Features of AMD Global Visa Services:</strong></p><p>Personalized guidance for every visa type</p><p>Document verification and form filling</p><p>Appointment scheduling at embassies</p><p>Quick response to queries via phone or WhatsApp</p><p>24/7 customer support</p><p>With AMD Global, travelers in Germany can get complete assistance without the stress or confusion of handling embassy procedures alone.</p><h3>3. Visa Types Supported by AMD Global</h3><p>AMD Global provides support for almost every major visa category, depending on your purpose of travel.</p><h4>✈️ <strong>Tourist Visa</strong></h4><p>Perfect for those who want to visit another country for a short vacation or sightseeing. AMD Global ensures your documents and travel itinerary meet embassy standards.</p><h4>💼 <strong>Business Visa</strong></h4><p>If you’re traveling abroad for meetings, conferences, or partnerships, AMD Global helps arrange business invitation letters, schedules, and proper visa documentation.</p><h4>🎓 <strong>Student Visa</strong></h4><p>For students applying to universities outside Germany, AMD Global assists with visa documentation, interview preparation, and required financial proof.</p><h4>👪 <strong>Family Visit Visa</strong></h4><p>Planning to visit family members abroad? AMD Global helps prepare family invitation letters and documentation to make your visit smooth and hassle-free.</p><h3>4. Step-by-Step Process of Visa Booking with AMD Global</h3><p><strong>Step 1: Consultation</strong><br>You start by contacting AMD Global through their website or WhatsApp. Their experts ask about your travel plans and help you select the correct visa type.</p><p><strong>Step 2: Document Collection</strong><br>Once your visa type is confirmed, AMD Global shares a checklist of documents you’ll need (like passport, photos, and financial proof).</p><p><strong>Step 3: Application Preparation</strong><br>The team helps fill out your visa application form correctly, review documents, and attach supporting material.</p><p><strong>Step 4: Embassy Appointment</strong><br>AMD Global books your embassy appointment and provides all instructions for the interview or submission process.</p><p><strong>Step 5: Submission and Tracking</strong><br>After submission, AMD Global keeps track of your application and updates you until your visa is issued.</p><p>This structured process ensures zero confusion — and higher chances of approval.</p><h3>5. How AMD Global Saves You Time and Effort</h3><p>Many people in Germany try to handle visa applications on their own and end up spending weeks fixing errors or waiting for re-appointments.</p><p>AMD Global removes that stress by:</p><p>Preparing documents correctly the first time</p><p>Scheduling appointments faster</p><p>Avoiding rejection due to common mistakes</p><p>Offering fast communication with embassies</p><p>This saves valuable time — whether you’re a working professional, student, or frequent traveler.</p><h3>6. Affordable Visa Assistance Packages</h3><p>Another reason travelers choose AMD Global is its <strong>transparent and affordable pricing</strong>.</p><p>Unlike traditional agents who charge hidden fees, AMD Global provides clear pricing for every visa type upfront.</p><p>You can easily compare visa fees and processing costs on the website, ensuring there are <strong>no surprises or extra charges</strong> later.</p><p>💡 <strong>Tip:</strong> Combine your <strong>visa booking and flight booking</strong> through AMD Global to get exclusive bundle discounts.</p><h3>7. Expert Guidance for First-Time Travelers</h3><p>If you are applying for a visa for the first time, the process might feel overwhelming. AMD Global’s expert team takes extra care to guide first-time applicants with clarity and confidence.</p><p>They assist you with:</p><p>Document translation (if required)</p><p>Filling online embassy forms</p><p>Travel insurance and proof of accommodation</p><p>Cover letter creation for visa applications</p><p>This complete guidance helps new travelers avoid confusion and ensures a smooth visa experience.</p><h3>8. AMD Global’s Customer Reviews and Trust</h3><p>AMD Global’s excellent service is backed by <strong>hundreds of satisfied clients</strong> across Germany who have successfully obtained visas through their support.</p><p>⭐ <strong>Customer Review Example:</strong></p><blockquote><p>“AMD Global handled my Schengen visa application perfectly. They explained everything, checked all my documents, and got my visa approved without any stress. Highly recommended!”</p></blockquote><p>Such feedback highlights why AMD Global is becoming the <strong>go-to platform for visa booking in Germany</strong>.</p><h3>9. Combining Visa and Flight Booking for a Smooth Journey</h3><p>The best part about AMD Global is that you can handle <strong>both your flight and visa bookings</strong> on the same platform.</p><p>Once your visa is approved, you can instantly find the <strong>best flight deals</strong> directly through AMD Global — saving both time and money.</p><p>It’s a complete travel solution for modern travelers who prefer everything in one place.</p><h3>Conclusion</h3><p>When it comes to <strong>visa booking and travel assistance in Germany</strong>, <strong>AMD Global</strong> stands out as a trusted, professional, and affordable choice.</p><p>From application preparation to embassy coordination, AMD Global makes the entire process simple, secure, and stress-free.</p><p>If you’re planning your next international trip — for business, study, or vacation — let AMD Global handle your <strong>visa and flight booking</strong> so you can focus on your journey, not the paperwork.</p><p>✨ <strong>Visit </strong><a href=\"https://amdglobal.de\"><strong>amdglobal.de</strong></a><strong> today and let the experts make your travel dreams come true!</strong></p>', 'Applying for a visa can often feel complicated — from filling out forms and collecting documents to waiting for approvals. But for travelers in Germany, AMD Global has made this process easier than ever.', 'blog_images/TGbjepfdii5v418fBooe3RyKd1HWldtDI4eyVK6u.jpg', 6, 1, 'published', 190, 234, 67, 0, 'A Complete Guide to Visa Booking and Travel Assistance in Germany', 'Applying for a visa can often feel complicated — from filling out forms and collecting documents to waiting for approvals. But for travelers in Germany, AMD Global has made this process easier than ever.', 1, 45, NULL, '2025-07-21 20:02:21', 0, 1, NULL, '2025-07-18 09:40:40', '2025-12-26 07:50:55'),
-(7, 'Top Reasons Why AMD Global is the Best Flight Booking Platform in Germany', 'top-reasons-why-amd-global-is-the-best-flight-booking-platform-in-germany', '<h3>Introduction</h3><p>Finding reliable and affordable flight booking services in Germany can often be stressful — from comparing airline prices to managing visa applications and planning your trip smoothly. But with <strong>AMD Global</strong>, travelers now have a trusted one-stop solution for <strong>flight and visa booking services in Germany</strong>.</p><p>AMD Global has built its reputation as one of the <strong>most reliable and customer-friendly travel platforms in Germany</strong>, offering easy booking options, transparent pricing, and quick visa assistance — all in one place.</p><p>In this blog, we’ll explore why AMD Global stands out as the <strong>best flight booking platform in Germany</strong> for both personal and business travelers.</p><h3>1. Easy and Fast Flight Booking Process</h3><p>Booking a flight with AMD Global is incredibly easy. The platform is designed for <strong>simplicity and convenience</strong>, allowing users to search, compare, and book flights within minutes.</p><p>Whether you are planning a <strong>holiday in Europe</strong> or <strong>a business trip abroad</strong>, AMD Global provides all available flight options from major airlines, helping you find the <strong>best routes and lowest fares</strong> without any hidden charges.</p><p>✅ <strong>Key Features:</strong></p><p>Quick search with instant results</p><p>Transparent ticket pricing</p><p>Multiple payment options</p><p>24/7 customer support</p><p>With just a few clicks, you can confirm your flight — saving valuable time and effort.</p><h3>2. Reliable Visa Assistance for Travelers</h3><p>What makes AMD Global unique is its <strong>comprehensive visa assistance service</strong>. Many travelers struggle with visa paperwork and requirements, but AMD Global simplifies the entire process.</p><p>Their <strong>expert visa team</strong> guides you step-by-step — from application submission to document verification and interview preparation (if needed).</p><p>AMD Global helps with:</p><p><strong>Tourist visas</strong></p><p><strong>Business visas</strong></p><p><strong>Student visas</strong></p><p><strong>Family visit visas</strong></p><p>With this support, travelers can enjoy a stress-free experience, knowing that professionals are handling their documentation accurately and efficiently.</p><h3>3. Affordable Prices and Great Deals</h3><p>Germany has several online travel platforms, but AMD Global stands out because of its <strong>competitive pricing and frequent travel offers</strong>.</p><p>The company partners with <strong>leading airlines</strong> to provide customers with exclusive deals that aren’t available on most other booking sites.</p><p>💡 <strong>Tip:</strong> Sign up for AMD Global’s newsletter to receive updates on <strong>special discounts</strong>, <strong>seasonal promotions</strong>, and <strong>last-minute flight deals</strong>.</p><p>This commitment to affordability makes AMD Global a <strong>budget-friendly choice</strong> for students, families, and corporate travelers alike.</p><h3>4. Trusted by Thousands of Travelers</h3><p>Over the years, AMD Global has earned the trust of <strong>thousands of satisfied customers across Germany</strong>.</p><p>People appreciate the platform’s <strong>honest service</strong>, <strong>fast response time</strong>, and <strong>dedicated support team</strong> that helps them every step of the way — from booking to boarding.</p><p>⭐ <strong>Customer Review Example:</strong></p><blockquote><p>“I’ve used AMD Global for my last three international trips. The process was smooth, prices were great, and the visa service saved me a lot of time. Highly recommended!”</p></blockquote><p>This kind of genuine feedback shows AMD Global’s strong commitment to customer satisfaction.</p><h3>5. 24/7 Customer Support</h3><p>Travel plans don’t always go smoothly — sometimes flights get rescheduled, or you may need urgent changes. AMD Global ensures that help is <strong>always available</strong>, day or night.</p><p>Their <strong>24/7 customer support team</strong> is reachable via phone, email, or WhatsApp, ensuring that every issue is handled quickly and professionally.</p><p>This responsive support system gives travelers confidence and peace of mind — another reason why AMD Global is trusted by so many people in Germany.</p><h3>6. Secure and Modern Payment Options</h3><p>Online security is a top priority for travelers booking flights or visas. AMD Global uses <strong>encrypted payment systems</strong> to ensure that every transaction is safe and protected.</p><p>Users can choose from multiple payment methods, including:</p><p>Credit or debit card</p><p>PayPal</p><p>Bank transfer</p><p>This flexibility makes AMD Global suitable for both <strong>local German residents</strong> and <strong>international travelers</strong> booking from abroad.</p><h3>7. Your Complete Travel Partner</h3><p>Beyond flight and visa booking, AMD Global aims to be a <strong>complete travel companion</strong> for customers.</p><p>They provide travel tips, airport guidance, hotel booking assistance, and updates on travel restrictions or visa policies — all to make your journey smooth and worry-free.</p><p>With AMD Global, you’re not just booking a ticket — you’re gaining a <strong>trusted travel partner</strong> dedicated to your comfort and convenience.</p><h3>Conclusion</h3><p>If you’re living in Germany and looking for a <strong>reliable, affordable, and professional flight and visa booking platform</strong>, <strong>AMD Global</strong> is the right choice.</p><p>From booking cheap flights to handling your visa process, AMD Global takes care of everything — so you can focus on enjoying your trip.</p><p>Whether it’s a family vacation, business trip, or international travel plan, <strong>amdglobal.de</strong> ensures that your journey begins with confidence.</p><p>✨ <strong>Book your next flight or visa with AMD Global today — and travel the smart way!</strong></p>', 'Finding reliable and affordable flight booking services in Germany can often be stressful — from comparing airline prices to managing visa applications and planning your trip smoothly. But with AMD Global, travelers now have a trusted one-stop solution for flight and visa booking services in Germany.', 'assets/images/blogs/1769795143_697cee475ca06.png', 6, 1, 'published', 187, 0, 0, 0, 'Top Reasons Why AMD Global is the Best Flight Booking Platform in Germany', 'Top Reasons Why AMD Global is the Best Flight Booking Platform in Germany', 1, 45, NULL, NULL, 1, 1, NULL, '2025-07-18 22:10:45', '2026-01-30 12:45:43');
+(7, 'Top Reasons Why AMD Global is the Best Flight Booking Platform in Germany', 'top-reasons-why-amd-global-is-the-best-flight-booking-platform-in-germany', '<h3>Introduction</h3><p>Finding reliable and affordable flight booking services in Germany can often be stressful — from comparing airline prices to managing visa applications and planning your trip smoothly. But with <strong>AMD Global</strong>, travelers now have a trusted one-stop solution for <strong>flight and visa booking services in Germany</strong>.</p><p>AMD Global has built its reputation as one of the <strong>most reliable and customer-friendly travel platforms in Germany</strong>, offering easy booking options, transparent pricing, and quick visa assistance — all in one place.</p><p>In this blog, we’ll explore why AMD Global stands out as the <strong>best flight booking platform in Germany</strong> for both personal and business travelers.</p><h3>1. Easy and Fast Flight Booking Process</h3><p>Booking a flight with AMD Global is incredibly easy. The platform is designed for <strong>simplicity and convenience</strong>, allowing users to search, compare, and book flights within minutes.</p><p>Whether you are planning a <strong>holiday in Europe</strong> or <strong>a business trip abroad</strong>, AMD Global provides all available flight options from major airlines, helping you find the <strong>best routes and lowest fares</strong> without any hidden charges.</p><p>✅ <strong>Key Features:</strong></p><p>Quick search with instant results</p><p>Transparent ticket pricing</p><p>Multiple payment options</p><p>24/7 customer support</p><p>With just a few clicks, you can confirm your flight — saving valuable time and effort.</p><h3>2. Reliable Visa Assistance for Travelers</h3><p>What makes AMD Global unique is its <strong>comprehensive visa assistance service</strong>. Many travelers struggle with visa paperwork and requirements, but AMD Global simplifies the entire process.</p><p>Their <strong>expert visa team</strong> guides you step-by-step — from application submission to document verification and interview preparation (if needed).</p><p>AMD Global helps with:</p><p><strong>Tourist visas</strong></p><p><strong>Business visas</strong></p><p><strong>Student visas</strong></p><p><strong>Family visit visas</strong></p><p>With this support, travelers can enjoy a stress-free experience, knowing that professionals are handling their documentation accurately and efficiently.</p><h3>3. Affordable Prices and Great Deals</h3><p>Germany has several online travel platforms, but AMD Global stands out because of its <strong>competitive pricing and frequent travel offers</strong>.</p><p>The company partners with <strong>leading airlines</strong> to provide customers with exclusive deals that aren’t available on most other booking sites.</p><p>💡 <strong>Tip:</strong> Sign up for AMD Global’s newsletter to receive updates on <strong>special discounts</strong>, <strong>seasonal promotions</strong>, and <strong>last-minute flight deals</strong>.</p><p>This commitment to affordability makes AMD Global a <strong>budget-friendly choice</strong> for students, families, and corporate travelers alike.</p><h3>4. Trusted by Thousands of Travelers</h3><p>Over the years, AMD Global has earned the trust of <strong>thousands of satisfied customers across Germany</strong>.</p><p>People appreciate the platform’s <strong>honest service</strong>, <strong>fast response time</strong>, and <strong>dedicated support team</strong> that helps them every step of the way — from booking to boarding.</p><p>⭐ <strong>Customer Review Example:</strong></p><blockquote><p>“I’ve used AMD Global for my last three international trips. The process was smooth, prices were great, and the visa service saved me a lot of time. Highly recommended!”</p></blockquote><p>This kind of genuine feedback shows AMD Global’s strong commitment to customer satisfaction.</p><h3>5. 24/7 Customer Support</h3><p>Travel plans don’t always go smoothly — sometimes flights get rescheduled, or you may need urgent changes. AMD Global ensures that help is <strong>always available</strong>, day or night.</p><p>Their <strong>24/7 customer support team</strong> is reachable via phone, email, or WhatsApp, ensuring that every issue is handled quickly and professionally.</p><p>This responsive support system gives travelers confidence and peace of mind — another reason why AMD Global is trusted by so many people in Germany.</p><h3>6. Secure and Modern Payment Options</h3><p>Online security is a top priority for travelers booking flights or visas. AMD Global uses <strong>encrypted payment systems</strong> to ensure that every transaction is safe and protected.</p><p>Users can choose from multiple payment methods, including:</p><p>Credit or debit card</p><p>PayPal</p><p>Bank transfer</p><p>This flexibility makes AMD Global suitable for both <strong>local German residents</strong> and <strong>international travelers</strong> booking from abroad.</p><h3>7. Your Complete Travel Partner</h3><p>Beyond flight and visa booking, AMD Global aims to be a <strong>complete travel companion</strong> for customers.</p><p>They provide travel tips, airport guidance, hotel booking assistance, and updates on travel restrictions or visa policies — all to make your journey smooth and worry-free.</p><p>With AMD Global, you’re not just booking a ticket — you’re gaining a <strong>trusted travel partner</strong> dedicated to your comfort and convenience.</p><h3>Conclusion</h3><p>If you’re living in Germany and looking for a <strong>reliable, affordable, and professional flight and visa booking platform</strong>, <strong>AMD Global</strong> is the right choice.</p><p>From booking cheap flights to handling your visa process, AMD Global takes care of everything — so you can focus on enjoying your trip.</p><p>Whether it’s a family vacation, business trip, or international travel plan, <strong>amdglobal.de</strong> ensures that your journey begins with confidence.</p><p>✨ <strong>Book your next flight or visa with AMD Global today — and travel the smart way!</strong></p>', 'Finding reliable and affordable flight booking services in Germany can often be stressful — from comparing airline prices to managing visa applications and planning your trip smoothly. But with AMD Global, travelers now have a trusted one-stop solution for flight and visa booking services in Germany.', 'assets/images/blogs/1773380334_69b3a2eed94de.jpg', 6, 1, 'published', 199, 0, 0, 0, 'Top Reasons Why AMD Global is the Best Flight Booking Platform in Germany', 'Top Reasons Why AMD Global is the Best Flight Booking Platform in Germany', 1, 45, NULL, NULL, 1, 1, NULL, '2025-07-18 22:10:45', '2026-07-24 08:01:49'),
+(8, 'affordable flight booking services in Germany', 'affordable-flight-booking-services-in-germany', '<p>Finding reliable and affordable flight booking services in Germany can often be stressful — from comparing airline prices to managing visa applications and planning your trip smoothly. But with AMD Global, travelers now have a trusted one-stop solution for flight and visa booking services in Germany.Finding reliable and affordable flight booking services in Germany can often be stressful — from comparing airline prices to managing visa applications and planning your trip smoothly. But with AMD Global, travelers now have a trusted one-stop solution for flight and visa booking services in Germany.Finding reliable and affordable flight booking services in Germany can often be stressful — from comparing airline prices to managing visa applications and planning your trip smoothly. But with AMD Global, travelers now have a trusted one-stop solution for flight and visa booking services in Germany.Finding reliable and affordable flight booking services in Germany can often be stressful — from comparing airline prices to managing visa applications and planning your trip smoothly. But with AMD Global, travelers now have a trusted one-stop solution for flight and visa booking services in Germany.Finding reliable and affordable flight booking services in Germany can often be stressful — from comparing airline prices to managing visa applications and planning your trip smoothly. But with AMD Global, travelers now have a trusted one-stop solution for flight and visa booking services in Germany.Finding reliable and affordable flight booking services in Germany can often be stressful — from comparing airline prices to managing visa applications and planning your trip smoothly. But with AMD Global, travelers now have a trusted one-stop solution for flight and visa booking services in Germany.Finding reliable and affordable flight booking services in Germany can often be stressful — from comparing airline prices to managing visa applications and planning your trip smoothly. But with AMD Global, travelers now have a trusted one-stop solution for flight and visa booking services in Germany.</p>', NULL, 'assets/images/blogs/1773381420_69b3a72cdf1eb.jpg', 6, 1, 'published', 2, 0, 0, 0, 'affordable flight booking services in Germany', NULL, 2, 45, NULL, NULL, 0, 1, NULL, '2026-03-13 00:57:00', '2026-07-31 11:45:12');
 
 -- --------------------------------------------------------
 
@@ -271,6 +456,19 @@ CREATE TABLE `cache` (
   `expiration` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `cache`
+--
+
+INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
+('codeweblo_cache_license-api:::1', 'i:1;', 1778838823),
+('codeweblo_cache_license-api:::1:timer', 'i:1778838823;', 1778838823),
+('codeweblo-cache-agent_permissions_10', 'a:7:{s:13:\"bookings.make\";b:1;s:13:\"bookings.view\";b:1;s:10:\"hotels.add\";b:1;s:9:\"tours.add\";b:1;s:9:\"umrah.add\";b:1;s:14:\"wallet.request\";b:1;s:11:\"wallet.view\";b:1;}', 1791305733),
+('codeweblo-cache-agent_permissions_13', 'a:0:{}', 1790930575),
+('codeweblo-cache-agent_permissions_7', 'a:19:{s:13:\"module.hotels\";b:1;s:14:\"module.flights\";b:0;s:12:\"module.tours\";b:0;s:12:\"module.umrah\";b:0;s:11:\"module.visa\";b:0;s:10:\"hotels.api\";b:1;s:13:\"hotels.manual\";b:0;s:11:\"flights.api\";b:0;s:14:\"flights.manual\";b:0;s:12:\"tours.manual\";b:0;s:12:\"umrah.manual\";b:0;s:11:\"visa.submit\";b:0;s:11:\"wallet.view\";b:1;s:14:\"wallet.request\";b:1;s:13:\"bookings.view\";b:1;s:13:\"bookings.make\";b:1;s:10:\"hotels.add\";b:1;s:9:\"tours.add\";b:1;s:9:\"umrah.add\";b:1;}', 1791394717),
+('codeweblo-cache-agent_permissions_8', 'a:7:{s:13:\"bookings.make\";b:1;s:13:\"bookings.view\";b:0;s:10:\"hotels.add\";b:1;s:9:\"tours.add\";b:1;s:9:\"umrah.add\";b:1;s:14:\"wallet.request\";b:1;s:11:\"wallet.view\";b:1;}', 1790933131),
+('codeweblo-cache-setting_maintenance_mode', 'N;', 1791202108);
+
 -- --------------------------------------------------------
 
 --
@@ -309,7 +507,285 @@ CREATE TABLE `contact_messages` (
 
 INSERT INTO `contact_messages` (`id`, `first_name`, `last_name`, `email`, `phone`, `subject`, `booking_ref`, `message`, `status`, `created_at`, `updated_at`) VALUES
 (3, 'younas', 'dev', 'hm.younas22@gmail.com', '034608020722', 'booking', 'AMD123456', 'this is test email', 'read', '2025-11-05 06:08:39', '2025-11-05 06:53:13'),
-(4, 'Rogan', 'Foley', 'hm.younas22@gmail.com', '+1 (288) 532-7482', 'other', 'Soluta neque totam q', 'Est velit atque eli', 'new', '2025-11-19 12:04:19', '2025-11-19 12:04:19');
+(4, 'Rogan', 'Foley', 'hm.younas22@gmail.com', '+1 (288) 532-7482', 'other', 'Soluta neque totam q', 'Est velit atque eli', 'replied', '2025-11-19 12:04:19', '2026-07-31 10:45:52');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `countries`
+--
+
+CREATE TABLE `countries` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `iso3` char(3) DEFAULT NULL,
+  `iso2` char(2) DEFAULT NULL,
+  `phone_code` varchar(10) DEFAULT NULL,
+  `capital` varchar(255) DEFAULT NULL,
+  `currency` char(3) DEFAULT NULL,
+  `currency_symbol` varchar(10) DEFAULT NULL,
+  `latitude` decimal(10,8) DEFAULT NULL,
+  `longitude` decimal(11,8) DEFAULT NULL,
+  `region` varchar(100) DEFAULT NULL,
+  `subregion` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `countries`
+--
+
+INSERT INTO `countries` (`id`, `name`, `iso3`, `iso2`, `phone_code`, `capital`, `currency`, `currency_symbol`, `latitude`, `longitude`, `region`, `subregion`, `created_at`) VALUES
+(1, 'Afghanistan', 'AFG', 'AF', '93', 'Kabul', 'AFN', 'Ïï', 33.00000000, 65.00000000, 'Asia', 'Southern Asia', '2025-09-05 21:22:25'),
+(2, 'Aland Islands', 'ALA', 'AX', '+358-18', 'Mariehamn', 'EUR', 'Ôé¼', 60.11666700, 19.90000000, 'Europe', 'Northern Europe', '2025-09-05 21:22:25'),
+(3, 'Albania', 'ALB', 'AL', '355', 'Tirana', 'ALL', 'Lek', 41.00000000, 20.00000000, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(4, 'Algeria', 'DZA', 'DZ', '213', 'Algiers', 'DZD', 'Ï»Ï¼', 28.00000000, 3.00000000, 'Africa', 'Northern Africa', '2025-09-05 21:22:25'),
+(5, 'American Samoa', 'ASM', 'AS', '+1-684', 'Pago Pago', 'USD', '$', -14.33333333, -170.00000000, 'Oceania', 'Polynesia', '2025-09-05 21:22:25'),
+(6, 'Andorra', 'AND', 'AD', '376', 'Andorra la Vella', 'EUR', 'Ôé¼', 42.50000000, 1.50000000, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(7, 'Angola', 'AGO', 'AO', '244', 'Luanda', 'AOA', 'Kz', -12.50000000, 18.50000000, 'Africa', 'Middle Africa', '2025-09-05 21:22:25'),
+(8, 'Anguilla', 'AIA', 'AI', '+1-264', 'The Valley', 'XCD', '$', 18.25000000, -63.16666666, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(9, 'Antarctica', 'ATA', 'AQ', '', '', '', '$', -74.65000000, 4.48000000, 'Polar', '', '2025-09-05 21:22:25'),
+(10, 'Antigua And Barbuda', 'ATG', 'AG', '+1-268', 'St. John\'s', 'XCD', '$', 17.05000000, -61.80000000, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(11, 'Argentina', 'ARG', 'AR', '54', 'Buenos Aires', 'ARS', '$', -34.00000000, -64.00000000, 'Americas', 'South America', '2025-09-05 21:22:25'),
+(12, 'Armenia', 'ARM', 'AM', '374', 'Yerevan', 'AMD', 'ÍÅ', 40.00000000, 45.00000000, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(13, 'Aruba', 'ABW', 'AW', '297', 'Oranjestad', 'AWG', 'ãÆ', 12.50000000, -69.96666666, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(14, 'Australia', 'AUS', 'AU', '61', 'Canberra', 'AUD', '$', -27.00000000, 133.00000000, 'Oceania', 'Australia and New Zealand', '2025-09-05 21:22:25'),
+(15, 'Austria', 'AUT', 'AT', '43', 'Vienna', 'EUR', 'Ôé¼', 47.33333333, 13.33333333, 'Europe', 'Western Europe', '2025-09-05 21:22:25'),
+(16, 'Azerbaijan', 'AZE', 'AZ', '994', 'Baku', 'AZN', 'm', 40.50000000, 47.50000000, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(17, 'Bahamas The', 'BHS', 'BS', '+1-242', 'Nassau', 'BSD', 'B$', 24.25000000, -76.00000000, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(18, 'Bahrain', 'BHR', 'BH', '973', 'Manama', 'BHD', '.Ï».Ï¿', 26.00000000, 50.55000000, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(19, 'Bangladesh', 'BGD', 'BD', '880', 'Dhaka', 'BDT', 'Óº│', 24.00000000, 90.00000000, 'Asia', 'Southern Asia', '2025-09-05 21:22:25'),
+(20, 'Barbados', 'BRB', 'BB', '+1-246', 'Bridgetown', 'BBD', 'Bds$', 13.16666666, -59.53333333, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(21, 'Belarus', 'BLR', 'BY', '375', 'Minsk', 'BYN', 'Br', 53.00000000, 28.00000000, 'Europe', 'Eastern Europe', '2025-09-05 21:22:25'),
+(22, 'Belgium', 'BEL', 'BE', '32', 'Brussels', 'EUR', 'Ôé¼', 50.83333333, 4.00000000, 'Europe', 'Western Europe', '2025-09-05 21:22:25'),
+(23, 'Belize', 'BLZ', 'BZ', '501', 'Belmopan', 'BZD', '$', 17.25000000, -88.75000000, 'Americas', 'Central America', '2025-09-05 21:22:25'),
+(24, 'Benin', 'BEN', 'BJ', '229', 'Porto-Novo', 'XOF', 'CFA', 9.50000000, 2.25000000, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(25, 'Bermuda', 'BMU', 'BM', '+1-441', 'Hamilton', 'BMD', '$', 32.33333333, -64.75000000, 'Americas', 'Northern America', '2025-09-05 21:22:25'),
+(26, 'Bhutan', 'BTN', 'BT', '975', 'Thimphu', 'BTN', 'Nu.', 27.50000000, 90.50000000, 'Asia', 'Southern Asia', '2025-09-05 21:22:25'),
+(27, 'Bolivia', 'BOL', 'BO', '591', 'Sucre', 'BOB', 'Bs.', -17.00000000, -65.00000000, 'Americas', 'South America', '2025-09-05 21:22:25'),
+(28, 'Bosnia and Herzegovina', 'BIH', 'BA', '387', 'Sarajevo', 'BAM', 'KM', 44.00000000, 18.00000000, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(29, 'Botswana', 'BWA', 'BW', '267', 'Gaborone', 'BWP', 'P', -22.00000000, 24.00000000, 'Africa', 'Southern Africa', '2025-09-05 21:22:25'),
+(30, 'Bouvet Island', 'BVT', 'BV', '0055', '', 'NOK', 'kr', -54.43333333, 3.40000000, '', '', '2025-09-05 21:22:25'),
+(31, 'Brazil', 'BRA', 'BR', '55', 'Brasilia', 'BRL', 'R$', -10.00000000, -55.00000000, 'Americas', 'South America', '2025-09-05 21:22:25'),
+(32, 'British Indian Ocean Territory', 'IOT', 'IO', '246', 'Diego Garcia', 'USD', '$', -6.00000000, 71.50000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(33, 'Brunei', 'BRN', 'BN', '673', 'Bandar Seri Begawan', 'BND', 'B$', 4.50000000, 114.66666666, 'Asia', 'South-Eastern Asia', '2025-09-05 21:22:25'),
+(34, 'Bulgaria', 'BGR', 'BG', '359', 'Sofia', 'BGN', 'ðøð▓.', 43.00000000, 25.00000000, 'Europe', 'Eastern Europe', '2025-09-05 21:22:25'),
+(35, 'Burkina Faso', 'BFA', 'BF', '226', 'Ouagadougou', 'XOF', 'CFA', 13.00000000, -2.00000000, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(36, 'Burundi', 'BDI', 'BI', '257', 'Bujumbura', 'BIF', 'FBu', -3.50000000, 30.00000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(37, 'Cambodia', 'KHM', 'KH', '855', 'Phnom Penh', 'KHR', 'KHR', 13.00000000, 105.00000000, 'Asia', 'South-Eastern Asia', '2025-09-05 21:22:25'),
+(38, 'Cameroon', 'CMR', 'CM', '237', 'Yaounde', 'XAF', 'FCFA', 6.00000000, 12.00000000, 'Africa', 'Middle Africa', '2025-09-05 21:22:25'),
+(39, 'Canada', 'CAN', 'CA', '1', 'Ottawa', 'CAD', '$', 60.00000000, -95.00000000, 'Americas', 'Northern America', '2025-09-05 21:22:25'),
+(40, 'Cape Verde', 'CPV', 'CV', '238', 'Praia', 'CVE', '$', 16.00000000, -24.00000000, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(41, 'Cayman Islands', 'CYM', 'KY', '+1-345', 'George Town', 'KYD', '$', 19.50000000, -80.50000000, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(42, 'Central African Republic', 'CAF', 'CF', '236', 'Bangui', 'XAF', 'FCFA', 7.00000000, 21.00000000, 'Africa', 'Middle Africa', '2025-09-05 21:22:25'),
+(43, 'Chad', 'TCD', 'TD', '235', 'N\'Djamena', 'XAF', 'FCFA', 15.00000000, 19.00000000, 'Africa', 'Middle Africa', '2025-09-05 21:22:25'),
+(44, 'Chile', 'CHL', 'CL', '56', 'Santiago', 'CLP', '$', -30.00000000, -71.00000000, 'Americas', 'South America', '2025-09-05 21:22:25'),
+(45, 'China', 'CHN', 'CN', '86', 'Beijing', 'CNY', '┬Ñ', 35.00000000, 105.00000000, 'Asia', 'Eastern Asia', '2025-09-05 21:22:25'),
+(46, 'Christmas Island', 'CXR', 'CX', '61', 'Flying Fish Cove', 'AUD', '$', -10.50000000, 105.66666666, 'Oceania', 'Australia and New Zealand', '2025-09-05 21:22:25'),
+(47, 'Cocos (Keeling) Islands', 'CCK', 'CC', '61', 'West Island', 'AUD', '$', -12.50000000, 96.83333333, 'Oceania', 'Australia and New Zealand', '2025-09-05 21:22:25'),
+(48, 'Colombia', 'COL', 'CO', '57', 'Bogota', 'COP', '$', 4.00000000, -72.00000000, 'Americas', 'South America', '2025-09-05 21:22:25'),
+(49, 'Comoros', 'COM', 'KM', '269', 'Moroni', 'KMF', 'CF', -12.16666666, 44.25000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(50, 'Congo', 'COG', 'CG', '242', 'Brazzaville', 'XAF', 'FC', -1.00000000, 15.00000000, 'Africa', 'Middle Africa', '2025-09-05 21:22:25'),
+(51, 'Congo The Democratic Republic Of The', 'COD', 'CD', '243', 'Kinshasa', 'CDF', 'FC', 0.00000000, 25.00000000, 'Africa', 'Middle Africa', '2025-09-05 21:22:25'),
+(52, 'Cook Islands', 'COK', 'CK', '682', 'Avarua', 'NZD', '$', -21.23333333, -159.76666666, 'Oceania', 'Polynesia', '2025-09-05 21:22:25'),
+(53, 'Costa Rica', 'CRI', 'CR', '506', 'San Jose', 'CRC', 'Ôéí', 10.00000000, -84.00000000, 'Americas', 'Central America', '2025-09-05 21:22:25'),
+(54, 'Cote D\'Ivoire (Ivory Coast)', 'CIV', 'CI', '225', 'Yamoussoukro', 'XOF', 'CFA', 8.00000000, -5.00000000, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(55, 'Croatia (Hrvatska)', 'HRV', 'HR', '385', 'Zagreb', 'HRK', 'kn', 45.16666666, 15.50000000, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(56, 'Cuba', 'CUB', 'CU', '53', 'Havana', 'CUP', '$', 21.50000000, -80.00000000, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(57, 'Cyprus', 'CYP', 'CY', '357', 'Nicosia', 'EUR', 'Ôé¼', 35.00000000, 33.00000000, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(58, 'Czech Republic', 'CZE', 'CZ', '420', 'Prague', 'CZK', 'K─ì', 49.75000000, 15.50000000, 'Europe', 'Eastern Europe', '2025-09-05 21:22:25'),
+(59, 'Denmark', 'DNK', 'DK', '45', 'Copenhagen', 'DKK', 'Kr.', 56.00000000, 10.00000000, 'Europe', 'Northern Europe', '2025-09-05 21:22:25'),
+(60, 'Djibouti', 'DJI', 'DJ', '253', 'Djibouti', 'DJF', 'Fdj', 11.50000000, 43.00000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(61, 'Dominica', 'DMA', 'DM', '+1-767', 'Roseau', 'XCD', '$', 15.41666666, -61.33333333, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(62, 'Dominican Republic', 'DOM', 'DO', '+1-809 and', 'Santo Domingo', 'DOP', '$', 19.00000000, -70.66666666, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(63, 'East Timor', 'TLS', 'TL', '670', 'Dili', 'USD', '$', -8.83333333, 125.91666666, 'Asia', 'South-Eastern Asia', '2025-09-05 21:22:25'),
+(64, 'Ecuador', 'ECU', 'EC', '593', 'Quito', 'USD', '$', -2.00000000, -77.50000000, 'Americas', 'South America', '2025-09-05 21:22:25'),
+(65, 'Egypt', 'EGY', 'EG', '20', 'Cairo', 'EGP', 'Ï¼.┘à', 27.00000000, 30.00000000, 'Africa', 'Northern Africa', '2025-09-05 21:22:25'),
+(66, 'El Salvador', 'SLV', 'SV', '503', 'San Salvador', 'USD', '$', 13.83333333, -88.91666666, 'Americas', 'Central America', '2025-09-05 21:22:25'),
+(67, 'Equatorial Guinea', 'GNQ', 'GQ', '240', 'Malabo', 'XAF', 'FCFA', 2.00000000, 10.00000000, 'Africa', 'Middle Africa', '2025-09-05 21:22:25'),
+(68, 'Eritrea', 'ERI', 'ER', '291', 'Asmara', 'ERN', 'Nfk', 15.00000000, 39.00000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(69, 'Estonia', 'EST', 'EE', '372', 'Tallinn', 'EUR', 'Ôé¼', 59.00000000, 26.00000000, 'Europe', 'Northern Europe', '2025-09-05 21:22:25'),
+(70, 'Ethiopia', 'ETH', 'ET', '251', 'Addis Ababa', 'ETB', 'Nkf', 8.00000000, 38.00000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(71, 'Falkland Islands', 'FLK', 'FK', '500', 'Stanley', 'FKP', '┬ú', -51.75000000, -59.00000000, 'Americas', 'South America', '2025-09-05 21:22:25'),
+(72, 'Faroe Islands', 'FRO', 'FO', '298', 'Torshavn', 'DKK', 'Kr.', 62.00000000, -7.00000000, 'Europe', 'Northern Europe', '2025-09-05 21:22:25'),
+(73, 'Fiji Islands', 'FJI', 'FJ', '679', 'Suva', 'FJD', 'FJ$', -18.00000000, 175.00000000, 'Oceania', 'Melanesia', '2025-09-05 21:22:25'),
+(74, 'Finland', 'FIN', 'FI', '358', 'Helsinki', 'EUR', 'Ôé¼', 64.00000000, 26.00000000, 'Europe', 'Northern Europe', '2025-09-05 21:22:25'),
+(75, 'France', 'FRA', 'FR', '33', 'Paris', 'EUR', 'Ôé¼', 46.00000000, 2.00000000, 'Europe', 'Western Europe', '2025-09-05 21:22:25'),
+(76, 'French Guiana', 'GUF', 'GF', '594', 'Cayenne', 'EUR', 'Ôé¼', 4.00000000, -53.00000000, 'Americas', 'South America', '2025-09-05 21:22:25'),
+(77, 'French Polynesia', 'PYF', 'PF', '689', 'Papeete', 'XPF', 'Ôéú', -15.00000000, -140.00000000, 'Oceania', 'Polynesia', '2025-09-05 21:22:25'),
+(78, 'French Southern Territories', 'ATF', 'TF', '', 'Port-aux-Francais', 'EUR', 'Ôé¼', -49.25000000, 69.16700000, 'Africa', 'Southern Africa', '2025-09-05 21:22:25'),
+(79, 'Gabon', 'GAB', 'GA', '241', 'Libreville', 'XAF', 'FCFA', -1.00000000, 11.75000000, 'Africa', 'Middle Africa', '2025-09-05 21:22:25'),
+(80, 'Gambia The', 'GMB', 'GM', '220', 'Banjul', 'GMD', 'D', 13.46666666, -16.56666666, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(81, 'Georgia', 'GEO', 'GE', '995', 'Tbilisi', 'GEL', 'ßâÜ', 42.00000000, 43.50000000, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(82, 'Germany', 'DEU', 'DE', '49', 'Berlin', 'EUR', 'Ôé¼', 51.00000000, 9.00000000, 'Europe', 'Western Europe', '2025-09-05 21:22:25'),
+(83, 'Ghana', 'GHA', 'GH', '233', 'Accra', 'GHS', 'GHÔéÁ', 8.00000000, -2.00000000, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(84, 'Gibraltar', 'GIB', 'GI', '350', 'Gibraltar', 'GIP', '┬ú', 36.13333333, -5.35000000, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(85, 'Greece', 'GRC', 'GR', '30', 'Athens', 'EUR', 'Ôé¼', 39.00000000, 22.00000000, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(86, 'Greenland', 'GRL', 'GL', '299', 'Nuuk', 'DKK', 'Kr.', 72.00000000, -40.00000000, 'Americas', 'Northern America', '2025-09-05 21:22:25'),
+(87, 'Grenada', 'GRD', 'GD', '+1-473', 'St. George\'s', 'XCD', '$', 12.11666666, -61.66666666, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(88, 'Guadeloupe', 'GLP', 'GP', '590', 'Basse-Terre', 'EUR', 'Ôé¼', 16.25000000, -61.58333300, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(89, 'Guam', 'GUM', 'GU', '+1-671', 'Hagatna', 'USD', '$', 13.46666666, 144.78333333, 'Oceania', 'Micronesia', '2025-09-05 21:22:25'),
+(90, 'Guatemala', 'GTM', 'GT', '502', 'Guatemala City', 'GTQ', 'Q', 15.50000000, -90.25000000, 'Americas', 'Central America', '2025-09-05 21:22:25'),
+(91, 'Guernsey and Alderney', 'GGY', 'GG', '+44-1481', 'St Peter Port', 'GBP', '┬ú', 49.46666666, -2.58333333, 'Europe', 'Northern Europe', '2025-09-05 21:22:25'),
+(92, 'Guinea', 'GIN', 'GN', '224', 'Conakry', 'GNF', 'FG', 11.00000000, -10.00000000, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(93, 'Guinea-Bissau', 'GNB', 'GW', '245', 'Bissau', 'XOF', 'CFA', 12.00000000, -15.00000000, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(94, 'Guyana', 'GUY', 'GY', '592', 'Georgetown', 'GYD', '$', 5.00000000, -59.00000000, 'Americas', 'South America', '2025-09-05 21:22:25'),
+(95, 'Haiti', 'HTI', 'HT', '509', 'Port-au-Prince', 'HTG', 'G', 19.00000000, -72.41666666, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(96, 'Heard Island and McDonald Islands', 'HMD', 'HM', '', '', 'AUD', '$', -53.10000000, 72.51666666, '', '', '2025-09-05 21:22:25'),
+(97, 'Honduras', 'HND', 'HN', '504', 'Tegucigalpa', 'HNL', 'L', 15.00000000, -86.50000000, 'Americas', 'Central America', '2025-09-05 21:22:25'),
+(98, 'Hong Kong S.A.R.', 'HKG', 'HK', '852', 'Hong Kong', 'HKD', '$', 22.25000000, 114.16666666, 'Asia', 'Eastern Asia', '2025-09-05 21:22:25'),
+(99, 'Hungary', 'HUN', 'HU', '36', 'Budapest', 'HUF', 'Ft', 47.00000000, 20.00000000, 'Europe', 'Eastern Europe', '2025-09-05 21:22:25'),
+(100, 'Iceland', 'ISL', 'IS', '354', 'Reykjavik', 'ISK', 'kr', 65.00000000, -18.00000000, 'Europe', 'Northern Europe', '2025-09-05 21:22:25'),
+(101, 'India', 'IND', 'IN', '91', 'New Delhi', 'INR', 'Ôé╣', 20.00000000, 77.00000000, 'Asia', 'Southern Asia', '2025-09-05 21:22:25'),
+(102, 'Indonesia', 'IDN', 'ID', '62', 'Jakarta', 'IDR', 'Rp', -5.00000000, 120.00000000, 'Asia', 'South-Eastern Asia', '2025-09-05 21:22:25'),
+(103, 'Iran', 'IRN', 'IR', '98', 'Tehran', 'IRR', '´À╝', 32.00000000, 53.00000000, 'Asia', 'Southern Asia', '2025-09-05 21:22:25'),
+(104, 'Iraq', 'IRQ', 'IQ', '964', 'Baghdad', 'IQD', 'Ï».Ï╣', 33.00000000, 44.00000000, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(105, 'Ireland', 'IRL', 'IE', '353', 'Dublin', 'EUR', 'Ôé¼', 53.00000000, -8.00000000, 'Europe', 'Northern Europe', '2025-09-05 21:22:25'),
+(106, 'Israel', 'ISR', 'IL', '972', 'Jerusalem', 'ILS', 'Ôé¬', 31.50000000, 34.75000000, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(107, 'Italy', 'ITA', 'IT', '39', 'Rome', 'EUR', 'Ôé¼', 42.83333333, 12.83333333, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(108, 'Jamaica', 'JAM', 'JM', '+1-876', 'Kingston', 'JMD', 'J$', 18.25000000, -77.50000000, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(109, 'Japan', 'JPN', 'JP', '81', 'Tokyo', 'JPY', '┬Ñ', 36.00000000, 138.00000000, 'Asia', 'Eastern Asia', '2025-09-05 21:22:25'),
+(110, 'Jersey', 'JEY', 'JE', '+44-1534', 'Saint Helier', 'GBP', '┬ú', 49.25000000, -2.16666666, 'Europe', 'Northern Europe', '2025-09-05 21:22:25'),
+(111, 'Jordan', 'JOR', 'JO', '962', 'Amman', 'JOD', 'Ïº.Ï»', 31.00000000, 36.00000000, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(112, 'Kazakhstan', 'KAZ', 'KZ', '7', 'Astana', 'KZT', 'ð╗ð▓', 48.00000000, 68.00000000, 'Asia', 'Central Asia', '2025-09-05 21:22:25'),
+(113, 'Kenya', 'KEN', 'KE', '254', 'Nairobi', 'KES', 'KSh', 1.00000000, 38.00000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(114, 'Kiribati', 'KIR', 'KI', '686', 'Tarawa', 'AUD', '$', 1.41666666, 173.00000000, 'Oceania', 'Micronesia', '2025-09-05 21:22:25'),
+(115, 'Korea North', 'PRK', 'KP', '850', 'Pyongyang', 'KPW', 'Ôé®', 40.00000000, 127.00000000, 'Asia', 'Eastern Asia', '2025-09-05 21:22:25'),
+(116, 'Korea South', 'KOR', 'KR', '82', 'Seoul', 'KRW', 'Ôé®', 37.00000000, 127.50000000, 'Asia', 'Eastern Asia', '2025-09-05 21:22:25'),
+(117, 'Kuwait', 'KWT', 'KW', '965', 'Kuwait City', 'KWD', '┘â.Ï»', 29.50000000, 45.75000000, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(118, 'Kyrgyzstan', 'KGZ', 'KG', '996', 'Bishkek', 'KGS', 'ð╗ð▓', 41.00000000, 75.00000000, 'Asia', 'Central Asia', '2025-09-05 21:22:25'),
+(119, 'Laos', 'LAO', 'LA', '856', 'Vientiane', 'LAK', 'Ôé¡', 18.00000000, 105.00000000, 'Asia', 'South-Eastern Asia', '2025-09-05 21:22:25'),
+(120, 'Latvia', 'LVA', 'LV', '371', 'Riga', 'EUR', 'Ôé¼', 57.00000000, 25.00000000, 'Europe', 'Northern Europe', '2025-09-05 21:22:25'),
+(121, 'Lebanon', 'LBN', 'LB', '961', 'Beirut', 'LBP', '┬ú', 33.83333333, 35.83333333, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(122, 'Lesotho', 'LSO', 'LS', '266', 'Maseru', 'LSL', 'L', -29.50000000, 28.50000000, 'Africa', 'Southern Africa', '2025-09-05 21:22:25'),
+(123, 'Liberia', 'LBR', 'LR', '231', 'Monrovia', 'LRD', '$', 6.50000000, -9.50000000, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(124, 'Libya', 'LBY', 'LY', '218', 'Tripolis', 'LYD', 'Ï».┘ä', 25.00000000, 17.00000000, 'Africa', 'Northern Africa', '2025-09-05 21:22:25'),
+(125, 'Liechtenstein', 'LIE', 'LI', '423', 'Vaduz', 'CHF', 'CHf', 47.26666666, 9.53333333, 'Europe', 'Western Europe', '2025-09-05 21:22:25'),
+(126, 'Lithuania', 'LTU', 'LT', '370', 'Vilnius', 'EUR', 'Ôé¼', 56.00000000, 24.00000000, 'Europe', 'Northern Europe', '2025-09-05 21:22:25'),
+(127, 'Luxembourg', 'LUX', 'LU', '352', 'Luxembourg', 'EUR', 'Ôé¼', 49.75000000, 6.16666666, 'Europe', 'Western Europe', '2025-09-05 21:22:25'),
+(128, 'Macau S.A.R.', 'MAC', 'MO', '853', 'Macao', 'MOP', '$', 22.16666666, 113.55000000, 'Asia', 'Eastern Asia', '2025-09-05 21:22:25'),
+(129, 'Macedonia', 'MKD', 'MK', '389', 'Skopje', 'MKD', 'ð┤ðÁð¢', 41.83333333, 22.00000000, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(130, 'Madagascar', 'MDG', 'MG', '261', 'Antananarivo', 'MGA', 'Ar', -20.00000000, 47.00000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(131, 'Malawi', 'MWI', 'MW', '265', 'Lilongwe', 'MWK', 'MK', -13.50000000, 34.00000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(132, 'Malaysia', 'MYS', 'MY', '60', 'Kuala Lumpur', 'MYR', 'RM', 2.50000000, 112.50000000, 'Asia', 'South-Eastern Asia', '2025-09-05 21:22:25'),
+(133, 'Maldives', 'MDV', 'MV', '960', 'Male', 'MVR', 'Rf', 3.25000000, 73.00000000, 'Asia', 'Southern Asia', '2025-09-05 21:22:25'),
+(134, 'Mali', 'MLI', 'ML', '223', 'Bamako', 'XOF', 'CFA', 17.00000000, -4.00000000, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(135, 'Malta', 'MLT', 'MT', '356', 'Valletta', 'EUR', 'Ôé¼', 35.83333333, 14.58333333, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(136, 'Man (Isle of)', 'IMN', 'IM', '+44-1624', 'Douglas, Isle of Man', 'GBP', '┬ú', 54.25000000, -4.50000000, 'Europe', 'Northern Europe', '2025-09-05 21:22:25'),
+(137, 'Marshall Islands', 'MHL', 'MH', '692', 'Majuro', 'USD', '$', 9.00000000, 168.00000000, 'Oceania', 'Micronesia', '2025-09-05 21:22:25'),
+(138, 'Martinique', 'MTQ', 'MQ', '596', 'Fort-de-France', 'EUR', 'Ôé¼', 14.66666700, -61.00000000, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(139, 'Mauritania', 'MRT', 'MR', '222', 'Nouakchott', 'MRO', 'MRU', 20.00000000, -12.00000000, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(140, 'Mauritius', 'MUS', 'MU', '230', 'Port Louis', 'MUR', 'Ôé¿', -20.28333333, 57.55000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(141, 'Mayotte', 'MYT', 'YT', '262', 'Mamoudzou', 'EUR', 'Ôé¼', -12.83333333, 45.16666666, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(142, 'Mexico', 'MEX', 'MX', '52', 'Mexico City', 'MXN', '$', 23.00000000, -102.00000000, 'Americas', 'Central America', '2025-09-05 21:22:25'),
+(143, 'Micronesia', 'FSM', 'FM', '691', 'Palikir', 'USD', '$', 6.91666666, 158.25000000, 'Oceania', 'Micronesia', '2025-09-05 21:22:25'),
+(144, 'Moldova', 'MDA', 'MD', '373', 'Chisinau', 'MDL', 'L', 47.00000000, 29.00000000, 'Europe', 'Eastern Europe', '2025-09-05 21:22:25'),
+(145, 'Monaco', 'MCO', 'MC', '377', 'Monaco', 'EUR', 'Ôé¼', 43.73333333, 7.40000000, 'Europe', 'Western Europe', '2025-09-05 21:22:25'),
+(146, 'Mongolia', 'MNG', 'MN', '976', 'Ulan Bator', 'MNT', 'Ôé«', 46.00000000, 105.00000000, 'Asia', 'Eastern Asia', '2025-09-05 21:22:25'),
+(147, 'Montenegro', 'MNE', 'ME', '382', 'Podgorica', 'EUR', 'Ôé¼', 42.50000000, 19.30000000, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(148, 'Montserrat', 'MSR', 'MS', '+1-664', 'Plymouth', 'XCD', '$', 16.75000000, -62.20000000, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(149, 'Morocco', 'MAR', 'MA', '212', 'Rabat', 'MAD', 'DH', 32.00000000, -5.00000000, 'Africa', 'Northern Africa', '2025-09-05 21:22:25'),
+(150, 'Mozambique', 'MOZ', 'MZ', '258', 'Maputo', 'MZN', 'MT', -18.25000000, 35.00000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(151, 'Myanmar', 'MMR', 'MM', '95', 'Nay Pyi Taw', 'MMK', 'K', 22.00000000, 98.00000000, 'Asia', 'South-Eastern Asia', '2025-09-05 21:22:25'),
+(152, 'Namibia', 'NAM', 'NA', '264', 'Windhoek', 'NAD', '$', -22.00000000, 17.00000000, 'Africa', 'Southern Africa', '2025-09-05 21:22:25'),
+(153, 'Nauru', 'NRU', 'NR', '674', 'Yaren', 'AUD', '$', -0.53333333, 166.91666666, 'Oceania', 'Micronesia', '2025-09-05 21:22:25'),
+(154, 'Nepal', 'NPL', 'NP', '977', 'Kathmandu', 'NPR', 'Ôé¿', 28.00000000, 84.00000000, 'Asia', 'Southern Asia', '2025-09-05 21:22:25'),
+(155, 'Bonaire, Sint Eustatius and Saba', 'BES', 'BQ', '599', 'Kralendijk', 'USD', '$', 12.15000000, -68.26666700, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(156, 'Netherlands The', 'NLD', 'NL', '31', 'Amsterdam', 'EUR', 'Ôé¼', 52.50000000, 5.75000000, 'Europe', 'Western Europe', '2025-09-05 21:22:25'),
+(157, 'New Caledonia', 'NCL', 'NC', '687', 'Noumea', 'XPF', 'Ôéú', -21.50000000, 165.50000000, 'Oceania', 'Melanesia', '2025-09-05 21:22:25'),
+(158, 'New Zealand', 'NZL', 'NZ', '64', 'Wellington', 'NZD', '$', -41.00000000, 174.00000000, 'Oceania', 'Australia and New Zealand', '2025-09-05 21:22:25'),
+(159, 'Nicaragua', 'NIC', 'NI', '505', 'Managua', 'NIO', 'C$', 13.00000000, -85.00000000, 'Americas', 'Central America', '2025-09-05 21:22:25'),
+(160, 'Niger', 'NER', 'NE', '227', 'Niamey', 'XOF', 'CFA', 16.00000000, 8.00000000, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(161, 'Nigeria', 'NGA', 'NG', '234', 'Abuja', 'NGN', 'Ôéª', 10.00000000, 8.00000000, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(162, 'Niue', 'NIU', 'NU', '683', 'Alofi', 'NZD', '$', -19.03333333, -169.86666666, 'Oceania', 'Polynesia', '2025-09-05 21:22:25'),
+(163, 'Norfolk Island', 'NFK', 'NF', '672', 'Kingston', 'AUD', '$', -29.03333333, 167.95000000, 'Oceania', 'Australia and New Zealand', '2025-09-05 21:22:25'),
+(164, 'Northern Mariana Islands', 'MNP', 'MP', '+1-670', 'Saipan', 'USD', '$', 15.20000000, 145.75000000, 'Oceania', 'Micronesia', '2025-09-05 21:22:25'),
+(165, 'Norway', 'NOR', 'NO', '47', 'Oslo', 'NOK', 'kr', 62.00000000, 10.00000000, 'Europe', 'Northern Europe', '2025-09-05 21:22:25'),
+(166, 'Oman', 'OMN', 'OM', '968', 'Muscat', 'OMR', '.Ï╣.Ï▒', 21.00000000, 57.00000000, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(167, 'Pakistan', 'PAK', 'PK', '92', 'Islamabad', 'PKR', 'Ôé¿', 30.00000000, 70.00000000, 'Asia', 'Southern Asia', '2025-09-05 21:22:25'),
+(168, 'Palau', 'PLW', 'PW', '680', 'Melekeok', 'USD', '$', 7.50000000, 134.50000000, 'Oceania', 'Micronesia', '2025-09-05 21:22:25'),
+(169, 'Palestinian Territory Occupied', 'PSE', 'PS', '970', 'East Jerusalem', 'ILS', 'Ôé¬', 31.90000000, 35.20000000, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(170, 'Panama', 'PAN', 'PA', '507', 'Panama City', 'PAB', 'B/.', 9.00000000, -80.00000000, 'Americas', 'Central America', '2025-09-05 21:22:25'),
+(171, 'Papua new Guinea', 'PNG', 'PG', '675', 'Port Moresby', 'PGK', 'K', -6.00000000, 147.00000000, 'Oceania', 'Melanesia', '2025-09-05 21:22:25'),
+(172, 'Paraguay', 'PRY', 'PY', '595', 'Asuncion', 'PYG', 'Ôé▓', -23.00000000, -58.00000000, 'Americas', 'South America', '2025-09-05 21:22:25'),
+(173, 'Peru', 'PER', 'PE', '51', 'Lima', 'PEN', 'S/.', -10.00000000, -76.00000000, 'Americas', 'South America', '2025-09-05 21:22:25'),
+(174, 'Philippines', 'PHL', 'PH', '63', 'Manila', 'PHP', 'Ôé▒', 13.00000000, 122.00000000, 'Asia', 'South-Eastern Asia', '2025-09-05 21:22:25'),
+(175, 'Pitcairn Island', 'PCN', 'PN', '870', 'Adamstown', 'NZD', '$', -25.06666666, -130.10000000, 'Oceania', 'Polynesia', '2025-09-05 21:22:25'),
+(176, 'Poland', 'POL', 'PL', '48', 'Warsaw', 'PLN', 'z┼é', 52.00000000, 20.00000000, 'Europe', 'Eastern Europe', '2025-09-05 21:22:25'),
+(177, 'Portugal', 'PRT', 'PT', '351', 'Lisbon', 'EUR', 'Ôé¼', 39.50000000, -8.00000000, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(178, 'Puerto Rico', 'PRI', 'PR', '+1-787 and', 'San Juan', 'USD', '$', 18.25000000, -66.50000000, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(179, 'Qatar', 'QAT', 'QA', '974', 'Doha', 'QAR', '┘é.Ï▒', 25.50000000, 51.25000000, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(180, 'Reunion', 'REU', 'RE', '262', 'Saint-Denis', 'EUR', 'Ôé¼', -21.15000000, 55.50000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(181, 'Romania', 'ROU', 'RO', '40', 'Bucharest', 'RON', 'lei', 46.00000000, 25.00000000, 'Europe', 'Eastern Europe', '2025-09-05 21:22:25'),
+(182, 'Russia', 'RUS', 'RU', '7', 'Moscow', 'RUB', 'Ôé¢', 60.00000000, 100.00000000, 'Europe', 'Eastern Europe', '2025-09-05 21:22:25'),
+(183, 'Rwanda', 'RWA', 'RW', '250', 'Kigali', 'RWF', 'FRw', -2.00000000, 30.00000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(184, 'Saint Helena', 'SHN', 'SH', '290', 'Jamestown', 'SHP', '┬ú', -15.95000000, -5.70000000, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(185, 'Saint Kitts And Nevis', 'KNA', 'KN', '+1-869', 'Basseterre', 'XCD', '$', 17.33333333, -62.75000000, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(186, 'Saint Lucia', 'LCA', 'LC', '+1-758', 'Castries', 'XCD', '$', 13.88333333, -60.96666666, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(187, 'Saint Pierre and Miquelon', 'SPM', 'PM', '508', 'Saint-Pierre', 'EUR', 'Ôé¼', 46.83333333, -56.33333333, 'Americas', 'Northern America', '2025-09-05 21:22:25'),
+(188, 'Saint Vincent And The Grenadines', 'VCT', 'VC', '+1-784', 'Kingstown', 'XCD', '$', 13.25000000, -61.20000000, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(189, 'Saint-Barthelemy', 'BLM', 'BL', '590', 'Gustavia', 'EUR', 'Ôé¼', 18.50000000, -63.41666666, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(190, 'Saint-Martin (French part)', 'MAF', 'MF', '590', 'Marigot', 'EUR', 'Ôé¼', 18.08333333, -63.95000000, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(191, 'Samoa', 'WSM', 'WS', '685', 'Apia', 'WST', 'SAT', -13.58333333, -172.33333333, 'Oceania', 'Polynesia', '2025-09-05 21:22:25'),
+(192, 'San Marino', 'SMR', 'SM', '378', 'San Marino', 'EUR', 'Ôé¼', 43.76666666, 12.41666666, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(193, 'Sao Tome and Principe', 'STP', 'ST', '239', 'Sao Tome', 'STD', 'Db', 1.00000000, 7.00000000, 'Africa', 'Middle Africa', '2025-09-05 21:22:25'),
+(194, 'Saudi Arabia', 'SAU', 'SA', '966', 'Riyadh', 'SAR', '´À╝', 25.00000000, 45.00000000, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(195, 'Senegal', 'SEN', 'SN', '221', 'Dakar', 'XOF', 'CFA', 14.00000000, -14.00000000, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(196, 'Serbia', 'SRB', 'RS', '381', 'Belgrade', 'RSD', 'din', 44.00000000, 21.00000000, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(197, 'Seychelles', 'SYC', 'SC', '248', 'Victoria', 'SCR', 'SRe', -4.58333333, 55.66666666, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(198, 'Sierra Leone', 'SLE', 'SL', '232', 'Freetown', 'SLL', 'Le', 8.50000000, -11.50000000, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(199, 'Singapore', 'SGP', 'SG', '65', 'Singapur', 'SGD', '$', 1.36666666, 103.80000000, 'Asia', 'South-Eastern Asia', '2025-09-05 21:22:25'),
+(200, 'Slovakia', 'SVK', 'SK', '421', 'Bratislava', 'EUR', 'Ôé¼', 48.66666666, 19.50000000, 'Europe', 'Eastern Europe', '2025-09-05 21:22:25'),
+(201, 'Slovenia', 'SVN', 'SI', '386', 'Ljubljana', 'EUR', 'Ôé¼', 46.11666666, 14.81666666, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(202, 'Solomon Islands', 'SLB', 'SB', '677', 'Honiara', 'SBD', 'Si$', -8.00000000, 159.00000000, 'Oceania', 'Melanesia', '2025-09-05 21:22:25'),
+(203, 'Somalia', 'SOM', 'SO', '252', 'Mogadishu', 'SOS', 'Sh.so.', 10.00000000, 49.00000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(204, 'South Africa', 'ZAF', 'ZA', '27', 'Pretoria', 'ZAR', 'R', -29.00000000, 24.00000000, 'Africa', 'Southern Africa', '2025-09-05 21:22:25'),
+(205, 'South Georgia', 'SGS', 'GS', '', 'Grytviken', 'GBP', '┬ú', -54.50000000, -37.00000000, 'Americas', 'South America', '2025-09-05 21:22:25'),
+(206, 'South Sudan', 'SSD', 'SS', '211', 'Juba', 'SSP', '┬ú', 7.00000000, 30.00000000, 'Africa', 'Middle Africa', '2025-09-05 21:22:25'),
+(207, 'Spain', 'ESP', 'ES', '34', 'Madrid', 'EUR', 'Ôé¼', 40.00000000, -4.00000000, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(208, 'Sri Lanka', 'LKA', 'LK', '94', 'Colombo', 'LKR', 'Rs', 7.00000000, 81.00000000, 'Asia', 'Southern Asia', '2025-09-05 21:22:25'),
+(209, 'Sudan', 'SDN', 'SD', '249', 'Khartoum', 'SDG', '.Ï│.Ï¼', 15.00000000, 30.00000000, 'Africa', 'Northern Africa', '2025-09-05 21:22:25'),
+(210, 'Suriname', 'SUR', 'SR', '597', 'Paramaribo', 'SRD', '$', 4.00000000, -56.00000000, 'Americas', 'South America', '2025-09-05 21:22:25'),
+(211, 'Svalbard And Jan Mayen Islands', 'SJM', 'SJ', '47', 'Longyearbyen', 'NOK', 'kr', 78.00000000, 20.00000000, 'Europe', 'Northern Europe', '2025-09-05 21:22:25'),
+(212, 'Swaziland', 'SWZ', 'SZ', '268', 'Mbabane', 'SZL', 'E', -26.50000000, 31.50000000, 'Africa', 'Southern Africa', '2025-09-05 21:22:25'),
+(213, 'Sweden', 'SWE', 'SE', '46', 'Stockholm', 'SEK', 'kr', 62.00000000, 15.00000000, 'Europe', 'Northern Europe', '2025-09-05 21:22:25'),
+(214, 'Switzerland', 'CHE', 'CH', '41', 'Bern', 'CHF', 'CHf', 47.00000000, 8.00000000, 'Europe', 'Western Europe', '2025-09-05 21:22:25'),
+(215, 'Syria', 'SYR', 'SY', '963', 'Damascus', 'SYP', 'LS', 35.00000000, 38.00000000, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(216, 'Taiwan', 'TWN', 'TW', '886', 'Taipei', 'TWD', '$', 23.50000000, 121.00000000, 'Asia', 'Eastern Asia', '2025-09-05 21:22:25'),
+(217, 'Tajikistan', 'TJK', 'TJ', '992', 'Dushanbe', 'TJS', 'SM', 39.00000000, 71.00000000, 'Asia', 'Central Asia', '2025-09-05 21:22:25'),
+(218, 'Tanzania', 'TZA', 'TZ', '255', 'Dodoma', 'TZS', 'TSh', -6.00000000, 35.00000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(219, 'Thailand', 'THA', 'TH', '66', 'Bangkok', 'THB', 'Ó©┐', 15.00000000, 100.00000000, 'Asia', 'South-Eastern Asia', '2025-09-05 21:22:25'),
+(220, 'Togo', 'TGO', 'TG', '228', 'Lome', 'XOF', 'CFA', 8.00000000, 1.16666666, 'Africa', 'Western Africa', '2025-09-05 21:22:25'),
+(221, 'Tokelau', 'TKL', 'TK', '690', '', 'NZD', '$', -9.00000000, -172.00000000, 'Oceania', 'Polynesia', '2025-09-05 21:22:25'),
+(222, 'Tonga', 'TON', 'TO', '676', 'Nuku\'alofa', 'TOP', '$', -20.00000000, -175.00000000, 'Oceania', 'Polynesia', '2025-09-05 21:22:25'),
+(223, 'Trinidad And Tobago', 'TTO', 'TT', '+1-868', 'Port of Spain', 'TTD', '$', 11.00000000, -61.00000000, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(224, 'Tunisia', 'TUN', 'TN', '216', 'Tunis', 'TND', 'Ï¬.Ï»', 34.00000000, 9.00000000, 'Africa', 'Northern Africa', '2025-09-05 21:22:25'),
+(225, 'Turkey', 'TUR', 'TR', '90', 'Ankara', 'TRY', 'Ôé║', 39.00000000, 35.00000000, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(226, 'Turkmenistan', 'TKM', 'TM', '993', 'Ashgabat', 'TMT', 'T', 40.00000000, 60.00000000, 'Asia', 'Central Asia', '2025-09-05 21:22:25'),
+(227, 'Turks And Caicos Islands', 'TCA', 'TC', '+1-649', 'Cockburn Town', 'USD', '$', 21.75000000, -71.58333333, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(228, 'Tuvalu', 'TUV', 'TV', '688', 'Funafuti', 'AUD', '$', -8.00000000, 178.00000000, 'Oceania', 'Polynesia', '2025-09-05 21:22:25'),
+(229, 'Uganda', 'UGA', 'UG', '256', 'Kampala', 'UGX', 'USh', 1.00000000, 32.00000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(230, 'Ukraine', 'UKR', 'UA', '380', 'Kiev', 'UAH', 'Ôé┤', 49.00000000, 32.00000000, 'Europe', 'Eastern Europe', '2025-09-05 21:22:25'),
+(231, 'United Arab Emirates', 'ARE', 'AE', '971', 'Abu Dhabi', 'AED', 'ÏÑ.Ï»', 24.00000000, 54.00000000, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(232, 'United Kingdom', 'GBR', 'GB', '44', 'London', 'GBP', '┬ú', 54.00000000, -2.00000000, 'Europe', 'Northern Europe', '2025-09-05 21:22:25'),
+(233, 'United States', 'USA', 'US', '1', 'Washington', 'USD', '$', 38.00000000, -97.00000000, 'Americas', 'Northern America', '2025-09-05 21:22:25'),
+(234, 'United States Minor Outlying Islands', 'UMI', 'UM', '1', '', 'USD', '$', 0.00000000, 0.00000000, 'Americas', 'Northern America', '2025-09-05 21:22:25'),
+(235, 'Uruguay', 'URY', 'UY', '598', 'Montevideo', 'UYU', '$', -33.00000000, -56.00000000, 'Americas', 'South America', '2025-09-05 21:22:25'),
+(236, 'Uzbekistan', 'UZB', 'UZ', '998', 'Tashkent', 'UZS', 'ð╗ð▓', 41.00000000, 64.00000000, 'Asia', 'Central Asia', '2025-09-05 21:22:25'),
+(237, 'Vanuatu', 'VUT', 'VU', '678', 'Port Vila', 'VUV', 'VT', -16.00000000, 167.00000000, 'Oceania', 'Melanesia', '2025-09-05 21:22:25'),
+(238, 'Vatican City State (Holy See)', 'VAT', 'VA', '379', 'Vatican City', 'EUR', 'Ôé¼', 41.90000000, 12.45000000, 'Europe', 'Southern Europe', '2025-09-05 21:22:25'),
+(239, 'Venezuela', 'VEN', 'VE', '58', 'Caracas', 'VEF', 'Bs', 8.00000000, -66.00000000, 'Americas', 'South America', '2025-09-05 21:22:25'),
+(240, 'Vietnam', 'VNM', 'VN', '84', 'Hanoi', 'VND', 'Ôé½', 16.16666666, 107.83333333, 'Asia', 'South-Eastern Asia', '2025-09-05 21:22:25'),
+(241, 'Virgin Islands (British)', 'VGB', 'VG', '+1-284', 'Road Town', 'USD', '$', 18.43138300, -64.62305000, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(242, 'Virgin Islands (US)', 'VIR', 'VI', '+1-340', 'Charlotte Amalie', 'USD', '$', 18.34000000, -64.93000000, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(243, 'Wallis And Futuna Islands', 'WLF', 'WF', '681', 'Mata Utu', 'XPF', 'Ôéú', -13.30000000, -176.20000000, 'Oceania', 'Polynesia', '2025-09-05 21:22:25'),
+(244, 'Western Sahara', 'ESH', 'EH', '212', 'El-Aaiun', 'MAD', 'MAD', 24.50000000, -13.00000000, 'Africa', 'Northern Africa', '2025-09-05 21:22:25'),
+(245, 'Yemen', 'YEM', 'YE', '967', 'Sanaa', 'YER', '´À╝', 15.00000000, 48.00000000, 'Asia', 'Western Asia', '2025-09-05 21:22:25'),
+(246, 'Zambia', 'ZMB', 'ZM', '260', 'Lusaka', 'ZMW', 'ZK', -15.00000000, 30.00000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(247, 'Zimbabwe', 'ZWE', 'ZW', '263', 'Harare', 'ZWL', '$', -20.00000000, 30.00000000, 'Africa', 'Eastern Africa', '2025-09-05 21:22:25'),
+(248, 'Kosovo', 'XKX', 'XK', '383', 'Pristina', 'EUR', 'Ôé¼', 42.56129090, 20.34030350, 'Europe', 'Eastern Europe', '2025-09-05 21:22:25'),
+(249, 'Cura├ºao', 'CUW', 'CW', '599', 'Willemstad', 'ANG', 'ãÆ', 12.11666700, -68.93333300, 'Americas', 'Caribbean', '2025-09-05 21:22:25'),
+(250, 'Sint Maarten (Dutch part)', 'SXM', 'SX', '1721', 'Philipsburg', 'ANG', 'ãÆ', 18.03333300, -63.05000000, 'Americas', 'Caribbean', '2025-09-05 21:22:25');
 
 -- --------------------------------------------------------
 
@@ -331,10 +807,10 @@ CREATE TABLE `currencies` (
 --
 
 INSERT INTO `currencies` (`id`, `currency_name`, `currency_country`, `currency_default`, `currency_status`, `currency_rate`) VALUES
-(1, 'USD', 'US', '1', '1', '1'),
+(1, 'USD', 'US', '1', '0', '1'),
 (2, 'GBP', 'GB', '0', '0', '0.743105'),
-(3, 'SAR', 'SA', '0', '0', '3.750706'),
-(4, 'EUR', 'DE', '0', '0', '0.881291'),
+(3, 'SAR', 'SA', '0', '1', '3.750706'),
+(4, 'EUR', 'DE', '0', '1', '0.881291'),
 (8, 'AED', 'UAE', '0', '1', '12');
 
 -- --------------------------------------------------------
@@ -13241,6 +13717,9 @@ INSERT INTO `flights_airports` (`id`, `airport`, `city`, `country`, `code`, `lat
 
 CREATE TABLE `flights_booking` (
   `id` int(11) NOT NULL,
+  `agent_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `booked_via` enum('guest','user','agent') NOT NULL DEFAULT 'guest',
   `booking_code_ref` varchar(225) NOT NULL,
   `booking_status_flag` enum('confirmed','pending','cancelled') NOT NULL DEFAULT 'pending',
   `booking_air_pnr` varchar(225) DEFAULT NULL,
@@ -13269,14 +13748,67 @@ CREATE TABLE `flights_booking` (
 -- Dumping data for table `flights_booking`
 --
 
-INSERT INTO `flights_booking` (`id`, `booking_code_ref`, `booking_status_flag`, `booking_air_pnr`, `booking_fare_base`, `booking_adult_count`, `booking_child_count`, `booking_infant_count`, `booking_currency_origin`, `booking_data`, `booking_response_json`, `booking_response_error`, `booking_payment_state`, `booking_supplier_name`, `module`, `booking_txn_id`, `booking_user_data`, `booking_guest`, `booking_nationality_code`, `booking_flight_segment`, `booking_payment_gateway`, `created_at`, `updated_at`) VALUES
-(1, '20251111063959', 'pending', NULL, '305', 1, 0, 0, 'EUR', '\"{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-11-13\\\",\\\"lastTicketingDateTime\\\":\\\"2025-11-13\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT2H25M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-13T03:30:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-13T04:55:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"332\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"73H\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H25M\\\",\\\"id\\\":\\\"7\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT2H\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-15T06:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-15T09:00:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"333\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"7M8\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H\\\",\\\"id\\\":\\\"22\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"304.89\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"FZ\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"7\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}},{\\\"segmentId\\\":\\\"22\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}}]}]}\"', NULL, NULL, 'unpaid', 'amadeus_enterprise', 'flight', NULL, '\"{\\\"first_name\\\":null,\\\"last_name\\\":null,\\\"user_email\\\":null,\\\"user_phone\\\":\\\"\\\",\\\"user_address\\\":null}\"', '\"[{\\\"traveller_type\\\":\\\"adults\\\",\\\"title\\\":null,\\\"first_name\\\":\\\"Brent\\\",\\\"last_name\\\":\\\"Kirkland\\\",\\\"nationality\\\":\\\"us\\\",\\\"dob_day\\\":\\\"19\\\",\\\"dob_month\\\":\\\"12\\\",\\\"dob_year\\\":\\\"2003\\\",\\\"passport\\\":\\\"Ut repudiandae sunt\\\",\\\"passport_day_expiry\\\":\\\"18\\\",\\\"passport_month_expiry\\\":\\\"2\\\",\\\"passport_year_expiry\\\":\\\"2031\\\",\\\"passport_issuance_day\\\":\\\"26\\\",\\\"passport_issuance_month\\\":\\\"5\\\",\\\"passport_issuance_year\\\":\\\"1981\\\",\\\"gender\\\":\\\"f\\\",\\\"email\\\":null,\\\"phone\\\":\\\"\\\"}]\"', 'US', '\"{\\\"segments\\\":[[{\\\"id\\\":\\\"7\\\",\\\"flight_number\\\":\\\"FZ 332\\\",\\\"airline_name\\\":\\\"Fly Dubai\\\",\\\"departure\\\":{\\\"airport\\\":\\\"KHI\\\",\\\"city\\\":\\\"Karachi\\\",\\\"city_name\\\":\\\"Karachi\\\",\\\"airport_name\\\":\\\"Jinnah International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"03:30 AM\\\",\\\"date\\\":\\\"2025-11-13\\\",\\\"date_convert\\\":\\\"Thu 13 Nov 2025\\\",\\\"terminal\\\":\\\"M\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"DXB\\\",\\\"city\\\":\\\"Dubai\\\",\\\"city_name\\\":\\\"Dubai\\\",\\\"airport_name\\\":\\\"Dubai International Airport\\\",\\\"country\\\":\\\"United Arab Emirates\\\",\\\"time\\\":\\\"04:55 AM\\\",\\\"date\\\":\\\"2025-11-13\\\",\\\"date_convert\\\":\\\"Thu 13 Nov 2025\\\",\\\"terminal\\\":\\\"2\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"FZ\\\",\\\"operating\\\":\\\"FZ\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"73H\\\",\\\"duration\\\":\\\"02h:25m\\\",\\\"total_duration\\\":\\\"02h:25m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"ECONOMY\\\",\\\"baggage\\\":\\\"30KG\\\",\\\"cabin_baggage\\\":\\\"1PC\\\",\\\"currency\\\":\\\"EUR\\\",\\\"price\\\":\\\"305\\\",\\\"adult_price\\\":\\\"305\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-11-13\\\",\\\"lastTicketingDateTime\\\":\\\"2025-11-13\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT2H25M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-13T03:30:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-13T04:55:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"332\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"73H\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H25M\\\",\\\"id\\\":\\\"7\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT2H\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-15T06:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-15T09:00:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"333\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"7M8\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H\\\",\\\"id\\\":\\\"22\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"304.89\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"FZ\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"7\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}},{\\\"segmentId\\\":\\\"22\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}}]}]},\\\"supplier\\\":\\\"amadeus_enterprise\\\",\\\"type\\\":\\\"round\\\"}],[{\\\"id\\\":\\\"22\\\",\\\"flight_number\\\":\\\"FZ 333\\\",\\\"airline_name\\\":\\\"Fly Dubai\\\",\\\"departure\\\":{\\\"airport\\\":\\\"DXB\\\",\\\"city\\\":\\\"Dubai\\\",\\\"city_name\\\":\\\"Dubai\\\",\\\"airport_name\\\":\\\"Dubai International Airport\\\",\\\"country\\\":\\\"United Arab Emirates\\\",\\\"time\\\":\\\"06:00 AM\\\",\\\"date\\\":\\\"2025-11-15\\\",\\\"date_convert\\\":\\\"Sat 15 Nov 2025\\\",\\\"terminal\\\":\\\"2\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"KHI\\\",\\\"city\\\":\\\"Karachi\\\",\\\"city_name\\\":\\\"Karachi\\\",\\\"airport_name\\\":\\\"Jinnah International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"09:00 AM\\\",\\\"date\\\":\\\"2025-11-15\\\",\\\"date_convert\\\":\\\"Sat 15 Nov 2025\\\",\\\"terminal\\\":\\\"M\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"FZ\\\",\\\"operating\\\":\\\"FZ\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"7M8\\\",\\\"duration\\\":\\\"02h:00m\\\",\\\"total_duration\\\":\\\"02h:00m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"ECONOMY\\\",\\\"baggage\\\":\\\"30KG\\\",\\\"cabin_baggage\\\":\\\"1PC\\\",\\\"currency\\\":\\\"EUR\\\",\\\"price\\\":\\\"305\\\",\\\"adult_price\\\":\\\"305\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-11-13\\\",\\\"lastTicketingDateTime\\\":\\\"2025-11-13\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT2H25M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-13T03:30:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-13T04:55:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"332\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"73H\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H25M\\\",\\\"id\\\":\\\"7\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT2H\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-15T06:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-15T09:00:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"333\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"7M8\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H\\\",\\\"id\\\":\\\"22\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"304.89\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"FZ\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"7\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}},{\\\"segmentId\\\":\\\"22\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}}]}]},\\\"supplier\\\":\\\"amadeus_enterprise\\\",\\\"type\\\":\\\"round\\\"}]]}\"', 'stripe', '2025-11-11 01:39:59', '2025-11-11 01:39:59'),
-(2, '20251111072217', 'pending', NULL, '305', 1, 0, 0, 'EUR', '\"{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-11-13\\\",\\\"lastTicketingDateTime\\\":\\\"2025-11-13\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT2H25M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-13T03:30:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-13T04:55:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"332\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"73H\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H25M\\\",\\\"id\\\":\\\"7\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT2H\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-15T06:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-15T09:00:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"333\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"7M8\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H\\\",\\\"id\\\":\\\"22\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"304.89\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"FZ\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"7\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}},{\\\"segmentId\\\":\\\"22\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}}]}]}\"', NULL, NULL, 'unpaid', 'amadeus_enterprise', 'flight', NULL, '\"{\\\"first_name\\\":null,\\\"last_name\\\":null,\\\"user_email\\\":null,\\\"user_phone\\\":\\\"\\\",\\\"user_address\\\":null}\"', '\"[{\\\"traveller_type\\\":\\\"adults\\\",\\\"title\\\":null,\\\"first_name\\\":\\\"Shad\\\",\\\"last_name\\\":\\\"Eaton\\\",\\\"nationality\\\":\\\"sa\\\",\\\"dob_day\\\":\\\"18\\\",\\\"dob_month\\\":\\\"12\\\",\\\"dob_year\\\":\\\"1994\\\",\\\"passport\\\":\\\"Omnis id ipsum eum\\\",\\\"passport_day_expiry\\\":\\\"22\\\",\\\"passport_month_expiry\\\":\\\"9\\\",\\\"passport_year_expiry\\\":\\\"2023\\\",\\\"passport_issuance_day\\\":\\\"11\\\",\\\"passport_issuance_month\\\":\\\"6\\\",\\\"passport_issuance_year\\\":\\\"2008\\\",\\\"gender\\\":\\\"m\\\",\\\"email\\\":null,\\\"phone\\\":\\\"\\\"}]\"', 'US', '\"{\\\"segments\\\":[[{\\\"id\\\":\\\"7\\\",\\\"flight_number\\\":\\\"FZ 332\\\",\\\"airline_name\\\":\\\"Fly Dubai\\\",\\\"departure\\\":{\\\"airport\\\":\\\"KHI\\\",\\\"city\\\":\\\"Karachi\\\",\\\"city_name\\\":\\\"Karachi\\\",\\\"airport_name\\\":\\\"Jinnah International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"03:30 AM\\\",\\\"date\\\":\\\"2025-11-13\\\",\\\"date_convert\\\":\\\"Thu 13 Nov 2025\\\",\\\"terminal\\\":\\\"M\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"DXB\\\",\\\"city\\\":\\\"Dubai\\\",\\\"city_name\\\":\\\"Dubai\\\",\\\"airport_name\\\":\\\"Dubai International Airport\\\",\\\"country\\\":\\\"United Arab Emirates\\\",\\\"time\\\":\\\"04:55 AM\\\",\\\"date\\\":\\\"2025-11-13\\\",\\\"date_convert\\\":\\\"Thu 13 Nov 2025\\\",\\\"terminal\\\":\\\"2\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"FZ\\\",\\\"operating\\\":\\\"FZ\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"73H\\\",\\\"duration\\\":\\\"02h:25m\\\",\\\"total_duration\\\":\\\"02h:25m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"ECONOMY\\\",\\\"baggage\\\":\\\"30KG\\\",\\\"cabin_baggage\\\":\\\"1PC\\\",\\\"currency\\\":\\\"EUR\\\",\\\"price\\\":\\\"305\\\",\\\"adult_price\\\":\\\"305\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-11-13\\\",\\\"lastTicketingDateTime\\\":\\\"2025-11-13\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT2H25M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-13T03:30:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-13T04:55:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"332\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"73H\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H25M\\\",\\\"id\\\":\\\"7\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT2H\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-15T06:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-15T09:00:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"333\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"7M8\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H\\\",\\\"id\\\":\\\"22\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"304.89\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"FZ\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"7\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}},{\\\"segmentId\\\":\\\"22\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}}]}]},\\\"supplier\\\":\\\"amadeus_enterprise\\\",\\\"type\\\":\\\"round\\\"}],[{\\\"id\\\":\\\"22\\\",\\\"flight_number\\\":\\\"FZ 333\\\",\\\"airline_name\\\":\\\"Fly Dubai\\\",\\\"departure\\\":{\\\"airport\\\":\\\"DXB\\\",\\\"city\\\":\\\"Dubai\\\",\\\"city_name\\\":\\\"Dubai\\\",\\\"airport_name\\\":\\\"Dubai International Airport\\\",\\\"country\\\":\\\"United Arab Emirates\\\",\\\"time\\\":\\\"06:00 AM\\\",\\\"date\\\":\\\"2025-11-15\\\",\\\"date_convert\\\":\\\"Sat 15 Nov 2025\\\",\\\"terminal\\\":\\\"2\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"KHI\\\",\\\"city\\\":\\\"Karachi\\\",\\\"city_name\\\":\\\"Karachi\\\",\\\"airport_name\\\":\\\"Jinnah International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"09:00 AM\\\",\\\"date\\\":\\\"2025-11-15\\\",\\\"date_convert\\\":\\\"Sat 15 Nov 2025\\\",\\\"terminal\\\":\\\"M\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"FZ\\\",\\\"operating\\\":\\\"FZ\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"7M8\\\",\\\"duration\\\":\\\"02h:00m\\\",\\\"total_duration\\\":\\\"02h:00m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"ECONOMY\\\",\\\"baggage\\\":\\\"30KG\\\",\\\"cabin_baggage\\\":\\\"1PC\\\",\\\"currency\\\":\\\"EUR\\\",\\\"price\\\":\\\"305\\\",\\\"adult_price\\\":\\\"305\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-11-13\\\",\\\"lastTicketingDateTime\\\":\\\"2025-11-13\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT2H25M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-13T03:30:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-13T04:55:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"332\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"73H\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H25M\\\",\\\"id\\\":\\\"7\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT2H\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-15T06:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-15T09:00:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"333\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"7M8\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H\\\",\\\"id\\\":\\\"22\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"304.89\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"FZ\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"7\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}},{\\\"segmentId\\\":\\\"22\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}}]}]},\\\"supplier\\\":\\\"amadeus_enterprise\\\",\\\"type\\\":\\\"round\\\"}]]}\"', 'stripe', '2025-11-11 02:22:17', '2025-11-11 02:22:17');
-INSERT INTO `flights_booking` (`id`, `booking_code_ref`, `booking_status_flag`, `booking_air_pnr`, `booking_fare_base`, `booking_adult_count`, `booking_child_count`, `booking_infant_count`, `booking_currency_origin`, `booking_data`, `booking_response_json`, `booking_response_error`, `booking_payment_state`, `booking_supplier_name`, `module`, `booking_txn_id`, `booking_user_data`, `booking_guest`, `booking_nationality_code`, `booking_flight_segment`, `booking_payment_gateway`, `created_at`, `updated_at`) VALUES
-(3, '20251226122300', 'pending', NULL, '2796', 1, 0, 0, 'USD', '\"{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-12-28\\\",\\\"lastTicketingDateTime\\\":\\\"2025-12-28\\\",\\\"numberOfBookableSeats\\\":6,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT21H10M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-28T15:15:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-28T23:00:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"168\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT5H45M\\\",\\\"id\\\":\\\"5\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-29T09:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-29T16:25:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"732\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H35M\\\",\\\"id\\\":\\\"6\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT20H55M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-30T20:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-30T23:40:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"737\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H50M\\\",\\\"id\\\":\\\"71\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-31T08:35:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-31T13:45:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"179\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT7H10M\\\",\\\"id\\\":\\\"72\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"2329.62\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"SV\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"5\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"6\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"71\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"72\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]}]}]}\"', NULL, NULL, 'unpaid', 'amadeus_self', 'flight', NULL, '\"{\\\"first_name\\\":null,\\\"last_name\\\":null,\\\"user_email\\\":null,\\\"user_phone\\\":\\\"\\\",\\\"user_address\\\":null}\"', '\"[{\\\"traveller_type\\\":\\\"adults\\\",\\\"title\\\":null,\\\"first_name\\\":\\\"Natalie\\\",\\\"last_name\\\":\\\"Downs\\\",\\\"nationality\\\":\\\"us\\\",\\\"dob_day\\\":\\\"20\\\",\\\"dob_month\\\":\\\"12\\\",\\\"dob_year\\\":\\\"2005\\\",\\\"passport\\\":\\\"Dolor quis blanditii\\\",\\\"passport_day_expiry\\\":\\\"08\\\",\\\"passport_month_expiry\\\":\\\"1\\\",\\\"passport_year_expiry\\\":\\\"2038\\\",\\\"passport_issuance_day\\\":\\\"14\\\",\\\"passport_issuance_month\\\":\\\"11\\\",\\\"passport_issuance_year\\\":\\\"1999\\\",\\\"gender\\\":\\\"m\\\",\\\"email\\\":null,\\\"phone\\\":\\\"\\\"}]\"', 'US', '\"{\\\"segments\\\":[[{\\\"id\\\":\\\"5\\\",\\\"flight_number\\\":\\\"SV 168\\\",\\\"airline_name\\\":\\\"Saudi Arabian Airlines\\\",\\\"departure\\\":{\\\"airport\\\":\\\"FRA\\\",\\\"city\\\":\\\"Frankfurt\\\",\\\"city_name\\\":\\\"Frankfurt\\\",\\\"airport_name\\\":\\\"Frankfurt am Main Airport\\\",\\\"country\\\":\\\"Germany\\\",\\\"time\\\":\\\"03:15 PM\\\",\\\"date\\\":\\\"2025-12-28\\\",\\\"date_convert\\\":\\\"Sun 28 Dec 2025\\\",\\\"terminal\\\":\\\"2\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"JED\\\",\\\"city\\\":\\\"Jeddah\\\",\\\"city_name\\\":\\\"Jeddah\\\",\\\"airport_name\\\":\\\"King Abdulaziz International Airport\\\",\\\"country\\\":\\\"Saudi Arabia\\\",\\\"time\\\":\\\"11:00 PM\\\",\\\"date\\\":\\\"2025-12-28\\\",\\\"date_convert\\\":\\\"Sun 28 Dec 2025\\\",\\\"terminal\\\":\\\"1\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"SV\\\",\\\"operating\\\":\\\"SV\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"320\\\",\\\"duration\\\":\\\"05h:45m\\\",\\\"total_duration\\\":\\\"10h:20m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"BUSINESS\\\",\\\"baggage\\\":\\\"0PC\\\",\\\"cabin_baggage\\\":\\\"2PC\\\",\\\"currency\\\":\\\"USD\\\",\\\"actual_price\\\":\\\"2329.62\\\",\\\"actual_adult_price\\\":\\\"2329.62\\\",\\\"actual_child_price\\\":0,\\\"actual_infant_price\\\":0,\\\"price\\\":\\\"2,796\\\",\\\"adult_price\\\":\\\"2,796\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-12-28\\\",\\\"lastTicketingDateTime\\\":\\\"2025-12-28\\\",\\\"numberOfBookableSeats\\\":6,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT21H10M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-28T15:15:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-28T23:00:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"168\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT5H45M\\\",\\\"id\\\":\\\"5\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-29T09:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-29T16:25:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"732\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H35M\\\",\\\"id\\\":\\\"6\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT20H55M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-30T20:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-30T23:40:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"737\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H50M\\\",\\\"id\\\":\\\"71\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-31T08:35:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-31T13:45:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"179\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT7H10M\\\",\\\"id\\\":\\\"72\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"2329.62\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"SV\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"5\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"6\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"71\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"72\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]}]}]},\\\"supplier\\\":\\\"amadeus_self\\\",\\\"type\\\":\\\"round\\\"},{\\\"id\\\":\\\"6\\\",\\\"flight_number\\\":\\\"SV 732\\\",\\\"airline_name\\\":\\\"Saudi Arabian Airlines\\\",\\\"departure\\\":{\\\"airport\\\":\\\"JED\\\",\\\"city\\\":\\\"Jeddah\\\",\\\"city_name\\\":\\\"Jeddah\\\",\\\"airport_name\\\":\\\"King Abdulaziz International Airport\\\",\\\"country\\\":\\\"Saudi Arabia\\\",\\\"time\\\":\\\"09:50 AM\\\",\\\"date\\\":\\\"2025-12-29\\\",\\\"date_convert\\\":\\\"Mon 29 Dec 2025\\\",\\\"terminal\\\":\\\"1\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"LHE\\\",\\\"city\\\":\\\"Lahore\\\",\\\"city_name\\\":\\\"Lahore\\\",\\\"airport_name\\\":\\\"Alama Iqbal International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"04:25 PM\\\",\\\"date\\\":\\\"2025-12-29\\\",\\\"date_convert\\\":\\\"Mon 29 Dec 2025\\\",\\\"terminal\\\":\\\"M\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"SV\\\",\\\"operating\\\":\\\"SV\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"773\\\",\\\"duration\\\":\\\"04h:35m\\\",\\\"total_duration\\\":\\\"10h:20m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"BUSINESS\\\",\\\"baggage\\\":\\\"0PC\\\",\\\"cabin_baggage\\\":\\\"2PC\\\",\\\"currency\\\":\\\"USD\\\",\\\"actual_price\\\":\\\"2329.62\\\",\\\"actual_adult_price\\\":\\\"2329.62\\\",\\\"actual_child_price\\\":0,\\\"actual_infant_price\\\":0,\\\"price\\\":\\\"2,796\\\",\\\"adult_price\\\":\\\"2,796\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-12-28\\\",\\\"lastTicketingDateTime\\\":\\\"2025-12-28\\\",\\\"numberOfBookableSeats\\\":6,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT21H10M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-28T15:15:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-28T23:00:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"168\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT5H45M\\\",\\\"id\\\":\\\"5\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-29T09:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-29T16:25:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"732\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H35M\\\",\\\"id\\\":\\\"6\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT20H55M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-30T20:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-30T23:40:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"737\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H50M\\\",\\\"id\\\":\\\"71\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-31T08:35:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-31T13:45:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"179\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT7H10M\\\",\\\"id\\\":\\\"72\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"2329.62\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"SV\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"5\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"6\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"71\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"72\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]}]}]},\\\"supplier\\\":\\\"amadeus_self\\\",\\\"type\\\":\\\"round\\\"}],[{\\\"id\\\":\\\"71\\\",\\\"flight_number\\\":\\\"SV 737\\\",\\\"airline_name\\\":\\\"Saudi Arabian Airlines\\\",\\\"departure\\\":{\\\"airport\\\":\\\"LHE\\\",\\\"city\\\":\\\"Lahore\\\",\\\"city_name\\\":\\\"Lahore\\\",\\\"airport_name\\\":\\\"Alama Iqbal International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"08:50 PM\\\",\\\"date\\\":\\\"2025-12-30\\\",\\\"date_convert\\\":\\\"Tue 30 Dec 2025\\\",\\\"terminal\\\":\\\"M\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"RUH\\\",\\\"city\\\":\\\"Riyadh\\\",\\\"city_name\\\":\\\"Riyadh\\\",\\\"airport_name\\\":\\\"King Khaled International Airport\\\",\\\"country\\\":\\\"Saudi Arabia\\\",\\\"time\\\":\\\"11:40 PM\\\",\\\"date\\\":\\\"2025-12-30\\\",\\\"date_convert\\\":\\\"Tue 30 Dec 2025\\\",\\\"terminal\\\":\\\"4\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"SV\\\",\\\"operating\\\":\\\"SV\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"773\\\",\\\"duration\\\":\\\"04h:50m\\\",\\\"total_duration\\\":\\\"12h:00m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"BUSINESS\\\",\\\"baggage\\\":\\\"0PC\\\",\\\"cabin_baggage\\\":\\\"2PC\\\",\\\"currency\\\":\\\"USD\\\",\\\"actual_price\\\":\\\"2329.62\\\",\\\"actual_adult_price\\\":\\\"2329.62\\\",\\\"actual_child_price\\\":0,\\\"actual_infant_price\\\":0,\\\"price\\\":\\\"2,796\\\",\\\"adult_price\\\":\\\"2,796\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-12-28\\\",\\\"lastTicketingDateTime\\\":\\\"2025-12-28\\\",\\\"numberOfBookableSeats\\\":6,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT21H10M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-28T15:15:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-28T23:00:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"168\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT5H45M\\\",\\\"id\\\":\\\"5\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-29T09:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-29T16:25:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"732\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H35M\\\",\\\"id\\\":\\\"6\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT20H55M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-30T20:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-30T23:40:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"737\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H50M\\\",\\\"id\\\":\\\"71\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-31T08:35:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-31T13:45:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"179\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT7H10M\\\",\\\"id\\\":\\\"72\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"2329.62\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"SV\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"5\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"6\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"71\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"72\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]}]}]},\\\"supplier\\\":\\\"amadeus_self\\\",\\\"type\\\":\\\"round\\\"},{\\\"id\\\":\\\"72\\\",\\\"flight_number\\\":\\\"SV 179\\\",\\\"airline_name\\\":\\\"Saudi Arabian Airlines\\\",\\\"departure\\\":{\\\"airport\\\":\\\"RUH\\\",\\\"city\\\":\\\"Riyadh\\\",\\\"city_name\\\":\\\"Riyadh\\\",\\\"airport_name\\\":\\\"King Khaled International Airport\\\",\\\"country\\\":\\\"Saudi Arabia\\\",\\\"time\\\":\\\"08:35 AM\\\",\\\"date\\\":\\\"2025-12-31\\\",\\\"date_convert\\\":\\\"Wed 31 Dec 2025\\\",\\\"terminal\\\":\\\"4\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"FRA\\\",\\\"city\\\":\\\"Frankfurt\\\",\\\"city_name\\\":\\\"Frankfurt\\\",\\\"airport_name\\\":\\\"Frankfurt am Main Airport\\\",\\\"country\\\":\\\"Germany\\\",\\\"time\\\":\\\"01:45 PM\\\",\\\"date\\\":\\\"2025-12-31\\\",\\\"date_convert\\\":\\\"Wed 31 Dec 2025\\\",\\\"terminal\\\":\\\"2\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"SV\\\",\\\"operating\\\":\\\"SV\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"320\\\",\\\"duration\\\":\\\"07h:10m\\\",\\\"total_duration\\\":\\\"12h:00m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"BUSINESS\\\",\\\"baggage\\\":\\\"0PC\\\",\\\"cabin_baggage\\\":\\\"2PC\\\",\\\"currency\\\":\\\"USD\\\",\\\"actual_price\\\":\\\"2329.62\\\",\\\"actual_adult_price\\\":\\\"2329.62\\\",\\\"actual_child_price\\\":0,\\\"actual_infant_price\\\":0,\\\"price\\\":\\\"2,796\\\",\\\"adult_price\\\":\\\"2,796\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-12-28\\\",\\\"lastTicketingDateTime\\\":\\\"2025-12-28\\\",\\\"numberOfBookableSeats\\\":6,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT21H10M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-28T15:15:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-28T23:00:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"168\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT5H45M\\\",\\\"id\\\":\\\"5\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-29T09:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-29T16:25:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"732\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H35M\\\",\\\"id\\\":\\\"6\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT20H55M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-30T20:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-30T23:40:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"737\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H50M\\\",\\\"id\\\":\\\"71\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-31T08:35:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-31T13:45:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"179\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT7H10M\\\",\\\"id\\\":\\\"72\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"2329.62\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"SV\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"5\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"6\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"71\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"72\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]}]}]},\\\"supplier\\\":\\\"amadeus_self\\\",\\\"type\\\":\\\"round\\\"}]]}\"', 'stripe', '2025-12-26 07:23:01', '2025-12-26 07:23:01');
-INSERT INTO `flights_booking` (`id`, `booking_code_ref`, `booking_status_flag`, `booking_air_pnr`, `booking_fare_base`, `booking_adult_count`, `booking_child_count`, `booking_infant_count`, `booking_currency_origin`, `booking_data`, `booking_response_json`, `booking_response_error`, `booking_payment_state`, `booking_supplier_name`, `module`, `booking_txn_id`, `booking_user_data`, `booking_guest`, `booking_nationality_code`, `booking_flight_segment`, `booking_payment_gateway`, `created_at`, `updated_at`) VALUES
-(4, '20251226130249', 'pending', NULL, '15924', 1, 0, 0, 'AED', '\"{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"9\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-12-28\\\",\\\"lastTicketingDateTime\\\":\\\"2025-12-28\\\",\\\"numberOfBookableSeats\\\":8,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT18H15M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-28T20:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"AUH\\\",\\\"terminal\\\":\\\"A\\\",\\\"at\\\":\\\"2025-12-29T02:15:00\\\"},\\\"carrierCode\\\":\\\"EY\\\",\\\"number\\\":\\\"1043\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"339\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"DE\\\"},\\\"duration\\\":\\\"PT3H15M\\\",\\\"id\\\":\\\"12\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"AUH\\\",\\\"terminal\\\":\\\"A\\\",\\\"at\\\":\\\"2025-12-29T14:10:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-29T18:15:00\\\"},\\\"carrierCode\\\":\\\"EY\\\",\\\"number\\\":\\\"288\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"321\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"EY\\\"},\\\"duration\\\":\\\"PT3H5M\\\",\\\"id\\\":\\\"13\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"13270.00\\\",\\\"base\\\":\\\"11390.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"13270.00\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"EY\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"13270.00\\\",\\\"base\\\":\\\"11390.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"12\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"DNN00V2R\\\",\\\"brandedFare\\\":\\\"JVALUE\\\",\\\"brandedFareLabel\\\":\\\"BUSINESS VALUE\\\",\\\"class\\\":\\\"D\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":35,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"EXCESS WEIGHT SPECIAL CHARGE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BAGGAGE\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FOOD AND BEVERAGE\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"MEAL\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"PRIORITY ACCESS\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"NO SHOW FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"STANDARD SEAT SELECTION\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"BID TO UPGRADE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"13\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"DNN00V2R\\\",\\\"brandedFare\\\":\\\"JVALUE\\\",\\\"brandedFareLabel\\\":\\\"BUSINESS VALUE\\\",\\\"class\\\":\\\"D\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":35,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"weight\\\":12,\\\"weightUnit\\\":\\\"KG\\\"},\\\"amenities\\\":[{\\\"description\\\":\\\"EXCESS WEIGHT SPECIAL CHARGE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BAGGAGE\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FOOD AND BEVERAGE\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"MEAL\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"PRIORITY ACCESS\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"NO SHOW FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"STANDARD SEAT SELECTION\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"BID TO UPGRADE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]}]}]}\"', NULL, NULL, 'unpaid', 'amadeus_self', 'flight', NULL, '\"{\\\"first_name\\\":null,\\\"last_name\\\":null,\\\"user_email\\\":null,\\\"user_phone\\\":\\\"\\\",\\\"user_address\\\":null}\"', '\"[{\\\"traveller_type\\\":\\\"adults\\\",\\\"title\\\":null,\\\"first_name\\\":\\\"Bruno\\\",\\\"last_name\\\":\\\"Barry\\\",\\\"nationality\\\":\\\"us\\\",\\\"dob_day\\\":\\\"13\\\",\\\"dob_month\\\":\\\"8\\\",\\\"dob_year\\\":\\\"1974\\\",\\\"passport\\\":\\\"Consequat Eum eius\\\",\\\"passport_day_expiry\\\":\\\"19\\\",\\\"passport_month_expiry\\\":\\\"3\\\",\\\"passport_year_expiry\\\":\\\"2023\\\",\\\"passport_issuance_day\\\":\\\"10\\\",\\\"passport_issuance_month\\\":\\\"11\\\",\\\"passport_issuance_year\\\":\\\"1982\\\",\\\"gender\\\":\\\"m\\\",\\\"email\\\":null,\\\"phone\\\":\\\"\\\"}]\"', 'US', '\"{\\\"segments\\\":[[{\\\"id\\\":\\\"12\\\",\\\"flight_number\\\":\\\"EY 1043\\\",\\\"airline_name\\\":\\\"Etihad Airways\\\",\\\"departure\\\":{\\\"airport\\\":\\\"FRA\\\",\\\"city\\\":\\\"Frankfurt\\\",\\\"city_name\\\":\\\"Frankfurt\\\",\\\"airport_name\\\":\\\"Frankfurt am Main Airport\\\",\\\"country\\\":\\\"Germany\\\",\\\"time\\\":\\\"08:00 PM\\\",\\\"date\\\":\\\"2025-12-28\\\",\\\"date_convert\\\":\\\"Sun 28 Dec 2025\\\",\\\"terminal\\\":\\\"1\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"AUH\\\",\\\"city\\\":\\\"Abu Dhabi\\\",\\\"city_name\\\":\\\"Abu Dhabi\\\",\\\"airport_name\\\":\\\"Abu Dhabi International Airport\\\",\\\"country\\\":\\\"United Arab Emirates\\\",\\\"time\\\":\\\"02:15 AM\\\",\\\"date\\\":\\\"2025-12-29\\\",\\\"date_convert\\\":\\\"Mon 29 Dec 2025\\\",\\\"terminal\\\":\\\"A\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"EY\\\",\\\"operating\\\":\\\"DE\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"339\\\",\\\"duration\\\":\\\"03h:15m\\\",\\\"total_duration\\\":\\\"06h:20m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"BUSINESS\\\",\\\"baggage\\\":\\\"35KG\\\",\\\"cabin_baggage\\\":\\\"2PC\\\",\\\"currency\\\":\\\"AED\\\",\\\"actual_price\\\":\\\"13270.00\\\",\\\"actual_adult_price\\\":\\\"13270.00\\\",\\\"actual_child_price\\\":0,\\\"actual_infant_price\\\":0,\\\"price\\\":\\\"15,924\\\",\\\"adult_price\\\":\\\"15,924\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"9\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-12-28\\\",\\\"lastTicketingDateTime\\\":\\\"2025-12-28\\\",\\\"numberOfBookableSeats\\\":8,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT18H15M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-28T20:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"AUH\\\",\\\"terminal\\\":\\\"A\\\",\\\"at\\\":\\\"2025-12-29T02:15:00\\\"},\\\"carrierCode\\\":\\\"EY\\\",\\\"number\\\":\\\"1043\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"339\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"DE\\\"},\\\"duration\\\":\\\"PT3H15M\\\",\\\"id\\\":\\\"12\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"AUH\\\",\\\"terminal\\\":\\\"A\\\",\\\"at\\\":\\\"2025-12-29T14:10:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-29T18:15:00\\\"},\\\"carrierCode\\\":\\\"EY\\\",\\\"number\\\":\\\"288\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"321\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"EY\\\"},\\\"duration\\\":\\\"PT3H5M\\\",\\\"id\\\":\\\"13\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"13270.00\\\",\\\"base\\\":\\\"11390.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"13270.00\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"EY\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"13270.00\\\",\\\"base\\\":\\\"11390.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"12\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"DNN00V2R\\\",\\\"brandedFare\\\":\\\"JVALUE\\\",\\\"brandedFareLabel\\\":\\\"BUSINESS VALUE\\\",\\\"class\\\":\\\"D\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":35,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"EXCESS WEIGHT SPECIAL CHARGE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BAGGAGE\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FOOD AND BEVERAGE\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"MEAL\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"PRIORITY ACCESS\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"NO SHOW FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"STANDARD SEAT SELECTION\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"BID TO UPGRADE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"13\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"DNN00V2R\\\",\\\"brandedFare\\\":\\\"JVALUE\\\",\\\"brandedFareLabel\\\":\\\"BUSINESS VALUE\\\",\\\"class\\\":\\\"D\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":35,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"weight\\\":12,\\\"weightUnit\\\":\\\"KG\\\"},\\\"amenities\\\":[{\\\"description\\\":\\\"EXCESS WEIGHT SPECIAL CHARGE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BAGGAGE\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FOOD AND BEVERAGE\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"MEAL\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"PRIORITY ACCESS\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"NO SHOW FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"STANDARD SEAT SELECTION\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"BID TO UPGRADE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]}]}]},\\\"supplier\\\":\\\"amadeus_self\\\",\\\"type\\\":\\\"oneway\\\"},{\\\"id\\\":\\\"13\\\",\\\"flight_number\\\":\\\"EY 288\\\",\\\"airline_name\\\":\\\"Etihad Airways\\\",\\\"departure\\\":{\\\"airport\\\":\\\"AUH\\\",\\\"city\\\":\\\"Abu Dhabi\\\",\\\"city_name\\\":\\\"Abu Dhabi\\\",\\\"airport_name\\\":\\\"Abu Dhabi International Airport\\\",\\\"country\\\":\\\"United Arab Emirates\\\",\\\"time\\\":\\\"02:10 PM\\\",\\\"date\\\":\\\"2025-12-29\\\",\\\"date_convert\\\":\\\"Mon 29 Dec 2025\\\",\\\"terminal\\\":\\\"A\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"LHE\\\",\\\"city\\\":\\\"Lahore\\\",\\\"city_name\\\":\\\"Lahore\\\",\\\"airport_name\\\":\\\"Alama Iqbal International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"06:15 PM\\\",\\\"date\\\":\\\"2025-12-29\\\",\\\"date_convert\\\":\\\"Mon 29 Dec 2025\\\",\\\"terminal\\\":\\\"M\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"EY\\\",\\\"operating\\\":\\\"EY\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"321\\\",\\\"duration\\\":\\\"03h:05m\\\",\\\"total_duration\\\":\\\"06h:20m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"BUSINESS\\\",\\\"baggage\\\":\\\"35KG\\\",\\\"cabin_baggage\\\":\\\"2PC\\\",\\\"currency\\\":\\\"AED\\\",\\\"actual_price\\\":\\\"13270.00\\\",\\\"actual_adult_price\\\":\\\"13270.00\\\",\\\"actual_child_price\\\":0,\\\"actual_infant_price\\\":0,\\\"price\\\":\\\"15,924\\\",\\\"adult_price\\\":\\\"15,924\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"9\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-12-28\\\",\\\"lastTicketingDateTime\\\":\\\"2025-12-28\\\",\\\"numberOfBookableSeats\\\":8,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT18H15M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-28T20:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"AUH\\\",\\\"terminal\\\":\\\"A\\\",\\\"at\\\":\\\"2025-12-29T02:15:00\\\"},\\\"carrierCode\\\":\\\"EY\\\",\\\"number\\\":\\\"1043\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"339\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"DE\\\"},\\\"duration\\\":\\\"PT3H15M\\\",\\\"id\\\":\\\"12\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"AUH\\\",\\\"terminal\\\":\\\"A\\\",\\\"at\\\":\\\"2025-12-29T14:10:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-29T18:15:00\\\"},\\\"carrierCode\\\":\\\"EY\\\",\\\"number\\\":\\\"288\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"321\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"EY\\\"},\\\"duration\\\":\\\"PT3H5M\\\",\\\"id\\\":\\\"13\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"13270.00\\\",\\\"base\\\":\\\"11390.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"13270.00\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"EY\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"13270.00\\\",\\\"base\\\":\\\"11390.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"12\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"DNN00V2R\\\",\\\"brandedFare\\\":\\\"JVALUE\\\",\\\"brandedFareLabel\\\":\\\"BUSINESS VALUE\\\",\\\"class\\\":\\\"D\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":35,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"EXCESS WEIGHT SPECIAL CHARGE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BAGGAGE\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FOOD AND BEVERAGE\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"MEAL\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"PRIORITY ACCESS\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"NO SHOW FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"STANDARD SEAT SELECTION\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"BID TO UPGRADE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"13\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"DNN00V2R\\\",\\\"brandedFare\\\":\\\"JVALUE\\\",\\\"brandedFareLabel\\\":\\\"BUSINESS VALUE\\\",\\\"class\\\":\\\"D\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":35,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"weight\\\":12,\\\"weightUnit\\\":\\\"KG\\\"},\\\"amenities\\\":[{\\\"description\\\":\\\"EXCESS WEIGHT SPECIAL CHARGE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BAGGAGE\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FOOD AND BEVERAGE\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"MEAL\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"PRIORITY ACCESS\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"NO SHOW FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"STANDARD SEAT SELECTION\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"BID TO UPGRADE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]}]}]},\\\"supplier\\\":\\\"amadeus_self\\\",\\\"type\\\":\\\"oneway\\\"}]]}\"', 'stripe', '2025-12-26 08:02:49', '2025-12-26 08:02:49'),
-(5, '20260202025457', 'confirmed', '', '969', 1, 0, 0, 'AED', '\"{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2026-02-04\\\",\\\"lastTicketingDateTime\\\":\\\"2026-02-04\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT3H35M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"at\\\":\\\"2026-02-04T12:55:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2026-02-04T15:30:00\\\"},\\\"carrierCode\\\":\\\"PK\\\",\\\"number\\\":\\\"203\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"PK\\\"},\\\"duration\\\":\\\"PT3H35M\\\",\\\"id\\\":\\\"35\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"865.00\\\",\\\"base\\\":\\\"610.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"865.00\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"PK\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"865.00\\\",\\\"base\\\":\\\"610.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"35\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"VLOWPK\\\",\\\"class\\\":\\\"V\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"weight\\\":7,\\\"weightUnit\\\":\\\"KG\\\"}}]}]}\"', '', '[{\"status\":400,\"code\":34651,\"title\":\"SEGMENT SELL FAILURE\",\"detail\":\"Itinerary schedule change detected between segments requested and actual segment sell is exceeding 15 minutes\"}]', 'paid', 'amadeus_enterprise', 'flight', NULL, '\"{\\\"first_name\\\":\\\"Christine\\\",\\\"last_name\\\":\\\"Randall\\\",\\\"user_email\\\":\\\"vopexibydo@mailinator.com\\\",\\\"user_phone\\\":\\\"15513997642\\\",\\\"user_address\\\":\\\"181 East Hague Freeway\\\"}\"', '\"[{\\\"traveller_type\\\":\\\"adults\\\",\\\"title\\\":null,\\\"first_name\\\":\\\"Usama\\\",\\\"last_name\\\":\\\"Malik\\\",\\\"nationality\\\":\\\"ax\\\",\\\"dob_day\\\":\\\"02\\\",\\\"dob_month\\\":\\\"1\\\",\\\"dob_year\\\":\\\"2022\\\",\\\"passport\\\":\\\"1264178641786174\\\",\\\"passport_day_expiry\\\":\\\"02\\\",\\\"passport_month_expiry\\\":\\\"2\\\",\\\"passport_year_expiry\\\":\\\"2027\\\",\\\"passport_issuance_day\\\":\\\"01\\\",\\\"passport_issuance_month\\\":\\\"1\\\",\\\"passport_issuance_year\\\":\\\"2023\\\",\\\"gender\\\":\\\"m\\\",\\\"email\\\":null,\\\"phone\\\":\\\"\\\"}]\"', 'US', '\"{\\\"segments\\\":[[{\\\"id\\\":\\\"35\\\",\\\"flight_number\\\":\\\"PK 203\\\",\\\"airline_name\\\":\\\"Pakistan International Airlines\\\",\\\"departure\\\":{\\\"airport\\\":\\\"LHE\\\",\\\"city\\\":\\\"Lahore\\\",\\\"city_name\\\":\\\"Lahore\\\",\\\"airport_name\\\":\\\"Alama Iqbal International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"12:55 PM\\\",\\\"date\\\":\\\"2026-02-04\\\",\\\"date_convert\\\":\\\"Wed 04 Feb 2026\\\",\\\"terminal\\\":null},\\\"arrival\\\":{\\\"airport\\\":\\\"DXB\\\",\\\"city\\\":\\\"Dubai\\\",\\\"city_name\\\":\\\"Dubai\\\",\\\"airport_name\\\":\\\"Dubai International Airport\\\",\\\"country\\\":\\\"United Arab Emirates\\\",\\\"time\\\":\\\"03:30 PM\\\",\\\"date\\\":\\\"2026-02-04\\\",\\\"date_convert\\\":\\\"Wed 04 Feb 2026\\\",\\\"terminal\\\":\\\"1\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"PK\\\",\\\"operating\\\":\\\"PK\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"320\\\",\\\"duration\\\":\\\"03h:35m\\\",\\\"total_duration\\\":\\\"03h:35m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"ECONOMY\\\",\\\"baggage\\\":\\\"30KG\\\",\\\"cabin_baggage\\\":\\\"0PC\\\",\\\"currency\\\":\\\"AED\\\",\\\"actual_price\\\":\\\"865.00\\\",\\\"actual_adult_price\\\":\\\"865.00\\\",\\\"actual_child_price\\\":0,\\\"actual_infant_price\\\":0,\\\"price\\\":\\\"969\\\",\\\"adult_price\\\":\\\"969\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2026-02-04\\\",\\\"lastTicketingDateTime\\\":\\\"2026-02-04\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT3H35M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"at\\\":\\\"2026-02-04T12:55:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2026-02-04T15:30:00\\\"},\\\"carrierCode\\\":\\\"PK\\\",\\\"number\\\":\\\"203\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"PK\\\"},\\\"duration\\\":\\\"PT3H35M\\\",\\\"id\\\":\\\"35\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"865.00\\\",\\\"base\\\":\\\"610.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"865.00\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"PK\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"865.00\\\",\\\"base\\\":\\\"610.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"35\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"VLOWPK\\\",\\\"class\\\":\\\"V\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"weight\\\":7,\\\"weightUnit\\\":\\\"KG\\\"}}]}]},\\\"supplier\\\":\\\"amadeus_enterprise\\\",\\\"type\\\":\\\"oneway\\\"}]]}\"', 'stripe', '2026-02-02 03:04:09', '2026-02-01 22:04:09');
+INSERT INTO `flights_booking` (`id`, `agent_id`, `user_id`, `booked_via`, `booking_code_ref`, `booking_status_flag`, `booking_air_pnr`, `booking_fare_base`, `booking_adult_count`, `booking_child_count`, `booking_infant_count`, `booking_currency_origin`, `booking_data`, `booking_response_json`, `booking_response_error`, `booking_payment_state`, `booking_supplier_name`, `module`, `booking_txn_id`, `booking_user_data`, `booking_guest`, `booking_nationality_code`, `booking_flight_segment`, `booking_payment_gateway`, `created_at`, `updated_at`) VALUES
+(1, NULL, NULL, '', '20251111063959', 'pending', NULL, '305', 1, 0, 0, 'EUR', '\"{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-11-13\\\",\\\"lastTicketingDateTime\\\":\\\"2025-11-13\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT2H25M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-13T03:30:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-13T04:55:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"332\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"73H\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H25M\\\",\\\"id\\\":\\\"7\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT2H\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-15T06:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-15T09:00:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"333\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"7M8\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H\\\",\\\"id\\\":\\\"22\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"304.89\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"FZ\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"7\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}},{\\\"segmentId\\\":\\\"22\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}}]}]}\"', NULL, NULL, 'unpaid', 'amadeus_enterprise', 'flight', NULL, '\"{\\\"first_name\\\":null,\\\"last_name\\\":null,\\\"user_email\\\":null,\\\"user_phone\\\":\\\"\\\",\\\"user_address\\\":null}\"', '\"[{\\\"traveller_type\\\":\\\"adults\\\",\\\"title\\\":null,\\\"first_name\\\":\\\"Brent\\\",\\\"last_name\\\":\\\"Kirkland\\\",\\\"nationality\\\":\\\"us\\\",\\\"dob_day\\\":\\\"19\\\",\\\"dob_month\\\":\\\"12\\\",\\\"dob_year\\\":\\\"2003\\\",\\\"passport\\\":\\\"Ut repudiandae sunt\\\",\\\"passport_day_expiry\\\":\\\"18\\\",\\\"passport_month_expiry\\\":\\\"2\\\",\\\"passport_year_expiry\\\":\\\"2031\\\",\\\"passport_issuance_day\\\":\\\"26\\\",\\\"passport_issuance_month\\\":\\\"5\\\",\\\"passport_issuance_year\\\":\\\"1981\\\",\\\"gender\\\":\\\"f\\\",\\\"email\\\":null,\\\"phone\\\":\\\"\\\"}]\"', 'US', '\"{\\\"segments\\\":[[{\\\"id\\\":\\\"7\\\",\\\"flight_number\\\":\\\"FZ 332\\\",\\\"airline_name\\\":\\\"Fly Dubai\\\",\\\"departure\\\":{\\\"airport\\\":\\\"KHI\\\",\\\"city\\\":\\\"Karachi\\\",\\\"city_name\\\":\\\"Karachi\\\",\\\"airport_name\\\":\\\"Jinnah International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"03:30 AM\\\",\\\"date\\\":\\\"2025-11-13\\\",\\\"date_convert\\\":\\\"Thu 13 Nov 2025\\\",\\\"terminal\\\":\\\"M\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"DXB\\\",\\\"city\\\":\\\"Dubai\\\",\\\"city_name\\\":\\\"Dubai\\\",\\\"airport_name\\\":\\\"Dubai International Airport\\\",\\\"country\\\":\\\"United Arab Emirates\\\",\\\"time\\\":\\\"04:55 AM\\\",\\\"date\\\":\\\"2025-11-13\\\",\\\"date_convert\\\":\\\"Thu 13 Nov 2025\\\",\\\"terminal\\\":\\\"2\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"FZ\\\",\\\"operating\\\":\\\"FZ\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"73H\\\",\\\"duration\\\":\\\"02h:25m\\\",\\\"total_duration\\\":\\\"02h:25m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"ECONOMY\\\",\\\"baggage\\\":\\\"30KG\\\",\\\"cabin_baggage\\\":\\\"1PC\\\",\\\"currency\\\":\\\"EUR\\\",\\\"price\\\":\\\"305\\\",\\\"adult_price\\\":\\\"305\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-11-13\\\",\\\"lastTicketingDateTime\\\":\\\"2025-11-13\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT2H25M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-13T03:30:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-13T04:55:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"332\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"73H\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H25M\\\",\\\"id\\\":\\\"7\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT2H\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-15T06:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-15T09:00:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"333\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"7M8\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H\\\",\\\"id\\\":\\\"22\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"304.89\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"FZ\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"7\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}},{\\\"segmentId\\\":\\\"22\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}}]}]},\\\"supplier\\\":\\\"amadeus_enterprise\\\",\\\"type\\\":\\\"round\\\"}],[{\\\"id\\\":\\\"22\\\",\\\"flight_number\\\":\\\"FZ 333\\\",\\\"airline_name\\\":\\\"Fly Dubai\\\",\\\"departure\\\":{\\\"airport\\\":\\\"DXB\\\",\\\"city\\\":\\\"Dubai\\\",\\\"city_name\\\":\\\"Dubai\\\",\\\"airport_name\\\":\\\"Dubai International Airport\\\",\\\"country\\\":\\\"United Arab Emirates\\\",\\\"time\\\":\\\"06:00 AM\\\",\\\"date\\\":\\\"2025-11-15\\\",\\\"date_convert\\\":\\\"Sat 15 Nov 2025\\\",\\\"terminal\\\":\\\"2\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"KHI\\\",\\\"city\\\":\\\"Karachi\\\",\\\"city_name\\\":\\\"Karachi\\\",\\\"airport_name\\\":\\\"Jinnah International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"09:00 AM\\\",\\\"date\\\":\\\"2025-11-15\\\",\\\"date_convert\\\":\\\"Sat 15 Nov 2025\\\",\\\"terminal\\\":\\\"M\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"FZ\\\",\\\"operating\\\":\\\"FZ\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"7M8\\\",\\\"duration\\\":\\\"02h:00m\\\",\\\"total_duration\\\":\\\"02h:00m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"ECONOMY\\\",\\\"baggage\\\":\\\"30KG\\\",\\\"cabin_baggage\\\":\\\"1PC\\\",\\\"currency\\\":\\\"EUR\\\",\\\"price\\\":\\\"305\\\",\\\"adult_price\\\":\\\"305\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-11-13\\\",\\\"lastTicketingDateTime\\\":\\\"2025-11-13\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT2H25M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-13T03:30:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-13T04:55:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"332\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"73H\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H25M\\\",\\\"id\\\":\\\"7\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT2H\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-15T06:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-15T09:00:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"333\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"7M8\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H\\\",\\\"id\\\":\\\"22\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"304.89\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"FZ\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"7\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}},{\\\"segmentId\\\":\\\"22\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}}]}]},\\\"supplier\\\":\\\"amadeus_enterprise\\\",\\\"type\\\":\\\"round\\\"}]]}\"', 'stripe', '2026-05-07 16:44:18', '2025-11-11 01:39:59'),
+(2, NULL, NULL, '', '20251111072217', 'pending', NULL, '305', 1, 0, 0, 'EUR', '\"{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-11-13\\\",\\\"lastTicketingDateTime\\\":\\\"2025-11-13\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT2H25M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-13T03:30:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-13T04:55:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"332\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"73H\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H25M\\\",\\\"id\\\":\\\"7\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT2H\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-15T06:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-15T09:00:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"333\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"7M8\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H\\\",\\\"id\\\":\\\"22\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"304.89\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"FZ\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"7\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}},{\\\"segmentId\\\":\\\"22\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}}]}]}\"', NULL, NULL, 'unpaid', 'amadeus_enterprise', 'flight', NULL, '\"{\\\"first_name\\\":null,\\\"last_name\\\":null,\\\"user_email\\\":null,\\\"user_phone\\\":\\\"\\\",\\\"user_address\\\":null}\"', '\"[{\\\"traveller_type\\\":\\\"adults\\\",\\\"title\\\":null,\\\"first_name\\\":\\\"Shad\\\",\\\"last_name\\\":\\\"Eaton\\\",\\\"nationality\\\":\\\"sa\\\",\\\"dob_day\\\":\\\"18\\\",\\\"dob_month\\\":\\\"12\\\",\\\"dob_year\\\":\\\"1994\\\",\\\"passport\\\":\\\"Omnis id ipsum eum\\\",\\\"passport_day_expiry\\\":\\\"22\\\",\\\"passport_month_expiry\\\":\\\"9\\\",\\\"passport_year_expiry\\\":\\\"2023\\\",\\\"passport_issuance_day\\\":\\\"11\\\",\\\"passport_issuance_month\\\":\\\"6\\\",\\\"passport_issuance_year\\\":\\\"2008\\\",\\\"gender\\\":\\\"m\\\",\\\"email\\\":null,\\\"phone\\\":\\\"\\\"}]\"', 'US', '\"{\\\"segments\\\":[[{\\\"id\\\":\\\"7\\\",\\\"flight_number\\\":\\\"FZ 332\\\",\\\"airline_name\\\":\\\"Fly Dubai\\\",\\\"departure\\\":{\\\"airport\\\":\\\"KHI\\\",\\\"city\\\":\\\"Karachi\\\",\\\"city_name\\\":\\\"Karachi\\\",\\\"airport_name\\\":\\\"Jinnah International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"03:30 AM\\\",\\\"date\\\":\\\"2025-11-13\\\",\\\"date_convert\\\":\\\"Thu 13 Nov 2025\\\",\\\"terminal\\\":\\\"M\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"DXB\\\",\\\"city\\\":\\\"Dubai\\\",\\\"city_name\\\":\\\"Dubai\\\",\\\"airport_name\\\":\\\"Dubai International Airport\\\",\\\"country\\\":\\\"United Arab Emirates\\\",\\\"time\\\":\\\"04:55 AM\\\",\\\"date\\\":\\\"2025-11-13\\\",\\\"date_convert\\\":\\\"Thu 13 Nov 2025\\\",\\\"terminal\\\":\\\"2\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"FZ\\\",\\\"operating\\\":\\\"FZ\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"73H\\\",\\\"duration\\\":\\\"02h:25m\\\",\\\"total_duration\\\":\\\"02h:25m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"ECONOMY\\\",\\\"baggage\\\":\\\"30KG\\\",\\\"cabin_baggage\\\":\\\"1PC\\\",\\\"currency\\\":\\\"EUR\\\",\\\"price\\\":\\\"305\\\",\\\"adult_price\\\":\\\"305\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-11-13\\\",\\\"lastTicketingDateTime\\\":\\\"2025-11-13\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT2H25M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-13T03:30:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-13T04:55:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"332\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"73H\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H25M\\\",\\\"id\\\":\\\"7\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT2H\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-15T06:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-15T09:00:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"333\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"7M8\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H\\\",\\\"id\\\":\\\"22\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"304.89\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"FZ\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"7\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}},{\\\"segmentId\\\":\\\"22\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}}]}]},\\\"supplier\\\":\\\"amadeus_enterprise\\\",\\\"type\\\":\\\"round\\\"}],[{\\\"id\\\":\\\"22\\\",\\\"flight_number\\\":\\\"FZ 333\\\",\\\"airline_name\\\":\\\"Fly Dubai\\\",\\\"departure\\\":{\\\"airport\\\":\\\"DXB\\\",\\\"city\\\":\\\"Dubai\\\",\\\"city_name\\\":\\\"Dubai\\\",\\\"airport_name\\\":\\\"Dubai International Airport\\\",\\\"country\\\":\\\"United Arab Emirates\\\",\\\"time\\\":\\\"06:00 AM\\\",\\\"date\\\":\\\"2025-11-15\\\",\\\"date_convert\\\":\\\"Sat 15 Nov 2025\\\",\\\"terminal\\\":\\\"2\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"KHI\\\",\\\"city\\\":\\\"Karachi\\\",\\\"city_name\\\":\\\"Karachi\\\",\\\"airport_name\\\":\\\"Jinnah International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"09:00 AM\\\",\\\"date\\\":\\\"2025-11-15\\\",\\\"date_convert\\\":\\\"Sat 15 Nov 2025\\\",\\\"terminal\\\":\\\"M\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"FZ\\\",\\\"operating\\\":\\\"FZ\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"7M8\\\",\\\"duration\\\":\\\"02h:00m\\\",\\\"total_duration\\\":\\\"02h:00m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"ECONOMY\\\",\\\"baggage\\\":\\\"30KG\\\",\\\"cabin_baggage\\\":\\\"1PC\\\",\\\"currency\\\":\\\"EUR\\\",\\\"price\\\":\\\"305\\\",\\\"adult_price\\\":\\\"305\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-11-13\\\",\\\"lastTicketingDateTime\\\":\\\"2025-11-13\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT2H25M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-13T03:30:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-13T04:55:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"332\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"73H\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H25M\\\",\\\"id\\\":\\\"7\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT2H\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-11-15T06:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"KHI\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-11-15T09:00:00\\\"},\\\"carrierCode\\\":\\\"FZ\\\",\\\"number\\\":\\\"333\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"7M8\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"FZ\\\"},\\\"duration\\\":\\\"PT2H\\\",\\\"id\\\":\\\"22\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"304.89\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"FZ\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"EUR\\\",\\\"total\\\":\\\"304.89\\\",\\\"base\\\":\\\"200.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"7\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}},{\\\"segmentId\\\":\\\"22\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"LRLP7PK1\\\",\\\"brandedFare\\\":\\\"ECO2\\\",\\\"brandedFareLabel\\\":\\\"ECO2\\\",\\\"class\\\":\\\"L\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}}]}]},\\\"supplier\\\":\\\"amadeus_enterprise\\\",\\\"type\\\":\\\"round\\\"}]]}\"', 'stripe', '2026-05-07 16:44:18', '2025-11-11 02:22:17');
+INSERT INTO `flights_booking` (`id`, `agent_id`, `user_id`, `booked_via`, `booking_code_ref`, `booking_status_flag`, `booking_air_pnr`, `booking_fare_base`, `booking_adult_count`, `booking_child_count`, `booking_infant_count`, `booking_currency_origin`, `booking_data`, `booking_response_json`, `booking_response_error`, `booking_payment_state`, `booking_supplier_name`, `module`, `booking_txn_id`, `booking_user_data`, `booking_guest`, `booking_nationality_code`, `booking_flight_segment`, `booking_payment_gateway`, `created_at`, `updated_at`) VALUES
+(3, NULL, NULL, '', '20251226122300', 'pending', NULL, '2796', 1, 0, 0, 'USD', '\"{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-12-28\\\",\\\"lastTicketingDateTime\\\":\\\"2025-12-28\\\",\\\"numberOfBookableSeats\\\":6,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT21H10M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-28T15:15:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-28T23:00:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"168\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT5H45M\\\",\\\"id\\\":\\\"5\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-29T09:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-29T16:25:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"732\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H35M\\\",\\\"id\\\":\\\"6\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT20H55M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-30T20:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-30T23:40:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"737\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H50M\\\",\\\"id\\\":\\\"71\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-31T08:35:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-31T13:45:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"179\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT7H10M\\\",\\\"id\\\":\\\"72\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"2329.62\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"SV\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"5\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"6\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"71\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"72\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]}]}]}\"', NULL, NULL, 'unpaid', 'amadeus_self', 'flight', NULL, '\"{\\\"first_name\\\":null,\\\"last_name\\\":null,\\\"user_email\\\":null,\\\"user_phone\\\":\\\"\\\",\\\"user_address\\\":null}\"', '\"[{\\\"traveller_type\\\":\\\"adults\\\",\\\"title\\\":null,\\\"first_name\\\":\\\"Natalie\\\",\\\"last_name\\\":\\\"Downs\\\",\\\"nationality\\\":\\\"us\\\",\\\"dob_day\\\":\\\"20\\\",\\\"dob_month\\\":\\\"12\\\",\\\"dob_year\\\":\\\"2005\\\",\\\"passport\\\":\\\"Dolor quis blanditii\\\",\\\"passport_day_expiry\\\":\\\"08\\\",\\\"passport_month_expiry\\\":\\\"1\\\",\\\"passport_year_expiry\\\":\\\"2038\\\",\\\"passport_issuance_day\\\":\\\"14\\\",\\\"passport_issuance_month\\\":\\\"11\\\",\\\"passport_issuance_year\\\":\\\"1999\\\",\\\"gender\\\":\\\"m\\\",\\\"email\\\":null,\\\"phone\\\":\\\"\\\"}]\"', 'US', '\"{\\\"segments\\\":[[{\\\"id\\\":\\\"5\\\",\\\"flight_number\\\":\\\"SV 168\\\",\\\"airline_name\\\":\\\"Saudi Arabian Airlines\\\",\\\"departure\\\":{\\\"airport\\\":\\\"FRA\\\",\\\"city\\\":\\\"Frankfurt\\\",\\\"city_name\\\":\\\"Frankfurt\\\",\\\"airport_name\\\":\\\"Frankfurt am Main Airport\\\",\\\"country\\\":\\\"Germany\\\",\\\"time\\\":\\\"03:15 PM\\\",\\\"date\\\":\\\"2025-12-28\\\",\\\"date_convert\\\":\\\"Sun 28 Dec 2025\\\",\\\"terminal\\\":\\\"2\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"JED\\\",\\\"city\\\":\\\"Jeddah\\\",\\\"city_name\\\":\\\"Jeddah\\\",\\\"airport_name\\\":\\\"King Abdulaziz International Airport\\\",\\\"country\\\":\\\"Saudi Arabia\\\",\\\"time\\\":\\\"11:00 PM\\\",\\\"date\\\":\\\"2025-12-28\\\",\\\"date_convert\\\":\\\"Sun 28 Dec 2025\\\",\\\"terminal\\\":\\\"1\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"SV\\\",\\\"operating\\\":\\\"SV\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"320\\\",\\\"duration\\\":\\\"05h:45m\\\",\\\"total_duration\\\":\\\"10h:20m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"BUSINESS\\\",\\\"baggage\\\":\\\"0PC\\\",\\\"cabin_baggage\\\":\\\"2PC\\\",\\\"currency\\\":\\\"USD\\\",\\\"actual_price\\\":\\\"2329.62\\\",\\\"actual_adult_price\\\":\\\"2329.62\\\",\\\"actual_child_price\\\":0,\\\"actual_infant_price\\\":0,\\\"price\\\":\\\"2,796\\\",\\\"adult_price\\\":\\\"2,796\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-12-28\\\",\\\"lastTicketingDateTime\\\":\\\"2025-12-28\\\",\\\"numberOfBookableSeats\\\":6,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT21H10M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-28T15:15:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-28T23:00:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"168\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT5H45M\\\",\\\"id\\\":\\\"5\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-29T09:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-29T16:25:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"732\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H35M\\\",\\\"id\\\":\\\"6\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT20H55M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-30T20:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-30T23:40:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"737\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H50M\\\",\\\"id\\\":\\\"71\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-31T08:35:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-31T13:45:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"179\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT7H10M\\\",\\\"id\\\":\\\"72\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"2329.62\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"SV\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"5\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"6\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"71\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"72\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]}]}]},\\\"supplier\\\":\\\"amadeus_self\\\",\\\"type\\\":\\\"round\\\"},{\\\"id\\\":\\\"6\\\",\\\"flight_number\\\":\\\"SV 732\\\",\\\"airline_name\\\":\\\"Saudi Arabian Airlines\\\",\\\"departure\\\":{\\\"airport\\\":\\\"JED\\\",\\\"city\\\":\\\"Jeddah\\\",\\\"city_name\\\":\\\"Jeddah\\\",\\\"airport_name\\\":\\\"King Abdulaziz International Airport\\\",\\\"country\\\":\\\"Saudi Arabia\\\",\\\"time\\\":\\\"09:50 AM\\\",\\\"date\\\":\\\"2025-12-29\\\",\\\"date_convert\\\":\\\"Mon 29 Dec 2025\\\",\\\"terminal\\\":\\\"1\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"LHE\\\",\\\"city\\\":\\\"Lahore\\\",\\\"city_name\\\":\\\"Lahore\\\",\\\"airport_name\\\":\\\"Alama Iqbal International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"04:25 PM\\\",\\\"date\\\":\\\"2025-12-29\\\",\\\"date_convert\\\":\\\"Mon 29 Dec 2025\\\",\\\"terminal\\\":\\\"M\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"SV\\\",\\\"operating\\\":\\\"SV\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"773\\\",\\\"duration\\\":\\\"04h:35m\\\",\\\"total_duration\\\":\\\"10h:20m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"BUSINESS\\\",\\\"baggage\\\":\\\"0PC\\\",\\\"cabin_baggage\\\":\\\"2PC\\\",\\\"currency\\\":\\\"USD\\\",\\\"actual_price\\\":\\\"2329.62\\\",\\\"actual_adult_price\\\":\\\"2329.62\\\",\\\"actual_child_price\\\":0,\\\"actual_infant_price\\\":0,\\\"price\\\":\\\"2,796\\\",\\\"adult_price\\\":\\\"2,796\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-12-28\\\",\\\"lastTicketingDateTime\\\":\\\"2025-12-28\\\",\\\"numberOfBookableSeats\\\":6,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT21H10M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-28T15:15:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-28T23:00:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"168\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT5H45M\\\",\\\"id\\\":\\\"5\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-29T09:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-29T16:25:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"732\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H35M\\\",\\\"id\\\":\\\"6\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT20H55M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-30T20:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-30T23:40:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"737\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H50M\\\",\\\"id\\\":\\\"71\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-31T08:35:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-31T13:45:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"179\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT7H10M\\\",\\\"id\\\":\\\"72\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"2329.62\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"SV\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"5\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"6\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"71\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"72\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]}]}]},\\\"supplier\\\":\\\"amadeus_self\\\",\\\"type\\\":\\\"round\\\"}],[{\\\"id\\\":\\\"71\\\",\\\"flight_number\\\":\\\"SV 737\\\",\\\"airline_name\\\":\\\"Saudi Arabian Airlines\\\",\\\"departure\\\":{\\\"airport\\\":\\\"LHE\\\",\\\"city\\\":\\\"Lahore\\\",\\\"city_name\\\":\\\"Lahore\\\",\\\"airport_name\\\":\\\"Alama Iqbal International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"08:50 PM\\\",\\\"date\\\":\\\"2025-12-30\\\",\\\"date_convert\\\":\\\"Tue 30 Dec 2025\\\",\\\"terminal\\\":\\\"M\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"RUH\\\",\\\"city\\\":\\\"Riyadh\\\",\\\"city_name\\\":\\\"Riyadh\\\",\\\"airport_name\\\":\\\"King Khaled International Airport\\\",\\\"country\\\":\\\"Saudi Arabia\\\",\\\"time\\\":\\\"11:40 PM\\\",\\\"date\\\":\\\"2025-12-30\\\",\\\"date_convert\\\":\\\"Tue 30 Dec 2025\\\",\\\"terminal\\\":\\\"4\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"SV\\\",\\\"operating\\\":\\\"SV\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"773\\\",\\\"duration\\\":\\\"04h:50m\\\",\\\"total_duration\\\":\\\"12h:00m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"BUSINESS\\\",\\\"baggage\\\":\\\"0PC\\\",\\\"cabin_baggage\\\":\\\"2PC\\\",\\\"currency\\\":\\\"USD\\\",\\\"actual_price\\\":\\\"2329.62\\\",\\\"actual_adult_price\\\":\\\"2329.62\\\",\\\"actual_child_price\\\":0,\\\"actual_infant_price\\\":0,\\\"price\\\":\\\"2,796\\\",\\\"adult_price\\\":\\\"2,796\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-12-28\\\",\\\"lastTicketingDateTime\\\":\\\"2025-12-28\\\",\\\"numberOfBookableSeats\\\":6,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT21H10M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-28T15:15:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-28T23:00:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"168\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT5H45M\\\",\\\"id\\\":\\\"5\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-29T09:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-29T16:25:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"732\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H35M\\\",\\\"id\\\":\\\"6\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT20H55M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-30T20:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-30T23:40:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"737\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H50M\\\",\\\"id\\\":\\\"71\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-31T08:35:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-31T13:45:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"179\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT7H10M\\\",\\\"id\\\":\\\"72\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"2329.62\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"SV\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"5\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"6\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"71\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"72\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]}]}]},\\\"supplier\\\":\\\"amadeus_self\\\",\\\"type\\\":\\\"round\\\"},{\\\"id\\\":\\\"72\\\",\\\"flight_number\\\":\\\"SV 179\\\",\\\"airline_name\\\":\\\"Saudi Arabian Airlines\\\",\\\"departure\\\":{\\\"airport\\\":\\\"RUH\\\",\\\"city\\\":\\\"Riyadh\\\",\\\"city_name\\\":\\\"Riyadh\\\",\\\"airport_name\\\":\\\"King Khaled International Airport\\\",\\\"country\\\":\\\"Saudi Arabia\\\",\\\"time\\\":\\\"08:35 AM\\\",\\\"date\\\":\\\"2025-12-31\\\",\\\"date_convert\\\":\\\"Wed 31 Dec 2025\\\",\\\"terminal\\\":\\\"4\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"FRA\\\",\\\"city\\\":\\\"Frankfurt\\\",\\\"city_name\\\":\\\"Frankfurt\\\",\\\"airport_name\\\":\\\"Frankfurt am Main Airport\\\",\\\"country\\\":\\\"Germany\\\",\\\"time\\\":\\\"01:45 PM\\\",\\\"date\\\":\\\"2025-12-31\\\",\\\"date_convert\\\":\\\"Wed 31 Dec 2025\\\",\\\"terminal\\\":\\\"2\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"SV\\\",\\\"operating\\\":\\\"SV\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"320\\\",\\\"duration\\\":\\\"07h:10m\\\",\\\"total_duration\\\":\\\"12h:00m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"BUSINESS\\\",\\\"baggage\\\":\\\"0PC\\\",\\\"cabin_baggage\\\":\\\"2PC\\\",\\\"currency\\\":\\\"USD\\\",\\\"actual_price\\\":\\\"2329.62\\\",\\\"actual_adult_price\\\":\\\"2329.62\\\",\\\"actual_child_price\\\":0,\\\"actual_infant_price\\\":0,\\\"price\\\":\\\"2,796\\\",\\\"adult_price\\\":\\\"2,796\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-12-28\\\",\\\"lastTicketingDateTime\\\":\\\"2025-12-28\\\",\\\"numberOfBookableSeats\\\":6,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT21H10M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-28T15:15:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-28T23:00:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"168\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT5H45M\\\",\\\"id\\\":\\\"5\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"JED\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-29T09:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-29T16:25:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"732\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H35M\\\",\\\"id\\\":\\\"6\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]},{\\\"duration\\\":\\\"PT20H55M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-30T20:50:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-30T23:40:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"737\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"773\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT4H50M\\\",\\\"id\\\":\\\"71\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"RUH\\\",\\\"terminal\\\":\\\"4\\\",\\\"at\\\":\\\"2025-12-31T08:35:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"2\\\",\\\"at\\\":\\\"2025-12-31T13:45:00\\\"},\\\"carrierCode\\\":\\\"SV\\\",\\\"number\\\":\\\"179\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"SV\\\"},\\\"duration\\\":\\\"PT7H10M\\\",\\\"id\\\":\\\"72\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"2329.62\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"SV\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"2329.62\\\",\\\"base\\\":\\\"1721.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"5\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"6\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"IARXDEB5\\\",\\\"brandedFare\\\":\\\"NBASICB\\\",\\\"brandedFareLabel\\\":\\\"BASIC BUS\\\",\\\"class\\\":\\\"I\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":2},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"125 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 2PC 32KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"71\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"72\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"MARXDEB4\\\",\\\"brandedFare\\\":\\\"NBASICE\\\",\\\"brandedFareLabel\\\":\\\"BASIC ECO\\\",\\\"class\\\":\\\"M\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":1},\\\"includedCabinBags\\\":{\\\"quantity\\\":1},\\\"amenities\\\":[{\\\"description\\\":\\\"BASIC SEAT\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGE FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"REFUNDABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"UPGRADE ELIGIBILITY\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"CHANGEABLE TICKET\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"60 PERCENT MILES EARNED\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FREE BAG 1PC 23KG\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]}]}]},\\\"supplier\\\":\\\"amadeus_self\\\",\\\"type\\\":\\\"round\\\"}]]}\"', 'stripe', '2026-05-07 16:44:18', '2025-12-26 07:23:01');
+INSERT INTO `flights_booking` (`id`, `agent_id`, `user_id`, `booked_via`, `booking_code_ref`, `booking_status_flag`, `booking_air_pnr`, `booking_fare_base`, `booking_adult_count`, `booking_child_count`, `booking_infant_count`, `booking_currency_origin`, `booking_data`, `booking_response_json`, `booking_response_error`, `booking_payment_state`, `booking_supplier_name`, `module`, `booking_txn_id`, `booking_user_data`, `booking_guest`, `booking_nationality_code`, `booking_flight_segment`, `booking_payment_gateway`, `created_at`, `updated_at`) VALUES
+(4, NULL, NULL, '', '20251226130249', 'pending', NULL, '15924', 1, 0, 0, 'AED', '\"{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"9\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-12-28\\\",\\\"lastTicketingDateTime\\\":\\\"2025-12-28\\\",\\\"numberOfBookableSeats\\\":8,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT18H15M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-28T20:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"AUH\\\",\\\"terminal\\\":\\\"A\\\",\\\"at\\\":\\\"2025-12-29T02:15:00\\\"},\\\"carrierCode\\\":\\\"EY\\\",\\\"number\\\":\\\"1043\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"339\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"DE\\\"},\\\"duration\\\":\\\"PT3H15M\\\",\\\"id\\\":\\\"12\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"AUH\\\",\\\"terminal\\\":\\\"A\\\",\\\"at\\\":\\\"2025-12-29T14:10:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-29T18:15:00\\\"},\\\"carrierCode\\\":\\\"EY\\\",\\\"number\\\":\\\"288\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"321\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"EY\\\"},\\\"duration\\\":\\\"PT3H5M\\\",\\\"id\\\":\\\"13\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"13270.00\\\",\\\"base\\\":\\\"11390.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"13270.00\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"EY\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"13270.00\\\",\\\"base\\\":\\\"11390.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"12\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"DNN00V2R\\\",\\\"brandedFare\\\":\\\"JVALUE\\\",\\\"brandedFareLabel\\\":\\\"BUSINESS VALUE\\\",\\\"class\\\":\\\"D\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":35,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"EXCESS WEIGHT SPECIAL CHARGE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BAGGAGE\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FOOD AND BEVERAGE\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"MEAL\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"PRIORITY ACCESS\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"NO SHOW FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"STANDARD SEAT SELECTION\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"BID TO UPGRADE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"13\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"DNN00V2R\\\",\\\"brandedFare\\\":\\\"JVALUE\\\",\\\"brandedFareLabel\\\":\\\"BUSINESS VALUE\\\",\\\"class\\\":\\\"D\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":35,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"weight\\\":12,\\\"weightUnit\\\":\\\"KG\\\"},\\\"amenities\\\":[{\\\"description\\\":\\\"EXCESS WEIGHT SPECIAL CHARGE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BAGGAGE\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FOOD AND BEVERAGE\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"MEAL\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"PRIORITY ACCESS\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"NO SHOW FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"STANDARD SEAT SELECTION\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"BID TO UPGRADE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]}]}]}\"', NULL, NULL, 'unpaid', 'amadeus_self', 'flight', NULL, '\"{\\\"first_name\\\":null,\\\"last_name\\\":null,\\\"user_email\\\":null,\\\"user_phone\\\":\\\"\\\",\\\"user_address\\\":null}\"', '\"[{\\\"traveller_type\\\":\\\"adults\\\",\\\"title\\\":null,\\\"first_name\\\":\\\"Bruno\\\",\\\"last_name\\\":\\\"Barry\\\",\\\"nationality\\\":\\\"us\\\",\\\"dob_day\\\":\\\"13\\\",\\\"dob_month\\\":\\\"8\\\",\\\"dob_year\\\":\\\"1974\\\",\\\"passport\\\":\\\"Consequat Eum eius\\\",\\\"passport_day_expiry\\\":\\\"19\\\",\\\"passport_month_expiry\\\":\\\"3\\\",\\\"passport_year_expiry\\\":\\\"2023\\\",\\\"passport_issuance_day\\\":\\\"10\\\",\\\"passport_issuance_month\\\":\\\"11\\\",\\\"passport_issuance_year\\\":\\\"1982\\\",\\\"gender\\\":\\\"m\\\",\\\"email\\\":null,\\\"phone\\\":\\\"\\\"}]\"', 'US', '\"{\\\"segments\\\":[[{\\\"id\\\":\\\"12\\\",\\\"flight_number\\\":\\\"EY 1043\\\",\\\"airline_name\\\":\\\"Etihad Airways\\\",\\\"departure\\\":{\\\"airport\\\":\\\"FRA\\\",\\\"city\\\":\\\"Frankfurt\\\",\\\"city_name\\\":\\\"Frankfurt\\\",\\\"airport_name\\\":\\\"Frankfurt am Main Airport\\\",\\\"country\\\":\\\"Germany\\\",\\\"time\\\":\\\"08:00 PM\\\",\\\"date\\\":\\\"2025-12-28\\\",\\\"date_convert\\\":\\\"Sun 28 Dec 2025\\\",\\\"terminal\\\":\\\"1\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"AUH\\\",\\\"city\\\":\\\"Abu Dhabi\\\",\\\"city_name\\\":\\\"Abu Dhabi\\\",\\\"airport_name\\\":\\\"Abu Dhabi International Airport\\\",\\\"country\\\":\\\"United Arab Emirates\\\",\\\"time\\\":\\\"02:15 AM\\\",\\\"date\\\":\\\"2025-12-29\\\",\\\"date_convert\\\":\\\"Mon 29 Dec 2025\\\",\\\"terminal\\\":\\\"A\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"EY\\\",\\\"operating\\\":\\\"DE\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"339\\\",\\\"duration\\\":\\\"03h:15m\\\",\\\"total_duration\\\":\\\"06h:20m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"BUSINESS\\\",\\\"baggage\\\":\\\"35KG\\\",\\\"cabin_baggage\\\":\\\"2PC\\\",\\\"currency\\\":\\\"AED\\\",\\\"actual_price\\\":\\\"13270.00\\\",\\\"actual_adult_price\\\":\\\"13270.00\\\",\\\"actual_child_price\\\":0,\\\"actual_infant_price\\\":0,\\\"price\\\":\\\"15,924\\\",\\\"adult_price\\\":\\\"15,924\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"9\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-12-28\\\",\\\"lastTicketingDateTime\\\":\\\"2025-12-28\\\",\\\"numberOfBookableSeats\\\":8,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT18H15M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-28T20:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"AUH\\\",\\\"terminal\\\":\\\"A\\\",\\\"at\\\":\\\"2025-12-29T02:15:00\\\"},\\\"carrierCode\\\":\\\"EY\\\",\\\"number\\\":\\\"1043\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"339\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"DE\\\"},\\\"duration\\\":\\\"PT3H15M\\\",\\\"id\\\":\\\"12\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"AUH\\\",\\\"terminal\\\":\\\"A\\\",\\\"at\\\":\\\"2025-12-29T14:10:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-29T18:15:00\\\"},\\\"carrierCode\\\":\\\"EY\\\",\\\"number\\\":\\\"288\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"321\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"EY\\\"},\\\"duration\\\":\\\"PT3H5M\\\",\\\"id\\\":\\\"13\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"13270.00\\\",\\\"base\\\":\\\"11390.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"13270.00\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"EY\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"13270.00\\\",\\\"base\\\":\\\"11390.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"12\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"DNN00V2R\\\",\\\"brandedFare\\\":\\\"JVALUE\\\",\\\"brandedFareLabel\\\":\\\"BUSINESS VALUE\\\",\\\"class\\\":\\\"D\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":35,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"EXCESS WEIGHT SPECIAL CHARGE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BAGGAGE\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FOOD AND BEVERAGE\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"MEAL\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"PRIORITY ACCESS\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"NO SHOW FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"STANDARD SEAT SELECTION\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"BID TO UPGRADE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"13\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"DNN00V2R\\\",\\\"brandedFare\\\":\\\"JVALUE\\\",\\\"brandedFareLabel\\\":\\\"BUSINESS VALUE\\\",\\\"class\\\":\\\"D\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":35,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"weight\\\":12,\\\"weightUnit\\\":\\\"KG\\\"},\\\"amenities\\\":[{\\\"description\\\":\\\"EXCESS WEIGHT SPECIAL CHARGE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BAGGAGE\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FOOD AND BEVERAGE\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"MEAL\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"PRIORITY ACCESS\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"NO SHOW FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"STANDARD SEAT SELECTION\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"BID TO UPGRADE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]}]}]},\\\"supplier\\\":\\\"amadeus_self\\\",\\\"type\\\":\\\"oneway\\\"},{\\\"id\\\":\\\"13\\\",\\\"flight_number\\\":\\\"EY 288\\\",\\\"airline_name\\\":\\\"Etihad Airways\\\",\\\"departure\\\":{\\\"airport\\\":\\\"AUH\\\",\\\"city\\\":\\\"Abu Dhabi\\\",\\\"city_name\\\":\\\"Abu Dhabi\\\",\\\"airport_name\\\":\\\"Abu Dhabi International Airport\\\",\\\"country\\\":\\\"United Arab Emirates\\\",\\\"time\\\":\\\"02:10 PM\\\",\\\"date\\\":\\\"2025-12-29\\\",\\\"date_convert\\\":\\\"Mon 29 Dec 2025\\\",\\\"terminal\\\":\\\"A\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"LHE\\\",\\\"city\\\":\\\"Lahore\\\",\\\"city_name\\\":\\\"Lahore\\\",\\\"airport_name\\\":\\\"Alama Iqbal International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"06:15 PM\\\",\\\"date\\\":\\\"2025-12-29\\\",\\\"date_convert\\\":\\\"Mon 29 Dec 2025\\\",\\\"terminal\\\":\\\"M\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"EY\\\",\\\"operating\\\":\\\"EY\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"321\\\",\\\"duration\\\":\\\"03h:05m\\\",\\\"total_duration\\\":\\\"06h:20m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"BUSINESS\\\",\\\"baggage\\\":\\\"35KG\\\",\\\"cabin_baggage\\\":\\\"2PC\\\",\\\"currency\\\":\\\"AED\\\",\\\"actual_price\\\":\\\"13270.00\\\",\\\"actual_adult_price\\\":\\\"13270.00\\\",\\\"actual_child_price\\\":0,\\\"actual_infant_price\\\":0,\\\"price\\\":\\\"15,924\\\",\\\"adult_price\\\":\\\"15,924\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"9\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2025-12-28\\\",\\\"lastTicketingDateTime\\\":\\\"2025-12-28\\\",\\\"numberOfBookableSeats\\\":8,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT18H15M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"FRA\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2025-12-28T20:00:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"AUH\\\",\\\"terminal\\\":\\\"A\\\",\\\"at\\\":\\\"2025-12-29T02:15:00\\\"},\\\"carrierCode\\\":\\\"EY\\\",\\\"number\\\":\\\"1043\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"339\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"DE\\\"},\\\"duration\\\":\\\"PT3H15M\\\",\\\"id\\\":\\\"12\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"AUH\\\",\\\"terminal\\\":\\\"A\\\",\\\"at\\\":\\\"2025-12-29T14:10:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"terminal\\\":\\\"M\\\",\\\"at\\\":\\\"2025-12-29T18:15:00\\\"},\\\"carrierCode\\\":\\\"EY\\\",\\\"number\\\":\\\"288\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"321\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"EY\\\"},\\\"duration\\\":\\\"PT3H5M\\\",\\\"id\\\":\\\"13\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"13270.00\\\",\\\"base\\\":\\\"11390.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"13270.00\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"EY\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"13270.00\\\",\\\"base\\\":\\\"11390.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"12\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"DNN00V2R\\\",\\\"brandedFare\\\":\\\"JVALUE\\\",\\\"brandedFareLabel\\\":\\\"BUSINESS VALUE\\\",\\\"class\\\":\\\"D\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":35,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"quantity\\\":2},\\\"amenities\\\":[{\\\"description\\\":\\\"EXCESS WEIGHT SPECIAL CHARGE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BAGGAGE\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FOOD AND BEVERAGE\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"MEAL\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"PRIORITY ACCESS\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"NO SHOW FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"STANDARD SEAT SELECTION\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"BID TO UPGRADE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]},{\\\"segmentId\\\":\\\"13\\\",\\\"cabin\\\":\\\"BUSINESS\\\",\\\"fareBasis\\\":\\\"DNN00V2R\\\",\\\"brandedFare\\\":\\\"JVALUE\\\",\\\"brandedFareLabel\\\":\\\"BUSINESS VALUE\\\",\\\"class\\\":\\\"D\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":35,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"weight\\\":12,\\\"weightUnit\\\":\\\"KG\\\"},\\\"amenities\\\":[{\\\"description\\\":\\\"EXCESS WEIGHT SPECIAL CHARGE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BAGGAGE\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"FOOD AND BEVERAGE\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"MEAL\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"PRIORITY ACCESS\\\",\\\"isChargeable\\\":false,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"NO SHOW FEE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"TRAVEL_SERVICES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"STANDARD SEAT SELECTION\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}},{\\\"description\\\":\\\"BID TO UPGRADE\\\",\\\"isChargeable\\\":true,\\\"amenityType\\\":\\\"BRANDED_FARES\\\",\\\"amenityProvider\\\":{\\\"name\\\":\\\"BrandedFare\\\"}}]}]}]},\\\"supplier\\\":\\\"amadeus_self\\\",\\\"type\\\":\\\"oneway\\\"}]]}\"', 'stripe', '2026-05-07 16:44:18', '2025-12-26 08:02:49'),
+(5, NULL, NULL, '', '20260202025457', 'confirmed', '', '969', 1, 0, 0, 'AED', '\"{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2026-02-04\\\",\\\"lastTicketingDateTime\\\":\\\"2026-02-04\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT3H35M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"at\\\":\\\"2026-02-04T12:55:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2026-02-04T15:30:00\\\"},\\\"carrierCode\\\":\\\"PK\\\",\\\"number\\\":\\\"203\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"PK\\\"},\\\"duration\\\":\\\"PT3H35M\\\",\\\"id\\\":\\\"35\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"865.00\\\",\\\"base\\\":\\\"610.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"865.00\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"PK\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"865.00\\\",\\\"base\\\":\\\"610.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"35\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"VLOWPK\\\",\\\"class\\\":\\\"V\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"weight\\\":7,\\\"weightUnit\\\":\\\"KG\\\"}}]}]}\"', '', '[{\"status\":400,\"code\":34651,\"title\":\"SEGMENT SELL FAILURE\",\"detail\":\"Itinerary schedule change detected between segments requested and actual segment sell is exceeding 15 minutes\"}]', 'paid', 'amadeus_enterprise', 'flight', NULL, '\"{\\\"first_name\\\":\\\"Christine\\\",\\\"last_name\\\":\\\"Randall\\\",\\\"user_email\\\":\\\"vopexibydo@mailinator.com\\\",\\\"user_phone\\\":\\\"15513997642\\\",\\\"user_address\\\":\\\"181 East Hague Freeway\\\"}\"', '\"[{\\\"traveller_type\\\":\\\"adults\\\",\\\"title\\\":null,\\\"first_name\\\":\\\"Usama\\\",\\\"last_name\\\":\\\"Malik\\\",\\\"nationality\\\":\\\"ax\\\",\\\"dob_day\\\":\\\"02\\\",\\\"dob_month\\\":\\\"1\\\",\\\"dob_year\\\":\\\"2022\\\",\\\"passport\\\":\\\"1264178641786174\\\",\\\"passport_day_expiry\\\":\\\"02\\\",\\\"passport_month_expiry\\\":\\\"2\\\",\\\"passport_year_expiry\\\":\\\"2027\\\",\\\"passport_issuance_day\\\":\\\"01\\\",\\\"passport_issuance_month\\\":\\\"1\\\",\\\"passport_issuance_year\\\":\\\"2023\\\",\\\"gender\\\":\\\"m\\\",\\\"email\\\":null,\\\"phone\\\":\\\"\\\"}]\"', 'US', '\"{\\\"segments\\\":[[{\\\"id\\\":\\\"35\\\",\\\"flight_number\\\":\\\"PK 203\\\",\\\"airline_name\\\":\\\"Pakistan International Airlines\\\",\\\"departure\\\":{\\\"airport\\\":\\\"LHE\\\",\\\"city\\\":\\\"Lahore\\\",\\\"city_name\\\":\\\"Lahore\\\",\\\"airport_name\\\":\\\"Alama Iqbal International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"12:55 PM\\\",\\\"date\\\":\\\"2026-02-04\\\",\\\"date_convert\\\":\\\"Wed 04 Feb 2026\\\",\\\"terminal\\\":null},\\\"arrival\\\":{\\\"airport\\\":\\\"DXB\\\",\\\"city\\\":\\\"Dubai\\\",\\\"city_name\\\":\\\"Dubai\\\",\\\"airport_name\\\":\\\"Dubai International Airport\\\",\\\"country\\\":\\\"United Arab Emirates\\\",\\\"time\\\":\\\"03:30 PM\\\",\\\"date\\\":\\\"2026-02-04\\\",\\\"date_convert\\\":\\\"Wed 04 Feb 2026\\\",\\\"terminal\\\":\\\"1\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"PK\\\",\\\"operating\\\":\\\"PK\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"320\\\",\\\"duration\\\":\\\"03h:35m\\\",\\\"total_duration\\\":\\\"03h:35m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"ECONOMY\\\",\\\"baggage\\\":\\\"30KG\\\",\\\"cabin_baggage\\\":\\\"0PC\\\",\\\"currency\\\":\\\"AED\\\",\\\"actual_price\\\":\\\"865.00\\\",\\\"actual_adult_price\\\":\\\"865.00\\\",\\\"actual_child_price\\\":0,\\\"actual_infant_price\\\":0,\\\"price\\\":\\\"969\\\",\\\"adult_price\\\":\\\"969\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2026-02-04\\\",\\\"lastTicketingDateTime\\\":\\\"2026-02-04\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT3H35M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"at\\\":\\\"2026-02-04T12:55:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2026-02-04T15:30:00\\\"},\\\"carrierCode\\\":\\\"PK\\\",\\\"number\\\":\\\"203\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"PK\\\"},\\\"duration\\\":\\\"PT3H35M\\\",\\\"id\\\":\\\"35\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"865.00\\\",\\\"base\\\":\\\"610.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"865.00\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":true},\\\"validatingAirlineCodes\\\":[\\\"PK\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"AED\\\",\\\"total\\\":\\\"865.00\\\",\\\"base\\\":\\\"610.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"35\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"VLOWPK\\\",\\\"class\\\":\\\"V\\\",\\\"includedCheckedBags\\\":{\\\"weight\\\":30,\\\"weightUnit\\\":\\\"KG\\\"},\\\"includedCabinBags\\\":{\\\"weight\\\":7,\\\"weightUnit\\\":\\\"KG\\\"}}]}]},\\\"supplier\\\":\\\"amadeus_enterprise\\\",\\\"type\\\":\\\"oneway\\\"}]]}\"', 'stripe', '2026-05-07 16:44:18', '2026-02-01 22:04:09'),
+(6, NULL, 9, '', '20260507153249', 'confirmed', 'YIARLI', '364', 1, 0, 0, 'USD', '\"{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2026-05-09\\\",\\\"lastTicketingDateTime\\\":\\\"2026-05-09\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT9H40M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"at\\\":\\\"2026-05-09T03:15:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DMM\\\",\\\"at\\\":\\\"2026-05-09T05:05:00\\\"},\\\"carrierCode\\\":\\\"XY\\\",\\\"number\\\":\\\"884\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"XY\\\"},\\\"duration\\\":\\\"PT3H50M\\\",\\\"id\\\":\\\"24\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"DMM\\\",\\\"at\\\":\\\"2026-05-09T09:25:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2026-05-09T11:55:00\\\"},\\\"carrierCode\\\":\\\"XY\\\",\\\"number\\\":\\\"811\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"XY\\\"},\\\"duration\\\":\\\"PT1H30M\\\",\\\"id\\\":\\\"25\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"325.16\\\",\\\"base\\\":\\\"170.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"325.16\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":false},\\\"validatingAirlineCodes\\\":[\\\"XY\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"325.16\\\",\\\"base\\\":\\\"170.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"24\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"HLIGOW\\\",\\\"class\\\":\\\"H\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":0},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}},{\\\"segmentId\\\":\\\"25\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"HLIGOW\\\",\\\"class\\\":\\\"H\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":0},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}}]}]}\"', '{\"data\":{\"type\":\"flight-order\",\"id\":\"eJzTd9eP9HQM8vEEAAuPAnA\",\"associatedRecords\":[{\"reference\":\"YIARLI\",\"creationDate\":\"2026-05-07T15:34:00.000\",\"originSystemCode\":\"GDS\",\"flightOfferId\":\"1\"}],\"flightOffers\":[{\"type\":\"flight-offer\",\"id\":\"1\",\"source\":\"GDS\",\"nonHomogeneous\":false,\"lastTicketingDate\":\"2026-05-09\",\"itineraries\":[{\"segments\":[{\"departure\":{\"iataCode\":\"LHE\",\"at\":\"2026-05-09T03:15:00\"},\"arrival\":{\"iataCode\":\"DMM\",\"at\":\"2026-05-09T05:05:00\"},\"carrierCode\":\"XY\",\"number\":\"884\",\"aircraft\":{\"code\":\"320\"},\"duration\":\"PT3H50M\",\"id\":\"24\",\"numberOfStops\":0,\"co2Emissions\":[{\"weight\":177,\"weightUnit\":\"KG\",\"cabin\":\"ECONOMY\"}]},{\"departure\":{\"iataCode\":\"DMM\",\"at\":\"2026-05-09T09:25:00\"},\"arrival\":{\"iataCode\":\"DXB\",\"terminal\":\"1\",\"at\":\"2026-05-09T11:55:00\"},\"carrierCode\":\"XY\",\"number\":\"811\",\"aircraft\":{\"code\":\"320\"},\"duration\":\"PT1H30M\",\"id\":\"25\",\"numberOfStops\":0,\"co2Emissions\":[{\"weight\":53,\"weightUnit\":\"KG\",\"cabin\":\"ECONOMY\"}]}]}],\"price\":{\"currency\":\"USD\",\"total\":\"325.16\",\"base\":\"170.00\",\"fees\":[{\"amount\":\"0.00\",\"type\":\"TICKETING\"},{\"amount\":\"0.00\",\"type\":\"SUPPLIER\"},{\"amount\":\"0.00\",\"type\":\"FORM_OF_PAYMENT\"}],\"grandTotal\":\"325.16\",\"billingCurrency\":\"USD\"},\"pricingOptions\":{\"fareType\":[\"PUBLISHED\"],\"includedCheckedBagsOnly\":false},\"validatingAirlineCodes\":[\"XY\"],\"travelerPricings\":[{\"travelerId\":\"1\",\"fareOption\":\"STANDARD\",\"travelerType\":\"ADULT\",\"price\":{\"currency\":\"USD\",\"total\":\"325.16\",\"base\":\"170.00\",\"taxes\":[{\"amount\":\"4.26\",\"code\":\"E3\"},{\"amount\":\"17.50\",\"code\":\"IO\"},{\"amount\":\"44.90\",\"code\":\"RG\"},{\"amount\":\"7.20\",\"code\":\"SP\"},{\"amount\":\"1.30\",\"code\":\"T2\"},{\"amount\":\"10.10\",\"code\":\"YD\"},{\"amount\":\"35.10\",\"code\":\"YQ\"},{\"amount\":\"33.40\",\"code\":\"YR\"},{\"amount\":\"1.40\",\"code\":\"ZR\"}]},\"fareDetailsBySegment\":[{\"segmentId\":\"24\",\"cabin\":\"ECONOMY\",\"fareBasis\":\"HLIGOW\",\"class\":\"H\",\"includedCheckedBags\":{\"quantity\":0}},{\"segmentId\":\"25\",\"cabin\":\"ECONOMY\",\"fareBasis\":\"HLIGOW\",\"class\":\"H\",\"includedCheckedBags\":{\"quantity\":0}}]}]}],\"travelers\":[{\"id\":\"1\",\"dateOfBirth\":\"2014-10-24\",\"gender\":\"FEMALE\",\"name\":{\"firstName\":\"DOMINIQUE\",\"lastName\":\"PETERSEN\"},\"documents\":[{\"number\":\"18223461833\",\"issuanceDate\":\"2019-01-17\",\"expiryDate\":\"2030-03-27\",\"issuanceCountry\":\"ES\",\"issuanceLocation\":\"Madrid\",\"nationality\":\"ES\",\"birthPlace\":\"Madrid\",\"documentType\":\"PASSPORT\",\"holder\":true}],\"contact\":{\"purpose\":\"STANDARD\",\"phones\":[{\"deviceType\":\"MOBILE\",\"countryCallingCode\":\"34\",\"number\":\"18223461833\"}],\"emailAddress\":\"ticybalari@mailinator.com\"}}],\"remarks\":{\"general\":[{\"subType\":\"GENERAL_MISCELLANEOUS\",\"text\":\"ONLINE BOOKING FROM INCREIBLE VIAJES\"}]},\"formOfPayments\":[{\"other\":{\"method\":\"CASH\",\"flightOfferIds\":[\"1\"]}}],\"ticketingAgreement\":{\"option\":\"CONFIRM\"},\"contacts\":[{\"addresseeName\":{\"firstName\":\"Iftikhar Ahmed\"},\"address\":{\"lines\":[\"Charlottenstra\\u00dfe. 17\"],\"postalCode\":\"52070\",\"countryCode\":\"DE\",\"cityName\":\"Aachen\"},\"purpose\":\"INVOICE\"},{\"addresseeName\":{\"firstName\":\"Roary Lindsay\"},\"address\":{\"lines\":[\"70 Crown Street, LONDON\"],\"postalCode\":\"28014\",\"countryCode\":\"ES\",\"cityName\":\"Madrid\"},\"purpose\":\"STANDARD\",\"phones\":[{\"deviceType\":\"LANDLINE\",\"countryCallingCode\":\"34\",\"number\":\"18223461833\"},{\"deviceType\":\"MOBILE\",\"countryCallingCode\":\"34\",\"number\":\"18223461833\"}],\"companyName\":\"CODEWEBLO\",\"emailAddress\":\"ticybalari@mailinator.com\"}]},\"dictionaries\":{\"locations\":{\"DMM\":{\"cityCode\":\"DMM\",\"countryCode\":\"SA\"},\"LHE\":{\"cityCode\":\"LHE\",\"countryCode\":\"PK\"},\"DXB\":{\"cityCode\":\"DXB\",\"countryCode\":\"AE\"}}}}', '', 'paid', 'amadeus_enterprise', 'flight', NULL, '\"{\\\"first_name\\\":\\\"Roary\\\",\\\"last_name\\\":\\\"Lindsay\\\",\\\"user_email\\\":\\\"ticybalari@mailinator.com\\\",\\\"user_phone\\\":\\\"18223461833\\\",\\\"user_address\\\":\\\"Quos natus earum ill\\\"}\"', '\"[{\\\"traveller_type\\\":\\\"adults\\\",\\\"title\\\":null,\\\"first_name\\\":\\\"Dominique\\\",\\\"last_name\\\":\\\"Petersen\\\",\\\"nationality\\\":\\\"ir\\\",\\\"dob_day\\\":\\\"24\\\",\\\"dob_month\\\":\\\"10\\\",\\\"dob_year\\\":\\\"2014\\\",\\\"passport\\\":\\\"A ea natus cillum de\\\",\\\"passport_day_expiry\\\":\\\"27\\\",\\\"passport_month_expiry\\\":\\\"3\\\",\\\"passport_year_expiry\\\":\\\"2030\\\",\\\"passport_issuance_day\\\":\\\"17\\\",\\\"passport_issuance_month\\\":\\\"1\\\",\\\"passport_issuance_year\\\":\\\"2019\\\",\\\"gender\\\":\\\"f\\\",\\\"email\\\":null,\\\"phone\\\":\\\"\\\"}]\"', 'US', '\"{\\\"segments\\\":[[{\\\"id\\\":\\\"24\\\",\\\"flight_number\\\":\\\"XY 884\\\",\\\"airline_name\\\":\\\"Nas Air\\\",\\\"departure\\\":{\\\"airport\\\":\\\"LHE\\\",\\\"city\\\":\\\"Lahore\\\",\\\"city_name\\\":\\\"Lahore\\\",\\\"airport_name\\\":\\\"Alama Iqbal International Airport\\\",\\\"country\\\":\\\"Pakistan\\\",\\\"time\\\":\\\"03:15 AM\\\",\\\"date\\\":\\\"2026-05-09\\\",\\\"date_convert\\\":\\\"Sat 09 May 2026\\\",\\\"terminal\\\":null},\\\"arrival\\\":{\\\"airport\\\":\\\"DMM\\\",\\\"city\\\":\\\"Dammam\\\",\\\"city_name\\\":\\\"Dammam\\\",\\\"airport_name\\\":\\\"King Fahd International Airport\\\",\\\"country\\\":\\\"Saudi Arabia\\\",\\\"time\\\":\\\"05:05 AM\\\",\\\"date\\\":\\\"2026-05-09\\\",\\\"date_convert\\\":\\\"Sat 09 May 2026\\\",\\\"terminal\\\":null,\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"XY\\\",\\\"operating\\\":\\\"XY\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"320\\\",\\\"duration\\\":\\\"03h:50m\\\",\\\"total_duration\\\":\\\"05h:20m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"ECONOMY\\\",\\\"baggage\\\":\\\"0PC\\\",\\\"cabin_baggage\\\":\\\"1PC\\\",\\\"currency\\\":\\\"USD\\\",\\\"actual_price\\\":\\\"325.16\\\",\\\"actual_adult_price\\\":\\\"325.16\\\",\\\"actual_child_price\\\":0,\\\"actual_infant_price\\\":0,\\\"price\\\":\\\"364\\\",\\\"adult_price\\\":\\\"364\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2026-05-09\\\",\\\"lastTicketingDateTime\\\":\\\"2026-05-09\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT9H40M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"at\\\":\\\"2026-05-09T03:15:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DMM\\\",\\\"at\\\":\\\"2026-05-09T05:05:00\\\"},\\\"carrierCode\\\":\\\"XY\\\",\\\"number\\\":\\\"884\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"XY\\\"},\\\"duration\\\":\\\"PT3H50M\\\",\\\"id\\\":\\\"24\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"DMM\\\",\\\"at\\\":\\\"2026-05-09T09:25:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2026-05-09T11:55:00\\\"},\\\"carrierCode\\\":\\\"XY\\\",\\\"number\\\":\\\"811\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"XY\\\"},\\\"duration\\\":\\\"PT1H30M\\\",\\\"id\\\":\\\"25\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"325.16\\\",\\\"base\\\":\\\"170.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"325.16\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":false},\\\"validatingAirlineCodes\\\":[\\\"XY\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"325.16\\\",\\\"base\\\":\\\"170.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"24\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"HLIGOW\\\",\\\"class\\\":\\\"H\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":0},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}},{\\\"segmentId\\\":\\\"25\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"HLIGOW\\\",\\\"class\\\":\\\"H\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":0},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}}]}]},\\\"supplier\\\":\\\"amadeus_enterprise\\\",\\\"type\\\":\\\"oneway\\\"},{\\\"id\\\":\\\"25\\\",\\\"flight_number\\\":\\\"XY 811\\\",\\\"airline_name\\\":\\\"Nas Air\\\",\\\"departure\\\":{\\\"airport\\\":\\\"DMM\\\",\\\"city\\\":\\\"Dammam\\\",\\\"city_name\\\":\\\"Dammam\\\",\\\"airport_name\\\":\\\"King Fahd International Airport\\\",\\\"country\\\":\\\"Saudi Arabia\\\",\\\"time\\\":\\\"09:25 AM\\\",\\\"date\\\":\\\"2026-05-09\\\",\\\"date_convert\\\":\\\"Sat 09 May 2026\\\",\\\"terminal\\\":null},\\\"arrival\\\":{\\\"airport\\\":\\\"DXB\\\",\\\"city\\\":\\\"Dubai\\\",\\\"city_name\\\":\\\"Dubai\\\",\\\"airport_name\\\":\\\"Dubai International Airport\\\",\\\"country\\\":\\\"United Arab Emirates\\\",\\\"time\\\":\\\"11:55 AM\\\",\\\"date\\\":\\\"2026-05-09\\\",\\\"date_convert\\\":\\\"Sat 09 May 2026\\\",\\\"terminal\\\":\\\"1\\\",\\\"date_adjustment\\\":0},\\\"carrier\\\":{\\\"marketing\\\":\\\"XY\\\",\\\"operating\\\":\\\"XY\\\",\\\"alliances\\\":null},\\\"equipment\\\":\\\"320\\\",\\\"duration\\\":\\\"01h:30m\\\",\\\"total_duration\\\":\\\"05h:20m\\\",\\\"distance\\\":\\\"\\\",\\\"eTicketable\\\":true,\\\"frequency\\\":1,\\\"stop_count\\\":0,\\\"class\\\":\\\"ECONOMY\\\",\\\"baggage\\\":\\\"0PC\\\",\\\"cabin_baggage\\\":\\\"1PC\\\",\\\"currency\\\":\\\"USD\\\",\\\"actual_price\\\":\\\"325.16\\\",\\\"actual_adult_price\\\":\\\"325.16\\\",\\\"actual_child_price\\\":0,\\\"actual_infant_price\\\":0,\\\"price\\\":\\\"364\\\",\\\"adult_price\\\":\\\"364\\\",\\\"child_price\\\":\\\"0\\\",\\\"infant_price\\\":\\\"0\\\",\\\"booking_data\\\":{\\\"type\\\":\\\"flight-offer\\\",\\\"id\\\":\\\"1\\\",\\\"source\\\":\\\"GDS\\\",\\\"instantTicketingRequired\\\":false,\\\"nonHomogeneous\\\":false,\\\"oneWay\\\":false,\\\"isUpsellOffer\\\":false,\\\"lastTicketingDate\\\":\\\"2026-05-09\\\",\\\"lastTicketingDateTime\\\":\\\"2026-05-09\\\",\\\"numberOfBookableSeats\\\":9,\\\"itineraries\\\":[{\\\"duration\\\":\\\"PT9H40M\\\",\\\"segments\\\":[{\\\"departure\\\":{\\\"iataCode\\\":\\\"LHE\\\",\\\"at\\\":\\\"2026-05-09T03:15:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DMM\\\",\\\"at\\\":\\\"2026-05-09T05:05:00\\\"},\\\"carrierCode\\\":\\\"XY\\\",\\\"number\\\":\\\"884\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"XY\\\"},\\\"duration\\\":\\\"PT3H50M\\\",\\\"id\\\":\\\"24\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false},{\\\"departure\\\":{\\\"iataCode\\\":\\\"DMM\\\",\\\"at\\\":\\\"2026-05-09T09:25:00\\\"},\\\"arrival\\\":{\\\"iataCode\\\":\\\"DXB\\\",\\\"terminal\\\":\\\"1\\\",\\\"at\\\":\\\"2026-05-09T11:55:00\\\"},\\\"carrierCode\\\":\\\"XY\\\",\\\"number\\\":\\\"811\\\",\\\"aircraft\\\":{\\\"code\\\":\\\"320\\\"},\\\"operating\\\":{\\\"carrierCode\\\":\\\"XY\\\"},\\\"duration\\\":\\\"PT1H30M\\\",\\\"id\\\":\\\"25\\\",\\\"numberOfStops\\\":0,\\\"blacklistedInEU\\\":false}]}],\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"325.16\\\",\\\"base\\\":\\\"170.00\\\",\\\"fees\\\":[{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"SUPPLIER\\\"},{\\\"amount\\\":\\\"0.00\\\",\\\"type\\\":\\\"TICKETING\\\"}],\\\"grandTotal\\\":\\\"325.16\\\"},\\\"pricingOptions\\\":{\\\"fareType\\\":[\\\"PUBLISHED\\\"],\\\"includedCheckedBagsOnly\\\":false},\\\"validatingAirlineCodes\\\":[\\\"XY\\\"],\\\"travelerPricings\\\":[{\\\"travelerId\\\":\\\"1\\\",\\\"fareOption\\\":\\\"STANDARD\\\",\\\"travelerType\\\":\\\"ADULT\\\",\\\"price\\\":{\\\"currency\\\":\\\"USD\\\",\\\"total\\\":\\\"325.16\\\",\\\"base\\\":\\\"170.00\\\"},\\\"fareDetailsBySegment\\\":[{\\\"segmentId\\\":\\\"24\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"HLIGOW\\\",\\\"class\\\":\\\"H\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":0},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}},{\\\"segmentId\\\":\\\"25\\\",\\\"cabin\\\":\\\"ECONOMY\\\",\\\"fareBasis\\\":\\\"HLIGOW\\\",\\\"class\\\":\\\"H\\\",\\\"includedCheckedBags\\\":{\\\"quantity\\\":0},\\\"includedCabinBags\\\":{\\\"quantity\\\":1}}]}]},\\\"supplier\\\":\\\"amadeus_enterprise\\\",\\\"type\\\":\\\"oneway\\\"}]]}\"', 'stripe', '2026-05-07 16:44:18', '2026-05-07 10:34:46'),
+(7, 10, NULL, 'agent', '20260930144541', 'pending', NULL, '99.07', 1, 0, 0, 'USD', '\"{\\\"svc_id\\\":\\\"arl_00009VME7D6ivUu8dn35WK\\\",\\\"passenger_id\\\":\\\"pas_0000BAw56udyU3alKQz8jK\\\",\\\"booking_token\\\":\\\"off_0000BAw56usVc1Da3VmkNf\\\",\\\"currency\\\":\\\"USD\\\",\\\"amount\\\":\\\"99.07\\\"}\"', NULL, NULL, 'paid', 'duffel', 'flight', NULL, '\"{\\\"first_name\\\":\\\"demo\\\",\\\"last_name\\\":\\\"agent\\\",\\\"user_email\\\":\\\"agent@travelbookingpanel.com\\\",\\\"user_phone\\\":\\\"3341674174\\\",\\\"user_address\\\":null}\"', '\"[{\\\"traveller_type\\\":\\\"adults\\\",\\\"title\\\":null,\\\"first_name\\\":\\\"Brent1\\\",\\\"last_name\\\":\\\"Brent2\\\",\\\"nationality\\\":\\\"at\\\",\\\"dob_day\\\":\\\"13\\\",\\\"dob_month\\\":\\\"12\\\",\\\"dob_year\\\":\\\"2005\\\",\\\"passport\\\":\\\"3232323232\\\",\\\"passport_day_expiry\\\":\\\"14\\\",\\\"passport_month_expiry\\\":\\\"10\\\",\\\"passport_year_expiry\\\":\\\"2029\\\",\\\"passport_issuance_day\\\":\\\"13\\\",\\\"passport_issuance_month\\\":\\\"12\\\",\\\"passport_issuance_year\\\":\\\"2013\\\",\\\"gender\\\":\\\"m\\\",\\\"email\\\":null,\\\"phone\\\":\\\"\\\"}]\"', 'US', '\"{\\\"segments\\\":[[{\\\"id\\\":\\\"seg_0000BAw56usVc1Da3VmkNd\\\",\\\"flight_number\\\":\\\"1161\\\",\\\"airline_name\\\":\\\"Duffel Airways\\\",\\\"departure\\\":{\\\"airport\\\":\\\"LHE\\\",\\\"city\\\":\\\"LHE\\\",\\\"city_name\\\":\\\"Lahore\\\",\\\"airport_name\\\":\\\"Allama Iqbal International Airport\\\",\\\"country\\\":\\\"PK\\\",\\\"time\\\":\\\"12:46 AM\\\",\\\"booking_time\\\":\\\"2026-10-02T00:46:00\\\",\\\"date_convert\\\":\\\"Fri 02 Oct 2026\\\",\\\"terminal\\\":\\\"2\\\"},\\\"arrival\\\":{\\\"airport\\\":\\\"DXB\\\",\\\"city\\\":\\\"DXB\\\",\\\"city_name\\\":\\\"Dubai\\\",\\\"country\\\":\\\"AE\\\",\\\"airport_name\\\":\\\"Dubai International Airport\\\",\\\"time\\\":\\\"02:59 AM\\\",\\\"booking_time\\\":\\\"2026-10-02T02:59:00\\\",\\\"date\\\":\\\"2026-10-02\\\",\\\"date_convert\\\":\\\"Fri 02 Oct 2026\\\",\\\"terminal\\\":\\\"1\\\"},\\\"carrier\\\":{\\\"marketing\\\":\\\"ZZ\\\",\\\"operating\\\":\\\"ZZ\\\",\\\"alliances\\\":null},\\\"equipment\\\":null,\\\"total_duration\\\":\\\"2:13\\\",\\\"duration\\\":\\\"3h 13m\\\",\\\"distance\\\":null,\\\"eTicketable\\\":true,\\\"frequency\\\":null,\\\"stop_count\\\":0,\\\"class\\\":\\\"economy\\\",\\\"baggage\\\":1,\\\"cabin_baggage\\\":1,\\\"currency\\\":\\\"USD\\\",\\\"price\\\":\\\"99.07\\\",\\\"adult_price\\\":\\\"99.07\\\",\\\"child_price\\\":\\\"99.07\\\",\\\"infant_price\\\":\\\"99.07\\\",\\\"options\\\":\\\"\\\",\\\"booking_data\\\":{\\\"svc_id\\\":\\\"arl_00009VME7D6ivUu8dn35WK\\\",\\\"passenger_id\\\":\\\"pas_0000BAw56udyU3alKQz8jK\\\",\\\"booking_token\\\":\\\"off_0000BAw56usVc1Da3VmkNf\\\",\\\"currency\\\":\\\"USD\\\",\\\"amount\\\":\\\"99.07\\\"},\\\"redirect_url\\\":\\\"\\\",\\\"refundable\\\":\\\"\\\",\\\"supplier\\\":\\\"duffel\\\",\\\"type\\\":\\\"oneway\\\"}]]}\"', 'agent_wallet', '2026-09-30 14:45:41', '2026-09-30 09:45:41');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hotels`
+--
+
+CREATE TABLE `hotels` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `agent_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `added_by` varchar(20) NOT NULL DEFAULT 'admin',
+  `approval_status` enum('pending','approved','rejected') NOT NULL DEFAULT 'approved',
+  `location_id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `type` varchar(50) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `whatsapp` varchar(20) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `check_in_time` time DEFAULT NULL,
+  `check_out_time` time DEFAULT NULL,
+  `total_rooms` int(11) DEFAULT NULL,
+  `stars` tinyint(3) UNSIGNED DEFAULT NULL,
+  `total_rating` int(10) UNSIGNED DEFAULT NULL,
+  `status` tinyint(4) DEFAULT 1,
+  `featured` enum('0','1') NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `hotels`
+--
+
+INSERT INTO `hotels` (`id`, `agent_id`, `added_by`, `approval_status`, `location_id`, `name`, `type`, `description`, `address`, `phone`, `whatsapp`, `email`, `check_in_time`, `check_out_time`, `total_rooms`, `stars`, `total_rating`, `status`, `featured`, `created_at`, `updated_at`) VALUES
+(1, NULL, 'admin', 'approved', 9404, 'Pearl Continental Karachi', 'hotel', 'Pearl Continental Karachi is a prestigious 5-star luxury hotel located in the heart of Karachi\'s business district. With over 40 years of hospitality excellence, the hotel features elegant rooms with modern amenities, multiple dining options including international and local cuisine, a rooftop swimming pool with panoramic city views, fully-equipped fitness center, and extensive conference facilities. Perfect for business travelers and tourists alike, the hotel offers world-class service with traditional Pakistani hospitality.', 'Club Road, Civil Lines, Karachi, Sindh', '+92-21-35685660', '+92-21-35685660', 'info@pckarachi.com', '14:00:00', '12:00:00', 75, 3, 2300, 1, '0', '2026-02-20 14:13:39', '2026-03-07 02:36:29'),
+(3, NULL, 'admin', 'approved', 9404, 'Avari Towers Lahore', 'hotel', 'Avari Towers Lahore stands as one of the most distinguished hotels in the cultural capital of Pakistan. This luxury hotel combines modern facilities with warm Pakistani hospitality, offering elegantly appointed rooms, fine dining experiences showcasing local and international cuisine, a rooftop restaurant with stunning city views, health club with swimming pool, and comprehensive business facilities. Ideally located near key commercial areas and historical sites, it serves both business and leisure travelers with exceptional service and attention to detail.', '87 Shahrah-e-Quaid-e-Azam, The Mall, Lahore, Punjab', '+92-42-36360360', '+92-42-36360360', 'contact@avari.com', '14:00:00', '11:00:00', 62, 3, 2300, 1, '1', '2026-02-20 14:13:39', '2026-03-07 02:36:17'),
+(4, NULL, 'admin', 'approved', 9404, 'Marriott Executive Apartments Karachi', 'hotel', 'Marriott Executive Apartments Karachi offers sophisticated extended-stay accommodations in the heart of the city\'s business district. Each spacious apartment features a fully-equipped kitchen, separate living and sleeping areas, modern work spaces with high-speed internet, and premium amenities. The property includes a rooftop pool, fitness center, business lounge, and on-site dining options. Designed for both short and long-term stays, it provides the perfect blend of home comfort and hotel luxury, making it ideal for business executives and relocating families.', 'Plot No. ST-2/1, Block-9, KDA Improvement Scheme No. 5, Clifton, Karachi, Sindh', '+92-21-35706060', '+92-21-35706060', 'info@marriottkarachi.com', '15:00:00', '12:00:00', 55, 4, 2300, 1, '1', '2026-02-20 14:13:39', '2026-03-07 02:36:24'),
+(5, NULL, 'admin', 'approved', 9404, 'Ramada Plaza Karachi', 'hotel', 'Ramada Plaza Karachi is a contemporary business hotel offering modern comfort and convenience in Pakistan\'s commercial hub. The hotel features well-appointed rooms with comfortable bedding, flat-screen TVs, and work desks, along with diverse dining options, a fitness center, swimming pool, and flexible meeting spaces. Strategically located near the airport and key business areas, Ramada Plaza caters to corporate travelers and tourists seeking quality accommodation at competitive rates. The friendly staff ensures a pleasant and productive stay for all guests.', 'Sharah-e-Faisal Road, Stadium Commercial Area, Karachi, Sindh', '+92-21-34525252', '+92-21-34525252', 'contact@ramadakarachi.com', '14:00:00', '11:00:00', 48, 4, 2300, 1, '1', '2026-02-20 14:13:39', '2026-03-07 02:36:33'),
+(6, NULL, 'admin', 'approved', 9404, 'The Nishat Hotel Lahore', 'hotel', 'The Nishat Hotel Lahore is a premier business hotel located in the heart of Lahore\'s commercial district. Known for its exceptional service and elegant ambiance, the hotel offers spacious rooms with contemporary decor, multiple dining venues serving Pakistani and international cuisine, a well-equipped business center, meeting facilities, and a fitness center. The hotel\'s central location provides easy access to Lahore\'s historical landmarks, shopping districts, and business centers, making it an ideal choice for both corporate and leisure travelers seeking comfort and convenience.', 'Shahrah-e-Quaid-e-Azam, Gulberg III, Lahore, Punjab', '+92-42-35756000', '+92-42-35756000', 'reservations@nishathotels.com', '15:00:00', '11:00:00', 58, 4, 2300, 1, '0', '2026-02-20 14:13:39', '2026-02-27 02:26:19'),
+(7, NULL, 'admin', 'approved', 9404, 'Green Valley Guest House Murree', 'guest house', 'Nestled in the picturesque hills of Murree, Green Valley Guest House offers a cozy retreat for families and couples seeking peace and natural beauty. The guest house features comfortable rooms with mountain views, home-cooked Pakistani meals, and warm hospitality. Located just minutes from Mall Road, guests can enjoy easy access to local attractions while experiencing the tranquility of the mountains. Ideal for weekend getaways and extended stays, our family-run establishment provides personalized attention and a homely atmosphere that makes every guest feel welcome.', 'Lower Topa Road, Murree, Punjab', '+92-51-9269845', '+92-51-9269845', 'contact@greenvalleymurree.com', '15:00:00', '11:00:00', 18, 5, 2300, 1, '0', '2026-02-20 14:13:39', '2026-02-27 02:27:58'),
+(8, NULL, 'admin', 'approved', 1, 'Alpine Comfort Guest House Nathia Gali', 'guest house', 'Alpine Comfort Guest House in Nathia Gali provides a peaceful mountain escape surrounded by pine forests and breathtaking Himalayan views. Our guest house offers clean, comfortable rooms with essential amenities, delicious home-style Pakistani cuisine, and a welcoming family environment. Perfect for nature lovers, hikers, and those seeking respite from city life, the property is located near popular hiking trails and scenic viewpoints. Experience traditional hill station hospitality combined with modern comfort in one of Pakistan\'s most beautiful destinations.', 'Main Bazaar Road, Nathia Gali, Khyber Pakhtunkhwa', '+92-992-410234', '+92-992-410234', 'info@alpinecomfort.com', '14:00:00', '11:00:00', 15, 5, 2300, 1, '0', '2026-02-20 14:13:39', '2026-02-27 02:29:29'),
+(9, NULL, 'admin', 'approved', 1, 'Hill View Guest House Abbottabad', 'guest house', 'Hill View Guest House Abbottabad is a charming accommodation option in the heart of this peaceful city. Offering budget-friendly rooms with basic amenities, the guest house caters to travelers seeking simple, clean, and comfortable lodging. With easy access to local markets, restaurants, and attractions, it serves as an excellent base for exploring the region. Our friendly staff ensures a pleasant stay with personalized service. The property is particularly popular among families visiting the area and tourists traveling to nearby hill stations like Nathia Gali and Ayubia.', 'Jinnah Road, Mandian, Abbottabad, Khyber Pakhtunkhwa', '+92-992-383456', '+92-992-383456', 'contact@hillviewabbottabad.com', '15:00:00', '11:00:00', 12, 5, 2300, 1, '0', '2026-02-20 14:13:39', '2026-02-27 02:30:12'),
+(10, NULL, 'admin', 'approved', 1, 'Sunset Guest House Karachi', 'guest house', 'Sunset Guest House Karachi offers affordable and comfortable accommodation in a convenient location near the city center and main business districts. The guest house provides clean rooms with air conditioning, WiFi, and essential amenities at competitive rates. Ideal for budget-conscious business travelers, students, and tourists, the property focuses on providing value for money without compromising on cleanliness and comfort. Our helpful staff can assist with local transportation and sightseeing recommendations. Continental breakfast is included, and nearby restaurants offer diverse dining options.', 'M.A. Jinnah Road, Garden East, Karachi, Sindh', '+92-21-32727890', '+92-21-32727890', 'info@sunsetguesthouse.com', '14:00:00', '11:00:00', 20, 3, 2300, 1, '0', '2026-02-20 14:13:39', '2026-02-27 02:31:43'),
+(11, NULL, 'admin', 'approved', 1, 'Shangrila Resort Skardu', 'resort', 'Shangrila Resort Skardu, also known as \"Heaven on Earth,\" is a breathtaking resort situated by the crystal-clear Lower Kachura Lake in Baltistan. The resort offers luxury cottages and rooms with stunning lake and mountain views, authentic Balti cuisine at its lakeside restaurant, boating facilities, and guided tours to nearby attractions like Deosai Plains and K2 Base Camp. The resort combines natural beauty with modern comforts, making it an unforgettable destination for adventure seekers and nature lovers. Experience the magic of Gilgit-Baltistan with world-class hospitality.', 'Lower Kachura Lake, Skardu, Gilgit-Baltistan', '+92-5815-960311', '+92-5815-960311', 'reservations@shangrilaskardu.com', '14:00:00', '11:00:00', 65, 3, 2300, 1, '0', '2026-02-20 14:13:39', '2026-02-27 02:32:24'),
+(12, NULL, 'admin', 'approved', 1, 'PC Bhurban Luxury Resort', 'resort', 'PC Bhurban Luxury Resort is an exclusive mountain retreat perched at 7,000 feet in the Murree hills, offering unparalleled luxury and natural beauty. This 5-star resort features elegantly designed rooms and suites with panoramic mountain views, fine dining restaurants, an 18-hole championship golf course, state-of-the-art spa and wellness center, indoor heated pool, and extensive recreational facilities. Perfect for corporate events, weddings, and family vacations, the resort provides a complete escape from urban life with activities ranging from golf and tennis to hiking and bird watching.', 'Murree Expressway, Bhurban, Punjab', '+92-51-9269020', '+92-51-9269020', 'info@pcbhurban.com', '15:00:00', '12:00:00', 85, 3, 2300, 1, '0', '2026-02-20 14:13:39', '2026-02-27 02:33:13'),
+(13, NULL, 'admin', 'approved', 1, 'Pearl Continental Beach Resort Karachi', 'resort', 'Pearl Continental Beach Resort Karachi offers a unique beachfront experience on the Arabian Sea coastline. This resort combines the tranquility of seaside living with luxury amenities, featuring spacious rooms with ocean views, multiple dining options specializing in seafood and international cuisine, direct beach access, water sports facilities, swimming pools, kids\' club, and extensive event spaces. Ideal for weekend getaways, family vacations, and destination weddings, the resort provides a perfect escape from the bustling city while remaining easily accessible from Karachi\'s main areas.', 'Hawke\'s Bay Road, Sandspit Beach, Karachi, Sindh', '+92-21-35065000', '+92-21-35065000', 'beachresort@pchotels.com', '14:00:00', '12:00:00', 72, 4, 2300, 1, '0', '2026-02-20 14:13:39', '2026-02-27 02:33:53'),
+(15, 7, 'agent', 'approved', 9404, 'Maris Davenport', 'resort', 'Ex labore voluptate', 'Aut quia dolores est', '+1 (134) 168-9496', 'Dolores quis exceptu', 'xocogigoxe@mailinator.com', '07:45:00', '16:28:00', 92, 4, 84, 1, '0', '2026-03-16 11:05:47', '2026-03-16 11:38:37'),
+(16, 7, 'agent', 'rejected', 9404, 'Zachery Padilla', 'hotel', 'Reprehenderit volupt', 'Sed ex architecto re', '+1 (487) 788-7809', 'Nisi culpa recusanda', 'waka@mailinator.com', '03:36:00', '13:25:00', 2, 5, NULL, 0, '0', '2026-03-18 15:51:31', '2026-03-18 16:52:18'),
+(17, 10, 'agent', 'pending', 3666, 'hotel 1', 'hotel', 'Lorem iure voluptas', 'Est et et natus exe', '+1 (775) 834-8826', 'Mollit et quidem eaq', 'nyludab@mailinator.com', '23:28:00', '08:27:00', 56, 5, NULL, 0, '0', '2026-06-21 00:10:53', '2026-06-21 00:10:53');
 
 -- --------------------------------------------------------
 
@@ -13286,7 +13818,11 @@ INSERT INTO `flights_booking` (`id`, `booking_code_ref`, `booking_status_flag`, 
 
 CREATE TABLE `hotels_booking` (
   `id` int(11) NOT NULL,
+  `agent_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `booked_via` enum('guest','user','agent') NOT NULL DEFAULT 'guest',
   `booking_code_ref` varchar(225) NOT NULL,
+  `module` varchar(225) NOT NULL DEFAULT 'hotel',
   `booking_status_flag` enum('confirmed','pending','cancelled') NOT NULL DEFAULT 'pending',
   `booking_hotel_pnr` varchar(225) DEFAULT NULL,
   `booking_fare_base` varchar(225) NOT NULL,
@@ -13301,6 +13837,7 @@ CREATE TABLE `hotels_booking` (
   `booking_txn_id` varchar(225) DEFAULT NULL,
   `booking_user_data` text NOT NULL,
   `booking_guest` text NOT NULL,
+  `booking_pnr` varchar(225) DEFAULT NULL,
   `booking_nationality_code` varchar(100) NOT NULL,
   `booking_payment_gateway` varchar(225) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -13311,16 +13848,362 @@ CREATE TABLE `hotels_booking` (
 -- Dumping data for table `hotels_booking`
 --
 
-INSERT INTO `hotels_booking` (`id`, `booking_code_ref`, `booking_status_flag`, `booking_hotel_pnr`, `booking_fare_base`, `booking_adult_count`, `booking_child_count`, `booking_currency_origin`, `booking_data`, `booking_response_json`, `booking_response_error`, `booking_payment_state`, `booking_supplier_name`, `booking_txn_id`, `booking_user_data`, `booking_guest`, `booking_nationality_code`, `booking_payment_gateway`, `created_at`, `updated_at`) VALUES
-(1, '20251108031549', 'pending', NULL, '543.33', 1, 0, 'USD', '{\"room\":{\"id\":\"DBT.ST\",\"name\":\"Standard Room Twin or Double\",\"price\":\"492.73\",\"per_day\":\"492.73\",\"currency\":\"USD\",\"refundable\":\"492.73\",\"refund_date\":\"2025-11-07T23:59:00+04:00\",\"images\":[\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_a_031.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ro_005.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_a_032.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_f_008.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_f_010.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ro_006.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ro_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ro_007.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ro_002.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_k_002.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_k_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ro_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_p_002.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_p_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_l_009.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_w_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_l_008.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ba_007.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_k_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ba_008.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_l_007.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_p_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ro_008.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_r_011.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_r_012.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_a_016.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ro_004.jpg\"],\"amenities\":[\"Disability-friendly bathroom\",\"Hairdryer\",\"Wi-fi\",\"TV\",\"Hi-fi\",\"DVD player\",\"Minibar\",\"Tea and coffee making facilities \",\"Ironing set\",\"Centrally regulated air conditioning\",\"Individually adjustable air conditioning\",\"Safe\",\"Wheelchair-accessible\",\"Wake-up service\",\"Smoking rooms\",\"Cot on demand\"],\"options\":[{\"id\":\"20251125|20251130|W|148|56324|DBT.ST|BAR NRF|RO||1~2~0||P@07~~20924f~1508967493~N~~~NRF~~FA7124FE443C4E4176257170964305AAUK000100000000052491ec\",\"price\":\"492.73\",\"per_day\":\"492.73\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251125|20251130|W|148|56324|DBT.ST|BAR|RO||1~2~0||P@07~~23f26d~-185546383~N~~~NOR~~FA7124FE443C4E4176257170964305AAUK00010000000005212206\",\"price\":\"518.18\",\"per_day\":\"518.18\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251125|20251130|W|148|56324|DBT.ST|BAR NRF|BB||1~2~0||P@07~~24c28b~-663831116~N~~~NRF~~FA7124FE443C4E4176257170964305AAUK0001000000000522121f\",\"price\":\"543.33\",\"per_day\":\"543.33\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251125|20251130|W|148|56324|DBT.ST|BAR|BB||1~2~0||P@07~~21e2aa~2055459154~N~~~NOR~~FA7124FE443C4E4176257170964305AAUK0001000000000524e238\",\"price\":\"568.78\",\"per_day\":\"568.78\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251125|20251130|W|148|56324|DBT.ST|BAR NRF|RO||1~2~0||N@07~~2282b7~-691267454~N~~~NRF~~FA7124FE443C4E4176257170964305AAUK00010000000005246243\",\"price\":\"579.70\",\"per_day\":\"579.70\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251125|20251130|W|148|56324|DBT.ST|BAR|RO||1~2~0||N@07~~2212db~1831449998~N~~~NOR~~FA7124FE443C4E4176257170964305AAUK0001000000000523f261\",\"price\":\"609.63\",\"per_day\":\"609.63\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251125|20251130|W|148|56324|DBT.ST|BAR NRF|BB||1~2~0||N@07~~24e2fe~1958411029~N~~~NRF~~FA7124FE443C4E4176257170964305AAUK0001000000000521427f\",\"price\":\"639.20\",\"per_day\":\"639.20\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251125|20251130|W|148|56324|DBT.ST|BAR|BB||1~2~0||N@07~~246322~-1702620608~N~~~NOR~~FA7124FE443C4E4176257170964305AAUK0001000000000520d29d\",\"price\":\"669.13\",\"per_day\":\"669.13\",\"adults\":2,\"child\":0,\"children_ages\":[]}]},\"option\":{\"id\":\"20251125|20251130|W|148|56324|DBT.ST|BAR NRF|BB||1~2~0||P@07~~24c28b~-663831116~N~~~NRF~~FA7124FE443C4E4176257170964305AAUK0001000000000522121f\",\"price\":\"543.33\",\"per_day\":\"543.33\",\"adults\":2,\"child\":0,\"children_ages\":[]},\"booking_data\":{\"hotel_name\":\"Marco Polo\",\"address\":\"Al Muteena St. Deira, P.o.box 25570. Dubai, 9th 4 4, DUBAI, 25570\",\"stars\":4,\"checkin\":\"2025-11-25\",\"checkout\":\"2025-11-30\",\"adults\":1,\"child\":0}}', NULL, NULL, 'unpaid', 'hotelbeds', NULL, '{\"first_name\":\"Christine\",\"last_name\":\"Randall\",\"email\":\"vopexibydo@mailinator.com\",\"phone\":\"+15513997642\",\"country\":\"ae\"}', '[{\"traveller_type\":\"adults\",\"title\":\"male\",\"first_name\":\"Christine\",\"last_name\":\"Randall\"},{\"traveller_type\":\"adults\",\"title\":\"male\",\"first_name\":\"Christine\",\"last_name\":\"Randall\"},{\"traveller_type\":\"child\",\"first_name\":\"Christine\",\"last_name\":\"Randall\"},{\"traveller_type\":\"child\",\"first_name\":\"Christine\",\"last_name\":\"Randall\"}]', 'ae', 'stripe', '2025-11-07 22:15:49', '2025-11-07 22:15:49'),
-(2, '20251108043425', 'pending', NULL, '142.58', 2, 0, 'USD', '{\"room\":{\"id\":\"DBL.BL-1\",\"name\":\"double with balcony\",\"price\":\"142.58\",\"per_day\":\"142.58\",\"currency\":\"USD\",\"refundable\":\"142.58\",\"refund_date\":\"2025-11-07T23:59:00+04:00\",\"images\":[\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_008.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_009.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_006.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_007.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_004.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_005.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_002.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_003.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_068.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_069.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_066.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_067.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_065.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_071.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_072.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_070.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_040.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_001.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_003.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_004.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_029.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_009.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_024.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_023.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_005.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_028.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_102.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_027.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_103.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_007.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_026.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_100.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_008.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_025.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_035.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_034.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_033.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_011.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_032.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_039.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_096.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_038.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_037.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_098.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_036.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_097.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_031.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_030.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_083.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_084.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_085.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_086.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_087.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_088.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_089.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_010.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_011.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_012.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_013.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_008.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_010.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_009.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_090.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_010.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_091.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_092.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_012.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_011.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_013.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_014.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_112.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_040.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_113.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_041.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_114.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_042.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_115.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_043.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_116.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_044.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_117.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_118.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_119.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_007.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_006.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_005.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_004.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_003.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_002.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_001.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_110.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_111.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_009.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_008.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_005.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_004.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_007.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_009.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_006.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_008.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_109.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_048.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_049.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_030.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_031.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_032.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_033.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_034.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_035.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_108.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_036.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_037.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_038.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_039.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_050.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_053.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_054.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_051.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_052.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_020.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_021.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_022.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_023.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_024.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_025.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_026.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_k_002.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_027.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_k_001.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_028.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_029.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_042.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_043.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_041.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_046.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_k_003.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_047.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_044.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_045.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_101.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_126.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_010.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_011.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_012.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_013.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_014.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_015.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_019.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_021.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_020.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_012.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_014.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_013.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_016.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_015.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_018.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_079.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_017.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_078.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_077.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_019.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_076.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_075.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_074.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_073.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_080.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_082.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_099.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_081.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_106.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_107.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_094.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_059.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_093.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_058.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_057.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_095.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_056.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_055.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_123.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_124.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_125.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_022.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_120.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_121.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_122.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_063.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_062.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_061.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_104.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_060.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_105.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_064.JPG\"],\"amenities\":[\"Number of bedrooms\",\"Bathroom\",\"Disability-friendly bathroom\",\"Shower\",\"Bathtub\",\"Hairdryer\",\"Bathrobes\",\"Slippers\",\"Make-up mirror\",\"Wi-fi\",\"Internet access\",\"TV\",\"220V power supply\",\"Alarm clock\",\"Minibar\",\"Mini fridge\",\"Tea and coffee making facilities \",\"Ironing set\",\"Centrally regulated air conditioning\",\"Safe\",\"Wheelchair-accessible\",\"Wake-up service\",\"Smoking rooms\",\"Soundproof room\",\"Cot on demand\"],\"options\":[{\"id\":\"20251110|20251112|W|148|64259|DBL.BL-1|BAR RO NRF|RO||1~2~0||N@07~~20ba5~1680759438~N~~~NRF~~B9187F5A7A35438176257644561205AAUK0001000000000523a8e\",\"price\":\"142.58\",\"per_day\":\"142.58\",\"adults\":2,\"child\":0,\"children_ages\":[]}]},\"option\":{\"id\":\"20251110|20251112|W|148|64259|DBL.BL-1|BAR RO NRF|RO||1~2~0||N@07~~20ba5~1680759438~N~~~NRF~~B9187F5A7A35438176257644561205AAUK0001000000000523a8e\",\"price\":\"142.58\",\"per_day\":\"142.58\",\"adults\":2,\"child\":0,\"children_ages\":[]},\"booking_data\":{\"hotel_name\":\"Al Khaleej Grand\",\"address\":\"Baniyas Square -14th Road, P.O Box, DEIRA DUBAI, 83163\",\"stars\":3,\"checkin\":\"2025-11-10\",\"checkout\":\"2025-11-12\",\"adults\":\"2\",\"child\":\"0\"}}', NULL, NULL, 'unpaid', 'hotelbeds', NULL, '{\"first_name\":\"Soft\",\"last_name\":\"Solution\",\"email\":\"Softsolutionits@gmail.com\",\"phone\":\"+923066340298\",\"country\":\"pk\"}', '[{\"traveller_type\":\"adults\",\"title\":\"male\",\"first_name\":\"Soft\",\"last_name\":\"Solution\"},{\"traveller_type\":\"adults\",\"title\":\"female\",\"first_name\":\"Lareina\",\"last_name\":\"Valdez\"},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null}]', 'pk', 'stripe', '2025-11-07 23:34:25', '2025-11-07 23:34:25'),
-(3, '20251108043549', 'pending', NULL, '142.58', 2, 0, 'USD', '{\"room\":{\"id\":\"DBL.BL-1\",\"name\":\"double with balcony\",\"price\":\"142.58\",\"per_day\":\"142.58\",\"currency\":\"USD\",\"refundable\":\"142.58\",\"refund_date\":\"2025-11-07T23:59:00+04:00\",\"images\":[\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_008.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_009.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_006.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_007.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_004.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_005.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_002.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_003.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_068.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_069.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_066.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_067.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_065.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_071.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_072.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_070.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_040.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_001.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_003.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_004.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_029.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_009.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_024.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_023.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_005.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_028.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_102.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_027.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_103.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_007.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_026.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_100.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_008.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_025.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_035.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_034.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_033.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_011.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_032.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_039.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_096.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_038.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_037.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_098.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_036.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_097.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_031.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_030.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_083.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_084.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_085.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_086.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_087.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_088.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_089.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_010.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_011.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_012.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_013.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_008.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_010.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_009.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_090.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_010.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_091.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_092.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_012.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_011.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_013.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_014.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_112.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_040.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_113.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_041.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_114.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_042.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_115.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_043.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_116.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_044.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_117.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_118.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_119.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_007.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_006.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_005.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_004.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_003.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_002.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_001.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_110.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_111.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_009.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_008.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_005.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_004.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_007.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_009.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_006.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_008.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_109.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_048.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_049.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_030.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_031.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_032.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_033.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_034.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_035.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_108.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_036.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_037.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_038.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_039.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_050.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_053.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_054.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_051.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_052.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_020.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_021.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_022.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_023.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_024.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_025.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_026.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_k_002.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_027.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_k_001.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_028.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_029.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_042.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_043.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_041.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_046.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_k_003.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_047.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_044.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_045.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_101.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_126.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_010.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_011.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_012.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_013.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_014.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_015.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_019.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_021.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_020.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_012.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_014.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_013.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_016.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_015.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_018.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_079.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_017.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_078.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_077.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_019.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_076.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_075.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_074.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_073.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_080.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_082.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_099.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_081.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_106.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_107.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_094.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_059.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_093.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_058.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_057.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_095.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_056.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_055.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_123.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_124.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_125.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_022.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_120.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_121.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_122.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_063.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_062.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_061.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_104.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_060.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_105.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_064.JPG\"],\"amenities\":[\"Number of bedrooms\",\"Bathroom\",\"Disability-friendly bathroom\",\"Shower\",\"Bathtub\",\"Hairdryer\",\"Bathrobes\",\"Slippers\",\"Make-up mirror\",\"Wi-fi\",\"Internet access\",\"TV\",\"220V power supply\",\"Alarm clock\",\"Minibar\",\"Mini fridge\",\"Tea and coffee making facilities \",\"Ironing set\",\"Centrally regulated air conditioning\",\"Safe\",\"Wheelchair-accessible\",\"Wake-up service\",\"Smoking rooms\",\"Soundproof room\",\"Cot on demand\"],\"options\":[{\"id\":\"20251110|20251112|W|148|64259|DBL.BL-1|BAR RO NRF|RO||1~2~0||N@07~~20ba5~-14951611~N~~~NRF~~81A4FA37006E4D1176257653421305AAUK0001000000000523a8e\",\"price\":\"142.58\",\"per_day\":\"142.58\",\"adults\":2,\"child\":0,\"children_ages\":[]}]},\"option\":{\"id\":\"20251110|20251112|W|148|64259|DBL.BL-1|BAR RO NRF|RO||1~2~0||N@07~~20ba5~-14951611~N~~~NRF~~81A4FA37006E4D1176257653421305AAUK0001000000000523a8e\",\"price\":\"142.58\",\"per_day\":\"142.58\",\"adults\":2,\"child\":0,\"children_ages\":[]},\"booking_data\":{\"hotel_name\":\"Al Khaleej Grand\",\"address\":\"Baniyas Square -14th Road, P.O Box, DEIRA DUBAI, 83163\",\"stars\":3,\"checkin\":\"2025-11-10\",\"checkout\":\"2025-11-12\",\"adults\":\"2\",\"child\":\"0\"}}', NULL, NULL, 'unpaid', 'hotelbeds', NULL, '{\"first_name\":\"Soft\",\"last_name\":\"Solution\",\"email\":\"Softsolutionits@gmail.com\",\"phone\":\"+923066340298\",\"country\":\"pk\"}', '[{\"traveller_type\":\"adults\",\"title\":\"male\",\"first_name\":\"Christine\",\"last_name\":\"Randall\"},{\"traveller_type\":\"adults\",\"title\":\"female\",\"first_name\":\"Erica\",\"last_name\":\"Le\"},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null}]', 'pk', 'stripe', '2025-11-07 23:35:49', '2025-11-07 23:35:49'),
-(4, '20251108054111', 'pending', NULL, '265.51', 2, 0, 'USD', '{\"room\":{\"id\":\"DBT.ST\",\"name\":\"Standard Room Twin or Double\",\"price\":\"165.20\",\"per_day\":\"165.20\",\"currency\":\"USD\",\"refundable\":\"82.60\",\"refund_date\":\"2025-11-08T23:59:00+04:00\",\"images\":[\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_a_031.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ro_005.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_a_032.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_f_008.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_f_010.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ro_006.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ro_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ro_007.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ro_002.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_k_002.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_k_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ro_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_p_002.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_p_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_l_009.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_w_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_l_008.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ba_007.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_k_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ba_008.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_l_007.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_p_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ro_008.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_r_011.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_r_012.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_a_016.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/056324\\/056324a_hb_ro_004.jpg\"],\"amenities\":[\"Disability-friendly bathroom\",\"Hairdryer\",\"Wi-fi\",\"TV\",\"Hi-fi\",\"DVD player\",\"Minibar\",\"Tea and coffee making facilities \",\"Ironing set\",\"Centrally regulated air conditioning\",\"Individually adjustable air conditioning\",\"Safe\",\"Wheelchair-accessible\",\"Wake-up service\",\"Smoking rooms\",\"Cot on demand\"],\"options\":[{\"id\":\"20251110|20251112|W|148|56324|DBT.ST|BAR|RO||1~2~0||P@07~~212c6~-1693956690~N~~~NOR~~0A12407E76EF49F176258043440205AAUK00010000000005214a5\",\"price\":\"165.20\",\"per_day\":\"165.20\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251110|20251112|W|148|56324|DBT.ST|BAR|BB||1~2~0||P@07~~22cde~1187048896~N~~~NOR~~0A12407E76EF49F176258043440205AAUK0001000000000522cb9\",\"price\":\"185.44\",\"per_day\":\"185.44\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251110|20251112|W|148|56324|DBT.ST|BAR|RO||1~2~0||N@07~~20fe9~-131531686~N~~~NOR~~0A12407E76EF49F176258043440205AAUK00010000000005222c2\",\"price\":\"194.34\",\"per_day\":\"194.34\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251110|20251112|W|148|56324|DBT.ST|BAR|BB||1~2~0||N@07~~246105~1423409138~N~~~NOR~~0A12407E76EF49F176258043440205AAUK0001000000000520eda\",\"price\":\"218.14\",\"per_day\":\"218.14\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251110|20251112|W|148|56324|DBT.ST|BAR NRF|RO||1~2~0||P@07~~217126~-2062349171~N~~~NRF~~0A12407E76EF49F176258043440205AAUK0001000000000521bf5\",\"price\":\"245.27\",\"per_day\":\"245.27\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251110|20251112|W|148|56324|DBT.ST|BAR NRF|BB||1~2~0||P@07~~23213e~1886104217~N~~~NRF~~0A12407E76EF49F176258043440205AAUK00010000000005233109\",\"price\":\"265.51\",\"per_day\":\"265.51\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251110|20251112|W|148|56324|DBT.ST|BAR NRF|RO||1~2~0||N@07~~21015a~-339819445~N~~~NRF~~0A12407E76EF49F176258043440205AAUK00010000000005237120\",\"price\":\"288.55\",\"per_day\":\"288.55\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251110|20251112|W|148|56324|DBT.ST|BAR NRF|BB||1~2~0||N@07~~246176~1563633256~N~~~NRF~~0A12407E76EF49F176258043440205AAUK00010000000005223138\",\"price\":\"312.35\",\"per_day\":\"312.35\",\"adults\":2,\"child\":0,\"children_ages\":[]}]},\"option\":{\"id\":\"20251110|20251112|W|148|56324|DBT.ST|BAR NRF|BB||1~2~0||P@07~~23213e~1886104217~N~~~NRF~~0A12407E76EF49F176258043440205AAUK00010000000005233109\",\"price\":\"265.51\",\"per_day\":\"265.51\",\"adults\":2,\"child\":0,\"children_ages\":[]},\"booking_data\":{\"hotel_name\":\"Marco Polo\",\"address\":\"Al Muteena St. Deira, P.o.box 25570. Dubai, 9th 4 4, DUBAI, 25570\",\"stars\":4,\"checkin\":\"2025-11-10\",\"checkout\":\"2025-11-12\",\"adults\":\"2\",\"child\":\"0\"}}', NULL, NULL, 'unpaid', 'hotelbeds', NULL, '{\"first_name\":\"Christine\",\"last_name\":\"Randall\",\"email\":\"vopexibydo@mailinator.com\",\"phone\":\"+15513997642\",\"country\":\"ae\"}', '[{\"traveller_type\":\"adults\",\"title\":\"male\",\"first_name\":\"Soft\",\"last_name\":\"Solution\"},{\"traveller_type\":\"adults\",\"title\":\"female\",\"first_name\":\"Lareina\",\"last_name\":\"Valdez\"},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null}]', 'ae', 'stripe', '2025-11-08 00:41:11', '2025-11-08 00:41:11');
-INSERT INTO `hotels_booking` (`id`, `booking_code_ref`, `booking_status_flag`, `booking_hotel_pnr`, `booking_fare_base`, `booking_adult_count`, `booking_child_count`, `booking_currency_origin`, `booking_data`, `booking_response_json`, `booking_response_error`, `booking_payment_state`, `booking_supplier_name`, `booking_txn_id`, `booking_user_data`, `booking_guest`, `booking_nationality_code`, `booking_payment_gateway`, `created_at`, `updated_at`) VALUES
-(5, '20251108055208', 'pending', NULL, '248.58', 2, 0, 'USD', '{\"room\":{\"id\":\"QUA.ST\",\"name\":\"quadruple standard\",\"price\":\"248.58\",\"per_day\":\"248.58\",\"currency\":\"USD\",\"refundable\":\"248.58\",\"refund_date\":\"2025-11-07T23:59:00+04:00\",\"images\":[\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_008.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_009.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_006.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_007.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_004.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_005.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_002.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_003.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_f_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_068.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_069.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_066.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_067.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_065.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_071.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_072.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_070.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_040.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_001.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_003.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_004.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_029.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_009.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_024.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_023.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_005.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_028.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_102.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_027.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_103.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_007.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_026.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_100.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_008.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_025.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_035.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_034.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_033.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_011.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_032.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_039.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_096.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_038.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_037.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_098.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_036.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_097.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_031.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_030.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_083.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_084.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_085.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_086.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_087.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_088.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_089.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_010.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_011.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_012.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_013.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_008.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_010.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_009.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_090.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_010.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_091.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_092.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_012.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_011.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_013.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_a_014.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_112.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_040.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_113.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_041.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_114.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_042.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_115.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_043.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_116.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_044.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_117.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_118.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_119.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_007.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_006.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_005.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_004.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_003.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_002.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_001.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_110.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_111.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_009.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_008.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_005.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_004.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_007.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_009.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_l_006.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_008.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_109.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_048.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_049.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_030.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_031.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_032.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_033.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_034.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_035.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_108.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_036.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_037.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_038.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_039.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_050.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_053.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_054.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_051.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_052.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_020.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_021.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_022.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_023.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_024.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_025.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_026.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_k_002.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_027.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_k_001.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_028.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_029.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_042.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_043.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_041.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_046.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_k_003.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_047.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_044.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_045.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_101.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_126.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_010.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_011.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_012.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_013.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_014.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_015.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_r_019.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_021.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_020.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_012.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_014.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_013.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_016.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_015.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_018.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_079.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_017.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_078.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_077.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_019.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_076.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_075.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_074.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_073.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_080.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_082.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_099.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_081.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_106.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_107.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_094.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_059.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_093.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_058.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_057.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_095.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_056.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_055.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_123.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_124.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_125.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_022.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_120.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_121.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_122.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_063.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_062.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_061.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_104.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_060.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_105.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/06\\/064259\\/064259a_hb_ro_064.JPG\"],\"amenities\":[\"Number of bedrooms\",\"Bathroom\",\"Disability-friendly bathroom\",\"Shower\",\"Bathtub\",\"Hairdryer\",\"Bathrobes\",\"Slippers\",\"Make-up mirror\",\"Wi-fi\",\"Internet access\",\"TV\",\"220V power supply\",\"Alarm clock\",\"Minibar\",\"Mini fridge\",\"Tea and coffee making facilities \",\"Ironing set\",\"Centrally regulated air conditioning\",\"Safe\",\"Wheelchair-accessible\",\"Wake-up service\",\"Smoking rooms\",\"Soundproof room\",\"Cot on demand\"],\"options\":[{\"id\":\"20251110|20251112|W|148|64259|QUA.ST|BAR RO NRF|RO||1~2~0||N@07~~25711f~1617873629~N~~~NRF~~297147D77A084F0176258066841105AAUK0001000000000523af8\",\"price\":\"248.58\",\"per_day\":\"248.58\",\"adults\":2,\"child\":0,\"children_ages\":[]}]},\"option\":{\"id\":\"20251110|20251112|W|148|64259|QUA.ST|BAR RO NRF|RO||1~2~0||N@07~~25711f~1617873629~N~~~NRF~~297147D77A084F0176258066841105AAUK0001000000000523af8\",\"price\":\"248.58\",\"per_day\":\"248.58\",\"adults\":2,\"child\":0,\"children_ages\":[]},\"booking_data\":{\"hotel_name\":\"Al Khaleej Grand\",\"address\":\"Baniyas Square -14th Road, P.O Box, DEIRA DUBAI, 83163\",\"stars\":3,\"checkin\":\"2025-11-10\",\"checkout\":\"2025-11-12\",\"adults\":\"2\",\"child\":\"0\"}}', NULL, NULL, 'unpaid', 'hotelbeds', NULL, '{\"first_name\":\"Christine\",\"last_name\":\"Randall\",\"email\":\"vopexibydo@mailinator.com\",\"phone\":\"+15513997642\",\"country\":\"sa\"}', '[{\"traveller_type\":\"adults\",\"title\":\"male\",\"first_name\":\"Lareina\",\"last_name\":\"Valdez\"},{\"traveller_type\":\"adults\",\"title\":\"female\",\"first_name\":\"Lareina\",\"last_name\":\"Valdez\"},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null}]', 'sa', 'stripe', '2025-11-08 00:52:08', '2025-11-08 00:52:08'),
-(6, '20251108094135', 'pending', NULL, '450.51', 2, 0, 'USD', '{\"room\":{\"id\":\"DBT.DX\",\"name\":\"Double or twin deluxe\",\"price\":\"384.02\",\"per_day\":\"384.02\",\"currency\":\"USD\",\"refundable\":\"182.82\",\"refund_date\":\"2025-11-08T23:59:00+04:00\",\"images\":[\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_r_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_r_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_r_004.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_w_015.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_w_014.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_w_013.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_w_011.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_w_010.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_019.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_l_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_018.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_l_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_l_002.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_004.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_010.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_p_002.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_006.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_017.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ba_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_p_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_016.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_a_025.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ba_002.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ba_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_020.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_t_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_p_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_009.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_026.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_028.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_027.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_w_009.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_008.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_022.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_007.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_021.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_k_002.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_k_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_a_002.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_k_004.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_a_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_k_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_k_005.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_a_024.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_015.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_005.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_024.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_023.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_025.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_012.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_014.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059265\\/059265a_hb_ro_002.jpg\"],\"amenities\":[\"Bathroom\",\"Disability-friendly bathroom\",\"Shower\",\"Bathtub\",\"Hairdryer\",\"Toiletries\",\"Bathrobes\",\"Slippers\",\"Telephone in the bathroom\",\"Wi-fi\",\"TV\",\"Satellite TV \",\"220V power supply\",\"Minibar\",\"Mini fridge\",\"Tea and coffee making facilities \",\"Ironing set\",\"Centrally regulated air conditioning\",\"Individually adjustable air conditioning\",\"Safe\",\"Wheelchair-accessible\",\"Wake-up service\",\"Cot on demand\"],\"options\":[{\"id\":\"20251110|20251112|W|148|59265|DBT.DX|WH02075R|RO||1~2~0||N@07~~22c1bc~-1038087696~N~~~NOR~~556D4604888B401176259446957005AAUK00010000000005202180\",\"price\":\"384.02\",\"per_day\":\"384.02\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251110|20251112|W|148|59265|DBT.DX|WH02423B|BB||1~2~0||N@07~~226209~1757978477~N~~~NOR~~556D4604888B401176259446957005AAUK000100000000052331c2\",\"price\":\"450.51\",\"per_day\":\"450.51\",\"adults\":2,\"child\":0,\"children_ages\":[]}]},\"option\":{\"id\":\"20251110|20251112|W|148|59265|DBT.DX|WH02423B|BB||1~2~0||N@07~~226209~1757978477~N~~~NOR~~556D4604888B401176259446957005AAUK000100000000052331c2\",\"price\":\"450.51\",\"per_day\":\"450.51\",\"adults\":2,\"child\":0,\"children_ages\":[]},\"booking_data\":{\"hotel_name\":\"Millennium Airport\",\"address\":\"Airport Road - Casablanca St., DUBAI-AIRPORT, 13018\",\"stars\":4,\"checkin\":\"2025-11-10\",\"checkout\":\"2025-11-12\",\"adults\":\"2\",\"child\":\"0\"}}', NULL, NULL, 'unpaid', 'hotelbeds', NULL, '{\"first_name\":\"Christine\",\"last_name\":\"Randall\",\"email\":\"vopexibydo@mailinator.com\",\"phone\":\"+15513997642\",\"country\":\"uk\"}', '[{\"traveller_type\":\"adults\",\"title\":\"male\",\"first_name\":\"Usama\",\"last_name\":\"Malik\"},{\"traveller_type\":\"adults\",\"title\":\"male\",\"first_name\":\"Erica\",\"last_name\":\"Le\"},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null}]', 'uk', 'stripe', '2025-11-08 04:41:35', '2025-11-08 04:41:35'),
-(7, '20251110151410', 'pending', NULL, '3931.36', 2, 0, 'USD', '{\"room\":{\"id\":\"DBT.EJ-1\",\"name\":\"EXECUTIVE SUITE\",\"price\":\"3888.40\",\"per_day\":\"3888.40\",\"currency\":\"USD\",\"refundable\":\"3888.40\",\"refund_date\":\"2025-11-09T23:59:00+04:00\",\"images\":[\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_r_009.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_f_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_l_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_p_002.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_l_005.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_l_004.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_l_007.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_l_006.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_045.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_077.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_076.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_031.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_030.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_075.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_027.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_k_002.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_k_001.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_047.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_046.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_049.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_048.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_a_002.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_029.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_a_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_028.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_037.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_038.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_036.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_r_010.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_035.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_r_011.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_034.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_r_012.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_033.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_039.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_061.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_r_013.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_032.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_060.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_056.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_055.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_067.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_054.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_059.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_058.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_066.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_057.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_065.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_062.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_064.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_063.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_050.jpg\"],\"amenities\":[\"Number of bedrooms\",\"Bathroom\",\"Shower\",\"Bathtub\",\"Hairdryer\",\"Wi-fi\",\"Internet access\",\"Direct dial telephone\",\"TV\",\"Satellite TV \",\"DVD player\",\"Minibar\",\"Tea and coffee making facilities \",\"Ironing set\",\"Centrally regulated air conditioning\",\"Individually adjustable air conditioning\",\"Safe\",\"Wheelchair-accessible\",\"Wake-up service\",\"Smoking rooms\",\"Extra beds on demand\",\"Cot on demand\"],\"options\":[{\"id\":\"20251112|20251114|W|148|59245|DBT.EJ-1|BAR-NRF2|RO||1~2~0||P@07~~21911a8~-661121536~N~~~NRF~~801A821F55D8493176278761593405AAUK00010000000005228f30\",\"price\":\"3888.40\",\"per_day\":\"3888.40\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251112|20251114|W|148|59245|DBT.EJ-1|BAR-NRF2|BB||1~2~0||P@07~~21511da~-86406833~N~~~NRF~~801A821F55D8493176278761593405AAUK00010000000005224f5b\",\"price\":\"3931.36\",\"per_day\":\"3931.36\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251112|20251114|W|148|59245|DBT.EJ-1|BAR-NRF2|RO||1~2~0||N@07~~2101296~409446663~N~~~NRF~~801A821F55D8493176278761593405AAUK00010000000005204ffd\",\"price\":\"4093.04\",\"per_day\":\"4093.04\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251112|20251114|W|148|59245|DBT.EJ-1|BAR-NRF2|BB||1~2~0||N@07~~20c12c8~-1061037269~N~~~NRF~~801A821F55D8493176278761593405AAUK000100000000052001028\",\"price\":\"4136.00\",\"per_day\":\"4136.00\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251112|20251114|W|148|59245|DBT.EJ-1|BAR-ALL-RO-SUI|RO||1~2~0||P@07~~203b092~-287349501~N~~~NOR~~801A821F55D8493176278761593405AAUK0001000000000522e97e3\",\"price\":\"38883.46\",\"per_day\":\"38883.46\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251112|20251114|W|148|59245|DBT.EJ-1|BAR-ALL-RO-SUI|BB||1~2~0||P@07~~24cb0a9~-1272373555~N~~~NOR~~801A821F55D8493176278761593405AAUK0001000000000525a97f7\",\"price\":\"38903.90\",\"per_day\":\"38903.90\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251112|20251114|W|148|59245|DBT.EJ-1|BAR-ALL-RO-SUI|RO||1~2~0||N@07~~208b9dd~41087274~N~~~NOR~~801A821F55D8493176278761593405AAUK000100000000052609fe1\",\"price\":\"40929.96\",\"per_day\":\"40929.96\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251112|20251114|W|148|59245|DBT.EJ-1|BAR-ALL-RO-SUI|BB||1~2~0||N@07~~206b9f6~-1633547773~N~~~NOR~~801A821F55D8493176278761593405AAUK000100000000052309ff7\",\"price\":\"40951.48\",\"per_day\":\"40951.48\",\"adults\":2,\"child\":0,\"children_ages\":[]}]},\"option\":{\"id\":\"20251112|20251114|W|148|59245|DBT.EJ-1|BAR-NRF2|BB||1~2~0||P@07~~21511da~-86406833~N~~~NRF~~801A821F55D8493176278761593405AAUK00010000000005224f5b\",\"price\":\"3931.36\",\"per_day\":\"3931.36\",\"adults\":2,\"child\":0,\"children_ages\":[]},\"booking_data\":{\"hotel_name\":\"Al Jawhara Gardens\",\"address\":\"Port Saeed Area, Deira, P.O.BOX 121711, DUBAI, \",\"stars\":4,\"checkin\":\"2025-11-12\",\"checkout\":\"2025-11-14\",\"adults\":\"2\",\"child\":\"0\"}}', NULL, NULL, 'unpaid', 'hotelbeds', NULL, '{\"first_name\":\"Oprah\",\"last_name\":\"Sosa\",\"email\":\"hytisijeqa@mailinator.com\",\"phone\":\"+1 (196) 508-2064\",\"country\":\"sa\"}', '[{\"traveller_type\":\"adults\",\"title\":\"female\",\"first_name\":\"Burke\",\"last_name\":\"Fowler\"},{\"traveller_type\":\"adults\",\"title\":\"other\",\"first_name\":\"Wynter\",\"last_name\":\"Jones\"},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null}]', 'sa', 'stripe', '2025-11-10 10:14:10', '2025-11-10 10:14:10'),
-(8, '20251111071639', 'pending', NULL, '4093.04', 2, 0, 'USD', '{\"room\":{\"id\":\"DBT.EJ-1\",\"name\":\"EXECUTIVE SUITE\",\"price\":\"3888.40\",\"per_day\":\"3888.40\",\"currency\":\"USD\",\"refundable\":\"3888.40\",\"refund_date\":\"2025-11-10T23:59:00+04:00\",\"images\":[\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_r_009.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_f_001.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_l_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_p_002.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_l_005.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_l_004.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_l_007.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_l_006.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_045.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_077.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_076.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_031.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_030.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_075.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_027.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_k_002.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_k_001.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_047.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_046.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_049.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_048.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_a_002.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_029.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_a_003.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_028.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_037.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_038.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_036.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_r_010.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_035.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_r_011.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_034.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_r_012.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_033.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_039.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_061.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_r_013.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_032.JPG\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_060.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_056.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_055.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_067.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_054.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_059.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_058.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_066.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_057.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_065.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_062.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_064.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_063.jpg\",\"http:\\/\\/photos.hotelbeds.com\\/giata\\/05\\/059245\\/059245a_hb_ro_050.jpg\"],\"amenities\":[\"Number of bedrooms\",\"Bathroom\",\"Shower\",\"Bathtub\",\"Hairdryer\",\"Wi-fi\",\"Internet access\",\"Direct dial telephone\",\"TV\",\"Satellite TV \",\"DVD player\",\"Minibar\",\"Tea and coffee making facilities \",\"Ironing set\",\"Centrally regulated air conditioning\",\"Individually adjustable air conditioning\",\"Safe\",\"Wheelchair-accessible\",\"Wake-up service\",\"Smoking rooms\",\"Extra beds on demand\",\"Cot on demand\"],\"options\":[{\"id\":\"20251113|20251115|W|148|59245|DBT.EJ-1|BAR-NRF2|RO||1~2~0||P@07~~21911a8~1428696684~N~~~NRF~~BBD60593E5CB44C176284467450805AAUK00010000000005228f30\",\"price\":\"3888.40\",\"per_day\":\"3888.40\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251113|20251115|W|148|59245|DBT.EJ-1|BAR-NRF2|BB||1~2~0||P@07~~21511da~2003411387~N~~~NRF~~BBD60593E5CB44C176284467450805AAUK00010000000005224f5b\",\"price\":\"3931.36\",\"per_day\":\"3931.36\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251113|20251115|W|148|59245|DBT.EJ-1|BAR-NRF2|RO||1~2~0||N@07~~2101296~-1795702413~N~~~NRF~~BBD60593E5CB44C176284467450805AAUK00010000000005204ffd\",\"price\":\"4093.04\",\"per_day\":\"4093.04\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251113|20251115|W|148|59245|DBT.EJ-1|BAR-NRF2|BB||1~2~0||N@07~~20c12c8~-701181889~N~~~NRF~~BBD60593E5CB44C176284467450805AAUK000100000000052001028\",\"price\":\"4136.00\",\"per_day\":\"4136.00\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251113|20251115|W|148|59245|DBT.EJ-1|BAR-ALL-RO-SUI|RO||1~2~0||P@07~~203b092~-1034898921~N~~~NOR~~BBD60593E5CB44C176284467450805AAUK0001000000000522e97e3\",\"price\":\"38883.46\",\"per_day\":\"38883.46\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251113|20251115|W|148|59245|DBT.EJ-1|BAR-ALL-RO-SUI|BB||1~2~0||P@07~~24cb0a9~-2019922975~N~~~NOR~~BBD60593E5CB44C176284467450805AAUK0001000000000525a97f7\",\"price\":\"38903.90\",\"per_day\":\"38903.90\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251113|20251115|W|148|59245|DBT.EJ-1|BAR-ALL-RO-SUI|RO||1~2~0||N@07~~208b9dd~-706462146~N~~~NOR~~BBD60593E5CB44C176284467450805AAUK000100000000052609fe1\",\"price\":\"40929.96\",\"per_day\":\"40929.96\",\"adults\":2,\"child\":0,\"children_ages\":[]},{\"id\":\"20251113|20251115|W|148|59245|DBT.EJ-1|BAR-ALL-RO-SUI|BB||1~2~0||N@07~~206b9f6~1913870103~N~~~NOR~~BBD60593E5CB44C176284467450805AAUK000100000000052309ff7\",\"price\":\"40951.48\",\"per_day\":\"40951.48\",\"adults\":2,\"child\":0,\"children_ages\":[]}]},\"option\":{\"id\":\"20251113|20251115|W|148|59245|DBT.EJ-1|BAR-NRF2|RO||1~2~0||N@07~~2101296~-1795702413~N~~~NRF~~BBD60593E5CB44C176284467450805AAUK00010000000005204ffd\",\"price\":\"4093.04\",\"per_day\":\"4093.04\",\"adults\":2,\"child\":0,\"children_ages\":[]},\"booking_data\":{\"hotel_name\":\"Al Jawhara Gardens\",\"address\":\"Port Saeed Area, Deira, P.O.BOX 121711, DUBAI, \",\"stars\":4,\"checkin\":\"2025-11-13\",\"checkout\":\"2025-11-15\",\"adults\":\"2\",\"child\":\"0\"}}', NULL, NULL, 'unpaid', 'hotelbeds', NULL, '{\"first_name\":\"Maia\",\"last_name\":\"Waters\",\"email\":\"sororaryl@mailinator.com\",\"phone\":\"+1 (856) 256-9158\",\"country\":\"us\"}', '[{\"traveller_type\":\"adults\",\"title\":\"other\",\"first_name\":\"Hilda\",\"last_name\":\"Montoya\"},{\"traveller_type\":\"adults\",\"title\":\"female\",\"first_name\":\"Valentine\",\"last_name\":\"Sutton\"},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null}]', 'us', 'stripe', '2025-11-11 02:16:39', '2025-11-11 02:16:39');
+INSERT INTO `hotels_booking` (`id`, `agent_id`, `user_id`, `booked_via`, `booking_code_ref`, `module`, `booking_status_flag`, `booking_hotel_pnr`, `booking_fare_base`, `booking_adult_count`, `booking_child_count`, `booking_currency_origin`, `booking_data`, `booking_response_json`, `booking_response_error`, `booking_payment_state`, `booking_supplier_name`, `booking_txn_id`, `booking_user_data`, `booking_guest`, `booking_pnr`, `booking_nationality_code`, `booking_payment_gateway`, `created_at`, `updated_at`) VALUES
+(1, NULL, NULL, '', '20260302022605', 'hotel', 'confirmed', NULL, '12922', 2, 0, 'USD', '{\"room\":{\"id\":\"1\",\"name\":\"Standard Room\",\"images\":[\"http:\\/\\/localhost\\/v2\\/public\\/assets\\/images\\/hotel-rooms\\/1772180546_69a15442bd1a7.jpg\",\"http:\\/\\/localhost\\/v2\\/public\\/assets\\/images\\/hotel-rooms\\/1772180546_69a15442be5a0.jpg\",\"http:\\/\\/localhost\\/v2\\/public\\/assets\\/images\\/hotel-rooms\\/1772180546_69a15442befb8.jpg\",\"http:\\/\\/localhost\\/v2\\/public\\/assets\\/images\\/hotel-rooms\\/1772180546_69a15442bf7d8.jpg\",\"http:\\/\\/localhost\\/v2\\/public\\/assets\\/images\\/hotel-rooms\\/1772180546_69a15442c0269.jpeg\"],\"amenities\":[\"WiFi\",\"Air Conditioning\",\"TV\"],\"currency\":\"USD\",\"price\":12922,\"actual_price\":12922,\"per_day\":6461,\"actual_per_day\":6461,\"original_currency\":\"USD\",\"refundable\":0,\"refund_date\":null,\"options\":[{\"id\":\"RT-1-2-0\",\"adults\":2,\"child\":0,\"price\":12922,\"per_day\":6461}]},\"option\":{\"id\":\"RT-1-2-0\",\"adults\":2,\"child\":0,\"price\":12922,\"per_day\":6461},\"booking_data\":{\"hotel_name\":\"Pearl Continental Karachi\",\"supplier_name\":\"manual\",\"address\":\"Club Road, Civil Lines, Karachi, Sindh\",\"stars\":3,\"checkin\":\"2026-03-04\",\"checkout\":\"2026-03-06\",\"adults\":\"2\",\"child\":\"0\"}}', NULL, NULL, 'paid', 'manual', NULL, '{\"first_name\":\"Christine\",\"last_name\":\"Randall\",\"email\":\"vopexibydo@mailinator.com\",\"phone\":\"+15513997642\",\"country\":\"am\"}', '[{\"traveller_type\":\"adults\",\"title\":\"male\",\"first_name\":\"Christine\",\"last_name\":\"Randall\"},{\"traveller_type\":\"adults\",\"title\":\"female\",\"first_name\":\"Christine\",\"last_name\":\"Randall\"},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null}]', '69A4F55361FAF', 'am', 'stripe', '2026-05-07 16:44:18', '2026-03-01 21:26:05'),
+(2, NULL, NULL, '', '20260303011503', 'hotel', 'confirmed', NULL, '10776', 2, 0, 'USD', '{\"room\":{\"id\":\"7\",\"name\":\"Standard Room\",\"images\":[],\"amenities\":[\"WiFi\",\"Air Conditioning\",\"TV\",\"Safe\"],\"currency\":\"USD\",\"price\":10776,\"actual_price\":10776,\"per_day\":5388,\"actual_per_day\":5388,\"original_currency\":\"USD\",\"refundable\":0,\"refund_date\":null,\"options\":[{\"id\":\"RT-7-2-0\",\"adults\":2,\"child\":0,\"price\":10776,\"per_day\":5388}]},\"option\":{\"id\":\"RT-7-2-0\",\"adults\":2,\"child\":0,\"price\":10776,\"per_day\":5388},\"booking_data\":{\"hotel_name\":\"Avari Towers Lahore\",\"supplier_name\":\"manual\",\"address\":\"87 Shahrah-e-Quaid-e-Azam, The Mall, Lahore, Punjab\",\"stars\":3,\"checkin\":\"2026-03-05\",\"checkout\":\"2026-03-07\",\"adults\":\"2\",\"child\":\"0\"}}', NULL, NULL, 'paid', 'manual', NULL, '{\"first_name\":\"Christine\",\"last_name\":\"Randall\",\"email\":\"vopexibydo@mailinator.com\",\"phone\":\"+15513997642\",\"country\":\"am\"}', '[{\"traveller_type\":\"adults\",\"title\":\"female\",\"first_name\":\"Christine\",\"last_name\":\"Randall\"},{\"traveller_type\":\"adults\",\"title\":\"male\",\"first_name\":\"Erica\",\"last_name\":\"Le\"},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null}]', '69A63642C2F4F', 'am', 'stripe', '2026-05-07 16:44:18', '2026-03-02 20:15:03'),
+(3, NULL, NULL, '', '20260307045052', 'hotel', 'pending', NULL, '29310', 2, 0, 'USD', '{\"room\":{\"id\":\"3\",\"name\":\"Executive Room\",\"images\":[],\"amenities\":[\"WiFi\",\"Air Conditioning\",\"TV\",\"Safe\",\"Mini Bar\",\"Room Service\",\"Laundry\",\"Balcony\",\"Breakfast Included\"],\"currency\":\"USD\",\"price\":29310,\"actual_price\":29310,\"per_day\":14655,\"actual_per_day\":14655,\"original_currency\":\"USD\",\"refundable\":0,\"refund_date\":null,\"options\":[{\"id\":\"RT-3-2-0\",\"adults\":2,\"child\":0,\"price\":29310,\"per_day\":14655}]},\"option\":{\"id\":\"RT-3-2-0\",\"adults\":2,\"child\":0,\"price\":29310,\"per_day\":14655},\"booking_data\":{\"hotel_name\":\"Pearl Continental Karachi\",\"supplier_name\":\"manual\",\"address\":\"Club Road, Civil Lines, Karachi, Sindh\",\"stars\":3,\"checkin\":\"2026-03-09\",\"checkout\":\"2026-03-11\",\"adults\":\"2\",\"child\":\"0\"}}', NULL, NULL, 'unpaid', 'manual', NULL, '{\"first_name\":\"Cynthia\",\"last_name\":\"Rice\",\"email\":\"zujoretaj@mailinator.com\",\"phone\":\"+1 (551) 206-8463\",\"country\":\"na\"}', '[{\"traveller_type\":\"adults\",\"title\":\"male\",\"first_name\":\"Dorian\",\"last_name\":\"Shields\"},{\"traveller_type\":\"adults\",\"title\":\"other\",\"first_name\":\"Barbara\",\"last_name\":\"Mcdowell\"},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null},{\"traveller_type\":null,\"first_name\":null,\"last_name\":null}]', NULL, 'na', 'after_pay', '2026-05-07 16:44:18', '2026-03-06 23:50:52'),
+(4, NULL, 9, 'user', '20260507164712', 'hotel', 'confirmed', NULL, '20888', 2, 0, 'USD', '{\"room\":{\"id\":\"20\",\"name\":\"Deluxe Room\",\"images\":[],\"amenities\":[\"WiFi\",\"Air Conditioning\",\"TV\",\"Safe\",\"Mini Bar\"],\"currency\":\"USD\",\"price\":20888,\"actual_price\":20888,\"per_day\":10444,\"actual_per_day\":10444,\"original_currency\":\"USD\",\"refundable\":0,\"refund_date\":null,\"options\":[{\"id\":\"RT-20-2-0\",\"adults\":2,\"child\":0,\"price\":20888,\"per_day\":10444}]},\"option\":{\"id\":\"RT-20-2-0\",\"adults\":2,\"child\":0,\"price\":20888,\"per_day\":10444},\"booking_data\":{\"hotel_name\":\"The Nishat Hotel Lahore\",\"supplier_name\":\"manual\",\"address\":\"Shahrah-e-Quaid-e-Azam, Gulberg III, Lahore, Punjab\",\"agent_id\":null,\"stars\":4,\"checkin\":\"2026-05-09\",\"checkout\":\"2026-05-11\",\"adults\":\"2\",\"child\":\"0\"}}', NULL, NULL, 'paid', 'manual', NULL, '{\"first_name\":\"Joy\",\"last_name\":\"Pittman\",\"email\":\"cyrufiqyli@mailinator.com\",\"phone\":\"+1 (318) 139-5936\",\"country\":\"gh\"}', '[{\"traveller_type\":\"adults\",\"title\":\"male\",\"first_name\":\"Caesar\",\"last_name\":\"Schultz\"},{\"traveller_type\":\"adults\",\"title\":\"other\",\"first_name\":\"Avye\",\"last_name\":\"Glenn\"}]', '69FCC23248369', 'gh', 'stripe', '2026-05-07 16:47:46', '2026-05-07 11:47:12'),
+(5, 10, NULL, 'agent', '20260507171523', 'hotel', 'confirmed', NULL, '10776', 2, 0, 'USD', '{\"room\":{\"id\":\"7\",\"name\":\"Standard Room\",\"images\":[],\"amenities\":[\"WiFi\",\"Air Conditioning\",\"TV\",\"Safe\"],\"currency\":\"USD\",\"price\":10776,\"actual_price\":10776,\"per_day\":5388,\"actual_per_day\":5388,\"original_currency\":\"USD\",\"refundable\":0,\"refund_date\":null,\"options\":[{\"id\":\"RT-7-2-0\",\"adults\":2,\"child\":0,\"price\":10776,\"per_day\":5388}]},\"option\":{\"id\":\"RT-7-2-0\",\"adults\":2,\"child\":0,\"price\":10776,\"per_day\":5388},\"booking_data\":{\"hotel_name\":\"Avari Towers Lahore\",\"supplier_name\":\"manual\",\"address\":\"87 Shahrah-e-Quaid-e-Azam, The Mall, Lahore, Punjab\",\"agent_id\":null,\"stars\":3,\"checkin\":\"2026-05-09\",\"checkout\":\"2026-05-11\",\"adults\":\"2\",\"child\":\"0\"}}', NULL, NULL, 'paid', 'manual', NULL, '{\"first_name\":\"Travel\",\"last_name\":\"BookingPanel\",\"email\":\"travelbookingpanel@gmail.com\",\"phone\":\"+1 (822) 346-1833\",\"country\":\"pk\"}', '[{\"traveller_type\":\"adults\",\"title\":\"male\",\"first_name\":\"Travel\",\"last_name\":\"BookingPanel\"},{\"traveller_type\":\"adults\",\"title\":\"male\",\"first_name\":\"Travel\",\"last_name\":\"BookingPanel\"}]', NULL, 'pk', 'agent_wallet', '2026-05-07 17:19:26', '2026-05-07 12:19:26');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hotel_amenities`
+--
+
+CREATE TABLE `hotel_amenities` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `hotel_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `amenity_id` bigint(20) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `hotel_amenities`
+--
+
+INSERT INTO `hotel_amenities` (`id`, `hotel_id`, `amenity_id`) VALUES
+(1, 1, 1),
+(2, 1, 2),
+(3, 1, 14),
+(4, 1, 3),
+(5, 1, 4),
+(6, 1, 10),
+(7, 1, 9),
+(8, 1, 5),
+(18, 3, 1),
+(19, 3, 2),
+(20, 3, 14),
+(21, 3, 3),
+(22, 3, 4),
+(23, 3, 10),
+(24, 3, 9),
+(25, 3, 8),
+(26, 3, 5),
+(27, 3, 6),
+(28, 4, 1),
+(29, 4, 2),
+(30, 4, 14),
+(31, 4, 3),
+(32, 4, 4),
+(33, 4, 10),
+(34, 4, 9),
+(35, 4, 5),
+(36, 5, 1),
+(37, 5, 2),
+(38, 5, 14),
+(39, 5, 3),
+(40, 5, 4),
+(41, 5, 10),
+(42, 5, 9),
+(43, 5, 8),
+(44, 5, 5),
+(45, 6, 1),
+(46, 6, 2),
+(47, 6, 14),
+(48, 6, 3),
+(49, 6, 4),
+(50, 6, 10),
+(51, 6, 9),
+(52, 6, 5),
+(53, 6, 6),
+(54, 7, 1),
+(55, 7, 2),
+(56, 7, 14),
+(57, 7, 3),
+(58, 7, 4),
+(59, 7, 10),
+(60, 8, 1),
+(61, 8, 2),
+(62, 8, 14),
+(63, 8, 3),
+(64, 8, 4),
+(65, 8, 10),
+(66, 9, 1),
+(67, 9, 2),
+(68, 9, 14),
+(69, 9, 3),
+(70, 9, 4),
+(71, 10, 1),
+(72, 10, 2),
+(73, 10, 14),
+(74, 10, 3),
+(75, 10, 4),
+(76, 11, 1),
+(77, 11, 2),
+(78, 11, 14),
+(79, 11, 3),
+(80, 11, 4),
+(81, 11, 10),
+(82, 11, 9),
+(83, 11, 8),
+(84, 11, 7),
+(85, 11, 15),
+(86, 11, 5),
+(87, 11, 6),
+(88, 11, 12),
+(89, 11, 11),
+(90, 11, 13),
+(91, 11, 20),
+(92, 11, 19),
+(93, 12, 1),
+(94, 12, 2),
+(95, 12, 14),
+(96, 12, 3),
+(97, 12, 4),
+(98, 12, 10),
+(99, 12, 9),
+(100, 12, 8),
+(101, 12, 7),
+(102, 12, 15),
+(103, 12, 5),
+(104, 12, 6),
+(105, 12, 12),
+(106, 12, 11),
+(107, 12, 13),
+(108, 12, 20),
+(109, 12, 19),
+(110, 13, 1),
+(111, 13, 2),
+(112, 13, 14),
+(113, 13, 3),
+(114, 13, 4),
+(115, 13, 10),
+(116, 13, 9),
+(117, 13, 8),
+(118, 13, 7),
+(119, 13, 15),
+(120, 13, 5),
+(121, 13, 6),
+(122, 13, 12),
+(123, 13, 11),
+(124, 13, 13),
+(125, 13, 20),
+(126, 13, 19),
+(138, 15, 4),
+(139, 15, 5),
+(140, 15, 7),
+(141, 15, 10),
+(142, 15, 11),
+(143, 15, 12),
+(144, 15, 14),
+(145, 15, 15),
+(146, 15, 20),
+(147, 16, 3),
+(148, 16, 5),
+(149, 16, 7),
+(150, 16, 9),
+(151, 16, 14),
+(152, 16, 15),
+(153, 16, 16),
+(154, 16, 19),
+(155, 16, 20),
+(156, 16, 21),
+(157, 17, 1),
+(158, 17, 3),
+(159, 17, 5),
+(160, 17, 7),
+(161, 17, 13),
+(162, 17, 14),
+(163, 17, 15),
+(164, 17, 16),
+(165, 17, 18),
+(166, 17, 19),
+(167, 17, 21),
+(168, 17, 22);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hotel_images`
+--
+
+CREATE TABLE `hotel_images` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `hotel_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `image_path` varchar(255) DEFAULT NULL,
+  `image_type` varchar(50) DEFAULT NULL,
+  `sort_order` int(11) DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `hotel_images`
+--
+
+INSERT INTO `hotel_images` (`id`, `hotel_id`, `image_path`, `image_type`, `sort_order`, `created_at`) VALUES
+(67, 3, 'hotel/1772176910_69a1460e49c00.jpg', 'general', 1, NULL),
+(68, 3, 'hotel/1772176910_69a1460e4a68c.jpg', 'general', 2, NULL),
+(69, 3, 'hotel/1772176910_69a1460e4b00d.jpg', 'general', 3, NULL),
+(70, 3, 'hotel/1772176910_69a1460e4bbbd.jpg', 'general', 4, NULL),
+(71, 3, 'hotel/1772176910_69a1460e4d13c.jpg', 'general', 5, NULL),
+(72, 3, 'hotel/1772176910_69a1460e4e7f1.jpg', 'general', 6, NULL),
+(73, 3, 'hotel/1772176910_69a1460e4f624.jpeg', 'general', 7, NULL),
+(74, 4, 'hotel/1772176947_69a146331faca.jpg', 'general', 1, NULL),
+(75, 4, 'hotel/1772176947_69a14633204cc.jpg', 'general', 2, NULL),
+(76, 4, 'hotel/1772176947_69a1463320e95.jpg', 'general', 3, NULL),
+(77, 4, 'hotel/1772176947_69a1463321918.jpg', 'general', 4, NULL),
+(78, 4, 'hotel/1772176947_69a14633225a9.jpg', 'general', 5, NULL),
+(79, 4, 'hotel/1772176947_69a1463322f49.jpg', 'general', 6, NULL),
+(80, 4, 'hotel/1772176947_69a1463323856.jpg', 'general', 7, NULL),
+(81, 4, 'hotel/1772176947_69a146332413a.jpeg', 'general', 8, NULL),
+(87, 6, 'hotel/1772177157_69a14705ccb9f.jpg', 'general', 1, NULL),
+(88, 6, 'hotel/1772177157_69a14705cd726.jpg', 'general', 2, NULL),
+(89, 6, 'hotel/1772177157_69a14705ce2a8.jpg', 'general', 3, NULL),
+(90, 6, 'hotel/1772177157_69a14705cec04.jpeg', 'general', 4, NULL),
+(91, 6, 'hotel/1772177179_69a1471b77050.jpg', 'general', 5, NULL),
+(92, 6, 'hotel/1772177179_69a1471b77b81.jpg', 'general', 6, NULL),
+(93, 6, 'hotel/1772177179_69a1471b7842f.jpg', 'general', 7, NULL),
+(94, 6, 'hotel/1772177179_69a1471b78c02.jpg', 'general', 8, NULL),
+(98, 7, 'hotel/1772177240_69a1475857aed.jpg', 'general', 1, NULL),
+(99, 7, 'hotel/1772177240_69a14758584e6.jpg', 'general', 2, NULL),
+(100, 7, 'hotel/1772177240_69a1475858e3d.jpeg', 'general', 3, NULL),
+(101, 7, 'hotel/1772177278_69a1477e7c3ce.jpg', 'general', 4, NULL),
+(102, 7, 'hotel/1772177278_69a1477e7d1ac.jpg', 'general', 5, NULL),
+(103, 7, 'hotel/1772177278_69a1477e7de56.jpg', 'general', 6, NULL),
+(104, 7, 'hotel/1772177278_69a1477e7ea00.jpg', 'general', 7, NULL),
+(105, 7, 'hotel/1772177278_69a1477e7f4d5.jpg', 'general', 8, NULL),
+(106, 8, 'hotel/1772177351_69a147c765f11.jpg', 'general', 1, NULL),
+(107, 8, 'hotel/1772177351_69a147c766b83.jpeg', 'general', 2, NULL),
+(108, 8, 'hotel/1772177369_69a147d9c0962.jpg', 'general', 3, NULL),
+(109, 8, 'hotel/1772177369_69a147d9c1332.jpg', 'general', 4, NULL),
+(110, 8, 'hotel/1772177369_69a147d9c1be1.jpg', 'general', 5, NULL),
+(111, 8, 'hotel/1772177369_69a147d9c2612.jpg', 'general', 6, NULL),
+(112, 8, 'hotel/1772177369_69a147d9c34af.jpg', 'general', 7, NULL),
+(113, 8, 'hotel/1772177369_69a147d9c40e3.jpg', 'general', 8, NULL),
+(114, 9, 'hotel/1772177412_69a148041e511.jpeg', 'general', 1, NULL),
+(115, 9, 'hotel/1772177412_69a148041eec7.jpg', 'general', 2, NULL),
+(116, 9, 'hotel/1772177412_69a148041f8cf.jpg', 'general', 3, NULL),
+(117, 9, 'hotel/1772177412_69a14804202b5.jpg', 'general', 4, NULL),
+(118, 9, 'hotel/1772177412_69a1480420c28.jpg', 'general', 5, NULL),
+(119, 9, 'hotel/1772177412_69a14804219b2.jpg', 'general', 6, NULL),
+(120, 9, 'hotel/1772177412_69a1480422302.jpg', 'general', 7, NULL),
+(121, 9, 'hotel/1772177412_69a1480422b1a.jpg', 'general', 8, NULL),
+(122, 10, 'hotel/1772177503_69a1485f4977e.jpg', 'general', 4, NULL),
+(123, 10, 'hotel/1772177503_69a1485f4a0dd.jpg', 'general', 3, NULL),
+(124, 10, 'hotel/1772177503_69a1485f4a82c.jpg', 'general', 5, NULL),
+(125, 10, 'hotel/1772177503_69a1485f4b24c.jpg', 'general', 6, NULL),
+(126, 10, 'hotel/1772177503_69a1485f4c7b2.jpg', 'general', 1, NULL),
+(127, 10, 'hotel/1772177503_69a1485f4d1c6.jpg', 'general', 7, NULL),
+(128, 10, 'hotel/1772177503_69a1485f4db95.jpg', 'general', 2, NULL),
+(129, 10, 'hotel/1772177503_69a1485f4e55c.jpeg', 'general', 8, NULL),
+(130, 11, 'hotel/1772177544_69a14888c7f66.jpg', 'general', 1, NULL),
+(131, 11, 'hotel/1772177544_69a14888c8924.jpg', 'general', 2, NULL),
+(132, 11, 'hotel/1772177544_69a14888c9584.jpg', 'general', 3, NULL),
+(133, 11, 'hotel/1772177544_69a14888c9f5b.jpg', 'general', 4, NULL),
+(134, 11, 'hotel/1772177544_69a14888ca830.jpg', 'general', 5, NULL),
+(135, 11, 'hotel/1772177544_69a14888cb11d.jpg', 'general', 6, NULL),
+(136, 11, 'hotel/1772177544_69a14888cba61.jpg', 'general', 7, NULL),
+(137, 11, 'hotel/1772177544_69a14888cc23c.jpeg', 'general', 8, NULL),
+(140, 12, 'hotel/1772177593_69a148b97afa3.jpg', 'general', 3, NULL),
+(141, 12, 'hotel/1772177593_69a148b97b816.jpg', 'general', 4, NULL),
+(142, 12, 'hotel/1772177593_69a148b97c063.jpg', 'general', 5, NULL),
+(143, 12, 'hotel/1772177593_69a148b97ca22.jpg', 'general', 6, NULL),
+(144, 12, 'hotel/1772177593_69a148b97d4c6.jpg', 'general', 7, NULL),
+(145, 12, 'hotel/1772177593_69a148b97de41.jpeg', 'general', 8, NULL),
+(146, 13, 'hotel/1772177633_69a148e108b5e.jpg', 'general', 1, NULL),
+(147, 13, 'hotel/1772177633_69a148e1097b2.jpg', 'general', 2, NULL),
+(148, 13, 'hotel/1772177633_69a148e10a5e4.jpg', 'general', 3, NULL),
+(149, 13, 'hotel/1772177633_69a148e10b1d1.jpg', 'general', 4, NULL),
+(150, 13, 'hotel/1772177633_69a148e10bc78.jpg', 'general', 5, NULL),
+(151, 13, 'hotel/1772177633_69a148e10c583.jpg', 'general', 6, NULL),
+(152, 13, 'hotel/1772177633_69a148e10cf0a.jpeg', 'general', 7, NULL),
+(153, 13, 'hotel/1772177633_69a148e10db62.jpg', 'general', 8, NULL),
+(154, 15, 'hotel/1773677147_69b82a5b10a05.jpg', 'general', 2, NULL),
+(155, 15, 'hotel/1773677147_69b82a5b11e91.jpg', 'general', 1, NULL),
+(156, 15, 'hotel/1773677147_69b82a5b12947.jpg', 'general', 3, NULL),
+(157, 16, 'hotel/1773867091_69bb1053bbff0.jpeg', 'general', 0, NULL),
+(158, 16, 'hotel/1773867091_69bb1053bdbed.jpg', 'general', 1, NULL),
+(159, 16, 'hotel/1773867091_69bb1053bed4d.jpg', 'general', 2, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hotel_policies`
+--
+
+CREATE TABLE `hotel_policies` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `hotel_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `policy_type` varchar(50) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `hotel_policies`
+--
+
+INSERT INTO `hotel_policies` (`id`, `hotel_id`, `policy_type`, `description`, `created_at`) VALUES
+(1, 1, 'cancellation', 'Free cancellation up to 24 hours before check-in. After that, one night charge applies. No-shows will be charged the full booking amount.', NULL),
+(2, 1, 'smoking', 'This is a non-smoking property. Smoking is only allowed in designated outdoor areas. A cleaning fee of PKR 5000 will be charged for violations.', NULL),
+(3, 1, 'family', 'Children under 12 stay free when using existing bedding. Extra bed charges apply for children above 12. Maximum 2 children per room.', NULL),
+(4, 1, 'payment', 'We accept cash, credit cards (Visa, MasterCard), and bank transfers. Full payment required at check-in. Online advance payment available for reservations.', NULL),
+(5, 1, 'pet', 'Pets are not allowed on the property for hygiene and safety reasons. Service animals are permitted with proper documentation.', NULL),
+(11, 3, 'cancellation', 'Free cancellation up to 24 hours before check-in. After that, one night charge applies. No-shows will be charged the full booking amount.', NULL),
+(12, 3, 'smoking', 'This is a non-smoking property. Smoking is only allowed in designated outdoor areas. A cleaning fee of PKR 5000 will be charged for violations.', NULL),
+(13, 3, 'family', 'Children under 12 stay free when using existing bedding. Extra bed charges apply for children above 12. Maximum 2 children per room.', NULL),
+(14, 3, 'payment', 'We accept cash, credit cards (Visa, MasterCard), and bank transfers. Full payment required at check-in. Online advance payment available for reservations.', NULL),
+(15, 3, 'pet', 'Pets are allowed with prior approval. Additional cleaning fee of PKR 2000 applies. Maximum one pet per room. Pets must be kept on leash in common areas.', NULL),
+(16, 4, 'cancellation', 'Free cancellation up to 24 hours before check-in. After that, one night charge applies. No-shows will be charged the full booking amount.', NULL),
+(17, 4, 'smoking', 'This is a non-smoking property. Smoking is only allowed in designated outdoor areas. A cleaning fee of PKR 5000 will be charged for violations.', NULL),
+(18, 4, 'family', 'Children under 12 stay free when using existing bedding. Extra bed charges apply for children above 12. Maximum 2 children per room.', NULL),
+(19, 4, 'payment', 'We accept cash, credit cards (Visa, MasterCard), and bank transfers. Full payment required at check-in. Online advance payment available for reservations.', NULL),
+(20, 4, 'pet', 'Pets are not allowed on the property for hygiene and safety reasons. Service animals are permitted with proper documentation.', NULL),
+(21, 5, 'cancellation', 'Free cancellation up to 24 hours before check-in. After that, one night charge applies. No-shows will be charged the full booking amount.', NULL),
+(22, 5, 'smoking', 'This is a non-smoking property. Smoking is only allowed in designated outdoor areas. A cleaning fee of PKR 5000 will be charged for violations.', NULL),
+(23, 5, 'family', 'Children under 12 stay free when using existing bedding. Extra bed charges apply for children above 12. Maximum 2 children per room.', NULL),
+(24, 5, 'payment', 'We accept cash, credit cards (Visa, MasterCard), and bank transfers. Full payment required at check-in. Online advance payment available for reservations.', NULL),
+(25, 5, 'pet', 'Pets are allowed with prior approval. Additional cleaning fee of PKR 2000 applies. Maximum one pet per room. Pets must be kept on leash in common areas.', NULL),
+(26, 6, 'cancellation', 'Free cancellation up to 24 hours before check-in. After that, one night charge applies. No-shows will be charged the full booking amount.', NULL),
+(27, 6, 'smoking', 'This is a non-smoking property. Smoking is only allowed in designated outdoor areas. A cleaning fee of PKR 5000 will be charged for violations.', NULL),
+(28, 6, 'family', 'Children under 12 stay free when using existing bedding. Extra bed charges apply for children above 12. Maximum 2 children per room.', NULL),
+(29, 6, 'payment', 'We accept cash, credit cards (Visa, MasterCard), and bank transfers. Full payment required at check-in. Online advance payment available for reservations.', NULL),
+(30, 6, 'pet', 'Pets are not allowed on the property for hygiene and safety reasons. Service animals are permitted with proper documentation.', NULL),
+(31, 7, 'cancellation', 'Free cancellation up to 24 hours before check-in. After that, one night charge applies. No-shows will be charged the full booking amount.', NULL),
+(32, 7, 'smoking', 'This is a non-smoking property. Smoking is only allowed in designated outdoor areas. A cleaning fee of PKR 5000 will be charged for violations.', NULL),
+(33, 7, 'family', 'Children under 12 stay free when using existing bedding. Extra bed charges apply for children above 12. Maximum 2 children per room.', NULL),
+(34, 7, 'payment', 'We accept cash, credit cards (Visa, MasterCard), and bank transfers. Full payment required at check-in. Online advance payment available for reservations.', NULL),
+(35, 7, 'pet', 'Pets are not allowed on the property for hygiene and safety reasons. Service animals are permitted with proper documentation.', NULL),
+(36, 8, 'cancellation', 'Free cancellation up to 24 hours before check-in. After that, one night charge applies. No-shows will be charged the full booking amount.', NULL),
+(37, 8, 'smoking', 'This is a non-smoking property. Smoking is only allowed in designated outdoor areas. A cleaning fee of PKR 5000 will be charged for violations.', NULL),
+(38, 8, 'family', 'Children under 12 stay free when using existing bedding. Extra bed charges apply for children above 12. Maximum 2 children per room.', NULL),
+(39, 8, 'payment', 'We accept cash, credit cards (Visa, MasterCard), and bank transfers. Full payment required at check-in. Online advance payment available for reservations.', NULL),
+(40, 8, 'pet', 'Pets are allowed with prior approval. Additional cleaning fee of PKR 2000 applies. Maximum one pet per room. Pets must be kept on leash in common areas.', NULL),
+(41, 9, 'cancellation', 'Free cancellation up to 24 hours before check-in. After that, one night charge applies. No-shows will be charged the full booking amount.', NULL),
+(42, 9, 'smoking', 'This is a non-smoking property. Smoking is only allowed in designated outdoor areas. A cleaning fee of PKR 5000 will be charged for violations.', NULL),
+(43, 9, 'family', 'Children under 12 stay free when using existing bedding. Extra bed charges apply for children above 12. Maximum 2 children per room.', NULL),
+(44, 9, 'payment', 'We accept cash, credit cards (Visa, MasterCard), and bank transfers. Full payment required at check-in. Online advance payment available for reservations.', NULL),
+(45, 9, 'pet', 'Pets are allowed with prior approval. Additional cleaning fee of PKR 2000 applies. Maximum one pet per room. Pets must be kept on leash in common areas.', NULL),
+(46, 10, 'cancellation', 'Free cancellation up to 24 hours before check-in. After that, one night charge applies. No-shows will be charged the full booking amount.', NULL),
+(47, 10, 'smoking', 'This is a non-smoking property. Smoking is only allowed in designated outdoor areas. A cleaning fee of PKR 5000 will be charged for violations.', NULL),
+(48, 10, 'family', 'Children under 12 stay free when using existing bedding. Extra bed charges apply for children above 12. Maximum 2 children per room.', NULL),
+(49, 10, 'payment', 'We accept cash, credit cards (Visa, MasterCard), and bank transfers. Full payment required at check-in. Online advance payment available for reservations.', NULL),
+(50, 10, 'pet', 'Pets are allowed with prior approval. Additional cleaning fee of PKR 2000 applies. Maximum one pet per room. Pets must be kept on leash in common areas.', NULL),
+(51, 11, 'cancellation', 'Free cancellation up to 24 hours before check-in. After that, one night charge applies. No-shows will be charged the full booking amount.', NULL),
+(52, 11, 'smoking', 'This is a non-smoking property. Smoking is only allowed in designated outdoor areas. A cleaning fee of PKR 5000 will be charged for violations.', NULL),
+(53, 11, 'family', 'Children under 12 stay free when using existing bedding. Extra bed charges apply for children above 12. Maximum 2 children per room.', NULL),
+(54, 11, 'payment', 'We accept cash, credit cards (Visa, MasterCard), and bank transfers. Full payment required at check-in. Online advance payment available for reservations.', NULL),
+(55, 11, 'pet', 'Pets are not allowed on the property for hygiene and safety reasons. Service animals are permitted with proper documentation.', NULL),
+(56, 12, 'cancellation', 'Free cancellation up to 24 hours before check-in. After that, one night charge applies. No-shows will be charged the full booking amount.', NULL),
+(57, 12, 'smoking', 'This is a non-smoking property. Smoking is only allowed in designated outdoor areas. A cleaning fee of PKR 5000 will be charged for violations.', NULL),
+(58, 12, 'family', 'Children under 12 stay free when using existing bedding. Extra bed charges apply for children above 12. Maximum 2 children per room.', NULL),
+(59, 12, 'payment', 'We accept cash, credit cards (Visa, MasterCard), and bank transfers. Full payment required at check-in. Online advance payment available for reservations.', NULL),
+(60, 12, 'pet', 'Pets are not allowed on the property for hygiene and safety reasons. Service animals are permitted with proper documentation.', NULL),
+(61, 13, 'cancellation', 'Free cancellation up to 24 hours before check-in. After that, one night charge applies. No-shows will be charged the full booking amount.', NULL),
+(62, 13, 'smoking', 'This is a non-smoking property. Smoking is only allowed in designated outdoor areas. A cleaning fee of PKR 5000 will be charged for violations.', NULL),
+(63, 13, 'family', 'Children under 12 stay free when using existing bedding. Extra bed charges apply for children above 12. Maximum 2 children per room.', NULL),
+(64, 13, 'payment', 'We accept cash, credit cards (Visa, MasterCard), and bank transfers. Full payment required at check-in. Online advance payment available for reservations.', NULL),
+(65, 13, 'pet', 'Pets are not allowed on the property for hygiene and safety reasons. Service animals are permitted with proper documentation.', NULL);
 
 -- --------------------------------------------------------
 
@@ -13387,7 +14270,7 @@ INSERT INTO `languages` (`id`, `code`, `name`, `native_name`, `direction`, `is_d
 (4, 'de', 'German', 'Deutsch', 'ltr', 0, 1, 4, '2026-01-30 05:27:23', '2026-01-30 05:27:23'),
 (5, 'es', 'Spanish', 'Español', 'ltr', 0, 1, 5, '2026-01-30 05:27:23', '2026-02-01 03:19:33'),
 (6, 'it', 'Italian', 'Italiano', 'ltr', 0, 1, 6, '2026-01-30 05:27:23', '2026-01-30 05:27:23'),
-(7, 'ar', 'Arabic', 'العربية', 'rtl', 0, 0, 7, '2026-01-30 05:27:23', '2026-01-30 02:21:02'),
+(7, 'ar', 'Arabic', 'العربية', 'rtl', 0, 1, 7, '2026-01-30 05:27:23', '2026-02-03 05:08:30'),
 (8, 'tr', 'Turkish', 'Türkçe', 'ltr', 0, 1, 9, '2026-01-30 05:27:23', '2026-01-30 05:27:23'),
 (9, 'ru', 'Russian', 'Русский', 'ltr', 0, 1, 10, '2026-01-30 05:27:23', '2026-01-30 05:27:23'),
 (10, 'cn', 'Chinese', '中文', 'ltr', 0, 1, 11, '2026-01-30 05:27:23', '2026-01-30 05:27:23'),
@@ -13401,7 +14284,7 @@ INSERT INTO `languages` (`id`, `code`, `name`, `native_name`, `direction`, `is_d
 --
 
 CREATE TABLE `locations` (
-  `id` int(11) NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
   `country` varchar(150) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `country_code` varchar(150) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `city` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
@@ -22413,24 +23296,15 @@ CREATE TABLE `menu_items` (
 --
 
 INSERT INTO `menu_items` (`id`, `name`, `url`, `category`, `sort_order`, `is_active`, `parent_id`, `icon`, `target`, `description`, `created_at`, `updated_at`) VALUES
-(1, 'Home', '/home', 'header', 1, 1, NULL, 'fas fa-house', '_self', 'Homepage link', '2025-07-19 05:31:43', '2026-01-30 10:43:15'),
-(4, 'Contact', '/page/contact', 'header', 7, 1, NULL, 'fas fa-phone', '_self', 'Contact page', '2025-07-19 05:31:43', '2026-01-30 10:43:15'),
+(1, 'Home', '/home', 'header', 1, 1, NULL, 'fas fa-house', '_self', 'Homepage link', '2025-07-19 05:31:43', '2026-07-13 12:24:56'),
+(4, 'Contact', '/page/contact', 'header', 7, 1, NULL, 'fas fa-phone', '_self', 'Contact page', '2025-07-19 05:31:43', '2026-07-13 12:24:56'),
 (8, 'About', '/page/about', 'footer_quick_links', 1, 1, NULL, 'bi bi-shield-check', '_self', 'About page', '2025-07-19 05:31:43', '2025-07-22 00:27:58'),
 (10, 'Sitemap', '/page/sitemap', 'footer_quick_links', 4, 0, NULL, 'bi bi-diagram-3', '_self', 'Website sitemap', '2025-07-19 05:31:43', '2026-01-30 12:10:39'),
 (11, 'Blog', '/blog', 'footer_quick_links', 3, 1, NULL, 'bi bi-journal-text', '_self', 'Company blog', '2025-07-19 05:31:43', '2025-07-21 22:26:57'),
-(12, 'Flights', '/flights', 'footer_services', 2, 1, NULL, 'bi bi-palette', '_self', 'Flight services', '2025-07-19 05:31:43', '2025-11-19 04:43:42'),
-(13, 'Visa', '/visa', 'footer_services', 3, 1, NULL, 'bi bi-cart', '_self', 'Visa solutions', '2025-07-19 05:31:43', '2025-11-19 04:43:42'),
 (16, 'Privacy Policy', '/page/privacy-policy', 'footer_support', 1, 1, NULL, 'bi bi-question-circle', '_self', 'Privacy Policy', '2025-07-19 05:31:43', '2026-01-22 01:38:15'),
 (17, 'Terms & Conditions', '/page/terms-conditions', 'footer_support', 2, 1, NULL, 'bi bi-headset', '_self', 'Terms & Conditions', '2025-07-19 05:31:43', '2026-01-22 01:38:18'),
-(20, 'Flights', '/flights', 'header', 3, 1, NULL, 'fas fa-plane', '_self', NULL, '2025-07-19 05:38:38', '2026-01-30 10:43:15'),
 (21, 'Contact', '/page/contact', 'footer_quick_links', 2, 1, NULL, NULL, '_self', 'Contact Page', '2025-07-19 05:40:32', '2025-07-22 00:28:13'),
-(23, 'Visa', '/visa', 'header', 4, 1, NULL, 'fas fa-passport', '_blank', 'this is visa page', '2025-07-19 05:55:08', '2026-01-30 10:43:15'),
-(26, 'Stay', '/hotels', 'header', 2, 1, NULL, 'fas fa-hotel', '_self', NULL, '2025-11-07 05:19:05', '2026-01-30 10:43:15'),
-(28, 'Stay', '/hotels', 'footer_services', 1, 1, NULL, 'fas fa-hotel', '_self', NULL, '2025-11-19 04:41:36', '2025-11-19 05:25:23'),
-(29, 'Umrah', '/umrah', 'header', 6, 1, NULL, 'fas fa-mosque', '_self', NULL, '2026-01-30 00:36:56', '2026-01-30 10:43:15'),
-(30, 'Tours', '/tours', 'footer_services', 4, 1, NULL, 'fas fa-suitcase', '_self', NULL, '2026-01-30 02:23:05', '2026-01-30 02:23:05'),
-(31, 'Umrah', '/umrah', 'footer_services', 5, 1, NULL, 'fas fa-mosque', '_self', NULL, '2026-01-30 02:23:28', '2026-01-30 02:23:28'),
-(32, 'Tours', '/tours', 'header', 5, 1, NULL, 'fas fa-suitcase', '_self', NULL, '2026-01-30 08:37:50', '2026-01-30 10:43:15');
+(33, 'Track Booking', '/track-ticket', 'footer_support', 3, 1, NULL, 'bi bi-life-preserver', '_self', 'Track Booking', '2026-10-01 07:24:24', '2026-10-01 07:33:18');
 
 -- --------------------------------------------------------
 
@@ -22465,7 +23339,36 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (14, '2025_07_19_134526_create_pages_table', 2),
 (15, '2025_07_19_151217_create_menu_items_table', 3),
 (17, '2026_01_24_100000_create_tour_tables', 4),
-(18, '2026_01_27_112344_update_tours_location_to_integer', 5);
+(18, '2026_01_27_112344_update_tours_location_to_integer', 5),
+(19, '2026_02_27_074723_add_sort_order_to_room_type_images_table', 6),
+(20, '2026_02_27_083922_add_stars_and_total_rating_to_hotels_table', 7),
+(21, '2026_02_27_084439_change_total_rating_to_integer_in_hotels_table', 8),
+(22, '2026_03_07_052714_add_featured_to_hotels_table', 9),
+(23, '2026_03_15_000001_add_agent_fields_to_users_table', 10),
+(24, '2026_03_15_000002_create_agent_wallets_table', 11),
+(25, '2026_03_15_000003_create_agent_wallet_transactions_table', 12),
+(26, '2026_03_15_000004_create_agent_permissions_table', 13),
+(27, '2026_03_15_000005_create_agent_topup_requests_table', 14),
+(28, '2026_03_15_000006_add_agent_id_to_booking_tables', 15),
+(29, '2026_03_16_000007_add_agent_id_to_property_tables', 16),
+(30, '2026_03_16_100000_add_approval_status_to_property_tables', 17),
+(31, '2026_03_16_200000_add_agent_id_to_lookup_tables', 18),
+(32, '2026_05_07_200000_update_booked_via_enum_in_booking_tables', 19),
+(33, '2026_07_13_170426_add_sort_order_to_modules_table', 20),
+(34, '2026_07_23_131050_create_theme_settings_table', 21),
+(35, '2026_07_23_085443_widen_color_columns_on_theme_settings_table', 22),
+(36, '2026_07_24_054013_add_user_id_to_theme_settings_table', 23),
+(37, '2026_07_24_070501_add_design_style_to_theme_settings_table', 24),
+(38, '2026_08_24_130956_add_api_testing_and_integration_fields_to_travel_partners_table', 25),
+(39, '2026_08_24_151205_create_travel_partner_imports_table', 26),
+(40, '2026_08_24_151205_update_travel_partners_for_stepper_flow', 27),
+(41, '2026_08_24_161202_add_financial_type_fields_to_travel_partners_table', 28),
+(43, '2026_09_03_000000_encrypt_travel_partner_api_credentials', 29),
+(44, '2026_10_01_000000_create_support_tickets_table', 30),
+(45, '2026_10_01_000001_add_track_ticket_footer_menu_item', 31),
+(46, '2026_10_02_000000_add_rejected_to_users_approval_status_enum', 32),
+(47, '2026_10_02_000001_change_agent_id_cascade_to_set_null_on_lookup_tables', 33),
+(48, '2026_10_07_000000_add_two_factor_columns_to_users_table', 34);
 
 -- --------------------------------------------------------
 
@@ -22479,6 +23382,7 @@ CREATE TABLE `modules` (
   `slug` varchar(255) NOT NULL,
   `description` text DEFAULT NULL,
   `status` enum('active','inactive') NOT NULL DEFAULT 'active',
+  `sort_order` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -22487,12 +23391,12 @@ CREATE TABLE `modules` (
 -- Dumping data for table `modules`
 --
 
-INSERT INTO `modules` (`id`, `name`, `slug`, `description`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Stay', 'hotel', NULL, 'active', NULL, '2026-01-30 10:36:28'),
-(2, 'Flight', 'flight', NULL, 'active', NULL, '2026-01-30 10:36:18'),
-(3, 'Visa', 'visa', NULL, 'active', NULL, '2026-01-30 10:40:32'),
-(4, 'Tours', 'tours', NULL, 'active', NULL, '2026-01-30 10:40:32'),
-(5, 'Umrah', 'umrah', NULL, 'active', NULL, '2026-01-30 10:40:37');
+INSERT INTO `modules` (`id`, `name`, `slug`, `description`, `status`, `sort_order`, `created_at`, `updated_at`) VALUES
+(1, 'Stay', 'hotel', NULL, 'active', 3, NULL, '2026-07-14 09:00:12'),
+(2, 'Flight', 'flight', NULL, 'active', 1, NULL, '2026-07-31 19:14:58'),
+(3, 'Visa', 'visa', NULL, 'active', 4, NULL, '2026-07-31 17:54:25'),
+(4, 'Tours', 'tours', NULL, 'active', 2, NULL, '2026-07-31 17:54:19'),
+(5, 'Umrah', 'umrah', NULL, 'active', 5, NULL, '2026-07-14 09:21:30');
 
 -- --------------------------------------------------------
 
@@ -22584,7 +23488,8 @@ CREATE TABLE `payment_gateways` (
 INSERT INTO `payment_gateways` (`id`, `name`, `credential_1`, `credential_2`, `credential_3`, `credential_4`, `credential_5`, `status`, `mode`) VALUES
 (1, 'stripe', 'pk_test_KIhUx4DZXHOnK6tUOxtdEMTD00phOqJ9gN', 'sk_test_zCTAEgeEGOYkb2qwBaDAJPmO00WW21fCqc', '', '', '', '1', '0'),
 (3, 'payone', '2046245', '1e9febc9-9ab2-4da7-8fdc-ed4c48c30f03', '', '', '', '0', '0'),
-(4, 'after_pay', '', '', '', '', '', '1', '0');
+(4, 'after_pay', '', '', '', '', '', '1', '0'),
+(5, 'paypal', '', '', '', '', '', '1', '0');
 
 -- --------------------------------------------------------
 
@@ -22608,6 +23513,1064 @@ CREATE TABLE `personal_access_tokens` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `rooms`
+--
+
+CREATE TABLE `rooms` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `hotel_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `room_type_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `room_number` varchar(20) DEFAULT NULL,
+  `floor` varchar(20) DEFAULT NULL,
+  `status` varchar(20) DEFAULT 'available',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `rooms`
+--
+
+INSERT INTO `rooms` (`id`, `hotel_id`, `room_type_id`, `room_number`, `floor`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, '101', 'Ground Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(2, 1, 1, '102', 'Ground Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(3, 1, 1, '103', 'Ground Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(4, 1, 1, '104', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(5, 1, 1, '105', 'Ground Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(6, 1, 1, '106', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(7, 1, 1, '107', 'Ground Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(8, 1, 1, '108', 'Ground Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(9, 1, 1, '109', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(10, 1, 1, '110', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(11, 1, 1, '201', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(12, 1, 1, '202', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(13, 1, 1, '203', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(14, 1, 1, '204', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(15, 1, 1, '205', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(16, 1, 1, '206', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(17, 1, 1, '207', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(18, 1, 1, '208', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(19, 1, 1, '209', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(20, 1, 1, '210', '1st Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(21, 1, 1, '301', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(22, 1, 1, '302', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(23, 1, 1, '303', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(24, 1, 1, '304', '2nd Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(25, 1, 1, '305', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(26, 1, 1, '306', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(27, 1, 1, '307', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(28, 1, 1, '308', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(29, 1, 1, '309', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(30, 1, 1, '310', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(31, 1, 1, '401', '3rd Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(32, 1, 1, '402', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(33, 1, 1, '403', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(34, 1, 1, '404', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(35, 1, 1, '405', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(36, 1, 1, '406', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(37, 1, 1, '407', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(38, 1, 2, '408', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(39, 1, 2, '409', '3rd Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(40, 1, 2, '410', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(41, 1, 2, '501', '4th Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(42, 1, 2, '502', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(43, 1, 2, '503', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(44, 1, 2, '504', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(45, 1, 2, '505', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(46, 1, 2, '506', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(47, 1, 2, '507', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(48, 1, 2, '508', '4th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(49, 1, 2, '509', '4th Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(50, 1, 2, '510', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(51, 1, 2, '601', '5th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(52, 1, 2, '602', '5th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(53, 1, 2, '603', '5th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(54, 1, 2, '604', '5th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(55, 1, 2, '605', '5th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(56, 1, 2, '606', '5th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(57, 1, 2, '607', '5th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(58, 1, 2, '608', '5th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(59, 1, 2, '609', '5th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(60, 1, 3, '610', '5th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(61, 1, 3, '701', '6th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(62, 1, 3, '702', '6th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(63, 1, 3, '703', '6th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(64, 1, 3, '704', '6th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(65, 1, 3, '705', '6th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(66, 1, 3, '706', '6th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(67, 1, 3, '707', '6th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(68, 1, 3, '708', '6th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(69, 1, 3, '709', '6th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(70, 1, 3, '710', '6th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(71, 1, 3, '801', '7th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(72, 1, 3, '802', '7th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(73, 1, 3, '803', '7th Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(74, 1, 3, '804', '7th Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(75, 1, 3, '805', '7th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(144, 3, 7, '101', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(145, 3, 7, '102', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(146, 3, 7, '103', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(147, 3, 7, '104', 'Ground Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(148, 3, 7, '105', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(149, 3, 7, '106', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(150, 3, 7, '107', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(151, 3, 7, '108', 'Ground Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(152, 3, 7, '109', 'Ground Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(153, 3, 7, '110', 'Ground Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(154, 3, 7, '201', '1st Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(155, 3, 7, '202', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(156, 3, 7, '203', '1st Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(157, 3, 7, '204', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(158, 3, 7, '205', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(159, 3, 7, '206', '1st Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(160, 3, 7, '207', '1st Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(161, 3, 7, '208', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(162, 3, 7, '209', '1st Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(163, 3, 7, '210', '1st Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(164, 3, 7, '301', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(165, 3, 7, '302', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(166, 3, 7, '303', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(167, 3, 7, '304', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(168, 3, 7, '305', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(169, 3, 7, '306', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(170, 3, 7, '307', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(171, 3, 7, '308', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(172, 3, 7, '309', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(173, 3, 7, '310', '2nd Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(174, 3, 7, '401', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(175, 3, 8, '402', '3rd Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(176, 3, 8, '403', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(177, 3, 8, '404', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(178, 3, 8, '405', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(179, 3, 8, '406', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(180, 3, 8, '407', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(181, 3, 8, '408', '3rd Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(182, 3, 8, '409', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(183, 3, 8, '410', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(184, 3, 8, '501', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(185, 3, 8, '502', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(186, 3, 8, '503', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(187, 3, 8, '504', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(188, 3, 8, '505', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(189, 3, 8, '506', '4th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(190, 3, 8, '507', '4th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(191, 3, 8, '508', '4th Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(192, 3, 8, '509', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(193, 3, 9, '510', '4th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(194, 3, 9, '601', '5th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(195, 3, 9, '602', '5th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(196, 3, 9, '603', '5th Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(197, 3, 9, '604', '5th Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(198, 3, 9, '605', '5th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(199, 3, 9, '606', '5th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(200, 3, 9, '607', '5th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(201, 3, 9, '608', '5th Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(202, 3, 10, '609', '5th Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(203, 3, 10, '610', '5th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(204, 3, 10, '701', '6th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(205, 3, 10, '702', '6th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(206, 4, 11, '101', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(207, 4, 11, '102', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(208, 4, 11, '103', 'Ground Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(209, 4, 11, '104', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(210, 4, 11, '105', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(211, 4, 11, '106', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(212, 4, 11, '107', 'Ground Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(213, 4, 11, '108', 'Ground Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(214, 4, 11, '109', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(215, 4, 11, '110', 'Ground Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(216, 4, 11, '201', '1st Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(217, 4, 11, '202', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(218, 4, 11, '203', '1st Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(219, 4, 11, '204', '1st Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(220, 4, 11, '205', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(221, 4, 11, '206', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(222, 4, 11, '207', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(223, 4, 11, '208', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(224, 4, 11, '209', '1st Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(225, 4, 11, '210', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(226, 4, 11, '301', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(227, 4, 11, '302', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(228, 4, 11, '303', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(229, 4, 11, '304', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(230, 4, 11, '305', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(231, 4, 11, '306', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(232, 4, 11, '307', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(233, 4, 12, '308', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(234, 4, 12, '309', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(235, 4, 12, '310', '2nd Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(236, 4, 12, '401', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(237, 4, 12, '402', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(238, 4, 12, '403', '3rd Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(239, 4, 12, '404', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(240, 4, 12, '405', '3rd Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(241, 4, 12, '406', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(242, 4, 12, '407', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(243, 4, 12, '408', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(244, 4, 12, '409', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(245, 4, 12, '410', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(246, 4, 12, '501', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(247, 4, 12, '502', '4th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(248, 4, 12, '503', '4th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(249, 4, 13, '504', '4th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(250, 4, 13, '505', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(251, 4, 13, '506', '4th Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(252, 4, 13, '507', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(253, 4, 13, '508', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(254, 4, 13, '509', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(255, 4, 13, '510', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(256, 4, 13, '601', '5th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(257, 4, 14, '602', '5th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(258, 4, 14, '603', '5th Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(259, 4, 14, '604', '5th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(260, 4, 14, '605', '5th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(261, 5, 15, '101', 'Ground Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(262, 5, 15, '102', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(263, 5, 15, '103', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(264, 5, 15, '104', 'Ground Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(265, 5, 15, '105', 'Ground Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(266, 5, 15, '106', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(267, 5, 15, '107', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(268, 5, 15, '108', 'Ground Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(269, 5, 15, '109', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(270, 5, 15, '110', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(271, 5, 15, '201', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(272, 5, 15, '202', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(273, 5, 15, '203', '1st Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(274, 5, 15, '204', '1st Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(275, 5, 15, '205', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(276, 5, 15, '206', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(277, 5, 15, '207', '1st Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(278, 5, 15, '208', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(279, 5, 15, '209', '1st Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(280, 5, 15, '210', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(281, 5, 15, '301', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(282, 5, 15, '302', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(283, 5, 15, '303', '2nd Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(284, 5, 15, '304', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(285, 5, 16, '305', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(286, 5, 16, '306', '2nd Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(287, 5, 16, '307', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(288, 5, 16, '308', '2nd Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(289, 5, 16, '309', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(290, 5, 16, '310', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(291, 5, 16, '401', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(292, 5, 16, '402', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(293, 5, 16, '403', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(294, 5, 16, '404', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(295, 5, 16, '405', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(296, 5, 16, '406', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(297, 5, 16, '407', '3rd Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(298, 5, 16, '408', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(299, 5, 17, '409', '3rd Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(300, 5, 17, '410', '3rd Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(301, 5, 17, '501', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(302, 5, 17, '502', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(303, 5, 17, '503', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(304, 5, 17, '504', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(305, 5, 17, '505', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(306, 5, 18, '506', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(307, 5, 18, '507', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(308, 5, 18, '508', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(309, 6, 19, '101', 'Ground Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(310, 6, 19, '102', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(311, 6, 19, '103', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(312, 6, 19, '104', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(313, 6, 19, '105', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(314, 6, 19, '106', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(315, 6, 19, '107', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(316, 6, 19, '108', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(317, 6, 19, '109', 'Ground Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(318, 6, 19, '110', 'Ground Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(319, 6, 19, '201', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(320, 6, 19, '202', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(321, 6, 19, '203', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(322, 6, 19, '204', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(323, 6, 19, '205', '1st Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(324, 6, 19, '206', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(325, 6, 19, '207', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(326, 6, 19, '208', '1st Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(327, 6, 19, '209', '1st Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(328, 6, 19, '210', '1st Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(329, 6, 19, '301', '2nd Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(330, 6, 19, '302', '2nd Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(331, 6, 19, '303', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(332, 6, 19, '304', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(333, 6, 19, '305', '2nd Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(334, 6, 19, '306', '2nd Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(335, 6, 19, '307', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(336, 6, 19, '308', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(337, 6, 19, '309', '2nd Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(338, 6, 20, '310', '2nd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(339, 6, 20, '401', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(340, 6, 20, '402', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(341, 6, 20, '403', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(342, 6, 20, '404', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(343, 6, 20, '405', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(344, 6, 20, '406', '3rd Floor', 'maintenance', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(345, 6, 20, '407', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(346, 6, 20, '408', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(347, 6, 20, '409', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(348, 6, 20, '410', '3rd Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(349, 6, 20, '501', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(350, 6, 20, '502', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(351, 6, 20, '503', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(352, 6, 20, '504', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(353, 6, 20, '505', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(354, 6, 20, '506', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(355, 6, 21, '507', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(356, 6, 21, '508', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(357, 6, 21, '509', '4th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(358, 6, 21, '510', '4th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(359, 6, 21, '601', '5th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(360, 6, 21, '602', '5th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(361, 6, 21, '603', '5th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(362, 6, 21, '604', '5th Floor', 'available', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(363, 6, 22, '605', '5th Floor', 'occupied', '2026-02-20 14:14:58', '2026-02-20 14:14:58'),
+(364, 6, 22, '606', '5th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(365, 6, 22, '607', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(366, 6, 22, '608', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(367, 7, 23, '101', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(368, 7, 23, '102', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(369, 7, 23, '103', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(370, 7, 23, '104', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(371, 7, 23, '105', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(372, 7, 23, '106', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(373, 7, 23, '107', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(374, 7, 23, '108', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(375, 7, 23, '109', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(376, 7, 24, '110', 'Ground Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(377, 7, 24, '201', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(378, 7, 24, '202', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(379, 7, 24, '203', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(380, 7, 24, '204', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(381, 7, 25, '205', '1st Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(382, 7, 25, '206', '1st Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(383, 7, 25, '207', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(384, 7, 25, '208', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(385, 8, 26, '101', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(386, 8, 26, '102', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(387, 8, 26, '103', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(388, 8, 26, '104', 'Ground Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(389, 8, 26, '105', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(390, 8, 26, '106', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(391, 8, 26, '107', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(392, 8, 27, '108', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(393, 8, 27, '109', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(394, 8, 27, '110', 'Ground Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(395, 8, 27, '201', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(396, 8, 28, '202', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(397, 8, 28, '203', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(398, 8, 28, '204', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(399, 8, 28, '205', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(400, 9, 29, '101', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(401, 9, 29, '102', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(402, 9, 29, '103', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(403, 9, 29, '104', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(404, 9, 29, '105', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(405, 9, 29, '106', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(406, 9, 30, '107', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(407, 9, 30, '108', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(408, 9, 30, '109', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(409, 9, 31, '110', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(410, 9, 31, '201', '1st Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(411, 9, 31, '202', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(412, 10, 32, '101', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(413, 10, 32, '102', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(414, 10, 32, '103', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(415, 10, 32, '104', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(416, 10, 32, '105', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(417, 10, 32, '106', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(418, 10, 32, '107', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(419, 10, 32, '108', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(420, 10, 32, '109', 'Ground Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(421, 10, 32, '110', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(422, 10, 33, '201', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(423, 10, 33, '202', '1st Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(424, 10, 33, '203', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(425, 10, 33, '204', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(426, 10, 33, '205', '1st Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(427, 10, 33, '206', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(428, 10, 34, '207', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(429, 10, 34, '208', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(430, 10, 34, '209', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(431, 10, 34, '210', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(432, 11, 35, '101', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(433, 11, 35, '102', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(434, 11, 35, '103', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(435, 11, 35, '104', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(436, 11, 35, '105', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(437, 11, 35, '106', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(438, 11, 35, '107', 'Ground Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(439, 11, 35, '108', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(440, 11, 35, '109', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(441, 11, 35, '110', 'Ground Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(442, 11, 35, '201', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(443, 11, 35, '202', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(444, 11, 35, '203', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(445, 11, 35, '204', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(446, 11, 35, '205', '1st Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(447, 11, 35, '206', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(448, 11, 35, '207', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(449, 11, 35, '208', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(450, 11, 35, '209', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(451, 11, 35, '210', '1st Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(452, 11, 35, '301', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(453, 11, 35, '302', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(454, 11, 35, '303', '2nd Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(455, 11, 35, '304', '2nd Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(456, 11, 35, '305', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(457, 11, 35, '306', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(458, 11, 35, '307', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(459, 11, 35, '308', '2nd Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(460, 11, 35, '309', '2nd Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(461, 11, 35, '310', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(462, 11, 35, '401', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(463, 11, 35, '402', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(464, 11, 36, '403', '3rd Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(465, 11, 36, '404', '3rd Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(466, 11, 36, '405', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(467, 11, 36, '406', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(468, 11, 36, '407', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(469, 11, 36, '408', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(470, 11, 36, '409', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(471, 11, 36, '410', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(472, 11, 36, '501', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(473, 11, 36, '502', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(474, 11, 36, '503', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(475, 11, 36, '504', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(476, 11, 36, '505', '4th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(477, 11, 36, '506', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(478, 11, 36, '507', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(479, 11, 36, '508', '4th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(480, 11, 36, '509', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(481, 11, 36, '510', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(482, 11, 36, '601', '5th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(483, 11, 37, '602', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(484, 11, 37, '603', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(485, 11, 37, '604', '5th Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(486, 11, 37, '605', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(487, 11, 37, '606', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(488, 11, 37, '607', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(489, 11, 37, '608', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(490, 11, 37, '609', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(491, 11, 37, '610', '5th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(492, 11, 38, '701', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(493, 11, 38, '702', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(494, 11, 38, '703', '6th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(495, 11, 38, '704', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(496, 11, 38, '705', '6th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(497, 12, 39, '101', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(498, 12, 39, '102', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(499, 12, 39, '103', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(500, 12, 39, '104', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(501, 12, 39, '105', 'Ground Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(502, 12, 39, '106', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(503, 12, 39, '107', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(504, 12, 39, '108', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(505, 12, 39, '109', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(506, 12, 39, '110', 'Ground Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(507, 12, 39, '201', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(508, 12, 39, '202', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(509, 12, 39, '203', '1st Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(510, 12, 39, '204', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(511, 12, 39, '205', '1st Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(512, 12, 39, '206', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(513, 12, 39, '207', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(514, 12, 39, '208', '1st Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(515, 12, 39, '209', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(516, 12, 39, '210', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(517, 12, 39, '301', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(518, 12, 39, '302', '2nd Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(519, 12, 39, '303', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(520, 12, 39, '304', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(521, 12, 39, '305', '2nd Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(522, 12, 39, '306', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(523, 12, 39, '307', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(524, 12, 39, '308', '2nd Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(525, 12, 39, '309', '2nd Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(526, 12, 39, '310', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(527, 12, 39, '401', '3rd Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(528, 12, 39, '402', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(529, 12, 39, '403', '3rd Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(530, 12, 39, '404', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(531, 12, 39, '405', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(532, 12, 39, '406', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(533, 12, 39, '407', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(534, 12, 39, '408', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(535, 12, 39, '409', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(536, 12, 39, '410', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(537, 12, 39, '501', '4th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(538, 12, 39, '502', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(539, 12, 40, '503', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(540, 12, 40, '504', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(541, 12, 40, '505', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(542, 12, 40, '506', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(543, 12, 40, '507', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(544, 12, 40, '508', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(545, 12, 40, '509', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(546, 12, 40, '510', '4th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(547, 12, 40, '601', '5th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(548, 12, 40, '602', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(549, 12, 40, '603', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(550, 12, 40, '604', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(551, 12, 40, '605', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(552, 12, 40, '606', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(553, 12, 40, '607', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(554, 12, 40, '608', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(555, 12, 40, '609', '5th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(556, 12, 40, '610', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(557, 12, 40, '701', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(558, 12, 40, '702', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(559, 12, 40, '703', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(560, 12, 40, '704', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(561, 12, 40, '705', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(562, 12, 40, '706', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(563, 12, 40, '707', '6th Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(564, 12, 41, '708', '6th Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(565, 12, 41, '709', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(566, 12, 41, '710', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(567, 12, 41, '801', '7th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(568, 12, 41, '802', '7th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(569, 12, 41, '803', '7th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(570, 12, 41, '804', '7th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(571, 12, 41, '805', '7th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(572, 12, 41, '806', '7th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(573, 12, 41, '807', '7th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(574, 12, 41, '808', '7th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(575, 12, 41, '809', '7th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(576, 12, 42, '810', '7th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(577, 12, 42, '901', '8th Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(578, 12, 42, '902', '8th Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(579, 12, 42, '903', '8th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(580, 12, 42, '904', '8th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(581, 12, 42, '905', '8th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(582, 13, 43, '101', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(583, 13, 43, '102', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(584, 13, 43, '103', 'Ground Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(585, 13, 43, '104', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(586, 13, 43, '105', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(587, 13, 43, '106', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(588, 13, 43, '107', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(589, 13, 43, '108', 'Ground Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(590, 13, 43, '109', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(591, 13, 43, '110', 'Ground Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(592, 13, 43, '201', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(593, 13, 43, '202', '1st Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(594, 13, 43, '203', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(595, 13, 43, '204', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(596, 13, 43, '205', '1st Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(597, 13, 43, '206', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(598, 13, 43, '207', '1st Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(599, 13, 43, '208', '1st Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(600, 13, 43, '209', '1st Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(601, 13, 43, '210', '1st Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(602, 13, 43, '301', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(603, 13, 43, '302', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(604, 13, 43, '303', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(605, 13, 43, '304', '2nd Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(606, 13, 43, '305', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(607, 13, 43, '306', '2nd Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(608, 13, 43, '307', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(609, 13, 43, '308', '2nd Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(610, 13, 43, '309', '2nd Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(611, 13, 43, '310', '2nd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(612, 13, 43, '401', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59');
+INSERT INTO `rooms` (`id`, `hotel_id`, `room_type_id`, `room_number`, `floor`, `status`, `created_at`, `updated_at`) VALUES
+(613, 13, 43, '402', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(614, 13, 43, '403', '3rd Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(615, 13, 43, '404', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(616, 13, 43, '405', '3rd Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(617, 13, 43, '406', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(618, 13, 44, '407', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(619, 13, 44, '408', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(620, 13, 44, '409', '3rd Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(621, 13, 44, '410', '3rd Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(622, 13, 44, '501', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(623, 13, 44, '502', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(624, 13, 44, '503', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(625, 13, 44, '504', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(626, 13, 44, '505', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(627, 13, 44, '506', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(628, 13, 44, '507', '4th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(629, 13, 44, '508', '4th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(630, 13, 44, '509', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(631, 13, 44, '510', '4th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(632, 13, 44, '601', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(633, 13, 44, '602', '5th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(634, 13, 44, '603', '5th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(635, 13, 44, '604', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(636, 13, 44, '605', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(637, 13, 44, '606', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(638, 13, 44, '607', '5th Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(639, 13, 45, '608', '5th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(640, 13, 45, '609', '5th Floor', 'maintenance', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(641, 13, 45, '610', '5th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(642, 13, 45, '701', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(643, 13, 45, '702', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(644, 13, 45, '703', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(645, 13, 45, '704', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(646, 13, 45, '705', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(647, 13, 45, '706', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(648, 13, 45, '707', '6th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(649, 13, 46, '708', '6th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(650, 13, 46, '709', '6th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(651, 13, 46, '710', '6th Floor', 'occupied', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(652, 13, 46, '801', '7th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(653, 13, 46, '802', '7th Floor', 'available', '2026-02-20 14:14:59', '2026-02-20 14:14:59'),
+(654, 15, 47, '297', 'Voluptatem vero mini', 'available', '2026-03-16 11:29:11', '2026-03-16 11:29:23'),
+(655, 15, 48, '838', 'Aliquam qui elit ex', 'occupied', '2026-03-18 15:52:22', '2026-03-18 15:52:22'),
+(656, 17, 25, '21', 'Qui et dolore in sol', 'available', '2026-06-21 00:11:37', '2026-06-21 00:11:37');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `room_types`
+--
+
+CREATE TABLE `room_types` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `hotel_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `price_per_night` decimal(10,2) DEFAULT NULL,
+  `beds` int(11) DEFAULT NULL,
+  `max_adults` int(11) DEFAULT NULL,
+  `max_children` int(11) DEFAULT NULL,
+  `ac` tinyint(4) DEFAULT 0,
+  `status` tinyint(4) DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `room_types`
+--
+
+INSERT INTO `room_types` (`id`, `hotel_id`, `name`, `description`, `price_per_night`, `beds`, `max_adults`, `max_children`, `ac`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Standard Room', 'Well-appointed standard room featuring modern decor and essential business amenities. Includes air conditioning, flat-screen TV, work desk with ergonomic chair, mini fridge, tea/coffee maker, and complimentary WiFi. Perfect for business travelers and tourists.', 6461.00, 1, 2, 1, 1, 1, '2026-02-20 14:14:31', '2026-02-26 07:58:43'),
+(2, 1, 'Deluxe Room', 'Elegant deluxe room with superior comfort and upgraded amenities. Features premium bedding, larger workspace, mini bar, safe deposit box, bathrobes, enhanced bathroom with premium toiletries, and choice of city or garden views. Ideal for extended stays.', 9827.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(3, 1, 'Executive Room', 'Premium executive room designed for business professionals. Includes spacious work area, high-speed internet, separate sitting area, executive lounge access, complimentary breakfast, premium minibar, and enhanced business services. Perfect for corporate travelers.', 14655.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(7, 3, 'Standard Room', 'Well-appointed standard room featuring modern decor and essential business amenities. Includes air conditioning, flat-screen TV, work desk with ergonomic chair, mini fridge, tea/coffee maker, and complimentary WiFi. Perfect for business travelers and tourists.', 5388.00, 1, 2, 1, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(8, 3, 'Deluxe Room', 'Elegant deluxe room with superior comfort and upgraded amenities. Features premium bedding, larger workspace, mini bar, safe deposit box, bathrobes, enhanced bathroom with premium toiletries, and choice of city or garden views. Ideal for extended stays.', 10244.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(9, 3, 'Executive Room', 'Premium executive room designed for business professionals. Includes spacious work area, high-speed internet, separate sitting area, executive lounge access, complimentary breakfast, premium minibar, and enhanced business services. Perfect for corporate travelers.', 15274.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(10, 3, 'Suite', 'Luxurious suite with separate bedroom and living area. Features king-size bed, spacious bathroom with bathtub, large work desk, dining area, premium entertainment system, minibar, and panoramic views. Includes butler service and exclusive amenities for a memorable stay.', 23094.00, 2, 4, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(11, 4, 'Standard Room', 'Well-appointed standard room featuring modern decor and essential business amenities. Includes air conditioning, flat-screen TV, work desk with ergonomic chair, mini fridge, tea/coffee maker, and complimentary WiFi. Perfect for business travelers and tourists.', 5903.00, 1, 2, 1, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(12, 4, 'Deluxe Room', 'Elegant deluxe room with superior comfort and upgraded amenities. Features premium bedding, larger workspace, mini bar, safe deposit box, bathrobes, enhanced bathroom with premium toiletries, and choice of city or garden views. Ideal for extended stays.', 9460.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(13, 4, 'Executive Room', 'Premium executive room designed for business professionals. Includes spacious work area, high-speed internet, separate sitting area, executive lounge access, complimentary breakfast, premium minibar, and enhanced business services. Perfect for corporate travelers.', 14478.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(14, 4, 'Suite', 'Luxurious suite with separate bedroom and living area. Features king-size bed, spacious bathroom with bathtub, large work desk, dining area, premium entertainment system, minibar, and panoramic views. Includes butler service and exclusive amenities for a memorable stay.', 29342.00, 2, 4, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(15, 5, 'Standard Room', 'Well-appointed standard room featuring modern decor and essential business amenities. Includes air conditioning, flat-screen TV, work desk with ergonomic chair, mini fridge, tea/coffee maker, and complimentary WiFi. Perfect for business travelers and tourists.', 6261.00, 1, 2, 1, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(16, 5, 'Deluxe Room', 'Elegant deluxe room with superior comfort and upgraded amenities. Features premium bedding, larger workspace, mini bar, safe deposit box, bathrobes, enhanced bathroom with premium toiletries, and choice of city or garden views. Ideal for extended stays.', 8810.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(17, 5, 'Executive Room', 'Premium executive room designed for business professionals. Includes spacious work area, high-speed internet, separate sitting area, executive lounge access, complimentary breakfast, premium minibar, and enhanced business services. Perfect for corporate travelers.', 17468.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(18, 5, 'Suite', 'Luxurious suite with separate bedroom and living area. Features king-size bed, spacious bathroom with bathtub, large work desk, dining area, premium entertainment system, minibar, and panoramic views. Includes butler service and exclusive amenities for a memorable stay.', 27907.00, 2, 4, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(19, 6, 'Standard Room', 'Well-appointed standard room featuring modern decor and essential business amenities. Includes air conditioning, flat-screen TV, work desk with ergonomic chair, mini fridge, tea/coffee maker, and complimentary WiFi. Perfect for business travelers and tourists.', 5927.00, 1, 2, 1, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(20, 6, 'Deluxe Room', 'Elegant deluxe room with superior comfort and upgraded amenities. Features premium bedding, larger workspace, mini bar, safe deposit box, bathrobes, enhanced bathroom with premium toiletries, and choice of city or garden views. Ideal for extended stays.', 10444.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(21, 6, 'Executive Room', 'Premium executive room designed for business professionals. Includes spacious work area, high-speed internet, separate sitting area, executive lounge access, complimentary breakfast, premium minibar, and enhanced business services. Perfect for corporate travelers.', 13736.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(22, 6, 'Suite', 'Luxurious suite with separate bedroom and living area. Features king-size bed, spacious bathroom with bathtub, large work desk, dining area, premium entertainment system, minibar, and panoramic views. Includes butler service and exclusive amenities for a memorable stay.', 24522.00, 2, 4, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(23, 7, 'Standard Room', 'Cozy and comfortable standard room perfect for budget-conscious travelers. Features essential amenities including a comfortable bed, clean private bathroom, basic furniture, and a peaceful ambiance. Ideal for solo travelers or couples looking for a simple yet pleasant stay.', 3269.00, 1, 2, 1, 0, 0, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(24, 7, 'Deluxe Room', 'Spacious deluxe room with enhanced comfort and modern amenities. Includes air conditioning, premium bedding, work desk, comfortable seating area, and upgraded bathroom fixtures. Perfect for those seeking extra comfort without luxury pricing.', 5234.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(25, 7, 'Family Room', 'Generously sized family room designed for comfort and convenience. Features multiple beds, air conditioning, ample storage space, and a larger bathroom. Ideal for families with children or groups of friends traveling together.', 7057.00, 3, 4, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(26, 8, 'Standard Room', 'Cozy and comfortable standard room perfect for budget-conscious travelers. Features essential amenities including a comfortable bed, clean private bathroom, basic furniture, and a peaceful ambiance. Ideal for solo travelers or couples looking for a simple yet pleasant stay.', 3696.00, 1, 2, 1, 0, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(27, 8, 'Deluxe Room', 'Spacious deluxe room with enhanced comfort and modern amenities. Includes air conditioning, premium bedding, work desk, comfortable seating area, and upgraded bathroom fixtures. Perfect for those seeking extra comfort without luxury pricing.', 5085.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(28, 8, 'Family Room', 'Generously sized family room designed for comfort and convenience. Features multiple beds, air conditioning, ample storage space, and a larger bathroom. Ideal for families with children or groups of friends traveling together.', 7347.00, 3, 4, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(29, 9, 'Standard Room', 'Cozy and comfortable standard room perfect for budget-conscious travelers. Features essential amenities including a comfortable bed, clean private bathroom, basic furniture, and a peaceful ambiance. Ideal for solo travelers or couples looking for a simple yet pleasant stay.', 3583.00, 1, 2, 1, 0, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(30, 9, 'Deluxe Room', 'Spacious deluxe room with enhanced comfort and modern amenities. Includes air conditioning, premium bedding, work desk, comfortable seating area, and upgraded bathroom fixtures. Perfect for those seeking extra comfort without luxury pricing.', 5507.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(31, 9, 'Family Room', 'Generously sized family room designed for comfort and convenience. Features multiple beds, air conditioning, ample storage space, and a larger bathroom. Ideal for families with children or groups of friends traveling together.', 7793.00, 3, 4, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(32, 10, 'Standard Room', 'Cozy and comfortable standard room perfect for budget-conscious travelers. Features essential amenities including a comfortable bed, clean private bathroom, basic furniture, and a peaceful ambiance. Ideal for solo travelers or couples looking for a simple yet pleasant stay.', 3319.00, 1, 2, 1, 0, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(33, 10, 'Deluxe Room', 'Spacious deluxe room with enhanced comfort and modern amenities. Includes air conditioning, premium bedding, work desk, comfortable seating area, and upgraded bathroom fixtures. Perfect for those seeking extra comfort without luxury pricing.', 5506.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(34, 10, 'Family Room', 'Generously sized family room designed for comfort and convenience. Features multiple beds, air conditioning, ample storage space, and a larger bathroom. Ideal for families with children or groups of friends traveling together.', 7686.00, 3, 4, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(35, 11, 'Standard Room', 'Beautifully designed standard room with resort amenities and scenic views. Features comfortable bedding, modern bathroom, private balcony, air conditioning, minibar, and access to all resort facilities including pool and gym. Perfect for leisure travelers.', 9127.00, 2, 2, 1, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(36, 11, 'Deluxe Room', 'Premium deluxe room with enhanced comfort and spectacular views. Includes superior bedding, spacious bathroom with rainfall shower, large balcony, seating area, premium minibar, and upgraded room service. Ideal for romantic getaways and relaxation.', 13435.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(37, 11, 'Executive Suite', 'Spacious executive suite with separate living and sleeping areas. Features king bed, luxurious bathroom with jacuzzi, expansive private terrace, dining space, premium entertainment, and exclusive concierge services. Perfect for special occasions and extended stays.', 29108.00, 2, 4, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(38, 11, 'Presidential Suite', 'Ultimate luxury presidential suite with panoramic views and world-class amenities. Includes master bedroom, guest bedroom, private living room, full dining area, kitchen, premium bathrooms with spa features, private butler, and access to exclusive resort areas. The epitome of luxury.', 56124.00, 3, 6, 3, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(39, 12, 'Standard Room', 'Beautifully designed standard room with resort amenities and scenic views. Features comfortable bedding, modern bathroom, private balcony, air conditioning, minibar, and access to all resort facilities including pool and gym. Perfect for leisure travelers.', 8168.00, 2, 2, 1, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(40, 12, 'Deluxe Room', 'Premium deluxe room with enhanced comfort and spectacular views. Includes superior bedding, spacious bathroom with rainfall shower, large balcony, seating area, premium minibar, and upgraded room service. Ideal for romantic getaways and relaxation.', 17594.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(41, 12, 'Executive Suite', 'Spacious executive suite with separate living and sleeping areas. Features king bed, luxurious bathroom with jacuzzi, expansive private terrace, dining space, premium entertainment, and exclusive concierge services. Perfect for special occasions and extended stays.', 25351.00, 2, 4, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(42, 12, 'Presidential Suite', 'Ultimate luxury presidential suite with panoramic views and world-class amenities. Includes master bedroom, guest bedroom, private living room, full dining area, kitchen, premium bathrooms with spa features, private butler, and access to exclusive resort areas. The epitome of luxury.', 42417.00, 3, 6, 3, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(43, 13, 'Standard Room', 'Beautifully designed standard room with resort amenities and scenic views. Features comfortable bedding, modern bathroom, private balcony, air conditioning, minibar, and access to all resort facilities including pool and gym. Perfect for leisure travelers.', 8271.00, 2, 2, 1, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(44, 13, 'Deluxe Room', 'Premium deluxe room with enhanced comfort and spectacular views. Includes superior bedding, spacious bathroom with rainfall shower, large balcony, seating area, premium minibar, and upgraded room service. Ideal for romantic getaways and relaxation.', 14696.00, 2, 3, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(45, 13, 'Executive Suite', 'Spacious executive suite with separate living and sleeping areas. Features king bed, luxurious bathroom with jacuzzi, expansive private terrace, dining space, premium entertainment, and exclusive concierge services. Perfect for special occasions and extended stays.', 28762.00, 2, 4, 2, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(46, 13, 'Presidential Suite', 'Ultimate luxury presidential suite with panoramic views and world-class amenities. Includes master bedroom, guest bedroom, private living room, full dining area, kitchen, premium bathrooms with spa features, private butler, and access to exclusive resort areas. The epitome of luxury.', 46614.00, 3, 6, 3, 1, 1, '2026-02-20 14:14:31', '2026-02-20 14:14:31'),
+(47, 15, 'Brock Johnson', 'Aut dolores voluptat', 874.00, 11, 58, 80, 1, 1, '2026-03-16 11:27:56', '2026-03-16 11:27:56'),
+(48, 15, 'Marshall Hodges1', 'Ut rerum vel cupidat', 423.00, 20, 57, 56, 0, 1, '2026-03-18 15:51:59', '2026-03-18 15:51:59'),
+(49, 17, 'Timothy Justice', 'Temporibus sint err', 181.00, 70, 95, 21, 1, 1, '2026-06-21 00:11:19', '2026-06-21 00:11:19');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `room_type_amenities`
+--
+
+CREATE TABLE `room_type_amenities` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `room_type_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `amenity_id` bigint(20) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `room_type_amenities`
+--
+
+INSERT INTO `room_type_amenities` (`id`, `room_type_id`, `amenity_id`) VALUES
+(1, 1, 1),
+(2, 1, 3),
+(3, 1, 4),
+(4, 2, 1),
+(5, 2, 3),
+(6, 2, 4),
+(7, 2, 17),
+(8, 2, 16),
+(9, 3, 1),
+(10, 3, 3),
+(11, 3, 4),
+(12, 3, 17),
+(13, 3, 16),
+(14, 3, 8),
+(15, 3, 9),
+(16, 3, 18),
+(17, 3, 15),
+(37, 7, 1),
+(38, 7, 3),
+(39, 7, 4),
+(40, 7, 17),
+(41, 8, 1),
+(42, 8, 3),
+(43, 8, 4),
+(44, 8, 17),
+(45, 8, 16),
+(46, 9, 1),
+(47, 9, 3),
+(48, 9, 4),
+(49, 9, 17),
+(50, 9, 16),
+(51, 9, 8),
+(52, 9, 9),
+(53, 9, 18),
+(54, 9, 15),
+(55, 10, 1),
+(56, 10, 3),
+(57, 10, 4),
+(58, 10, 17),
+(59, 10, 16),
+(60, 10, 8),
+(61, 10, 9),
+(62, 10, 18),
+(63, 10, 15),
+(64, 11, 1),
+(65, 11, 3),
+(66, 11, 4),
+(67, 11, 17),
+(68, 12, 1),
+(69, 12, 3),
+(70, 12, 4),
+(71, 12, 17),
+(72, 12, 16),
+(73, 12, 8),
+(74, 12, 18),
+(75, 13, 1),
+(76, 13, 3),
+(77, 13, 4),
+(78, 13, 17),
+(79, 13, 16),
+(80, 13, 8),
+(81, 13, 9),
+(82, 13, 18),
+(83, 13, 15),
+(84, 14, 1),
+(85, 14, 3),
+(86, 14, 4),
+(87, 14, 17),
+(88, 14, 16),
+(89, 14, 8),
+(90, 14, 9),
+(91, 14, 18),
+(92, 14, 15),
+(93, 15, 1),
+(94, 15, 3),
+(95, 15, 4),
+(96, 16, 1),
+(97, 16, 3),
+(98, 16, 4),
+(99, 16, 17),
+(100, 16, 16),
+(101, 16, 8),
+(102, 17, 1),
+(103, 17, 3),
+(104, 17, 4),
+(105, 17, 17),
+(106, 17, 16),
+(107, 17, 8),
+(108, 17, 9),
+(109, 17, 18),
+(110, 17, 15),
+(111, 18, 1),
+(112, 18, 3),
+(113, 18, 4),
+(114, 18, 17),
+(115, 18, 16),
+(116, 18, 8),
+(117, 18, 9),
+(118, 18, 18),
+(119, 18, 15),
+(120, 19, 1),
+(121, 19, 3),
+(122, 19, 4),
+(123, 19, 17),
+(124, 19, 16),
+(125, 20, 1),
+(126, 20, 3),
+(127, 20, 4),
+(128, 20, 17),
+(129, 20, 16),
+(130, 21, 1),
+(131, 21, 3),
+(132, 21, 4),
+(133, 21, 17),
+(134, 21, 16),
+(135, 21, 8),
+(136, 21, 9),
+(137, 21, 18),
+(138, 21, 15),
+(139, 22, 1),
+(140, 22, 3),
+(141, 22, 4),
+(142, 22, 17),
+(143, 22, 16),
+(144, 22, 8),
+(145, 22, 9),
+(146, 22, 18),
+(147, 22, 15),
+(148, 23, 1),
+(149, 23, 3),
+(150, 23, 4),
+(151, 23, 17),
+(152, 24, 1),
+(153, 24, 3),
+(154, 24, 4),
+(155, 24, 17),
+(156, 24, 16),
+(157, 24, 8),
+(158, 24, 9),
+(159, 24, 18),
+(160, 25, 1),
+(161, 25, 3),
+(162, 25, 4),
+(163, 25, 17),
+(164, 25, 16),
+(165, 25, 8),
+(166, 25, 18),
+(167, 26, 1),
+(168, 26, 3),
+(169, 26, 4),
+(170, 26, 17),
+(171, 26, 16),
+(172, 27, 1),
+(173, 27, 3),
+(174, 27, 4),
+(175, 27, 17),
+(176, 27, 16),
+(177, 27, 8),
+(178, 27, 9),
+(179, 28, 1),
+(180, 28, 3),
+(181, 28, 4),
+(182, 28, 17),
+(183, 28, 16),
+(184, 28, 8),
+(185, 28, 18),
+(186, 29, 1),
+(187, 29, 3),
+(188, 29, 4),
+(189, 29, 17),
+(190, 29, 16),
+(191, 30, 1),
+(192, 30, 3),
+(193, 30, 4),
+(194, 30, 17),
+(195, 30, 16),
+(196, 30, 8),
+(197, 30, 9),
+(198, 30, 18),
+(199, 31, 1),
+(200, 31, 3),
+(201, 31, 4),
+(202, 31, 17),
+(203, 31, 16),
+(204, 31, 8),
+(205, 31, 9),
+(206, 32, 1),
+(207, 32, 3),
+(208, 32, 4),
+(209, 32, 17),
+(210, 32, 16),
+(211, 33, 1),
+(212, 33, 3),
+(213, 33, 4),
+(214, 33, 17),
+(215, 33, 16),
+(216, 33, 8),
+(217, 33, 9),
+(218, 33, 18),
+(219, 34, 1),
+(220, 34, 3),
+(221, 34, 4),
+(222, 34, 17),
+(223, 34, 16),
+(224, 34, 8),
+(225, 34, 9),
+(226, 35, 1),
+(227, 35, 3),
+(228, 35, 4),
+(229, 35, 17),
+(230, 36, 1),
+(231, 36, 3),
+(232, 36, 4),
+(233, 36, 17),
+(234, 36, 16),
+(235, 36, 8),
+(236, 37, 1),
+(237, 37, 3),
+(238, 37, 4),
+(239, 37, 17),
+(240, 37, 16),
+(241, 37, 8),
+(242, 37, 9),
+(243, 37, 18),
+(244, 37, 15),
+(245, 38, 1),
+(246, 38, 3),
+(247, 38, 4),
+(248, 38, 17),
+(249, 38, 16),
+(250, 38, 8),
+(251, 38, 9),
+(252, 38, 18),
+(253, 38, 15),
+(254, 39, 1),
+(255, 39, 3),
+(256, 39, 4),
+(257, 40, 1),
+(258, 40, 3),
+(259, 40, 4),
+(260, 40, 17),
+(261, 40, 16),
+(262, 40, 8),
+(263, 40, 9),
+(264, 41, 1),
+(265, 41, 3),
+(266, 41, 4),
+(267, 41, 17),
+(268, 41, 16),
+(269, 41, 8),
+(270, 41, 9),
+(271, 41, 18),
+(272, 41, 15),
+(273, 42, 1),
+(274, 42, 3),
+(275, 42, 4),
+(276, 42, 17),
+(277, 42, 16),
+(278, 42, 8),
+(279, 42, 9),
+(280, 42, 18),
+(281, 42, 15),
+(282, 43, 1),
+(283, 43, 3),
+(284, 43, 4),
+(285, 43, 17),
+(286, 43, 16),
+(287, 44, 1),
+(288, 44, 3),
+(289, 44, 4),
+(290, 44, 17),
+(291, 44, 16),
+(292, 44, 18),
+(293, 45, 1),
+(294, 45, 3),
+(295, 45, 4),
+(296, 45, 17),
+(297, 45, 16),
+(298, 45, 8),
+(299, 45, 9),
+(300, 45, 18),
+(301, 45, 15),
+(302, 46, 1),
+(303, 46, 3),
+(304, 46, 4),
+(305, 46, 17),
+(306, 46, 16),
+(307, 46, 8),
+(308, 46, 9),
+(309, 46, 18),
+(310, 46, 15),
+(311, 47, 2),
+(312, 47, 6),
+(313, 47, 7),
+(314, 47, 10),
+(315, 47, 13),
+(316, 47, 14),
+(317, 47, 15),
+(318, 47, 16),
+(319, 47, 17),
+(320, 47, 19),
+(321, 47, 20),
+(322, 48, 5),
+(323, 48, 7),
+(324, 48, 8),
+(325, 48, 9),
+(326, 48, 10),
+(327, 48, 11),
+(328, 48, 12),
+(329, 48, 15),
+(330, 48, 16),
+(331, 48, 18),
+(332, 48, 21),
+(333, 49, 3),
+(334, 49, 4),
+(335, 49, 5),
+(336, 49, 6),
+(337, 49, 7),
+(338, 49, 8),
+(339, 49, 9),
+(340, 49, 10),
+(341, 49, 11),
+(342, 49, 13),
+(343, 49, 14),
+(344, 49, 15),
+(345, 49, 19),
+(346, 49, 21);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `room_type_images`
+--
+
+CREATE TABLE `room_type_images` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `room_type_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `image_path` varchar(255) DEFAULT NULL,
+  `sort_order` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `room_type_images`
+--
+
+INSERT INTO `room_type_images` (`id`, `room_type_id`, `image_path`, `sort_order`, `created_at`) VALUES
+(2, 1, 'hotel-rooms/1772180546_69a15442bd1a7.jpg', 0, NULL),
+(3, 1, 'hotel-rooms/1772180546_69a15442be5a0.jpg', 0, NULL),
+(4, 1, 'hotel-rooms/1772180546_69a15442befb8.jpg', 0, NULL),
+(5, 1, 'hotel-rooms/1772180546_69a15442bf7d8.jpg', 0, NULL),
+(6, 1, 'hotel-rooms/1772180546_69a15442c0269.jpeg', 0, NULL),
+(7, 47, 'hotel-rooms/1773865398_69bb09b6ae057.jpg', 0, NULL),
+(8, 47, 'hotel-rooms/1773865398_69bb09b6bb73f.jpg', 0, NULL),
+(9, 47, 'hotel-rooms/1773865398_69bb09b6bc228.jpg', 0, NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `sessions`
 --
 
@@ -22625,7 +24588,58 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('qpvOOSl6YttZlt8c6L3Fh4B3AfPUb86hEdJIh835', 6, '::1', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36', 'YToxMDp7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MTk6Imh0dHA6Ly9sb2NhbGhvc3QvdjIiO3M6NToicm91dGUiO3M6NDoiaG9tZSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NjoiX3Rva2VuIjtzOjQwOiJCczlzdm1vR2NUSlN4YzhTV0d0dm1zcldmZDJrVU5KVDA1TFRCWGk1IjtzOjM6InVybCI7YTowOnt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6NjtzOjEyOiJ1bXJhaF9zZWFyY2giO2E6MTI6e3M6Njoib3JpZ2luIjtzOjM6IkxIRSI7czoxMToib3JpZ2luX25hbWUiO3M6MTI6IkxhaG9yZSAoTEhFKSI7czoxMToiZGVzdGluYXRpb24iO3M6MzoiTUVEIjtzOjE2OiJkZXN0aW5hdGlvbl9uYW1lIjtzOjEzOiJNYWRpbmFoIChNRUQpIjtzOjE0OiJkZXBhcnR1cmVfZGF0ZSI7czoxMDoiMjAyNi0wMi0wNCI7czoxMToicmV0dXJuX2RhdGUiO3M6MTA6IjIwMjYtMDItMDgiO3M6NToiYWR1bHQiO2k6MTtzOjg6ImNoaWxkcmVuIjtpOjA7czo3OiJpbmZhbnRzIjtpOjA7czoxNToicGFzc2VuZ2VyX2NvdW50IjtpOjE7czoxMzoibWFra2FoX25pZ2h0cyI7aTowO3M6MTM6Im1hZGluYV9uaWdodHMiO2k6MDt9czo4OiJjdXJyZW5jeSI7czozOiJBRUQiO3M6MTA6ImJvb2tpbmdrZXkiO3M6MjM6IjIwMjYwMjAyMDMwNDM5NjMzMTgzNTQ2IjtzOjExOiJ0b3VyX3NlYXJjaCI7YToxMTp7czo4OiJsb2NhdGlvbiI7czo1OiJkdWJhaSI7czoxMzoibG9jYXRpb25fbmFtZSI7czo1OiJEdWJhaSI7czoxNjoibG9jYXRpb25fY291bnRyeSI7czoyMDoiVW5pdGVkIEFyYWIgRW1pcmF0ZXMiO3M6NDoidHlwZSI7czozOiJhbGwiO3M6OToidHlwZV9uYW1lIjtzOjg6IkFsbCB0b3VyIjtzOjEwOiJzdGFydF9kYXRlIjtzOjEwOiIyMDI2LTAyLTA0IjtzOjg6ImVuZF9kYXRlIjtzOjEwOiIyMDI2LTAyLTA2IjtzOjU6ImFkdWx0IjtpOjI7czo1OiJjaGlsZCI7aTowO3M6MTk6Im9yaWdpbmFsX3N0YXJ0X2RhdGUiO3M6MTA6IjA0LTAyLTIwMjYiO3M6MTc6Im9yaWdpbmFsX2VuZF9kYXRlIjtzOjEwOiIwNi0wMi0yMDI2Ijt9czoxMzoiZmxpZ2h0X3NlYXJjaCI7YToxMzp7czo2OiJvcmlnaW4iO3M6MzoibGhlIjtzOjExOiJkZXN0aW5hdGlvbiI7czozOiJkeGIiO3M6MTE6Im9yaWdpbl9uYW1lIjtzOjY6IkxhaG9yZSI7czoxNjoiZGVzdGluYXRpb25fbmFtZSI7czo1OiJEdWJhaSI7czo5OiJ0cmlwX3R5cGUiO3M6Njoib25ld2F5IjtzOjExOiJmbGlnaHRfdHlwZSI7czo3OiJlY29ub215IjtzOjE0OiJkZXBhcnR1cmVfZGF0ZSI7czoxMDoiMjAyNi0wMi0wNCI7czoxMToicmV0dXJuX2RhdGUiO047czo2OiJhZHVsdHMiO2k6MTtzOjg6ImNoaWxkcmVuIjtpOjA7czo3OiJpbmZhbnRzIjtpOjA7czoxNToicGFzc2VuZ2VyX2NvdW50IjtpOjE7czoxNjoic2VhcmNoX3RpbWVzdGFtcCI7czoxOToiMjAyNi0wMi0wMiAwMjo1NDowOCI7fX0=', 1770001501);
+('2RViUmO3FpXN2RJBSkRbwdDjZSVTz0woJiiSqnp0', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiaWttYVZWaFZDRFpXc2MzbzI0c2dXcmowSzh4ZHczY3FnUE1KN3pRNCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDc6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FnZW50L3JlZ2lzdGVyIjtzOjU6InJvdXRlIjtzOjE0OiJhZ2VudC5yZWdpc3RlciI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1790859263),
+('3FuuRUJ4ZKLQfEfhswl8388rYkLm24y1DFFsPSYL', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiM1pWazdqV3JWZG5RRU5VeloyTE1vN1NRa2hrbHdUVzFITzZ3Vk1xNSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzI6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzIjtzOjU6InJvdXRlIjtzOjQ6ImhvbWUiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1790857569),
+('40ufJ1oiDfSP4llgK4JqHY8FwY4Ch9WbHxUK2R5m', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiNTBIOU9CTTFPU0Q2V3R3Qk1PdW5HcFR4clJOZThITGhZWjhMTW9kZiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzg6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2xvZ2luIjtzOjU6InJvdXRlIjtzOjU6ImxvZ2luIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1791266073),
+('4dEWBj5vKieNbrci8wFjj74ppnY7cGFunUIvnVaW', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidTM4RkpmR3lHczlzQkVOeUpjb1ptUEtCVnNXcWRFRm13WFhYQzhCeiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDc6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FnZW50L3JlZ2lzdGVyIjtzOjU6InJvdXRlIjtzOjE0OiJhZ2VudC5yZWdpc3RlciI7fX0=', 1790859533),
+('4KdvkukOcGP8GSSL7ZrCN7PRWK7yyg9WLFtltS6U', 6, '::1', 'curl/8.12.1', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiZzh4Z21XRFEydkFISG1LcVJQb3ZBS2c2MTZ4c09BZ3RBWUhINUFHWiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDQ6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FkbWluL2xvZ2luIjtzOjU6InJvdXRlIjtzOjExOiJhZG1pbi5sb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjY7fQ==', 1791371970),
+('6BV9j0L6TZX4ZlQ8EpZRhNKZoYevyHDMRAwhObcC', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidmFnYjZLNzUzank4dEpyWTRWRU1oZXF3TDk2ZzM5U1hjS0t1ZXY2WiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDc6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FnZW50L3JlZ2lzdGVyIjtzOjU6InJvdXRlIjtzOjE0OiJhZ2VudC5yZWdpc3RlciI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1790859262),
+('8AroMlPrCYi6qc92di2hjwZTmh0ICkul245Sh0UH', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoieEt0V2liUGhiaTZ4bmRRWVA1Uk5Ma0k1SVJrSFFIQnp0bWpYSHhtWCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDc6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FnZW50L3JlZ2lzdGVyIjtzOjU6InJvdXRlIjtzOjE0OiJhZ2VudC5yZWdpc3RlciI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1791198530),
+('A82s7MmztDYBrX83IfE9Bg8grKfFraMn757WKg9d', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiQXA0T3pHSHBwUktycWVxeHNmZlRtNFdpcFFSeVNZQWYxaXV4M2JYUSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL3RyYWNrLXRpY2tldCI7czo1OiJyb3V0ZSI7czoxMjoidGlja2V0LnRyYWNrIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1790857489),
+('bS0ZGdLo2o3pJc177xrC5Hkum0OaTajyBkeVnrfA', 6, '::1', 'curl/8.12.1', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiWFNkNm5HaDFCNnY1OUljNWVnV3NodXVqckFDQXpFUU9zbzRYb2FCaCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDg6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FkbWluL2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czoyMToiYWRtaW4uZGFzaGJvYXJkLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Njt9', 1791301636),
+('CbrKUHREvGJggv4fyHa8ZYqKI4ste2A9xysJnFMG', 6, '::1', 'curl/8.12.1', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiUURiNnRaMFBLRkJ5ODdDVDAxV2JVVGRTbFUzbjNKblE4WG9Qc29rTiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDg6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FkbWluL2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czoyMToiYWRtaW4uZGFzaGJvYXJkLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czozOiJ1cmwiO2E6MDp7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjY7fQ==', 1791301627),
+('cSyQt03uqIdNCMuiUc5xR8f30b7NbIXW66BNbDTR', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiWXlYUFcyMlBGTmFxSXNRRzl5NmFKSzRJSHhUWWdUWVFLMVpScXVtayI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJuZXciO2E6MDp7fXM6Mzoib2xkIjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzg6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2xvZ2luIjtzOjU6InJvdXRlIjtzOjU6ImxvZ2luIjt9fQ==', 1790954364),
+('CwKDR2D2EbX3rIsrO37XtSAYb5Sen4QUaSVwlTK9', 7, '::1', 'curl/8.12.1', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiQ0k3TnFEMHI1VWg1eTZUenIxTTJJSFRhSFFCWFozemh3dXVXYkN6YyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDg6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FnZW50L2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czoxNToiYWdlbnQuZGFzaGJvYXJkIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Nzt9', 1791371962),
+('dX7xC5JqBJNqB1YHXBXBJfiXGQJrTBWPnynSdbeA', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoibVRXWUZKVFJHTmhrOU9nTWhITkRqQjMwZjVEbnNvVWpuVWVwU2tSbCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzI6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzIjtzOjU6InJvdXRlIjtzOjQ6ImhvbWUiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1790929730),
+('E6olfZaiQUqfRiZbfJutV8UpGw99o7MAXLkjJ45G', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiWFUzaXZuRFpGcXB2SERqM0UwNnJwbmpONExxU2dVYkswVHVZUGdZVSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1790943344),
+('FGGF02okQ8Qf1vH2kUgaeGFa8xL3uDSlJ9nsbpP2', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiT1lBd0ZYaVc0cmlPQzIxdGFFQm5FczBpVm9BSGsya0ZSa2hDYTdCVSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDA6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2NvbnRhY3QiO3M6NToicm91dGUiO3M6NzoiY29udGFjdCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1790929745),
+('FzEarUdy6RcS71kWFj4JfQ3JEjHTzjGcq1g2I91j', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiSFVaNWRIS2ZXeE1qVmNIbDNTZ3RlSE5mTHZwanJpOWl1UHY4bHJNQyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDc6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FnZW50L3JlZ2lzdGVyIjtzOjU6InJvdXRlIjtzOjE0OiJhZ2VudC5yZWdpc3RlciI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1790859235),
+('hcASfbWWFsQTiSFtSiPFQ9rQwY2wQSxlBrZHxCcf', 6, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoicFJUa3I1YmJwMGhlQWowN25RTGQwWEVtSHBEVGtxa0t1djUxV2t4byI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjQ3OiJodHRwOi8vbG9jYWxob3N0L3RyYXZlbGJwYW5lbF92My9hZG1pbi9hZ2VudHMvNyI7czo1OiJyb3V0ZSI7czoxNzoiYWRtaW4uYWdlbnRzLnNob3ciO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo2O30=', 1790927403),
+('HpXaX3Y8WNd2u8QYJWVG8st4vzTrQnIvICwWsJSg', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiQUVrV1ZlVEFENGt4U0RkaGxhcjNpQjUwYmc3T0t6RlA2dGtQY1lpVSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDg6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FnZW50L2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czoxNToiYWdlbnQuZGFzaGJvYXJkIjt9fQ==', 1791371867),
+('HxgGVTOgkOreseaJBKwVJl7jXxKZ4vTOSz4Kfbce', 7, '::1', 'curl/8.12.1', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiZGV1cWxVQWg0SmRmOTAyMGdmckJrMVVQcWIxZUZqZlE3dnFZYWNJNCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDg6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FnZW50L2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czoxNToiYWdlbnQuZGFzaGJvYXJkIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6NztzOjg6ImN1cnJlbmN5IjtzOjM6IlVTRCI7fQ==', 1791381957),
+('iHm7uQEBETUS6d1ZiF4FlY61QNKEgPCaSAXiQIac', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiWDFqRVExMzJnVTlnUWtvcEczMHZHbW1tOTlycnQ5OVNtQlF4Nk1FWSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDc6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL3RyYWNrLXRpY2tldC81IjtzOjU6InJvdXRlIjtzOjExOiJ0aWNrZXQuc2hvdyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1790857552),
+('ImeE8sZTN3wStYX1KWeW12lkevzZFQPapnUVdCIO', 6, '::1', 'curl/8.12.1', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoieG1vUTJPQ3hzcE83a3NDRE45M1VkU2ZuYklHN1BSVGZ1UFp6eUVHVSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTU6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FkbWluL2FnZW50cy8xMC93YWxsZXQiO3M6NToicm91dGUiO3M6MTk6ImFkbWluLmFnZW50cy53YWxsZXQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo2O3M6ODoiY3VycmVuY3kiO3M6MzoiVVNEIjt9', 1790862822),
+('iMF5KK6LGJRYLh46kI9MytMWbKAA6SKIZ0hjjDsv', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiWUZ4NUVVN3FBYnBYR3R1NXdUUHFmS285VzJRQTUwcGJ1Y2FFTFdOZyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzI6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzIjtzOjU6InJvdXRlIjtzOjQ6ImhvbWUiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1790858849),
+('JLLqpyhz7SlWM4uoVZjq9t3ep8TxixQPLiSn6I0C', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiUzQwVjloSWE5VzdPV0pjMU4xU3JQYW9yT08xMUxzcXZqT3FTUXVLNyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NjI6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2ZsaWdodC9pbnZvaWNlLzIwMjUxMTExMDYzOTU5IjtzOjU6InJvdXRlIjtzOjE0OiJmbGlnaHQuaW52b2ljZSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1790858848),
+('k2vZEPN3sv5AchvKZApD44JKe9hkshNXBVhMkAkD', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidDI0eDBJc1pWVWFDeTZNbkwyNm9CWTRUNGpoUHVPbWRYYVJmNU9wVCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzI6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzIjtzOjU6InJvdXRlIjtzOjQ6ImhvbWUiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1790929729),
+('L2VEjkBe7nLYJ5tPiFKsba39Ud0w4GuVCM0qt2uV', 6, '::1', 'curl/8.12.1', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiTmZabkl5NzF4THVoMDhzWWk3VVhMV1NJMGxDUnBOSWMyZXNVb3FqUiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDg6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FkbWluL2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czoyMToiYWRtaW4uZGFzaGJvYXJkLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Njt9', 1791371836),
+('M5luNyBSYLDenG9Z1OJTDSx2pavcH7oozNZgptNf', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiWVYyN20ybENVZUx6S2RJVjM2d3ZPNW0xZ2M3WWZzV1NBQU9nUFF1dCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzg6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2xvZ2luIjtzOjU6InJvdXRlIjtzOjU6ImxvZ2luIjt9fQ==', 1791304859),
+('N6TZvS33KPiODcXfMFuYm4tUVkR7qtW8MIbdGtFd', 10, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiaVZRdnlJQ3pzWFdudlhMWlBsRGdFVWdueWxvaHdpSnl2b1BURXFwRyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FnZW50L3dhbGxldCI7czo1OiJyb3V0ZSI7czoxODoiYWdlbnQud2FsbGV0LmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTA7czo4OiJjdXJyZW5jeSI7czozOiJBRUQiO30=', 1790862266),
+('NdHH94hyKRaF3fmsqhxU4fZVV56K79u5zihsZJme', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidGNPcmNpMzZYeEtLeWlWcTZlZWZnS1g4d1pxcmVncjQ0TmtmVGRCMSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL3RyYWNrLXRpY2tldCI7czo1OiJyb3V0ZSI7czoxMjoidGlja2V0LnRyYWNrIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1790857561),
+('Ni13W6bU2qJzDK98MM6cOaI1QoGnyG2906lzcl2E', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoibEFVOXk4aWNncXFSbUVZUlgwWkFJSm91RlpkbWpHdjJoUHJHdFgzNiI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo1NToiaHR0cDovL2xvY2FsaG9zdC90cmF2ZWxicGFuZWxfdjMvYWRtaW4vc2V0dGluZ3Mvd2Vic2l0ZSI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjU1OiJodHRwOi8vbG9jYWxob3N0L3RyYXZlbGJwYW5lbF92My9hZG1pbi9zZXR0aW5ncy93ZWJzaXRlIjtzOjU6InJvdXRlIjtzOjIyOiJhZG1pbi5zZXR0aW5ncy53ZWJzaXRlIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1791435194),
+('oIxxTHu3TaWDIGqmoJrPHrtYfVNwySsl5bHBK212', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiVkNvOTFpNGl2ZTdRdzFMcGQxR3ZmSThVRUtGNzVqZGdjNGxiRGJwTCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDQ6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FkbWluL2xvZ2luIjtzOjU6InJvdXRlIjtzOjExOiJhZG1pbi5sb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1790862631),
+('oMp978uVoqWcU73vOnXNFBcvKBaPuhinwFA0OIIw', 6, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiMUxyTjFWaGtmd0tZSjVXdjRaUGFnWmNJTkpGWTFYWnZ4Z2F4YU91NiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTU6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FkbWluL3NldHRpbmdzL3dlYnNpdGUiO3M6NToicm91dGUiO3M6MjI6ImFkbWluLnNldHRpbmdzLndlYnNpdGUiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTo2O30=', 1791302010),
+('q5O2Y3B4Fe1RIZSfcsD4AOIESSzV8pjBqG2FwWCX', 6, '::1', 'curl/8.12.1', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiT3NXVDJoZGlrakZYWmtGUjNPNVh2VmtyRVFmRkRaa2pKQTFibXdndiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDg6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FkbWluL2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czoyMToiYWRtaW4uZGFzaGJvYXJkLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Njt9', 1790929794),
+('rmqz3JOEtMfAm6sFaAWjR3fO6xR25QLVQEiJiNVc', 7, '::1', 'curl/8.12.1', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoidEJjREl0OTZBcHdnWXEyREtadEozTTJyQ2hwTnk3Y1JOUWpCT2RWbSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDg6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FnZW50L2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czoxNToiYWdlbnQuZGFzaGJvYXJkIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Nzt9', 1791371946),
+('RRuMH153sUdt2mOXcGxNcC1IxgghgQVTBRYx5s9h', 6, '::1', 'curl/8.12.1', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiRGdWbDNoMEtZbnRBWFNROThHYmlTMThNZzVSaWFRcUR0dm1BQzRpViI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDQ6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FkbWluL2xvZ2luIjtzOjU6InJvdXRlIjtzOjExOiJhZG1pbi5sb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjY7fQ==', 1791301640),
+('rZlhI5j6OBeYC7GxrlWSQcd1krXkwwxktRxoPl2c', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiajV1MXlGRGYzRXR6dWNmT285dGU5VTVIZUYwQ1czdm9UODJOWWtlVyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDc6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FnZW50L3JlZ2lzdGVyIjtzOjU6InJvdXRlIjtzOjE0OiJhZ2VudC5yZWdpc3RlciI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1790947029),
+('SQ0b83wX1VjHYOrpQdMpNC4ii2NIb3ewhcCKdlGa', 7, '::1', 'curl/8.12.1', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNk00SEFwc1NZOUpuaFJqN05RaXZhUWliN2dwanhoak1qTGh6d3VVNyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDg6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FnZW50L2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czoxNToiYWdlbnQuZGFzaGJvYXJkIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Nzt9', 1791391131),
+('SSpGZ84ZcJe88OeJTiuslPFcRzZ5ETa6g6HLhujA', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiR0tOS1RZY2lVN3hXTENwdkM0UG9pa1BRZnFSZnBSZG1yb1J6VGdtSCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzI6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzIjtzOjU6InJvdXRlIjtzOjQ6ImhvbWUiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1790929753),
+('styiP69WZR6Tj3au8bKZ4BofA85ySIXrForVT4R9', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiUThWcHVjMFVDc1JBM0UyQ1ZDMjViM3pQZDg4VEJZaVk2T3YyQXVjOCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDc6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FnZW50L3JlZ2lzdGVyIjtzOjU6InJvdXRlIjtzOjE0OiJhZ2VudC5yZWdpc3RlciI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1790859262),
+('sXJFuF7G3AG3ql7gSixY2oFtDDgB1g9dvULN20SK', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiSmNsU0ZzblJIM1Z4T0djOXkzamVXYVVPRTFvcmh0THZSZGIxbjJKbyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzg6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2xvZ2luIjtzOjU6InJvdXRlIjtzOjU6ImxvZ2luIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1790861615),
+('UlEjfMRiONeWd8GUh3ERhMU4Nuoed1fKCN57yRXg', NULL, '::1', 'curl/8.12.1', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoiTEZWRjJ5NnpKS1FnUHQwTlpqNFFncmxDbm80WUN1cXo0U283bFM3UyI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1790862170),
+('uPNjcKDYNxEW5mpVTiSdFGC9pKc2vyQMHy7V6Jqf', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiZGkxZjlZRVQzMHBoeEZPQm4yTGcxS3hJUHZENWs0ZmNkRmhLV0hvdiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjY6Imh0dHA6Ly9sb2NhbGhvc3QvZ21iX2xlYWRzIjtzOjU6InJvdXRlIjtzOjQ6ImhvbWUiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1791198531),
+('V13crvtyMppiglbxdreabwo21Hw0nfMHuNA2hJwt', NULL, '::1', 'curl/8.12.1', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiaTVvUHVnbmowR0NabldTSGphTkVjaTJNSENjUU5FRDcxYUpRVkdKQiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL3RyYWNrLXRpY2tldCI7czo1OiJyb3V0ZSI7czoxMjoidGlja2V0LnRyYWNrIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxNzoidmVyaWZpZWRfdGlja2V0XzUiO2I6MTt9', 1790857510),
+('WicEjYhVBMsuNcmF8F4FJCYTYzBCXW43IWSljw0v', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiVnFuc1BjR3d6dnRqZHlNRnBVVVM5UWo3T2JXaUVQN05yR1hNcDdrdiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NjI6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2ZsaWdodC9pbnZvaWNlLzIwMjYwMjAyMDI1NDU3IjtzOjU6InJvdXRlIjtzOjE0OiJmbGlnaHQuaW52b2ljZSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1790858021),
+('Wn0Ro3g7c5becwRa0fu3buiFOil8qRTcT69QaA3Q', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiTHVCaW55ckJudUluRHJEekwyMjNSeU8xTnRFZFBDMTlvRDV1Yk1ybCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzI6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzIjtzOjU6InJvdXRlIjtzOjQ6ImhvbWUiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1790929754),
+('XHCdXysTuFDt8ozyjMzDmDv1xQ3qTpD7088Aq5wo', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiOUZzS1U4V0puWXdmV1RtU3ZIWVJ1MEhWZXVEM3VETlhON2ROS0pzYSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzI6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzIjtzOjU6InJvdXRlIjtzOjQ6ImhvbWUiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1790929747),
+('XICkd6ncezgQflQdhlYr90xdGaOdOmMjeh3wpelH', NULL, '::1', 'curl/8.12.1', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoib1k4Y2tCa1o5NkNkdnVBMXQ0MU1KeW1oUnduV2M3WTJ0RFFkelQ3USI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1790861736),
+('XscVJeItKSNBWwRDKYArzjMfL24pZGOevr7z6PW0', NULL, '::1', 'curl/8.12.1', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiOE1WYldHQUdJUnNPcGx5V1JzSG1aNzM0Z09wRnpKb0lhZ1RkWHRUYyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDg6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FkbWluL2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czoyMToiYWRtaW4uZGFzaGJvYXJkLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMToiMmZhX3BlbmRpbmciO2E6Mjp7czo3OiJ1c2VyX2lkIjtpOjY7czo4OiJyZW1lbWJlciI7YjowO31zOjM6InVybCI7YToxOntzOjg6ImludGVuZGVkIjtzOjQ4OiJodHRwOi8vbG9jYWxob3N0L3RyYXZlbGJwYW5lbF92My9hZG1pbi9kYXNoYm9hcmQiO319', 1791371781),
+('xWbgRHaKoiesRk1oHlxuL5ND9tSR9mLW6fXzLPIZ', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiME5hcDN5Mm1sampuY2VjQUlYWks5RGs2cDY1VmNHc2RkUDM4TWFETiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzI6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzIjtzOjU6InJvdXRlIjtzOjQ6ImhvbWUiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1790858849),
+('y4RzXU6EIVuC5bXBBwaL3X6xt6SkyCTnCXvPML7k', NULL, '::1', 'curl/8.12.1', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoidE5VbDdGN0cwRHM5Nm1IbE9OeEsyREptMERQdGgyVG5DN0o2a3JtYyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDc6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL3RyYWNrLXRpY2tldC81IjtzOjU6InJvdXRlIjtzOjExOiJ0aWNrZXQuc2hvdyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTc6InZlcmlmaWVkX3RpY2tldF81IjtiOjE7fQ==', 1790857545),
+('zcawq3GahYg8Kq9xzZ1f8rmtrp0OPnPvFNBmnnhd', 6, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiNjFVY1AydFVtMnk3ZzFOMWNTckM1aFV4OWZIclhzckVpY1djZ244bCI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjU1OiJodHRwOi8vbG9jYWxob3N0L3RyYXZlbGJwYW5lbF92My9hZG1pbi9hZ2VudHMvMTAvd2FsbGV0IjtzOjU6InJvdXRlIjtzOjE5OiJhZG1pbi5hZ2VudHMud2FsbGV0Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Njt9', 1790862795),
+('ZJJO3Xlziyk4HVEXw7eVn1HVOA0idXPqmdw3751O', NULL, '::1', 'curl/8.12.1', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoicnJtZk9PckRDSGp6Ync1ZlRQbFZZMTdRcDV0cktydFdsU3RLOUhZVyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDc6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FnZW50L3JlZ2lzdGVyIjtzOjU6InJvdXRlIjtzOjE0OiJhZ2VudC5yZWdpc3RlciI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1790859235),
+('ZqVJQ2NDoCCIyZFYmkLULa50U6yRFTlLk6VU6XBD', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoibm03Sll0UWY1cUZxaFNKZ3B4cURNWENZazR5ZXR2VDdQN2JkS2hRQSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDc6Imh0dHA6Ly9sb2NhbGhvc3QvdHJhdmVsYnBhbmVsX3YzL2FnZW50L3JlZ2lzdGVyIjtzOjU6InJvdXRlIjtzOjE0OiJhZ2VudC5yZWdpc3RlciI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1791205855);
 
 -- --------------------------------------------------------
 
@@ -22651,7 +24665,7 @@ CREATE TABLE `settings` (
 
 INSERT INTO `settings` (`id`, `group`, `key`, `value`, `type`, `description`, `is_active`, `created_at`, `updated_at`) VALUES
 (1, 'main', 'business_name', 'TravelBookingPanel', 'text', 'Business name displayed across the website', 1, '2025-07-14 15:23:15', '2025-08-26 22:57:10'),
-(2, 'main', 'domain_name', 'travelbookingpanel.com', 'text', 'Primary domain name', 1, '2025-07-14 15:23:15', '2025-08-26 22:57:10'),
+(2, 'main', 'domain_name', 'example.com', 'text', 'Primary domain name', 1, '2025-07-14 15:23:15', '2026-09-29 12:08:24'),
 (3, 'main', 'license_key', 'SK-2025-XXXXXXXX-XXXX1', 'text', 'Software license key', 1, '2025-07-14 15:23:15', '2025-07-19 04:51:18'),
 (4, 'main', 'website_offline', '1', 'boolean', 'Put website in maintenance mode', 1, '2025-07-14 15:23:15', '2025-07-19 04:51:18'),
 (5, 'seo', 'meta_title', 'TravelBookingPanel - Best Flight Booking Platform', 'text', 'Meta title for SEO (50-60 characters)', 1, '2025-07-14 15:23:15', '2026-01-30 11:46:50'),
@@ -22671,8 +24685,8 @@ INSERT INTO `settings` (`id`, `group`, `key`, `value`, `type`, `description`, `i
 (19, 'contact', 'contact_phone', '+92 320 7560200', 'tel', 'Primary contact phone', 1, '2025-07-14 15:23:15', '2026-01-30 11:48:03'),
 (20, 'contact', 'support_email', 'contact@travelbookingpanel.com', 'email', 'Customer support email', 1, '2025-07-14 15:23:15', '2026-01-30 11:48:03'),
 (21, 'contact', 'emergency_contact', '+92 320 7560200', 'tel', 'Emergency contact number', 1, '2025-07-14 15:23:15', '2026-01-30 11:48:03'),
-(22, 'branding', 'business_logo', 'settings/branding/1762795190_69121eb6a22fd_business_logo.png', 'file', 'Business logo (PNG, max 1MB)', 1, '2025-07-14 15:23:15', '2025-11-10 12:19:50'),
-(23, 'branding', 'favicon', 'settings/branding/1762795525_69122005e506a_favicon.png', 'file', 'Website favicon (PNG, 32x32, max 1MB)', 1, '2025-07-14 15:23:15', '2025-11-10 12:25:25'),
+(22, 'branding', 'business_logo', 'settings/branding/1784984429_6a64b36d6a698_business_logo.png', 'file', 'Business logo (PNG, max 1MB)', 1, '2025-07-14 15:23:15', '2026-07-25 08:00:29'),
+(23, 'branding', 'favicon', 'settings/branding/1784984566_6a64b3f6d6745_favicon.png', 'file', 'Website favicon (PNG, 32x32, max 1MB)', 1, '2025-07-14 15:23:15', '2026-07-25 08:02:46'),
 (24, 'homepage', 'cover_image', 'settings/homepage/1763461025_691c47a1c4320_cover_image.jpg', 'file', 'Homepage hero cover image (PNG, 1920x800, max 1MB)', 1, '2025-07-14 15:23:15', '2025-11-18 05:17:05'),
 (25, 'homepage', 'cover_title', 'Find Your Perfect Flight', 'text', 'Homepage hero title', 1, '2025-07-14 15:23:15', '2025-11-18 05:17:34'),
 (26, 'homepage', 'cover_subtitle', 'Search from hundreds of airlines to find the best deals on flights worldwide', 'text', 'Homepage hero subtitle', 1, '2025-07-14 15:23:15', '2025-11-18 05:17:34'),
@@ -22683,8 +24697,8 @@ INSERT INTO `settings` (`id`, `group`, `key`, `value`, `type`, `description`, `i
 (31, 'social', 'google_url', '', 'url', 'Google Business profile URL', 1, '2025-07-14 15:23:15', '2025-07-14 15:23:15'),
 (32, 'social', 'youtube_url', NULL, 'url', 'YouTube channel URL', 1, '2025-07-14 15:23:15', '2025-11-18 05:36:24'),
 (33, 'social', 'whatsapp_number', NULL, 'tel', 'WhatsApp business number', 1, '2025-07-14 15:23:15', '2025-11-18 05:36:24'),
-(34, 'email', 'resend_api_key', 're_SBtHZ5PF_KLpxbmeiPZBf9hNHmuBJ7oEh', 'password', 'Resend API key for email delivery', 1, '2025-07-14 15:23:15', '2025-11-19 10:28:25'),
-(35, 'email', 'sender_name', 'Amdglobal Support', 'text', 'Name that appears in recipient inbox', 1, '2025-07-14 15:23:15', '2025-07-19 06:49:02'),
+(34, 'email', 'resend_api_key', 're_Coss5vFP_HQP1KRUvGtjssxJ336VQh1U4', 'password', 'Resend API key for email delivery', 1, '2025-07-14 15:23:15', '2026-10-02 02:49:03'),
+(35, 'email', 'sender_name', 'Travelbookingpanel Support', 'text', 'Name that appears in recipient inbox', 1, '2025-07-14 15:23:15', '2026-03-18 16:35:30'),
 (36, 'email', 'sender_email', 'contact@travelbookingpanel.com', 'email', 'Sender email address (must be verified domain)', 1, '2025-07-14 15:23:15', '2025-11-19 10:34:27'),
 (37, 'email', 'api_status', 'connected', 'text', 'API connection status', 1, '2025-07-14 15:23:15', '2025-07-19 06:34:22'),
 (38, 'email', 'last_test_email', 'hm.younas22@gmail.com', 'email', 'Last email used for testing', 1, '2025-07-14 15:23:15', '2025-07-19 06:46:17'),
@@ -22757,7 +24771,92 @@ INSERT INTO `settings` (`id`, `group`, `key`, `value`, `type`, `description`, `i
 (105, 'payment', 'payone_webhook_secret', NULL, 'text', NULL, 1, '2025-11-15 04:26:48', '2025-11-15 04:26:48'),
 (106, 'payment', 'payone_notes', NULL, 'text', NULL, 1, '2025-11-15 04:26:48', '2025-11-15 04:26:48'),
 (107, 'payment', 'payone_test_mode', '1', 'text', NULL, 1, '2025-11-18 04:36:47', '2025-11-18 04:36:47'),
-(108, 'branding', 'business_logo_white', 'settings/branding/1763460854_691c46f635dd6_business_logo_white.png', 'text', NULL, 1, '2025-11-18 05:14:14', '2025-11-18 05:14:14');
+(108, 'branding', 'business_logo_white', 'settings/branding/1763460854_691c46f635dd6_business_logo_white.png', 'text', NULL, 1, '2025-11-18 05:14:14', '2025-11-18 05:14:14'),
+(109, 'system', 'business_model', 'b2b', 'text', NULL, 1, '2026-07-13 08:36:41', '2026-10-01 08:23:30'),
+(112, 'system', 'agent_signup_url', NULL, 'text', NULL, 1, '2026-09-29 11:05:19', '2026-09-29 11:05:47'),
+(113, 'main', 'show_business_name_with_logo', '0', 'text', NULL, 1, '2026-09-29 12:07:59', '2026-09-29 12:08:35'),
+(114, 'security', 'admin_2fa_enabled', '0', 'text', NULL, 1, '2026-10-06 10:46:45', '2026-10-07 06:17:02'),
+(116, 'security', 'agent_2fa_enabled', '1', 'text', NULL, 1, '2026-10-07 06:17:02', '2026-10-07 06:17:16'),
+(117, 'security', 'user_2fa_enabled', '0', 'text', NULL, 1, '2026-10-07 06:17:02', '2026-10-07 06:17:02');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `support_tickets`
+--
+
+CREATE TABLE `support_tickets` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `ticket_number` varchar(255) NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `agent_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `subject` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `priority` varchar(255) NOT NULL DEFAULT 'normal',
+  `status` varchar(255) NOT NULL DEFAULT 'open',
+  `attachment` varchar(255) DEFAULT NULL,
+  `last_activity_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `support_ticket_replies`
+--
+
+CREATE TABLE `support_ticket_replies` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `support_ticket_id` bigint(20) UNSIGNED NOT NULL,
+  `sender_id` bigint(20) UNSIGNED NOT NULL,
+  `message` text NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `theme_settings`
+--
+
+CREATE TABLE `theme_settings` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `theme_name` varchar(40) NOT NULL DEFAULT 'default',
+  `design_style` varchar(20) NOT NULL DEFAULT 'classic',
+  `primary_color` varchar(40) NOT NULL,
+  `secondary_color` varchar(40) NOT NULL,
+  `success_color` varchar(40) NOT NULL,
+  `warning_color` varchar(40) NOT NULL,
+  `danger_color` varchar(40) NOT NULL,
+  `info_color` varchar(40) NOT NULL,
+  `body_background` varchar(40) NOT NULL,
+  `sidebar_background` varchar(40) NOT NULL,
+  `navbar_background` varchar(40) NOT NULL,
+  `card_background` varchar(40) NOT NULL,
+  `text_color` varchar(40) NOT NULL,
+  `border_color` varchar(40) NOT NULL,
+  `input_background` varchar(40) NOT NULL,
+  `input_border` varchar(40) NOT NULL,
+  `input_focus_color` varchar(40) NOT NULL,
+  `font_family` varchar(60) NOT NULL DEFAULT 'Inter',
+  `font_size` varchar(10) NOT NULL DEFAULT '14px',
+  `border_radius` varchar(20) NOT NULL DEFAULT 'medium',
+  `layout_options` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`layout_options`)),
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `theme_settings`
+--
+
+INSERT INTO `theme_settings` (`id`, `user_id`, `theme_name`, `design_style`, `primary_color`, `secondary_color`, `success_color`, `warning_color`, `danger_color`, `info_color`, `body_background`, `sidebar_background`, `navbar_background`, `card_background`, `text_color`, `border_color`, `input_background`, `input_border`, `input_focus_color`, `font_family`, `font_size`, `border_radius`, `layout_options`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, NULL, 'default', 'nova', '#0C6DFD', '#64748B', '#10B981', '#F59E0B', '#EF4444', '#0EA5E9', '#F8FAFC', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#1F2937', '#E5E7EB', '#FFFFFF', '#E5E7EB', '#0C6DFD', 'Inter', '14px', 'medium', '{\"sidebar_fixed\":true,\"navbar_fixed\":true,\"box_shadow\":true,\"rounded_cards\":true,\"rounded_inputs\":true,\"rounded_buttons\":true,\"compact_mode\":false,\"wide_layout\":false,\"fluid_layout\":false,\"animations\":true}', 1, '2026-07-23 03:51:36', '2026-09-03 03:26:36'),
+(7, 10, 'default', 'classic', '#0C6DFD', '#64748B', '#10B981', '#F59E0B', '#EF4444', '#0EA5E9', '#F8FAFC', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#1F2937', '#E5E7EB', '#FFFFFF', '#E5E7EB', '#0C6DFD', 'Inter', '14px', 'medium', '{\"sidebar_fixed\":true,\"navbar_fixed\":true,\"box_shadow\":true,\"rounded_cards\":true,\"rounded_inputs\":true,\"rounded_buttons\":true,\"compact_mode\":false,\"wide_layout\":false,\"fluid_layout\":false,\"animations\":true}', 1, '2026-10-01 06:10:02', '2026-10-01 06:53:52');
 
 -- --------------------------------------------------------
 
@@ -22767,6 +24866,9 @@ INSERT INTO `settings` (`id`, `group`, `key`, `value`, `type`, `description`, `i
 
 CREATE TABLE `tours` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `agent_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `added_by` varchar(20) NOT NULL DEFAULT 'admin',
+  `approval_status` enum('pending','approved','rejected') NOT NULL DEFAULT 'approved',
   `name` varchar(255) NOT NULL,
   `packege_type` varchar(255) NOT NULL,
   `currceny` varchar(255) NOT NULL,
@@ -22799,17 +24901,17 @@ CREATE TABLE `tours` (
 -- Dumping data for table `tours`
 --
 
-INSERT INTO `tours` (`id`, `name`, `packege_type`, `currceny`, `price`, `duration`, `loaction`, `leaving_from`, `going_to`, `checkin_date`, `checkout_date`, `days`, `nights`, `class`, `desc`, `inclusions`, `exclusions`, `policy`, `featured`, `status`, `stars`, `rating`, `adults`, `childs`, `infants`, `created_at`, `updated_at`) VALUES
-(2, 'Hunza Valley Escape', 'Family Tour Package', 'PKR', '85', '5 Days Tour', 9404, NULL, NULL, '2026-03-10', '2026-03-15', 5, 4, NULL, 'A luxury escape to Hunza Valley including scenic mountain views, Attabad Lake, Passu Cones, cultural exploration, local cuisine experience, and peaceful natural environment. Perfect for families and couples who want relaxation with adventure.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Booking requires 50% advance payment. Free cancellation before 72 hours. No refund after tour start. Management holds rights to change schedule due to weather or road conditions.', '1', '1', '5', '4.8', '2', '1', '0', '2026-01-27 14:29:17', '2026-02-01 21:26:58'),
-(3, 'Skardu Adventure Trip', 'Family Tour Package', 'PKR', '95000', '6 Days Tour', 9404, NULL, NULL, '2026-04-05', '2026-04-11', 6, 5, NULL, 'An adventurous journey to Skardu featuring lakes, deserts, cold deserts, forts, cultural heritage, and majestic mountain landscapes. Ideal for nature lovers and adventure seekers.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Full payment required before departure. Non-refundable after confirmation. Company not responsible for flight delays, weather issues, or natural disruptions.', '1', '1', '5', '4.7', '2', '2', '0', '2026-01-27 14:29:17', '2026-01-27 09:42:23'),
-(4, 'Naran Kaghan Getaway', 'Family Tour Package', 'PKR', '42000', '3 Days Tour', 9404, NULL, NULL, '2026-05-01', '2026-05-03', 3, 2, NULL, 'A refreshing short tour to Naran & Kaghan including waterfalls, rivers, valleys, lakes, and scenic road trips. Best for quick relaxation and nature photography.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Refund available if cancelled 48 hours before departure. No refund on last-day cancellation. Weather-based route changes may apply.', '0', '1', '4', '4.5', '2', '1', '0', '2026-01-27 14:29:17', '2026-01-27 09:44:00'),
-(5, 'Murree Family Tour', 'Honeymoon Tour Package', 'PKR', '30000', '2 Days Tour', 9404, NULL, NULL, '2026-02-15', '2026-02-16', 2, 1, NULL, 'A family-friendly short tour to Murree including mall road, chairlift, picnic points, scenic views, and comfortable stay for all age groups.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Same-day cancellation not refundable. Tour company is not responsible for traffic delays and weather conditions.', '0', '1', '4', '4.2', '4', '2', '1', '2026-01-27 14:29:17', '2026-01-27 09:44:24'),
-(6, 'Neelum Valley Special', 'Honeymoon Tour Package', 'PKR', '68000', '4 Days Tour', 9404, NULL, NULL, '2026-06-12', '2026-06-16', 4, 3, NULL, 'A beautiful journey through Neelum Valley including rivers, waterfalls, forests, green valleys, and peaceful nature retreats.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Booking confirmation after advance payment. Tour schedule may change due to weather or security situations.', '1', '1', '5', '4.6', '2', '1', '0', '2026-01-27 14:29:17', '2026-01-27 09:45:00'),
-(7, 'Swat Valley Nature Tour', 'Honeymoon Tour Package', 'PKR', '55000', '4 Days Tour', 9404, NULL, NULL, '2026-07-05', '2026-07-09', 4, 3, NULL, 'A peaceful nature tour to Swat Valley including rivers, green fields, mountains, cultural spots, and scenic beauty.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Partial refund available before 72 hours. No refund in case of no-show. Company not responsible for natural disasters.', '0', '1', '4', '4.4', '2', '2', '0', '2026-01-27 14:29:17', '2026-01-27 09:45:57'),
-(8, 'Fairy Meadows Trek', 'Honeymoon Tour Package', 'PKR', '110000', '7 Days Tour', 9404, NULL, NULL, '2026-08-01', '2026-08-07', 7, 6, NULL, 'A high-adventure trekking tour including Fairy Meadows, Nanga Parbat base camp views, mountain camping, and extreme nature exploration.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Participants must be physically fit. No refund after confirmation. Safety rules must be followed strictly.', '1', '1', '5', '4.9', '2', '0', '0', '2026-01-27 14:29:17', '2026-01-27 09:46:34'),
-(9, 'Kashmir Romantic Tour', 'Family Tour Package', 'PKR', '72000', '4 Days Tour', 9404, NULL, NULL, '2026-09-10', '2026-09-14', 4, 3, NULL, 'A romantic tour to Kashmir valleys including riversides, mountain resorts, sightseeing, and peaceful nature experience for couples.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Couple CNIC verification required. Partial refund before 72 hours. No refund after departure.', '1', '1', '5', '4.8', '2', '0', '0', '2026-01-27 14:29:17', '2026-01-27 09:46:51'),
-(10, 'Chitral Cultural Tour', 'Honeymoon Tour Package', 'PKR', '88000', '5 Days Tour', 9404, NULL, NULL, '2026-10-03', '2026-10-08', 5, 4, NULL, 'A cultural exploration tour of Chitral and Kalash Valley including traditions, festivals, historical forts, and mountain landscapes.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Valid CNIC required. Schedule may change due to festivals, weather, or road conditions.', '0', '1', '4', '4.3', '2', '1', '0', '2026-01-27 14:29:17', '2026-01-27 09:47:22'),
-(11, 'Gilgit Autumn Tour', 'Honeymoon Tour Package', 'PKR', '79000', '5 Days Tour', 9404, NULL, NULL, '2026-11-01', '2026-11-06', 5, 4, NULL, 'An autumn special tour to Gilgit including colorful valleys, rivers, mountains, photography spots, and cultural exploration.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Weather-based route changes possible. No refund for flight or road delays.', '1', '1', '5', '4.7', '2', '1', '0', '2026-01-27 14:29:17', '2026-01-27 09:47:32');
+INSERT INTO `tours` (`id`, `agent_id`, `added_by`, `approval_status`, `name`, `packege_type`, `currceny`, `price`, `duration`, `loaction`, `leaving_from`, `going_to`, `checkin_date`, `checkout_date`, `days`, `nights`, `class`, `desc`, `inclusions`, `exclusions`, `policy`, `featured`, `status`, `stars`, `rating`, `adults`, `childs`, `infants`, `created_at`, `updated_at`) VALUES
+(2, NULL, 'admin', 'approved', 'Hunza Valley Escape', 'Family Tour Package', 'PKR', '85', '5 Days Tour', 9404, NULL, NULL, '2026-03-10', '2026-03-15', 5, 4, NULL, 'A luxury escape to Hunza Valley including scenic mountain views, Attabad Lake, Passu Cones, cultural exploration, local cuisine experience, and peaceful natural environment. Perfect for families and couples who want relaxation with adventure.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Booking requires 50% advance payment. Free cancellation before 72 hours. No refund after tour start. Management holds rights to change schedule due to weather or road conditions.', '1', '1', '5', '4.8', '2', '1', '0', '2026-01-27 14:29:17', '2026-02-01 21:26:58'),
+(3, NULL, 'admin', 'approved', 'Skardu Adventure Trip', 'Family Tour Package', 'PKR', '95000', '6 Days Tour', 9404, NULL, NULL, '2026-04-05', '2026-04-11', 6, 5, NULL, 'An adventurous journey to Skardu featuring lakes, deserts, cold deserts, forts, cultural heritage, and majestic mountain landscapes. Ideal for nature lovers and adventure seekers.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Full payment required before departure. Non-refundable after confirmation. Company not responsible for flight delays, weather issues, or natural disruptions.', '1', '1', '5', '4.7', '2', '2', '0', '2026-01-27 14:29:17', '2026-01-27 09:42:23'),
+(4, NULL, 'admin', 'approved', 'Naran Kaghan Getaway', 'Family Tour Package', 'PKR', '42000', '3 Days Tour', 9404, NULL, NULL, '2026-05-01', '2026-05-03', 3, 2, NULL, 'A refreshing short tour to Naran & Kaghan including waterfalls, rivers, valleys, lakes, and scenic road trips. Best for quick relaxation and nature photography.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Refund available if cancelled 48 hours before departure. No refund on last-day cancellation. Weather-based route changes may apply.', '0', '1', '4', '4.5', '2', '1', '0', '2026-01-27 14:29:17', '2026-01-27 09:44:00'),
+(5, NULL, 'admin', 'approved', 'Murree Family Tour', 'Honeymoon Tour Package', 'PKR', '30000', '2 Days Tour', 9404, NULL, NULL, '2026-02-15', '2026-02-16', 2, 1, NULL, 'A family-friendly short tour to Murree including mall road, chairlift, picnic points, scenic views, and comfortable stay for all age groups.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Same-day cancellation not refundable. Tour company is not responsible for traffic delays and weather conditions.', '1', '1', '4', '4.2', '4', '2', '1', '2026-01-27 14:29:17', '2026-02-26 07:32:48'),
+(6, NULL, 'admin', 'approved', 'Neelum Valley Special', 'Honeymoon Tour Package', 'PKR', '68000', '4 Days Tour', 9404, NULL, NULL, '2026-06-12', '2026-06-16', 4, 3, NULL, 'A beautiful journey through Neelum Valley including rivers, waterfalls, forests, green valleys, and peaceful nature retreats.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Booking confirmation after advance payment. Tour schedule may change due to weather or security situations.', '1', '1', '5', '4.6', '2', '1', '0', '2026-01-27 14:29:17', '2026-01-27 09:45:00'),
+(7, NULL, 'admin', 'approved', 'Swat Valley Nature Tour', 'Honeymoon Tour Package', 'PKR', '55000', '4 Days Tour', 9404, NULL, NULL, '2026-07-05', '2026-07-09', 4, 3, NULL, 'A peaceful nature tour to Swat Valley including rivers, green fields, mountains, cultural spots, and scenic beauty.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Partial refund available before 72 hours. No refund in case of no-show. Company not responsible for natural disasters.', '0', '1', '4', '4.4', '2', '2', '0', '2026-01-27 14:29:17', '2026-01-27 09:45:57'),
+(8, NULL, 'admin', 'approved', 'Fairy Meadows Trek', 'Honeymoon Tour Package', 'PKR', '110000', '7 Days Tour', 9404, NULL, NULL, '2026-08-01', '2026-08-07', 7, 6, NULL, 'A high-adventure trekking tour including Fairy Meadows, Nanga Parbat base camp views, mountain camping, and extreme nature exploration.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Participants must be physically fit. No refund after confirmation. Safety rules must be followed strictly.', '1', '1', '5', '4.9', '2', '0', '0', '2026-01-27 14:29:17', '2026-01-27 09:46:34'),
+(9, NULL, 'admin', 'approved', 'Kashmir Romantic Tour', 'Family Tour Package', 'PKR', '72000', '4 Days Tour', 9404, NULL, NULL, '2026-09-10', '2026-09-14', 4, 3, NULL, 'A romantic tour to Kashmir valleys including riversides, mountain resorts, sightseeing, and peaceful nature experience for couples.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Couple CNIC verification required. Partial refund before 72 hours. No refund after departure.', '1', '1', '5', '4.8', '2', '0', '0', '2026-01-27 14:29:17', '2026-01-27 09:46:51'),
+(10, NULL, 'admin', 'approved', 'Chitral Cultural Tour', 'Honeymoon Tour Package', 'PKR', '88000', '5 Days Tour', 9404, NULL, NULL, '2026-10-03', '2026-10-08', 5, 4, NULL, 'A cultural exploration tour of Chitral and Kalash Valley including traditions, festivals, historical forts, and mountain landscapes.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Valid CNIC required. Schedule may change due to festivals, weather, or road conditions.', '0', '1', '4', '4.3', '2', '1', '0', '2026-01-27 14:29:17', '2026-01-27 09:47:22'),
+(11, NULL, 'admin', 'approved', 'Gilgit Autumn Tour', 'Honeymoon Tour Package', 'PKR', '79000', '5 Days Tour', 9404, NULL, NULL, '2026-11-01', '2026-11-06', 5, 4, NULL, 'An autumn special tour to Gilgit including colorful valleys, rivers, mountains, photography spots, and cultural exploration.', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\"]', 'Weather-based route changes possible. No refund for flight or road delays.', '1', '1', '5', '4.7', '2', '1', '0', '2026-01-27 14:29:17', '2026-01-27 09:47:32');
 
 -- --------------------------------------------------------
 
@@ -22819,6 +24921,9 @@ INSERT INTO `tours` (`id`, `name`, `packege_type`, `currceny`, `price`, `duratio
 
 CREATE TABLE `tours_booking` (
   `id` int(11) NOT NULL,
+  `agent_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `booked_via` enum('guest','user','agent') NOT NULL DEFAULT 'guest',
   `booking_code_ref` varchar(225) NOT NULL,
   `booking_status_flag` enum('confirmed','pending','cancelled') NOT NULL DEFAULT 'pending',
   `booking_pnr` varchar(255) DEFAULT NULL,
@@ -22856,10 +24961,11 @@ CREATE TABLE `tours_booking` (
 -- Dumping data for table `tours_booking`
 --
 
-INSERT INTO `tours_booking` (`id`, `booking_code_ref`, `booking_status_flag`, `booking_pnr`, `tour_id`, `tour_name`, `tour_location`, `tour_type`, `departure_date`, `return_date`, `tour_duration`, `tour_days`, `booking_fare_base`, `booking_adult_count`, `booking_child_count`, `booking_adult_price`, `booking_child_price`, `booking_total_price`, `booking_currency_origin`, `booking_data`, `booking_response_json`, `booking_response_error`, `booking_payment_state`, `booking_supplier_name`, `module`, `booking_txn_id`, `booking_user_data`, `booking_guest`, `booking_nationality_code`, `booking_payment_gateway`, `created_at`, `updated_at`) VALUES
-(1, 'TUR090AB496', 'confirmed', '69800FAF4790D', 2, 'Hunza Valley Escape', 'Dubai', 'Family Tour Package', '2026-02-04', '2026-02-06', '5 Days Tour', 5, '2040', 2, 0, 1020.00, 0.00, 2040.00, 'USD', '{\"tour_data\":{\"tour_id\":2,\"tour_name\":\"Hunza Valley Escape\",\"price\":1020,\"child_price\":0,\"currency\":\"USD\",\"duration\":\"5 Days Tour\",\"days\":5},\"search_params\":{\"location\":\"dubai\",\"type\":\"all\",\"start_date\":\"2026-02-04\",\"end_date\":\"2026-02-06\",\"adult\":2,\"child\":0,\"original_start_date\":\"04-02-2026\",\"original_end_date\":\"06-02-2026\"}}', NULL, NULL, 'paid', 'tour', 'tour', NULL, '{\"first_name\":\"Christine\",\"last_name\":\"Randall\",\"email\":\"vopexibydo@mailinator.com\",\"phone\":\"+15513997642\",\"country\":\"am\"}', '[{\"type\":\"adult\",\"gender\":\"male\",\"first_name\":\"Christine\",\"last_name\":\"Randall\"},{\"type\":\"adult\",\"gender\":\"male\",\"first_name\":\"Erica\",\"last_name\":\"Le\"}]', 'am', 'stripe', '2026-02-01 21:44:39', '2026-02-02 02:45:03'),
-(2, 'TUR69C14524', 'confirmed', '698010C080765', 2, 'Hunza Valley Escape', 'Dubai', 'Family Tour Package', '2026-02-04', '2026-02-06', '5 Days Tour', 5, '2040', 2, 0, 1020.00, 0.00, 2040.00, 'AED', '{\"tour_data\":{\"tour_id\":2,\"tour_name\":\"Hunza Valley Escape\",\"price\":1020,\"child_price\":0,\"currency\":\"AED\",\"duration\":\"5 Days Tour\",\"days\":5},\"search_params\":{\"location\":\"dubai\",\"type\":\"all\",\"start_date\":\"2026-02-04\",\"end_date\":\"2026-02-06\",\"adult\":2,\"child\":0,\"original_start_date\":\"04-02-2026\",\"original_end_date\":\"06-02-2026\"}}', NULL, NULL, 'paid', 'tour', 'tour', NULL, '{\"first_name\":\"Christine\",\"last_name\":\"Randall\",\"email\":\"vopexibydo@mailinator.com\",\"phone\":\"+15513997642\",\"country\":\"am\"}', '[{\"type\":\"adult\",\"gender\":\"male\",\"first_name\":\"Lareina\",\"last_name\":\"Valdez\"},{\"type\":\"adult\",\"gender\":\"male\",\"first_name\":\"Lareina\",\"last_name\":\"Valdez\"}]', 'am', 'stripe', '2026-02-01 21:49:11', '2026-02-02 02:49:36'),
-(3, 'TUR91A525BB', 'confirmed', '69801457300E6', 2, 'Hunza Valley Escape', 'Dubai', 'Family Tour Package', '2026-02-04', '2026-02-06', '5 Days Tour', 5, '2040', 2, 0, 1020.00, 0.00, 2040.00, 'AED', '{\"tour_data\":{\"tour_id\":2,\"tour_name\":\"Hunza Valley Escape\",\"price\":1020,\"child_price\":0,\"currency\":\"AED\",\"duration\":\"5 Days Tour\",\"days\":5},\"search_params\":{\"location\":\"dubai\",\"type\":\"all\",\"start_date\":\"2026-02-04\",\"end_date\":\"2026-02-06\",\"adult\":2,\"child\":0,\"original_start_date\":\"04-02-2026\",\"original_end_date\":\"06-02-2026\"}}', NULL, NULL, 'paid', 'tour', 'tour', NULL, '{\"first_name\":\"Christine\",\"last_name\":\"Randall\",\"email\":\"vopexibydo@mailinator.com\",\"phone\":\"+15513997642\",\"country\":\"am\"}', '[{\"type\":\"adult\",\"gender\":\"male\",\"first_name\":\"Soft\",\"last_name\":\"Solution\"},{\"type\":\"adult\",\"gender\":\"male\",\"first_name\":\"Erica\",\"last_name\":\"Le\"}]', 'am', 'stripe', '2026-02-01 22:04:34', '2026-02-02 03:04:55');
+INSERT INTO `tours_booking` (`id`, `agent_id`, `user_id`, `booked_via`, `booking_code_ref`, `booking_status_flag`, `booking_pnr`, `tour_id`, `tour_name`, `tour_location`, `tour_type`, `departure_date`, `return_date`, `tour_duration`, `tour_days`, `booking_fare_base`, `booking_adult_count`, `booking_child_count`, `booking_adult_price`, `booking_child_price`, `booking_total_price`, `booking_currency_origin`, `booking_data`, `booking_response_json`, `booking_response_error`, `booking_payment_state`, `booking_supplier_name`, `module`, `booking_txn_id`, `booking_user_data`, `booking_guest`, `booking_nationality_code`, `booking_payment_gateway`, `created_at`, `updated_at`) VALUES
+(1, NULL, NULL, '', 'TUR090AB496', 'confirmed', '69800FAF4790D', 2, 'Hunza Valley Escape', 'Dubai', 'Family Tour Package', '2026-02-04', '2026-02-06', '5 Days Tour', 5, '2040', 2, 0, 1020.00, 0.00, 2040.00, 'USD', '{\"tour_data\":{\"tour_id\":2,\"tour_name\":\"Hunza Valley Escape\",\"price\":1020,\"child_price\":0,\"currency\":\"USD\",\"duration\":\"5 Days Tour\",\"days\":5},\"search_params\":{\"location\":\"dubai\",\"type\":\"all\",\"start_date\":\"2026-02-04\",\"end_date\":\"2026-02-06\",\"adult\":2,\"child\":0,\"original_start_date\":\"04-02-2026\",\"original_end_date\":\"06-02-2026\"}}', NULL, NULL, 'paid', 'tour', 'tour', NULL, '{\"first_name\":\"Christine\",\"last_name\":\"Randall\",\"email\":\"vopexibydo@mailinator.com\",\"phone\":\"+15513997642\",\"country\":\"am\"}', '[{\"type\":\"adult\",\"gender\":\"male\",\"first_name\":\"Christine\",\"last_name\":\"Randall\"},{\"type\":\"adult\",\"gender\":\"male\",\"first_name\":\"Erica\",\"last_name\":\"Le\"}]', 'am', 'stripe', '2026-02-01 21:44:39', '2026-05-07 16:44:18'),
+(2, NULL, NULL, '', 'TUR69C14524', 'confirmed', '698010C080765', 2, 'Hunza Valley Escape', 'Dubai', 'Family Tour Package', '2026-02-04', '2026-02-06', '5 Days Tour', 5, '2040', 2, 0, 1020.00, 0.00, 2040.00, 'AED', '{\"tour_data\":{\"tour_id\":2,\"tour_name\":\"Hunza Valley Escape\",\"price\":1020,\"child_price\":0,\"currency\":\"AED\",\"duration\":\"5 Days Tour\",\"days\":5},\"search_params\":{\"location\":\"dubai\",\"type\":\"all\",\"start_date\":\"2026-02-04\",\"end_date\":\"2026-02-06\",\"adult\":2,\"child\":0,\"original_start_date\":\"04-02-2026\",\"original_end_date\":\"06-02-2026\"}}', NULL, NULL, 'paid', 'tour', 'tour', NULL, '{\"first_name\":\"Christine\",\"last_name\":\"Randall\",\"email\":\"vopexibydo@mailinator.com\",\"phone\":\"+15513997642\",\"country\":\"am\"}', '[{\"type\":\"adult\",\"gender\":\"male\",\"first_name\":\"Lareina\",\"last_name\":\"Valdez\"},{\"type\":\"adult\",\"gender\":\"male\",\"first_name\":\"Lareina\",\"last_name\":\"Valdez\"}]', 'am', 'stripe', '2026-02-01 21:49:11', '2026-05-07 16:44:18'),
+(3, NULL, NULL, '', 'TUR91A525BB', 'confirmed', '69801457300E6', 2, 'Hunza Valley Escape', 'Dubai', 'Family Tour Package', '2026-02-04', '2026-02-06', '5 Days Tour', 5, '2040', 2, 0, 1020.00, 0.00, 2040.00, 'AED', '{\"tour_data\":{\"tour_id\":2,\"tour_name\":\"Hunza Valley Escape\",\"price\":1020,\"child_price\":0,\"currency\":\"AED\",\"duration\":\"5 Days Tour\",\"days\":5},\"search_params\":{\"location\":\"dubai\",\"type\":\"all\",\"start_date\":\"2026-02-04\",\"end_date\":\"2026-02-06\",\"adult\":2,\"child\":0,\"original_start_date\":\"04-02-2026\",\"original_end_date\":\"06-02-2026\"}}', NULL, NULL, 'paid', 'tour', 'tour', NULL, '{\"first_name\":\"Christine\",\"last_name\":\"Randall\",\"email\":\"vopexibydo@mailinator.com\",\"phone\":\"+15513997642\",\"country\":\"am\"}', '[{\"type\":\"adult\",\"gender\":\"male\",\"first_name\":\"Soft\",\"last_name\":\"Solution\"},{\"type\":\"adult\",\"gender\":\"male\",\"first_name\":\"Erica\",\"last_name\":\"Le\"}]', 'am', 'stripe', '2026-02-01 22:04:34', '2026-05-07 16:44:18'),
+(4, NULL, NULL, '', 'TURED6E253C', 'confirmed', '69A4F69DB5E6C', 2, 'Hunza Valley Escape', 'Dubai', 'Family Tour Package', '2026-03-04', '2026-03-06', '5 Days Tour', 5, '170', 2, 0, 85.00, 0.00, 170.00, 'USD', '{\"tour_data\":{\"tour_id\":2,\"tour_name\":\"Hunza Valley Escape\",\"price\":85,\"child_price\":0,\"currency\":\"USD\",\"duration\":\"5 Days Tour\",\"days\":5},\"search_params\":{\"location\":\"dubai\",\"type\":\"all\",\"start_date\":\"2026-03-04\",\"end_date\":\"2026-03-06\",\"adult\":2,\"child\":0,\"original_start_date\":\"04-03-2026\",\"original_end_date\":\"06-03-2026\"}}', NULL, NULL, 'paid', 'tour', 'tour', NULL, '{\"first_name\":\"Christine\",\"last_name\":\"Randall\",\"email\":\"vopexibydo@mailinator.com\",\"phone\":\"+15513997642\",\"country\":\"am\"}', '[{\"type\":\"adult\",\"gender\":\"female\",\"first_name\":\"Christine\",\"last_name\":\"Randall\"},{\"type\":\"adult\",\"gender\":\"male\",\"first_name\":\"Soft\",\"last_name\":\"Solution\"}]', 'am', 'stripe', '2026-03-01 21:31:35', '2026-05-07 16:44:18');
 
 -- --------------------------------------------------------
 
@@ -22869,6 +24975,7 @@ INSERT INTO `tours_booking` (`id`, `booking_code_ref`, `booking_status_flag`, `b
 
 CREATE TABLE `tour_exclusions` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `agent_id` bigint(20) UNSIGNED DEFAULT NULL,
   `name` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -22878,17 +24985,19 @@ CREATE TABLE `tour_exclusions` (
 -- Dumping data for table `tour_exclusions`
 --
 
-INSERT INTO `tour_exclusions` (`id`, `name`, `created_at`, `updated_at`) VALUES
-(1, 'Airfare not included', '2026-01-27 06:35:34', '2026-01-27 06:35:34'),
-(2, 'Personal expenses', '2026-01-27 06:35:38', '2026-01-27 06:35:38'),
-(3, 'Travel insurance', '2026-01-27 06:35:42', '2026-01-27 06:35:42'),
-(4, 'Visa fees', '2026-01-27 06:35:45', '2026-01-27 06:35:45'),
-(5, 'Extra sightseeing charges', '2026-01-27 06:35:49', '2026-01-27 06:35:49'),
-(6, 'Meals not mentioned in itinerary', '2026-01-27 14:40:13', '2026-01-27 14:40:13'),
-(7, 'Laundry and minibar expenses', '2026-01-27 14:40:13', '2026-01-27 14:40:13'),
-(8, 'Early check-in & late check-out', '2026-01-27 14:40:13', '2026-01-27 14:40:13'),
-(9, 'Tips to drivers and guides', '2026-01-27 14:40:13', '2026-01-27 14:40:13'),
-(10, 'Any cost due to natural calamities', '2026-01-27 14:40:13', '2026-01-27 14:40:13');
+INSERT INTO `tour_exclusions` (`id`, `agent_id`, `name`, `created_at`, `updated_at`) VALUES
+(1, NULL, 'Airfare not included', '2026-01-27 06:35:34', '2026-01-27 06:35:34'),
+(2, NULL, 'Personal expenses', '2026-01-27 06:35:38', '2026-01-27 06:35:38'),
+(3, NULL, 'Travel insurance', '2026-01-27 06:35:42', '2026-01-27 06:35:42'),
+(4, NULL, 'Visa fees', '2026-01-27 06:35:45', '2026-01-27 06:35:45'),
+(5, NULL, 'Extra sightseeing charges', '2026-01-27 06:35:49', '2026-01-27 06:35:49'),
+(6, NULL, 'Meals not mentioned in itinerary', '2026-01-27 14:40:13', '2026-01-27 14:40:13'),
+(7, NULL, 'Laundry and minibar expenses', '2026-01-27 14:40:13', '2026-01-27 14:40:13'),
+(8, NULL, 'Early check-in & late check-out', '2026-01-27 14:40:13', '2026-01-27 14:40:13'),
+(9, NULL, 'Tips to drivers and guides', '2026-01-27 14:40:13', '2026-01-27 14:40:13'),
+(10, NULL, 'Any cost due to natural calamities', '2026-01-27 14:40:13', '2026-01-27 14:40:13'),
+(11, 7, 'Sacha Parks1', '2026-03-16 12:50:37', '2026-03-16 12:50:37'),
+(12, 7, 'Brenna Duke2', '2026-03-16 12:50:45', '2026-03-16 12:50:45');
 
 -- --------------------------------------------------------
 
@@ -23008,6 +25117,7 @@ INSERT INTO `tour_images` (`id`, `tour_id`, `image`, `created_at`, `updated_at`)
 
 CREATE TABLE `tour_inclusions` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `agent_id` bigint(20) UNSIGNED DEFAULT NULL,
   `name` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -23017,17 +25127,19 @@ CREATE TABLE `tour_inclusions` (
 -- Dumping data for table `tour_inclusions`
 --
 
-INSERT INTO `tour_inclusions` (`id`, `name`, `created_at`, `updated_at`) VALUES
-(1, 'Hotel accommodation', '2026-01-27 06:35:10', '2026-01-27 06:35:10'),
-(2, 'Daily breakfast', '2026-01-27 06:35:15', '2026-01-27 06:35:15'),
-(3, 'Airport transfers', '2026-01-27 06:35:19', '2026-01-27 06:35:19'),
-(4, 'Sightseeing as per itinerary', '2026-01-27 06:35:23', '2026-01-27 06:35:23'),
-(5, 'Professional tour guide', '2026-01-27 06:35:26', '2026-01-27 06:35:26'),
-(6, 'All applicable taxes', '2026-01-27 14:40:55', '2026-01-27 14:40:55'),
-(7, 'Luxury air-conditioned transport', '2026-01-27 14:40:55', '2026-01-27 14:40:55'),
-(8, 'Welcome drink on arrival', '2026-01-27 14:40:55', '2026-01-27 14:40:55'),
-(9, 'Entrance fees to monuments', '2026-01-27 14:40:55', '2026-01-27 14:40:55'),
-(10, '24/7 customer support', '2026-01-27 14:40:55', '2026-01-27 14:40:55');
+INSERT INTO `tour_inclusions` (`id`, `agent_id`, `name`, `created_at`, `updated_at`) VALUES
+(1, NULL, 'Hotel accommodation', '2026-01-27 06:35:10', '2026-01-27 06:35:10'),
+(2, NULL, 'Daily breakfast', '2026-01-27 06:35:15', '2026-01-27 06:35:15'),
+(3, NULL, 'Airport transfers', '2026-01-27 06:35:19', '2026-01-27 06:35:19'),
+(4, NULL, 'Sightseeing as per itinerary', '2026-01-27 06:35:23', '2026-01-27 06:35:23'),
+(5, NULL, 'Professional tour guide', '2026-01-27 06:35:26', '2026-01-27 06:35:26'),
+(6, NULL, 'All applicable taxes', '2026-01-27 14:40:55', '2026-01-27 14:40:55'),
+(7, NULL, 'Luxury air-conditioned transport', '2026-01-27 14:40:55', '2026-01-27 14:40:55'),
+(8, NULL, 'Welcome drink on arrival', '2026-01-27 14:40:55', '2026-01-27 14:40:55'),
+(9, NULL, 'Entrance fees to monuments', '2026-01-27 14:40:55', '2026-01-27 14:40:55'),
+(10, NULL, '24/7 customer support', '2026-01-27 14:40:55', '2026-01-27 14:40:55'),
+(11, 7, 'Arden Velez1', '2026-03-16 12:50:54', '2026-03-16 12:50:54'),
+(12, 7, 'Amir Shaw2', '2026-03-16 12:51:01', '2026-03-16 12:51:01');
 
 -- --------------------------------------------------------
 
@@ -23037,6 +25149,7 @@ INSERT INTO `tour_inclusions` (`id`, `name`, `created_at`, `updated_at`) VALUES
 
 CREATE TABLE `tour_package_type` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `agent_id` bigint(20) UNSIGNED DEFAULT NULL,
   `packege_type` varchar(255) NOT NULL,
   `status` enum('1','0') NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -23047,15 +25160,17 @@ CREATE TABLE `tour_package_type` (
 -- Dumping data for table `tour_package_type`
 --
 
-INSERT INTO `tour_package_type` (`id`, `packege_type`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Family Tour Package', '1', '2026-01-27 06:33:32', '2026-01-27 06:33:32'),
-(2, 'Honeymoon Tour Package', '1', '2026-01-27 06:33:52', '2026-01-27 06:33:52'),
-(3, 'Adventure Tour Package', '1', '2026-01-27 06:34:01', '2026-01-27 06:34:05'),
-(4, 'Luxury Tour Package', '1', '2026-01-27 14:39:00', '2026-01-27 14:39:00'),
-(5, 'Budget Tour Package', '1', '2026-01-27 14:39:00', '2026-01-27 14:39:00'),
-(6, 'Group Tour Package', '1', '2026-01-27 14:39:00', '2026-01-27 14:39:00'),
-(7, 'Corporate Tour Package', '1', '2026-01-27 14:39:00', '2026-01-27 14:39:00'),
-(8, 'Religious Tour Package', '1', '2026-01-27 14:39:00', '2026-01-27 14:39:00');
+INSERT INTO `tour_package_type` (`id`, `agent_id`, `packege_type`, `status`, `created_at`, `updated_at`) VALUES
+(1, NULL, 'Family Tour Package', '1', '2026-01-27 06:33:32', '2026-01-27 06:33:32'),
+(2, NULL, 'Honeymoon Tour Package', '1', '2026-01-27 06:33:52', '2026-01-27 06:33:52'),
+(3, NULL, 'Adventure Tour Package', '1', '2026-01-27 06:34:01', '2026-01-27 06:34:05'),
+(4, NULL, 'Luxury Tour Package', '1', '2026-01-27 14:39:00', '2026-01-27 14:39:00'),
+(5, NULL, 'Budget Tour Package', '1', '2026-01-27 14:39:00', '2026-01-27 14:39:00'),
+(6, NULL, 'Group Tour Package', '1', '2026-01-27 14:39:00', '2026-01-27 14:39:00'),
+(7, NULL, 'Corporate Tour Package', '1', '2026-01-27 14:39:00', '2026-01-27 14:39:00'),
+(8, NULL, 'Religious Tour Package', '1', '2026-01-27 14:39:00', '2026-01-27 14:39:00'),
+(9, 7, 'Natus quia duis qui 1', '1', '2026-03-16 12:51:14', '2026-03-16 12:51:14'),
+(10, 7, 'Accusamus placeat b2', '1', '2026-03-16 12:51:23', '2026-03-16 12:51:23');
 
 -- --------------------------------------------------------
 
@@ -23073,7 +25188,13 @@ CREATE TABLE `travel_partners` (
   `partner_tier` enum('standard','premium','enterprise') NOT NULL DEFAULT 'standard',
   `status` enum('active','pending','suspended','inactive') NOT NULL DEFAULT 'pending',
   `commission_rate` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `commission_type` varchar(255) NOT NULL DEFAULT 'percentage',
   `discount_rate` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `discount_type` varchar(255) NOT NULL DEFAULT 'percentage',
+  `b2c_markup` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `b2c_markup_type` varchar(255) NOT NULL DEFAULT 'percentage',
+  `b2b_markup` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `b2b_markup_type` varchar(255) NOT NULL DEFAULT 'percentage',
   `monthly_revenue` decimal(12,2) NOT NULL DEFAULT 0.00,
   `integration_date` date DEFAULT NULL,
   `contract_end_date` date DEFAULT NULL,
@@ -23083,6 +25204,17 @@ CREATE TABLE `travel_partners` (
   `api_credential_4` text DEFAULT NULL,
   `api_credential_5` text DEFAULT NULL,
   `api_credential_6` text DEFAULT NULL,
+  `db_host` varchar(255) DEFAULT NULL,
+  `db_port` varchar(255) DEFAULT NULL,
+  `db_database` varchar(255) DEFAULT NULL,
+  `db_username` varchar(255) DEFAULT NULL,
+  `db_password` text DEFAULT NULL,
+  `last_api_test_status` varchar(255) DEFAULT NULL,
+  `last_api_test_message` varchar(255) DEFAULT NULL,
+  `last_api_test_at` timestamp NULL DEFAULT NULL,
+  `last_db_test_status` varchar(255) DEFAULT NULL,
+  `last_db_test_message` varchar(255) DEFAULT NULL,
+  `last_db_test_at` timestamp NULL DEFAULT NULL,
   `development_mode` tinyint(1) NOT NULL DEFAULT 0,
   `currency_support` tinyint(1) NOT NULL DEFAULT 0,
   `payment_integration` tinyint(1) NOT NULL DEFAULT 0,
@@ -23110,14 +25242,40 @@ CREATE TABLE `travel_partners` (
 -- Dumping data for table `travel_partners`
 --
 
-INSERT INTO `travel_partners` (`id`, `company_name`, `module_id`, `profile_image`, `supplier_type`, `api_type`, `partner_tier`, `status`, `commission_rate`, `discount_rate`, `monthly_revenue`, `integration_date`, `contract_end_date`, `api_credential_1`, `api_credential_2`, `api_credential_3`, `api_credential_4`, `api_credential_5`, `api_credential_6`, `development_mode`, `currency_support`, `payment_integration`, `custom_pnr_format`, `api_uptime`, `total_bookings`, `total_revenue`, `revenue_growth`, `admin_notes`, `contract_details`, `contact_email`, `contact_phone`, `contact_person`, `supported_currencies`, `supported_countries`, `last_api_call`, `last_revenue_update`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-(1, 'amadeus_enterprise', 2, 'partners/1752853484_687a6bec3a39d.jpg', 'flight', 'a', 'standard', 'active', 12.00, 0.00, 0.00, NULL, NULL, 'client_credentials', '01N6evvhBVAe6w4UX4HeYXwooRobAhsO', 'DRio3duZqFpQczlR', NULL, 'jk', NULL, 1, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, 'adriana.lakin@example.com', '539.839.7319', 'Mr. Curtis Beer I', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-02-01 21:53:57'),
-(8, 'hotelbeds', 1, 'partners/1752853484_687a6bec3a39d.jpg', 'hotel', 'a', 'standard', 'active', 12.00, 0.00, 0.00, NULL, NULL, 'c6070d0561e87fa98758c397205ec912', 'fcbb3cfe02', NULL, NULL, 'jk', NULL, 1, 1, 1, 1, 0.00, 0, 0.00, 0.00, NULL, NULL, 'adriana.lakin@example.com', '539.839.7319', 'Mr. Curtis Beer I', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-01-30 10:36:28'),
-(9, 'agoda', 1, 'partners/1752853484_687a6bec3a39d.jpg', 'hotel', 'a', 'standard', 'active', 12.00, 0.00, 0.00, NULL, NULL, '1923592', '4a3d9548-eb5e-4235-9f52-16c4baea765c', NULL, NULL, 'jk', NULL, 1, 1, 1, 1, 0.00, 0, 0.00, 0.00, NULL, NULL, 'adriana.lakin@example.com', '539.839.7319', 'Mr. Curtis Beer I', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-01-30 10:36:28'),
-(12, 'amadeus_self', 2, 'partners/1752853484_687a6bec3a39d.jpg', 'flight', 'a', 'standard', 'inactive', 20.00, 0.00, 0.00, NULL, NULL, 'client_credentials', 'RuAVw6Qtmxm7vc5kRipS6AgnYsSfMxyQ', 'Bxfjj5kMRgvYYZsK', NULL, 'jk', NULL, 1, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, 'adriana.lakin@example.com', '539.839.7319', 'Mr. Curtis Beer I', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-02-01 21:49:57'),
-(13, 'Manual', 5, NULL, 'manual', NULL, 'standard', 'active', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-30 10:40:37'),
-(14, 'Manual', 4, NULL, 'manual', NULL, 'standard', 'active', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-30 10:40:32'),
-(15, 'Manual', 3, NULL, 'manual', NULL, 'standard', 'active', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-30 10:40:32');
+INSERT INTO `travel_partners` (`id`, `company_name`, `module_id`, `profile_image`, `supplier_type`, `api_type`, `partner_tier`, `status`, `commission_rate`, `commission_type`, `discount_rate`, `discount_type`, `b2c_markup`, `b2c_markup_type`, `b2b_markup`, `b2b_markup_type`, `monthly_revenue`, `integration_date`, `contract_end_date`, `api_credential_1`, `api_credential_2`, `api_credential_3`, `api_credential_4`, `api_credential_5`, `api_credential_6`, `db_host`, `db_port`, `db_database`, `db_username`, `db_password`, `last_api_test_status`, `last_api_test_message`, `last_api_test_at`, `last_db_test_status`, `last_db_test_message`, `last_db_test_at`, `development_mode`, `currency_support`, `payment_integration`, `custom_pnr_format`, `api_uptime`, `total_bookings`, `total_revenue`, `revenue_growth`, `admin_notes`, `contract_details`, `contact_email`, `contact_phone`, `contact_person`, `supported_currencies`, `supported_countries`, `last_api_call`, `last_revenue_update`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+(1, 'amadeus_enterprise', 2, 'partners/1752853484_687a6bec3a39d.jpg', 'flight', 'a', 'standard', 'inactive', 12.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, 'eyJpdiI6ImkyeFFlbHdWREFHV3kyVW93ekdmN3c9PSIsInZhbHVlIjoieU5Bd1VhekFaUnBPWGVldjR1elRtWWNROGdnN1ViTXEvMFNNVVF4Rk9zTT0iLCJtYWMiOiIwZTNkNDE0YmQxZDM3NzViNWUzMTY3Yzc3MmFiNDIwZDM2OWNlYTFiMTk4NmIwZWRlYmM0YmVmNzI4NjdlNDkxIiwidGFnIjoiIn0=', 'eyJpdiI6ImFuV3NZTFVBZnp5QTYySFEzNHZzYmc9PSIsInZhbHVlIjoiRVptRE1hL0pHbkJ5a3poYTJOcmxvdVdrcmpLWDdXdXJQb01DdC83elNMQnd0WC8rajZFVzNWemYvb3JSNnJKQiIsIm1hYyI6IjgwMTQ2OTk3YTZmOTc2MDljZGI5NGM1NWZhMTgzOGQzNDYwY2JjZmE4NWYzYTZjM2E0YjcxZDUzNDQ5MDU2NTciLCJ0YWciOiIifQ==', 'eyJpdiI6ImIvV1VhQ0MwMW5VL3pDbVV0dytUQmc9PSIsInZhbHVlIjoiS0d4L0hTWEl5UEgyOVNKK3V1UEFWQkNPSDBhUlZQMGVqT1VJT2hPNGRRUT0iLCJtYWMiOiJmZTg3MzQ0OWE5OGNkNjUzYzZhYTJmODE0YmFjZTIyOTUwYjg2ZmNlZmUzNGQxYjgzODZiMjAxNDM4YmQ5YmJiIiwidGFnIjoiIn0=', NULL, 'eyJpdiI6InQ1b21iYm4xdnU0d2Jxd3M0TENyNGc9PSIsInZhbHVlIjoiMXprL3MxWUlvdjF0VzFBYzZ5VG83UT09IiwibWFjIjoiNGUwZTllZjlhZWQ3MjQ3ZTZlNjlkYjlkMGRkY2QzMGYzZTViZWMwYjBiNDg0YjRmOGEwYWYyNjMyM2FjZGIyMyIsInRhZyI6IiJ9', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, 'adriana.lakin@example.com', '539.839.7319', 'Mr. Curtis Beer I', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-07-14 09:00:01'),
+(8, 'hotelbeds', 1, 'partners/1752853484_687a6bec3a39d.jpg', 'hotel', 'a', 'standard', 'inactive', 12.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, 'eyJpdiI6Im5vUVJKTWNqTXdOYW9FQkZmbXpTY3c9PSIsInZhbHVlIjoieTRHWXNhM2FPSWk5NHpZbkhDMTAzbHJHOSs2ZEs2SXhnUHRFM0xPZnpNNFlyNlBHOFNiSmFkOTEyQkM2bkpxMiIsIm1hYyI6ImEyMmY5MjgzNjllZjMyMjViZjU1YzYzZGVhNjNlMjk0NTk1M2VkNzIwN2VlNThmMGRjMmI3MmVkMGQ4OTgxMjkiLCJ0YWciOiIifQ==', 'eyJpdiI6IkE5NDJnelU0V2lzbUlhQ2xYWUpPWGc9PSIsInZhbHVlIjoibWNHWW5QRGNzNENlWHJlS1dQem1Ddz09IiwibWFjIjoiYzlhNWVjNTg3YzI1MzkwMTZjZDQ2ZGZlZTY1OWYyM2NlZGU2M2I0NmIxMjA0ZjNjZWQyZTUyY2M2OWFmMjhlMyIsInRhZyI6IiJ9', NULL, NULL, 'eyJpdiI6IkVyeXJrb0N5dkNoaHBCcysxTXdyN2c9PSIsInZhbHVlIjoiYURCL1VIckFCd1JuRVlQZm5QaHB3dz09IiwibWFjIjoiYWVmNzEzZTExZGQ3OTY5Mjg2OTkxMzZiZDRjMTA0ODI0NWYzMWU1NWFhOTI2MTljZTY5NmFhYTE3MmUyODAxNiIsInRhZyI6IiJ9', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 1, 1, 1, 0.00, 0, 0.00, 0.00, NULL, NULL, 'adriana.lakin@example.com', '539.839.7319', 'Mr. Curtis Beer I', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-07-14 06:41:46'),
+(9, 'agoda', 1, 'partners/1752853484_687a6bec3a39d.jpg', 'hotel', 'a', 'standard', 'active', 12.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, 'eyJpdiI6IitwMXdYM3MzNVIybEVJdUU2NnJxbHc9PSIsInZhbHVlIjoiOUhUMlpKZW5KaVRtMlRmMy9idWp1dz09IiwibWFjIjoiMmMxMzNmY2Q1ODU3YjU0MTBhNzBjNjE1NzM4ZjgwZWU5OWMxZDhhZTFhY2Q2NWQ2NzJlNDgzZmVjYTEwYWQ3MSIsInRhZyI6IiJ9', 'eyJpdiI6IkU4QUsyU0tkNXRDdGc4YjFxV0laVUE9PSIsInZhbHVlIjoiRlk4RnF4YXQ5Ni9jREY1MUdjbElQNGMwaS9DZmRxNVhJY0t1VGM0WmJvMU9uV0huUWloTWlXTWM2Rlcwc2Z5ZSIsIm1hYyI6ImQ4YWZmZTIzNmFjNjAwN2FlNDM1YTBiOTY0ZDM1ZTQ3YTY5ZDgxMWE5NGIwZTVmNDNjMDg2NGFjMjliZDhkOWYiLCJ0YWciOiIifQ==', NULL, NULL, 'eyJpdiI6ImFoZTRObnI5SkNoVjUvS2JSUzArOUE9PSIsInZhbHVlIjoieHowSUxROUhibU84M0szaURYaEJBZz09IiwibWFjIjoiYzlhMDc1OGExZjgzZmI0YjkzYzAzOTBmZThkODk4MmYwN2FhOTMzZTI3MjUxNmQwYmE4ZWUyNTVlNWQyYTQ0MiIsInRhZyI6IiJ9', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 1, 1, 1, 0.00, 0, 0.00, 0.00, NULL, NULL, 'adriana.lakin@example.com', '539.839.7319', 'Mr. Curtis Beer I', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-07-28 04:49:48'),
+(12, 'amadeus_self', 2, 'partners/1752853484_687a6bec3a39d.jpg', 'flight', 'a', 'standard', 'inactive', 20.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, 'eyJpdiI6InJwTldUeTFoUGRoVzB1Mm5TbFp1VEE9PSIsInZhbHVlIjoiMFBldGxuaE1GSHVWWmEzdG15QkpxSUhZWGJPS0pVTWpGdGl0Zms2NWhJMD0iLCJtYWMiOiI4MDkxZDAyN2Y1YjAxOGM3ZGQ3MDIzZTA3NTU1YjE5NzdiNjc5YzJlNmJhMjI0ZTEwODZiMzQxMmRiNzgzMTc5IiwidGFnIjoiIn0=', 'eyJpdiI6Im1wSUxBdmhpbTF4NjdwaW9rdDVLUnc9PSIsInZhbHVlIjoidFAyQ2NjQ1RZMWNGV0pML2kzcWVIUjVyUFd4S3d1WFErTmpYZ2dRYldvST0iLCJtYWMiOiI3NjQ2NWE1MTUyYjliY2RjNGQ4MTg0ZTZlOTdkZTZiZDI1M2IxNTI1NDVlM2VlODliMThmZmJkMTU5YWJjYzhkIiwidGFnIjoiIn0=', 'eyJpdiI6IlZJWnBMaEk2aEI5RFB0TDNYMEUvcVE9PSIsInZhbHVlIjoiRVJ5OGdBMXllNGhyUXdicWI1emNEdnozMXhzank2cVZtSWVLc2pLeTRVaz0iLCJtYWMiOiI3N2U5MDViNjAwMmFhMDY3NWQ2NWFmZjZjZjU0NmI0ZTE2NzE5NWUwNWZlYjNkNmYzNDgxMjc5ODAwNzdjYzA0IiwidGFnIjoiIn0=', NULL, 'eyJpdiI6IkV1MlprLytsdVZyYUtQQy9yaTNPdVE9PSIsInZhbHVlIjoiZmtYQURoc04yaTJlTXVUa0FYS0pOUT09IiwibWFjIjoiMTFiYzdiMGE0NjcwMzI4NTQzZmZlYWNiZjk3ZGQ3NWE2YmI1MDNiNjc5OGVjZDMxODMyYmUxYjhkNWMzZjFhZCIsInRhZyI6IiJ9', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, 'adriana.lakin@example.com', '539.839.7319', 'Mr. Curtis Beer I', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-09-30 08:23:57'),
+(13, 'Manual', 5, NULL, 'manual', NULL, 'standard', 'active', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 6, NULL, '2026-07-14 09:21:30'),
+(14, 'Manual', 4, NULL, 'manual', NULL, 'standard', 'active', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-31 17:54:19'),
+(15, 'Manual', 3, NULL, 'manual', NULL, 'standard', 'active', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-07-31 17:54:25'),
+(16, 'Manual', 1, NULL, 'manual', NULL, 'standard', 'active', 0.00, 'percentage', 0.00, 'percentage', 10.00, 'percentage', 5.00, 'percentage', 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 6, NULL, '2026-07-31 17:54:22'),
+(17, 'sabre', 2, 'partners/1752853484_687a6bec3a39d.jpg', 'flight', '', 'standard', 'inactive', 12.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, NULL, '', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, '', '', '', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-07-14 09:00:01'),
+(18, 'webbeds', 1, 'partners/1752853484_687a6bec3a39d.jpg', 'hotel', '', 'standard', 'active', 0.00, 'percentage', 0.00, 'fixed', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, 'eyJpdiI6InBZaUNnbEs1MTZlUzVCODhQVWdwOFE9PSIsInZhbHVlIjoiRThDWnErVTB5TFQrMWErcklBSFJLZz09IiwibWFjIjoiNGVkMDk0ODAyZTllMGI1ODY1OGY4NzQ1MDkzYmUwYTk4MzVmYThjMTY4MjY3OWY3YmViYzEwZDYyNGJjMmEwYiIsInRhZyI6IiJ9', 'eyJpdiI6ImFoalhtTjJlQml6ZzN1VFJhTjJjOUE9PSIsInZhbHVlIjoiQ1c1dXZKam9vQS95RXZYdUZmRlZFUT09IiwibWFjIjoiMDk5OTdjNjczN2E2NWZiMmY0NGQ1ZjdiY2Q5ZjQ3M2QyZjIwZDE0MTUzMDQ4M2Y3NmYwNWMyMjU4NmE1MTg0OCIsInRhZyI6IiJ9', 'eyJpdiI6IjI1QTQ0K0lCaGRMS0M1aitsUnEwNlE9PSIsInZhbHVlIjoiRUNvZ3hYSVRCdGhIbE1BUExZcHI2dz09IiwibWFjIjoiZDAxODBkY2IzZTUzZjEyMGI0Njk3OTA2MjM4ZTE0NWEyMTVlYzMwZmJlMzk2NDdjY2VjNzNiZmZmMjlhYmJiZSIsInRhZyI6IiJ9', NULL, '', NULL, 'localhost', NULL, 'supplier_data', 'root', NULL, 'success', 'API Credentials Verified Successfully', '2026-08-24 13:27:05', 'success', 'Connected to \"supplier_data\" successfully', '2026-08-24 10:48:48', 1, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, '', '', '', NULL, NULL, NULL, NULL, NULL, 6, '2025-07-14 15:23:15', '2026-08-24 14:09:08'),
+(19, 'duffel', 2, NULL, 'flight', NULL, 'standard', 'active', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, 'percentage', 0.00, NULL, NULL, 'eyJpdiI6Ikg3cGdZa2pHVlJxcDhhL3Y1UkQycFE9PSIsInZhbHVlIjoiVmVsa2NHRk9DcGI3Y3piS0JZVkplbVJManJYVnZJQmc1NmE1QUhUbk1hM1ZRRVJFWnRidzg1MjZUOHcvQ1B0NkQ2SGcyd1BwZnJkVVRSbmpiWlhmbXc9PSIsIm1hYyI6IjIxYTZjMjZmYmEzNmM5YzM0YmQyM2U0MWMwMDkwNWU0OThhMGFiNTMzZGE4NmQ2MTU1N2ViOTM0YjZjOTE5ZWQiLCJ0YWciOiIifQ==', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, 0, 0.00, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-09-30 08:23:51');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `travel_partner_imports`
+--
+
+CREATE TABLE `travel_partner_imports` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `travel_partner_id` bigint(20) UNSIGNED NOT NULL,
+  `import_type` varchar(255) NOT NULL,
+  `file_format` varchar(255) NOT NULL,
+  `original_filename` varchar(255) NOT NULL,
+  `stored_path` varchar(255) NOT NULL,
+  `status` varchar(255) NOT NULL,
+  `records_count` int(10) UNSIGNED DEFAULT NULL,
+  `preview_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`preview_data`)),
+  `error_message` text DEFAULT NULL,
+  `created_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -23127,6 +25285,9 @@ INSERT INTO `travel_partners` (`id`, `company_name`, `module_id`, `profile_image
 
 CREATE TABLE `umrah` (
   `id` int(11) NOT NULL,
+  `agent_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `added_by` varchar(20) NOT NULL DEFAULT 'admin',
+  `approval_status` enum('pending','approved','rejected') NOT NULL DEFAULT 'approved',
   `name` varchar(225) NOT NULL,
   `packege_type` varchar(225) NOT NULL,
   `currceny` varchar(225) NOT NULL,
@@ -23159,22 +25320,22 @@ CREATE TABLE `umrah` (
 -- Dumping data for table `umrah`
 --
 
-INSERT INTO `umrah` (`id`, `name`, `packege_type`, `currceny`, `price`, `duration`, `loaction`, `leaving_from`, `going_to`, `checkin_date`, `checkout_date`, `night_in_mekkah`, `night_in_madina`, `class`, `desc`, `exclusions`, `inclusions`, `policy`, `featured`, `status`, `stars`, `rating`, `adults`, `childs`, `infants`, `created_at`, `updated_at`) VALUES
-(7, 'Blake Daniels', 'basic', 'GBP', '267', 'Quis accusantium pos', 'Enim debitis asperio', 2207, 2072, '2009-11-26', '2004-05-18', 72, 72, 'first', 'Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore', '[\"1\",\"2\",\"3\"]', '[\"1\",\"3\",\"5\",\"6\"]', 'Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende', '0', '1', '3', 'Asperiores est sed', '41', '65', '10', '2026-01-27 15:09:13', '2026-01-27 15:09:13'),
-(8, 'Cain Bean', 'standard', 'GBP', '705', 'Iste perspiciatis l', 'Voluptatum a laboris', 2207, 2072, '1980-02-19', '1984-12-19', 19, 80, 'economy', 'Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo', '[\"1\",\"2\",\"3\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\",\"6\"]', 'Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut', '1', '1', '4', 'Aut maiores quia ame', '29', '47', '86', '2026-01-27 15:09:15', '2026-01-27 15:09:15'),
-(9, '14 Days Premium Umrah Package', 'standard', 'USD', '2499', '14 Days / 13 Nights', '1', 2207, 2072, '2026-03-27', '2026-04-10', 8, 5, NULL, 'Experience the spiritual journey of a lifetime with our 14-day Premium Umrah Package. This comprehensive package includes luxurious 5-star accommodations near the Holy Mosques, comfortable business class flights, and guided tours of all significant Islamic historical sites. Our expert guides will ensure your pilgrimage is both spiritually fulfilling and comfortable.', '[\"1\",\"2\",\"3\",\"4\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"10\"]', 'Free cancellation up to 30 days before departure. 50% refund between 15-30 days. No refund within 15 days of departure.', '0', '1', '5', '4.8', '2', '0', '0', '2026-01-27 16:48:34', '2026-01-27 11:48:34'),
-(10, '10 Days Economy Umrah Package', 'Economy', 'USD', '1299', '10 Days / 9 Nights', '1', 2207, 2072, '2026-02-27', '2026-03-09', 5, 4, 'Economy', 'Perfect for budget-conscious pilgrims, our 10-day Economy Umrah Package offers essential services for a comfortable spiritual journey. Stay in clean, well-located 3-star hotels within walking distance of the Harams. Includes economy flights, visa processing, and basic guided tours. Ideal for families and groups looking for affordable pilgrimage options.', '[1,2,3,4,5,6]', '[1,2,3,4,5,8,10]', 'Non-refundable booking. Date changes allowed up to 45 days before departure with $100 fee.', '0', '1', '3', '4.2', '2', '1', '0', '2026-01-27 16:45:55', '2026-01-27 11:45:55'),
-(11, '21 Days VIP Umrah Package', 'VIP', 'USD', '4999', '21 Days / 20 Nights', '1', 2207, 2072, '2026-04-27', '2026-05-18', 12, 8, 'First Class', 'Indulge in the ultimate Umrah experience with our exclusive 21-day VIP Package. Enjoy first-class flights, five-star hotels with Haram views, private transfers, and personalized services. This package includes extended stays in Makkah and Madinah, comprehensive Ziyarat tours, and dedicated personal assistance throughout your journey.', '[2,3,4]', '[1,2,3,4,5,6,7,8,9,10]', 'Flexible cancellation policy. Full refund up to 60 days before departure. 75% refund between 30-60 days.', '0', '1', '5', '4.9', '2', '0', '0', '2026-01-27 16:46:05', '2026-01-27 11:46:05'),
-(12, '14 Days Premium Umrah Package', 'Premium', 'USD', '2499', '14 Days / 13 Nights', '1', 2207, 2074, '2026-03-27', '2026-04-10', 8, 5, 'Business', 'Experience the spiritual journey of a lifetime with our 14-day Premium Umrah Package. This comprehensive package includes luxurious 5-star accommodations near the Holy Mosques, comfortable business class flights, and guided tours of all significant Islamic historical sites. Our expert guides will ensure your pilgrimage is both spiritually fulfilling and comfortable.', '[1,2,3,4]', '[1,2,3,4,5,6,7,8,9,10]', 'Free cancellation up to 30 days before departure. 50% refund between 15-30 days. No refund within 15 days of departure.', '1', '1', '5', '4.8', '2', '0', '0', '2026-01-27 15:11:10', '2026-01-27 15:11:10'),
-(13, '10 Days Economy Umrah Package', 'Economy', 'USD', '1299', '10 Days / 9 Nights', '1', 2207, 2074, '2026-02-27', '2026-03-09', 5, 4, 'Economy', 'Perfect for budget-conscious pilgrims, our 10-day Economy Umrah Package offers essential services for a comfortable spiritual journey. Stay in clean, well-located 3-star hotels within walking distance of the Harams. Includes economy flights, visa processing, and basic guided tours. Ideal for families and groups looking for affordable pilgrimage options.', '[1,2,3,4,5,6]', '[1,2,3,4,5,8,10]', 'Non-refundable booking. Date changes allowed up to 45 days before departure with $100 fee.', '1', '1', '3', '4.2', '2', '1', '0', '2026-01-27 15:11:07', '2026-01-27 15:11:07'),
-(14, '21 Days VIP Umrah Package', 'VIP', 'USD', '4999', '21 Days / 20 Nights', '1', 2207, 2074, '2026-04-27', '2026-05-18', 12, 8, 'First Class', 'Indulge in the ultimate Umrah experience with our exclusive 21-day VIP Package. Enjoy first-class flights, five-star hotels with Haram views, private transfers, and personalized services. This package includes extended stays in Makkah and Madinah, comprehensive Ziyarat tours, and dedicated personal assistance throughout your journey.', '[2,3,4]', '[1,2,3,4,5,6,7,8,9,10]', 'Flexible cancellation policy. Full refund up to 60 days before departure. 75% refund between 30-60 days.', '1', '1', '5', '4.9', '2', '0', '0', '2026-01-27 15:11:05', '2026-01-27 15:11:05'),
-(15, '7 Days Express Umrah Package', 'Standard', 'USD', '999', '7 Days / 6 Nights', '1', 2207, 2074, '2026-02-17', '2026-02-24', 3, 3, 'Economy', 'Short on time but not on faith? Our 7-day Express Umrah Package is designed for busy professionals and those with limited vacation time. This efficient package covers all essential rituals with comfortable 4-star accommodations, direct flights, and streamlined services to maximize your spiritual experience in minimal time.', '[1,2,3,4,5]', '[1,2,3,4,5,7,8,10]', 'Standard cancellation policy. 50% refund up to 21 days before departure.', '0', '1', '4', '4.5', '1', '0', '0', '2026-01-27 15:11:03', '2026-01-27 15:11:03'),
-(16, '15 Days Family Umrah Package', 'Standard', 'USD', '3499', '15 Days / 14 Nights', '1', 2207, 2074, '2026-03-27', '2026-04-11', 8, 6, 'Economy', 'Specially designed for families, this 15-day package includes child-friendly accommodations, family rooms, and flexible scheduling. Stay in comfortable 4-star hotels with family suites, enjoy guided tours suitable for all ages, and benefit from our experienced family travel coordinators who ensure a smooth journey for parents and children alike.', '[1,2,3]', '[1,2,3,4,5,6,7,8,9,10]', 'Family-friendly cancellation policy. Free date changes up to 30 days before departure.', '1', '1', '4', '4.6', '2', '2', '1', '2026-01-27 15:11:01', '2026-01-27 15:11:01'),
-(17, '12 Days Luxury Umrah Package', 'Luxury', 'USD', '5999', '12 Days / 11 Nights', '1', 2207, 2074, '2026-05-27', '2026-06-08', 7, 4, 'First Class', 'Experience unparalleled luxury with our premium 12-day package. Stay in the most prestigious hotels with direct Haram views, enjoy limousine transfers, personal butler service, and exclusive access to VIP lounges. This package is crafted for discerning travelers who seek the finest spiritual journey with exceptional comfort and privacy.', '[2,4]', '[1,2,3,4,5,6,7,8,9,10]', 'Premium flexible policy. Full refund up to 45 days, 90% refund up to 30 days before departure.', '1', '1', '5', '5', '2', '0', '0', '2026-01-27 15:10:59', '2026-01-27 15:10:59'),
-(18, '9 Days Ramadan Special Umrah', 'Premium', 'USD', '3299', '9 Days / 8 Nights', '1', 2207, 2074, '2026-06-27', '2026-07-06', 5, 3, 'Business', 'Perform Umrah during the blessed month of Ramadan with our special 9-day package. Includes Suhoor and Iftar meals, special prayers at the Harams, and convenient hotel locations for easy access during Taraweeh. Experience the spiritual intensity of Ramadan in the holy cities with our expertly planned schedule and premium services.', '[2,3,4]', '[1,2,3,4,5,6,7,8,9,10]', 'Special Ramadan policy. Limited availability. 60% refund up to 45 days before departure.', '1', '1', '5', '4.9', '2', '0', '0', '2026-01-27 15:10:57', '2026-01-27 15:10:57'),
-(19, '8 Days Budget Umrah Package', 'Economy', 'USD', '899', '8 Days / 7 Nights', '1', 2207, 2074, '2026-03-10', '2026-03-18', 4, 3, 'Economy', 'Our most affordable Umrah package without compromising on essential services. Perfect for first-time pilgrims and budget travelers. Includes basic but comfortable 3-star accommodations, economy flights, visa assistance, and fundamental guided tours. All essential services covered to ensure a successful pilgrimage.', '[1,2,3,4,5,6,7]', '[1,2,3,4,8,10]', 'Budget policy. Non-refundable. Date changes up to 60 days before with additional fee.', '0', '1', '3', '4', '1', '0', '0', '2026-01-27 15:10:55', '2026-01-27 15:10:55'),
-(20, '18 Days Extended Umrah Package', 'Standard', 'USD', '2899', '18 Days / 17 Nights', '1', 2207, 2074, '2026-04-27', '2026-05-15', 10, 7, 'Economy', 'Take your time to immerse yourself in the spiritual atmosphere with our extended 18-day package. Enjoy longer stays in both holy cities, multiple Ziyarat tours, and ample time for worship and reflection. Ideal for those seeking a deeper spiritual connection and comprehensive exploration of Islamic historical sites.', '[1,2,3,4]', '[1,2,3,4,5,6,7,8,9,10]', 'Standard cancellation. 70% refund up to 30 days, 40% refund up to 15 days before departure.', '0', '1', '4', '4.7', '2', '0', '0', '2026-01-27 15:10:53', '2026-01-27 15:10:53'),
-(21, '11 Days Senior Citizen Umrah Package', 'Premium', 'USD', '2799', '11 Days / 10 Nights', '1', 2207, 2074, '2026-03-27', '2026-04-07', 6, 4, 'Business', 'Specially designed for elderly pilgrims with mobility considerations and health support. Includes wheelchair-accessible hotels closest to the Harams, personal assistance, medical support on call, comfortable pacing, and transportation with easy access. Our trained staff ensures safety, comfort, and spiritual fulfillment for senior travelers.', '[1,3,4]', '[1,2,3,4,5,6,7,8,9,10]', 'Senior-friendly policy. Flexible dates. 80% refund up to 21 days before departure.', '1', '1', '5', '4.8', '2', '0', '0', '2026-01-27 15:10:51', '2026-01-27 15:10:51');
+INSERT INTO `umrah` (`id`, `agent_id`, `added_by`, `approval_status`, `name`, `packege_type`, `currceny`, `price`, `duration`, `loaction`, `leaving_from`, `going_to`, `checkin_date`, `checkout_date`, `night_in_mekkah`, `night_in_madina`, `class`, `desc`, `exclusions`, `inclusions`, `policy`, `featured`, `status`, `stars`, `rating`, `adults`, `childs`, `infants`, `created_at`, `updated_at`) VALUES
+(7, NULL, 'admin', 'approved', 'Blake Daniels', 'basic', 'GBP', '267', 'Quis accusantium pos', 'Enim debitis asperio', 2207, 2072, '2009-11-26', '2004-05-18', 72, 72, 'first', 'Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore Corporis non dolore', '[\"1\",\"2\",\"3\"]', '[\"1\",\"3\",\"5\",\"6\"]', 'Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende Molestiae reprehende', '0', '1', '3', 'Asperiores est sed', '41', '65', '10', '2026-01-27 15:09:13', '2026-01-27 15:09:13'),
+(8, NULL, 'admin', 'approved', 'Cain Bean', 'standard', 'GBP', '705', 'Iste perspiciatis l', 'Voluptatum a laboris', 2207, 2072, '1980-02-19', '1984-12-19', 19, 80, 'economy', 'Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo Molestiae rerum dolo', '[\"1\",\"2\",\"3\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\",\"6\"]', 'Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut Elit et animi aut', '1', '1', '4', 'Aut maiores quia ame', '29', '47', '86', '2026-01-27 15:09:15', '2026-01-27 15:09:15'),
+(9, NULL, 'admin', 'approved', '14 Days Premium Umrah Package', 'standard', 'USD', '2499', '14 Days / 13 Nights', '1', 2207, 2072, '2026-03-27', '2026-04-10', 8, 5, NULL, 'Experience the spiritual journey of a lifetime with our 14-day Premium Umrah Package. This comprehensive package includes luxurious 5-star accommodations near the Holy Mosques, comfortable business class flights, and guided tours of all significant Islamic historical sites. Our expert guides will ensure your pilgrimage is both spiritually fulfilling and comfortable.', '[\"1\",\"2\",\"3\",\"4\"]', '[\"1\",\"2\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"10\"]', 'Free cancellation up to 30 days before departure. 50% refund between 15-30 days. No refund within 15 days of departure.', '0', '1', '5', '4.8', '2', '0', '0', '2026-01-27 16:48:34', '2026-01-27 11:48:34'),
+(10, NULL, 'admin', 'approved', '10 Days Economy Umrah Package', 'Economy', 'USD', '1299', '10 Days / 9 Nights', '1', 2207, 2072, '2026-02-27', '2026-03-09', 5, 4, 'Economy', 'Perfect for budget-conscious pilgrims, our 10-day Economy Umrah Package offers essential services for a comfortable spiritual journey. Stay in clean, well-located 3-star hotels within walking distance of the Harams. Includes economy flights, visa processing, and basic guided tours. Ideal for families and groups looking for affordable pilgrimage options.', '[1,2,3,4,5,6]', '[1,2,3,4,5,8,10]', 'Non-refundable booking. Date changes allowed up to 45 days before departure with $100 fee.', '0', '1', '3', '4.2', '2', '1', '0', '2026-01-27 16:45:55', '2026-01-27 11:45:55'),
+(11, NULL, 'admin', 'approved', '21 Days VIP Umrah Package', 'VIP', 'USD', '4999', '21 Days / 20 Nights', '1', 2207, 2072, '2026-04-27', '2026-05-18', 12, 8, 'First Class', 'Indulge in the ultimate Umrah experience with our exclusive 21-day VIP Package. Enjoy first-class flights, five-star hotels with Haram views, private transfers, and personalized services. This package includes extended stays in Makkah and Madinah, comprehensive Ziyarat tours, and dedicated personal assistance throughout your journey.', '[2,3,4]', '[1,2,3,4,5,6,7,8,9,10]', 'Flexible cancellation policy. Full refund up to 60 days before departure. 75% refund between 30-60 days.', '0', '1', '5', '4.9', '2', '0', '0', '2026-01-27 16:46:05', '2026-01-27 11:46:05'),
+(12, NULL, 'admin', 'approved', '14 Days Premium Umrah Package', 'Premium', 'USD', '2499', '14 Days / 13 Nights', '1', 2207, 2074, '2026-03-27', '2026-04-10', 8, 5, 'Business', 'Experience the spiritual journey of a lifetime with our 14-day Premium Umrah Package. This comprehensive package includes luxurious 5-star accommodations near the Holy Mosques, comfortable business class flights, and guided tours of all significant Islamic historical sites. Our expert guides will ensure your pilgrimage is both spiritually fulfilling and comfortable.', '[1,2,3,4]', '[1,2,3,4,5,6,7,8,9,10]', 'Free cancellation up to 30 days before departure. 50% refund between 15-30 days. No refund within 15 days of departure.', '1', '1', '5', '4.8', '2', '0', '0', '2026-01-27 15:11:10', '2026-01-27 15:11:10'),
+(13, NULL, 'admin', 'approved', '10 Days Economy Umrah Package', 'Economy', 'USD', '1299', '10 Days / 9 Nights', '1', 2207, 2074, '2026-02-27', '2026-03-09', 5, 4, 'Economy', 'Perfect for budget-conscious pilgrims, our 10-day Economy Umrah Package offers essential services for a comfortable spiritual journey. Stay in clean, well-located 3-star hotels within walking distance of the Harams. Includes economy flights, visa processing, and basic guided tours. Ideal for families and groups looking for affordable pilgrimage options.', '[1,2,3,4,5,6]', '[1,2,3,4,5,8,10]', 'Non-refundable booking. Date changes allowed up to 45 days before departure with $100 fee.', '1', '1', '3', '4.2', '2', '1', '0', '2026-01-27 15:11:07', '2026-01-27 15:11:07'),
+(14, NULL, 'admin', 'approved', '21 Days VIP Umrah Package', 'VIP', 'USD', '4999', '21 Days / 20 Nights', '1', 2207, 2074, '2026-04-27', '2026-05-18', 12, 8, 'First Class', 'Indulge in the ultimate Umrah experience with our exclusive 21-day VIP Package. Enjoy first-class flights, five-star hotels with Haram views, private transfers, and personalized services. This package includes extended stays in Makkah and Madinah, comprehensive Ziyarat tours, and dedicated personal assistance throughout your journey.', '[2,3,4]', '[1,2,3,4,5,6,7,8,9,10]', 'Flexible cancellation policy. Full refund up to 60 days before departure. 75% refund between 30-60 days.', '1', '1', '5', '4.9', '2', '0', '0', '2026-01-27 15:11:05', '2026-01-27 15:11:05'),
+(15, NULL, 'admin', 'approved', '7 Days Express Umrah Package', 'Standard', 'USD', '999', '7 Days / 6 Nights', '1', 2207, 2074, '2026-02-17', '2026-02-24', 3, 3, 'Economy', 'Short on time but not on faith? Our 7-day Express Umrah Package is designed for busy professionals and those with limited vacation time. This efficient package covers all essential rituals with comfortable 4-star accommodations, direct flights, and streamlined services to maximize your spiritual experience in minimal time.', '[1,2,3,4,5]', '[1,2,3,4,5,7,8,10]', 'Standard cancellation policy. 50% refund up to 21 days before departure.', '0', '1', '4', '4.5', '1', '0', '0', '2026-01-27 15:11:03', '2026-01-27 15:11:03'),
+(16, NULL, 'admin', 'approved', '15 Days Family Umrah Package', 'Standard', 'USD', '3499', '15 Days / 14 Nights', '1', 2207, 2074, '2026-03-27', '2026-04-11', 8, 6, 'Economy', 'Specially designed for families, this 15-day package includes child-friendly accommodations, family rooms, and flexible scheduling. Stay in comfortable 4-star hotels with family suites, enjoy guided tours suitable for all ages, and benefit from our experienced family travel coordinators who ensure a smooth journey for parents and children alike.', '[1,2,3]', '[1,2,3,4,5,6,7,8,9,10]', 'Family-friendly cancellation policy. Free date changes up to 30 days before departure.', '1', '1', '4', '4.6', '2', '2', '1', '2026-01-27 15:11:01', '2026-01-27 15:11:01'),
+(17, NULL, 'admin', 'approved', '12 Days Luxury Umrah Package', 'Luxury', 'USD', '5999', '12 Days / 11 Nights', '1', 2207, 2074, '2026-05-27', '2026-06-08', 7, 4, 'First Class', 'Experience unparalleled luxury with our premium 12-day package. Stay in the most prestigious hotels with direct Haram views, enjoy limousine transfers, personal butler service, and exclusive access to VIP lounges. This package is crafted for discerning travelers who seek the finest spiritual journey with exceptional comfort and privacy.', '[2,4]', '[1,2,3,4,5,6,7,8,9,10]', 'Premium flexible policy. Full refund up to 45 days, 90% refund up to 30 days before departure.', '1', '1', '5', '5', '2', '0', '0', '2026-01-27 15:10:59', '2026-01-27 15:10:59'),
+(18, NULL, 'admin', 'approved', '9 Days Ramadan Special Umrah', 'Premium', 'USD', '3299', '9 Days / 8 Nights', '1', 2207, 2074, '2026-06-27', '2026-07-06', 5, 3, 'Business', 'Perform Umrah during the blessed month of Ramadan with our special 9-day package. Includes Suhoor and Iftar meals, special prayers at the Harams, and convenient hotel locations for easy access during Taraweeh. Experience the spiritual intensity of Ramadan in the holy cities with our expertly planned schedule and premium services.', '[2,3,4]', '[1,2,3,4,5,6,7,8,9,10]', 'Special Ramadan policy. Limited availability. 60% refund up to 45 days before departure.', '1', '1', '5', '4.9', '2', '0', '0', '2026-01-27 15:10:57', '2026-01-27 15:10:57'),
+(19, NULL, 'admin', 'approved', '8 Days Budget Umrah Package', 'Economy', 'USD', '899', '8 Days / 7 Nights', '1', 2207, 2074, '2026-03-10', '2026-03-18', 4, 3, 'Economy', 'Our most affordable Umrah package without compromising on essential services. Perfect for first-time pilgrims and budget travelers. Includes basic but comfortable 3-star accommodations, economy flights, visa assistance, and fundamental guided tours. All essential services covered to ensure a successful pilgrimage.', '[1,2,3,4,5,6,7]', '[1,2,3,4,8,10]', 'Budget policy. Non-refundable. Date changes up to 60 days before with additional fee.', '0', '1', '3', '4', '1', '0', '0', '2026-01-27 15:10:55', '2026-01-27 15:10:55'),
+(20, NULL, 'admin', 'approved', '18 Days Extended Umrah Package', 'Standard', 'USD', '2899', '18 Days / 17 Nights', '1', 2207, 2074, '2026-04-27', '2026-05-15', 10, 7, 'Economy', 'Take your time to immerse yourself in the spiritual atmosphere with our extended 18-day package. Enjoy longer stays in both holy cities, multiple Ziyarat tours, and ample time for worship and reflection. Ideal for those seeking a deeper spiritual connection and comprehensive exploration of Islamic historical sites.', '[1,2,3,4]', '[1,2,3,4,5,6,7,8,9,10]', 'Standard cancellation. 70% refund up to 30 days, 40% refund up to 15 days before departure.', '0', '1', '4', '4.7', '2', '0', '0', '2026-01-27 15:10:53', '2026-01-27 15:10:53'),
+(21, NULL, 'admin', 'approved', '11 Days Senior Citizen Umrah Package', 'Premium', 'USD', '2799', '11 Days / 10 Nights', '1', 2207, 2074, '2026-03-27', '2026-04-07', 6, 4, 'Business', 'Specially designed for elderly pilgrims with mobility considerations and health support. Includes wheelchair-accessible hotels closest to the Harams, personal assistance, medical support on call, comfortable pacing, and transportation with easy access. Our trained staff ensures safety, comfort, and spiritual fulfillment for senior travelers.', '[1,3,4]', '[1,2,3,4,5,6,7,8,9,10]', 'Senior-friendly policy. Flexible dates. 80% refund up to 21 days before departure.', '1', '1', '5', '4.8', '2', '0', '0', '2026-01-27 15:10:51', '2026-01-27 15:10:51');
 
 -- --------------------------------------------------------
 
@@ -23184,6 +25345,9 @@ INSERT INTO `umrah` (`id`, `name`, `packege_type`, `currceny`, `price`, `duratio
 
 CREATE TABLE `umrah_bookings` (
   `id` int(11) NOT NULL,
+  `agent_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `booked_via` enum('guest','user','agent') NOT NULL DEFAULT 'guest',
   `booking_code_ref` varchar(225) NOT NULL,
   `booking_status_flag` enum('confirmed','pending','cancelled') NOT NULL DEFAULT 'pending',
   `booking_pnr` varchar(255) DEFAULT NULL,
@@ -23223,8 +25387,8 @@ CREATE TABLE `umrah_bookings` (
 -- Dumping data for table `umrah_bookings`
 --
 
-INSERT INTO `umrah_bookings` (`id`, `booking_code_ref`, `booking_status_flag`, `booking_pnr`, `booking_fare_base`, `umrah_id`, `umrah_name`, `user_first_name`, `user_last_name`, `user_email`, `user_phone`, `user_country`, `booking_guest`, `booking_nationality_code`, `search_params`, `booking_adult_count`, `booking_child_count`, `infant_count`, `adult_price`, `child_price`, `infant_price`, `total_price`, `booking_currency_origin`, `booking_data`, `booking_response_json`, `booking_response_error`, `booking_payment_state`, `booking_supplier_name`, `module`, `booking_txn_id`, `booking_user_data`, `booking_payment_gateway`, `created_at`, `updated_at`) VALUES
-(1, 'UMR-698008ACD93BA', 'confirmed', '698008C453F95', '29988', 9, '14 Days Premium Umrah Package', 'Soft', 'Solution', 'Softsolutionits@gmail.com', '+923066340298', 'pk', '[{\"type\":\"adult\",\"gender\":\"male\",\"first_name\":\"Lareina\",\"last_name\":\"Valdez\"}]', 'pk', '{\"origin\":\"LHE\",\"destination\":\"MED\",\"departure_date\":\"04-02-2026\",\"return_date\":\"08-02-2026\",\"adult\":1,\"child\":0,\"infant\":0,\"makkah_nights\":0,\"madina_nights\":0}', 1, 0, 0, 29988.00, 0.00, 0.00, 29988.00, 'AED', NULL, NULL, NULL, 'paid', 'umrah', 'umrah', NULL, '{\"first_name\":\"Soft\",\"last_name\":\"Solution\",\"email\":\"Softsolutionits@gmail.com\",\"phone\":\"+923066340298\",\"country\":\"pk\"}', 'stripe', '2026-02-01 21:15:08', '2026-02-02 02:15:32');
+INSERT INTO `umrah_bookings` (`id`, `agent_id`, `user_id`, `booked_via`, `booking_code_ref`, `booking_status_flag`, `booking_pnr`, `booking_fare_base`, `umrah_id`, `umrah_name`, `user_first_name`, `user_last_name`, `user_email`, `user_phone`, `user_country`, `booking_guest`, `booking_nationality_code`, `search_params`, `booking_adult_count`, `booking_child_count`, `infant_count`, `adult_price`, `child_price`, `infant_price`, `total_price`, `booking_currency_origin`, `booking_data`, `booking_response_json`, `booking_response_error`, `booking_payment_state`, `booking_supplier_name`, `module`, `booking_txn_id`, `booking_user_data`, `booking_payment_gateway`, `created_at`, `updated_at`) VALUES
+(1, NULL, NULL, '', 'UMR-698008ACD93BA', 'confirmed', '698008C453F95', '29988', 9, '14 Days Premium Umrah Package', 'Soft', 'Solution', 'Softsolutionits@gmail.com', '+923066340298', 'pk', '[{\"type\":\"adult\",\"gender\":\"male\",\"first_name\":\"Lareina\",\"last_name\":\"Valdez\"}]', 'pk', '{\"origin\":\"LHE\",\"destination\":\"MED\",\"departure_date\":\"04-02-2026\",\"return_date\":\"08-02-2026\",\"adult\":1,\"child\":0,\"infant\":0,\"makkah_nights\":0,\"madina_nights\":0}', 1, 0, 0, 29988.00, 0.00, 0.00, 29988.00, 'AED', NULL, NULL, NULL, 'paid', 'umrah', 'umrah', NULL, '{\"first_name\":\"Soft\",\"last_name\":\"Solution\",\"email\":\"Softsolutionits@gmail.com\",\"phone\":\"+923066340298\",\"country\":\"pk\"}', 'stripe', '2026-02-01 21:15:08', '2026-05-07 16:44:18');
 
 -- --------------------------------------------------------
 
@@ -23234,6 +25398,7 @@ INSERT INTO `umrah_bookings` (`id`, `booking_code_ref`, `booking_status_flag`, `
 
 CREATE TABLE `umrah_exclusions` (
   `id` int(11) NOT NULL,
+  `agent_id` bigint(20) UNSIGNED DEFAULT NULL,
   `name` varchar(225) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
@@ -23243,18 +25408,18 @@ CREATE TABLE `umrah_exclusions` (
 -- Dumping data for table `umrah_exclusions`
 --
 
-INSERT INTO `umrah_exclusions` (`id`, `name`, `created_at`, `updated_at`) VALUES
-(1, 'Additional Meals', '2025-12-17 02:27:42', '0000-00-00 00:00:00'),
-(2, 'Hotel Parking', '2025-12-17 02:27:42', '0000-00-00 00:00:00'),
-(3, 'Room Extras', '2025-12-17 02:27:59', '0000-00-00 00:00:00'),
-(4, 'Lunch and dinner', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
-(5, 'Personal expenses', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
-(6, 'Additional baggage', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
-(7, 'Optional tours', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
-(8, 'Tips and gratuities', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
-(9, 'Laundry services', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
-(10, 'Room service', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
-(11, 'PCR test', '2026-01-27 10:05:24', '2026-01-27 10:05:24');
+INSERT INTO `umrah_exclusions` (`id`, `agent_id`, `name`, `created_at`, `updated_at`) VALUES
+(1, NULL, 'Additional Meals', '2025-12-17 02:27:42', '0000-00-00 00:00:00'),
+(2, NULL, 'Hotel Parking', '2025-12-17 02:27:42', '0000-00-00 00:00:00'),
+(3, NULL, 'Room Extras', '2025-12-17 02:27:59', '0000-00-00 00:00:00'),
+(4, NULL, 'Lunch and dinner', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
+(5, NULL, 'Personal expenses', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
+(6, NULL, 'Additional baggage', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
+(7, NULL, 'Optional tours', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
+(8, NULL, 'Tips and gratuities', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
+(9, NULL, 'Laundry services', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
+(10, NULL, 'Room service', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
+(11, NULL, 'PCR test', '2026-01-27 10:05:24', '2026-01-27 10:05:24');
 
 -- --------------------------------------------------------
 
@@ -23388,6 +25553,7 @@ INSERT INTO `umrah_images` (`id`, `umrah_id`, `image`, `created_at`, `updated_at
 
 CREATE TABLE `umrah_inclusions` (
   `id` int(11) NOT NULL,
+  `agent_id` bigint(20) UNSIGNED DEFAULT NULL,
   `name` varchar(225) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
@@ -23397,23 +25563,23 @@ CREATE TABLE `umrah_inclusions` (
 -- Dumping data for table `umrah_inclusions`
 --
 
-INSERT INTO `umrah_inclusions` (`id`, `name`, `created_at`, `updated_at`) VALUES
-(1, 'Flight Tickets', '2025-12-17 02:26:45', '0000-00-00 00:00:00'),
-(2, 'Umrah VISA', '2025-12-17 02:26:45', '0000-00-00 00:00:00'),
-(3, 'Hotel Service', '2025-12-17 02:26:59', '0000-00-00 00:00:00'),
-(4, 'Bus Service', '2025-12-17 02:26:59', '0000-00-00 00:00:00'),
-(5, 'Laundry', '2025-12-17 02:27:16', '0000-00-00 00:00:00'),
-(6, 'Umrah Kit', '2025-12-17 02:27:16', '0000-00-00 00:00:00'),
-(7, 'Return flight tickets', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
-(8, 'Hotel accommodation', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
-(9, 'Airport transfers', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
-(10, 'Visa processing', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
-(11, 'Guided Ziyarat tours', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
-(12, 'Free WiFi', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
-(13, 'Breakfast included', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
-(14, '24/7 customer support', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
-(15, 'Travel insurance', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
-(16, 'Group leader assistance', '2026-01-27 10:05:24', '2026-01-27 10:05:24');
+INSERT INTO `umrah_inclusions` (`id`, `agent_id`, `name`, `created_at`, `updated_at`) VALUES
+(1, NULL, 'Flight Tickets', '2025-12-17 02:26:45', '0000-00-00 00:00:00'),
+(2, NULL, 'Umrah VISA', '2025-12-17 02:26:45', '0000-00-00 00:00:00'),
+(3, NULL, 'Hotel Service', '2025-12-17 02:26:59', '0000-00-00 00:00:00'),
+(4, NULL, 'Bus Service', '2025-12-17 02:26:59', '0000-00-00 00:00:00'),
+(5, NULL, 'Laundry', '2025-12-17 02:27:16', '0000-00-00 00:00:00'),
+(6, NULL, 'Umrah Kit', '2025-12-17 02:27:16', '0000-00-00 00:00:00'),
+(7, NULL, 'Return flight tickets', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
+(8, NULL, 'Hotel accommodation', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
+(9, NULL, 'Airport transfers', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
+(10, NULL, 'Visa processing', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
+(11, NULL, 'Guided Ziyarat tours', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
+(12, NULL, 'Free WiFi', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
+(13, NULL, 'Breakfast included', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
+(14, NULL, '24/7 customer support', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
+(15, NULL, 'Travel insurance', '2026-01-27 10:05:24', '2026-01-27 10:05:24'),
+(16, NULL, 'Group leader assistance', '2026-01-27 10:05:24', '2026-01-27 10:05:24');
 
 -- --------------------------------------------------------
 
@@ -23423,6 +25589,7 @@ INSERT INTO `umrah_inclusions` (`id`, `name`, `created_at`, `updated_at`) VALUES
 
 CREATE TABLE `umrah_package_type` (
   `id` int(11) NOT NULL,
+  `agent_id` bigint(20) UNSIGNED DEFAULT NULL,
   `packege_type` varchar(225) NOT NULL,
   `status` enum('0','1') NOT NULL DEFAULT '1',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -23433,13 +25600,13 @@ CREATE TABLE `umrah_package_type` (
 -- Dumping data for table `umrah_package_type`
 --
 
-INSERT INTO `umrah_package_type` (`id`, `packege_type`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'basic', '1', '2025-12-17 02:29:36', '0000-00-00 00:00:00'),
-(2, 'standard', '1', '2025-12-17 02:29:36', '0000-00-00 00:00:00'),
-(3, 'premium', '1', '2025-12-17 02:29:41', '0000-00-00 00:00:00'),
-(4, 'Economy', '1', '2026-01-27 15:10:11', '2026-01-27 10:10:11'),
-(5, 'VIP', '1', '2026-01-27 15:10:11', '2026-01-27 10:10:11'),
-(6, 'Luxury', '1', '2026-01-27 15:10:11', '2026-01-27 10:10:11');
+INSERT INTO `umrah_package_type` (`id`, `agent_id`, `packege_type`, `status`, `created_at`, `updated_at`) VALUES
+(1, NULL, 'basic', '1', '2025-12-17 02:29:36', '0000-00-00 00:00:00'),
+(2, NULL, 'standard', '1', '2025-12-17 02:29:36', '0000-00-00 00:00:00'),
+(3, NULL, 'premium', '1', '2025-12-17 02:29:41', '0000-00-00 00:00:00'),
+(4, NULL, 'Economy', '1', '2026-01-27 15:10:11', '2026-01-27 10:10:11'),
+(5, NULL, 'VIP', '1', '2026-01-27 15:10:11', '2026-01-27 10:10:11'),
+(6, NULL, 'Luxury', '1', '2026-01-27 15:10:11', '2026-01-27 10:10:11');
 
 -- --------------------------------------------------------
 
@@ -23452,6 +25619,17 @@ CREATE TABLE `users` (
   `user_type` enum('user','admin','agent') NOT NULL DEFAULT 'user',
   `first_name` varchar(255) NOT NULL,
   `last_name` varchar(255) NOT NULL,
+  `company_name` varchar(255) DEFAULT NULL,
+  `agent_code` varchar(20) DEFAULT NULL,
+  `approval_status` enum('pending','active','suspended','rejected') NOT NULL DEFAULT 'pending',
+  `approved_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `rejection_reason` text DEFAULT NULL,
+  `company_address` text DEFAULT NULL,
+  `company_phone` varchar(30) DEFAULT NULL,
+  `company_logo` varchar(255) DEFAULT NULL,
+  `cnic_or_reg_number` varchar(100) DEFAULT NULL,
+  `parent_agent_id` bigint(20) UNSIGNED DEFAULT NULL,
   `email` varchar(255) NOT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `phone` varchar(255) DEFAULT NULL,
@@ -23481,6 +25659,8 @@ CREATE TABLE `users` (
   `marketing_emails` tinyint(1) NOT NULL DEFAULT 0,
   `internal_notes` text DEFAULT NULL,
   `remember_token` varchar(100) DEFAULT NULL,
+  `two_factor_secret` varchar(64) DEFAULT NULL,
+  `two_factor_confirmed_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -23489,13 +25669,18 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `user_type`, `first_name`, `last_name`, `email`, `email_verified_at`, `phone`, `profile_image`, `date_of_birth`, `gender`, `customer_tier`, `status`, `password`, `address`, `city`, `state`, `zip_code`, `country`, `total_bookings`, `total_spent`, `average_spending`, `last_activity`, `employee_id`, `hire_date`, `department`, `commission_rate`, `total_sales`, `total_commission`, `email_notifications`, `sms_notifications`, `marketing_emails`, `internal_notes`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'user', 'Oran', 'Price', 'renner.emmitt@example.com', '2025-07-14 15:23:13', NULL, NULL, NULL, NULL, 'bronze', 'active', '$2y$12$aUxK7cMnqQ.FFlGiDQtu9e9174kfwhSQEFvrwihNgUctwaec9UHyW', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'I5a6fj8sbD', '2025-07-14 15:23:15', '2025-07-14 15:23:15'),
-(2, 'user', 'Lonie', 'Kautzer', 'hkunze@example.com', '2025-07-14 15:23:13', NULL, NULL, NULL, NULL, 'bronze', 'active', '$2y$12$yHIkVd2Qe6MjDWwG6v64peGXpNcNjNUYZ5OBocTYp.kstEytJ3hVi', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'AcJyFQqGfS', '2025-07-14 15:23:15', '2025-07-14 15:23:15'),
-(3, 'user', 'Royal', 'Koch', 'bianka.green@example.com', '2025-07-14 15:23:14', NULL, NULL, NULL, NULL, 'bronze', 'active', '$2y$12$bbeZJp6ApHD7So.62/hTgubTtv5cXCXJSfDEAmWKHMrWrql16URee', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'EbUALjxGGB', '2025-07-14 15:23:15', '2025-07-14 15:23:15'),
-(4, 'user', 'Demond', 'Fahey', 'lubowitz.bradly@example.net', '2025-07-14 15:23:14', NULL, NULL, NULL, NULL, 'bronze', 'active', '$2y$12$Ht6yuT1A0C1khxeg6bJhbOygpx6QQi1lv7Vjmsgmn43c5l5qNZLey', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'iQMz31kHTF', '2025-07-14 15:23:15', '2025-07-14 15:23:15'),
-(5, 'user', 'Ernie', 'Leffler', 'ismael34@example.com', '2025-07-14 15:23:14', NULL, NULL, NULL, NULL, 'bronze', 'active', '$2y$12$J5YDnMlOWLkyoUMqSTehP.LTXVFqQuYJqGlzaS939XDfVoP97ZDYi', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'UqtPVoaxJV', '2025-07-14 15:23:15', '2025-07-14 15:23:15'),
-(6, 'admin', 'Admin', 'User', 'admin@travelbookingpanel.com', '2025-07-14 15:23:15', NULL, 'profile_images/1766752938_694e82aacfacd.png', NULL, NULL, 'bronze', 'active', '$2y$12$O0ta5fx6F6iBM8GWv7OXGOwKuuQ33rMJAt9YLUSBgUVnkUTRFy3mu', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, '2026-02-01 21:14:47', NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'kGUqxFsmc0p2lzH1kjXYh5cFBE39e38znagWkisOtnzYwsti8ljR5X2fVSWv', '2025-07-14 15:23:15', '2026-02-01 21:14:47');
+INSERT INTO `users` (`id`, `user_type`, `first_name`, `last_name`, `company_name`, `agent_code`, `approval_status`, `approved_by`, `approved_at`, `rejection_reason`, `company_address`, `company_phone`, `company_logo`, `cnic_or_reg_number`, `parent_agent_id`, `email`, `email_verified_at`, `phone`, `profile_image`, `date_of_birth`, `gender`, `customer_tier`, `status`, `password`, `address`, `city`, `state`, `zip_code`, `country`, `total_bookings`, `total_spent`, `average_spending`, `last_activity`, `employee_id`, `hire_date`, `department`, `commission_rate`, `total_sales`, `total_commission`, `email_notifications`, `sms_notifications`, `marketing_emails`, `internal_notes`, `remember_token`, `two_factor_secret`, `two_factor_confirmed_at`, `created_at`, `updated_at`) VALUES
+(1, 'user', 'Oran', 'Price', NULL, NULL, 'pending', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'renner.emmitt@example.com', '2025-07-14 15:23:13', NULL, NULL, NULL, NULL, 'bronze', 'active', '$2y$12$aUxK7cMnqQ.FFlGiDQtu9e9174kfwhSQEFvrwihNgUctwaec9UHyW', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'kAGguyV4MgZkpOn69gQtmskzUACOeCqNudHD0MR1HwX1rlaanriCbwWewHMF', NULL, NULL, '2025-07-14 15:23:15', '2026-10-01 06:35:25'),
+(2, 'user', 'Lonie', 'Kautzer', NULL, NULL, 'pending', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'hkunze@example.com', '2025-07-14 15:23:13', NULL, NULL, NULL, NULL, 'bronze', 'active', '$2y$12$yHIkVd2Qe6MjDWwG6v64peGXpNcNjNUYZ5OBocTYp.kstEytJ3hVi', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'AcJyFQqGfS', NULL, NULL, '2025-07-14 15:23:15', '2025-07-14 15:23:15'),
+(3, 'user', 'Royal', 'Koch', NULL, NULL, 'pending', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'bianka.green@example.com', '2025-07-14 15:23:14', NULL, NULL, NULL, NULL, 'bronze', 'active', '$2y$12$bbeZJp6ApHD7So.62/hTgubTtv5cXCXJSfDEAmWKHMrWrql16URee', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'EbUALjxGGB', NULL, NULL, '2025-07-14 15:23:15', '2025-07-14 15:23:15'),
+(4, 'user', 'Demond', 'Fahey', NULL, NULL, 'pending', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'lubowitz.bradly@example.net', '2025-07-14 15:23:14', NULL, NULL, NULL, NULL, 'bronze', 'active', '$2y$12$Ht6yuT1A0C1khxeg6bJhbOygpx6QQi1lv7Vjmsgmn43c5l5qNZLey', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'iQMz31kHTF', NULL, NULL, '2025-07-14 15:23:15', '2025-07-14 15:23:15'),
+(5, 'user', 'Ernie', 'Leffler', NULL, NULL, 'pending', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ismael34@example.com', '2025-07-14 15:23:14', NULL, NULL, NULL, NULL, 'bronze', 'active', '$2y$12$J5YDnMlOWLkyoUMqSTehP.LTXVFqQuYJqGlzaS939XDfVoP97ZDYi', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'UqtPVoaxJV', NULL, NULL, '2025-07-14 15:23:15', '2025-07-14 15:23:15'),
+(6, 'admin', 'Admin', 'User', NULL, NULL, 'pending', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'admin@travelbookingpanel.com', '2025-07-14 15:23:15', NULL, 'profile_images/1784984585_6a64b409d8864.png', NULL, NULL, 'bronze', 'active', '$2y$12$XYtOYegB3552yXSBkfSqHe/pZLhJLrQgMv0/wcCKtDMYSYnYlXoAO', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, '2026-10-07 06:19:30', NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, 'eq9su67wFLsvQMlrn5zBIcSp17CWZkfVPM9KL7hXnn3WpzMdmagXEZe0P59f', NULL, NULL, '2025-07-14 15:23:15', '2026-10-07 06:19:30'),
+(7, 'agent', 'Celeste', 'Dickerson', 'Robinson and Oconnor Co', 'AGT-0001', 'active', 6, '2026-10-02 03:24:24', 'hm.younas22@gmail.com', NULL, NULL, '1773684627_69b84793c8bee_company_logo.jpeg', NULL, NULL, 'hm.younas22@gmail.com', NULL, '+1 (605) 426-5161', NULL, NULL, NULL, 'bronze', 'active', '$2y$12$yIyDp7cddT5p6/MwNewSqeP.T9.tDgQCyl.f6fx6NPZ5mKYQBRVmO', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, '2026-10-07 11:38:36', NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, NULL, NULL, NULL, '2026-03-16 06:38:46', '2026-10-07 11:38:59'),
+(8, 'agent', 'Kareem', 'Peters', 'Bright and Patel Plc', 'AGT-0002', 'active', 6, '2026-03-18 17:05:22', NULL, 'In earum deleniti om', 'Lane and Conner Plc', NULL, '735', NULL, 'gology@mailinator.com', NULL, '+1 (312) 307-1127', NULL, NULL, NULL, 'bronze', 'active', '$2y$12$3V7maKUcLD0st72MIRYs7.UrkGw.jwO0Rp4L4kgXib0CoHO67CX.u', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, 93.00, 0, 0.00, 1, 0, 0, NULL, NULL, NULL, NULL, '2026-03-18 17:05:23', '2026-10-02 03:28:15'),
+(9, 'user', 'demo', 'user', NULL, NULL, 'pending', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'user@travelbookingpanel.com', NULL, NULL, '1778171014_69fcbc86a266f_avatar.jpg', NULL, NULL, 'bronze', 'active', '$2y$12$knjfkMfg19kBf5BEsjnpHuTsAAnSjZWenpxXJv6ejx/BojwPHvkAK', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, '2026-10-01 06:42:53', NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, NULL, NULL, NULL, '2026-05-07 06:08:01', '2026-10-01 06:42:53'),
+(10, 'agent', 'Celeste', 'Dickerson', 'Agent company', 'AGT-0003', 'active', 6, '2026-05-07 10:12:26', NULL, 'khanewal Pakistan\r\nkhanewal', NULL, '1778167919_69fcb06fcd8b6_company_logo.png', NULL, NULL, 'agent@travelbookingpanel.com', NULL, '+1 (605) 426-5161', '1778171162_69fcbd1ae163d.jpg', NULL, NULL, 'bronze', 'active', '$2y$12$V2rKQj/i6vec4MMldSkF7OHNtO.L3GDPmA/rHE4Qq.cJ2GMIzjNPu', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, '2026-10-06 10:55:31', NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, NULL, NULL, NULL, '2026-05-07 10:11:13', '2026-10-06 10:55:31'),
+(13, 'agent', 'Blaine', 'Newman', 'Leonard and Wade Plc', 'AGT-0004', 'pending', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'theclaritywrite@gmail.com', NULL, '+1 (668) 437-9178', NULL, NULL, NULL, 'bronze', 'active', '$2y$12$d2nXt4PclJGAVO.cL6YTleyD/.BoewBMrgXu7I/wkehgRGmUDqDEG', NULL, NULL, NULL, NULL, NULL, 0, 0.00, 0.00, NULL, NULL, NULL, NULL, NULL, 0, 0.00, 1, 0, 0, NULL, NULL, NULL, NULL, '2026-06-21 00:08:48', '2026-06-21 00:08:48');
 
 -- --------------------------------------------------------
 
@@ -23505,6 +25690,9 @@ INSERT INTO `users` (`id`, `user_type`, `first_name`, `last_name`, `email`, `ema
 
 CREATE TABLE `visa_requests` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `agent_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `booked_via` enum('guest','user','agent') NOT NULL DEFAULT 'guest',
   `visa_category` enum('uae','other') DEFAULT NULL,
   `visa_type` varchar(255) DEFAULT NULL,
   `visa_plan` varchar(255) DEFAULT NULL,
@@ -23552,14 +25740,53 @@ CREATE TABLE `visa_requests` (
 -- Dumping data for table `visa_requests`
 --
 
-INSERT INTO `visa_requests` (`id`, `visa_category`, `visa_type`, `visa_plan`, `first_name`, `middle_name`, `surname`, `father_name`, `mother_name`, `place_birth`, `occupation`, `marital_status`, `religion`, `nationality`, `passport_no`, `passport_issue_date`, `passport_expiry_date`, `gender`, `passport_front`, `passport_back`, `passport_photo`, `other_document`, `guarantor_name`, `guarantor_nationality`, `guarantor_relation`, `guarantor_emirates_id`, `guarantor_passport_no`, `employer_name`, `company_contact`, `guarantor_visa_no`, `guarantor_visa_expiry`, `guarantor_mobile`, `guarantor_email`, `receipt_no`, `receipt_amount`, `receipt_date`, `visa_payment_date`, `ticket_otb_date`, `security_deposit_date`, `agreed_terms`, `created_at`, `updated_at`) VALUES
-(1, NULL, 'tourist', 'single_entry', 'Edward', 'Deborah Rich', 'Prince', 'David Cross', 'Frances Rice', 'Incidunt in quidem', 'Ut odit magni ipsum', 'married', 'Ut est assumenda di', 'tr', 'Molestiae doloribus', '1983-09-14', '2027-06-05', 'female', 'visa-documents/IpPj9AMTs31zJMNVWU3wOkcuISpbMkcTc2P3VBLn.png', 'visa-documents/SDAaUwx4SoZzkkSlKBKy2oFNmYl7rtymJETLLojd.png', 'visa-documents/ywnk3Wy3gCSWFWqKXzDULp2R24shx3pgMeJW87AS.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2025-11-19 10:39:56', '2025-11-19 10:39:56'),
-(2, NULL, 'business', 'multiple_entry', 'Jena', 'Fatima Mcfadden', 'Barlow', 'Dante Hood', 'Miranda Flynn', 'Enim anim velit veri', 'Reprehenderit dolori', 'married', 'Soluta laborum sit', 'au', 'Aut quia magnam quis', '1995-12-11', '2028-11-20', 'female', 'visa-documents/nwo3Trs90jdknV6P2o54jnAOlsPKZqGnRY98QS5i.png', 'visa-documents/sWbahEVXxTjk3G2XDHRiS01Di4fdUJWoQ2HtsurJ.jpg', 'visa-documents/498Vx9gXInYMDvXRcRkPBwHLql2YTVZ87W7QgtOp.jpg', 'visa-documents/1ve3sFXErv8sAUZdQ7DsMKuTla8KYCq9t2G3mabB.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2025-11-19 10:59:23', '2025-11-19 10:59:23'),
-(3, NULL, 'transit', '60_days', 'Talon', 'Ulla Middleton', 'Walsh', 'Myles Diaz', 'Marsden Perez', 'Sit in enim est volu', 'Nulla maiores in qui', 'widowed', 'Qui corporis sunt ea', 'cm', 'Rem magnam accusamus', '2023-01-19', '2028-08-13', 'male', 'visa-documents/lsEd0e63UFjLfJBlDvUtDh1L24W4j7wJXSKFW7wV.png', 'visa-documents/S2HNep42rt6QSDhM9NC8uh86g7R2pq3Ll9PZxeqg.png', 'visa-documents/P4sCNQoq0bNO7Q7jzyl9xP2Mc1gIGr4cpmII8B9s.png', 'visa-documents/w6FhcM7UtbnA90qptCgt93mqVpmz1sT0suUIucfj.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2025-11-19 11:03:07', '2025-11-19 11:03:07');
+INSERT INTO `visa_requests` (`id`, `agent_id`, `user_id`, `booked_via`, `visa_category`, `visa_type`, `visa_plan`, `first_name`, `middle_name`, `surname`, `father_name`, `mother_name`, `place_birth`, `occupation`, `marital_status`, `religion`, `nationality`, `passport_no`, `passport_issue_date`, `passport_expiry_date`, `gender`, `passport_front`, `passport_back`, `passport_photo`, `other_document`, `guarantor_name`, `guarantor_nationality`, `guarantor_relation`, `guarantor_emirates_id`, `guarantor_passport_no`, `employer_name`, `company_contact`, `guarantor_visa_no`, `guarantor_visa_expiry`, `guarantor_mobile`, `guarantor_email`, `receipt_no`, `receipt_amount`, `receipt_date`, `visa_payment_date`, `ticket_otb_date`, `security_deposit_date`, `agreed_terms`, `created_at`, `updated_at`) VALUES
+(1, NULL, NULL, '', NULL, 'tourist', 'single_entry', 'Edward', 'Deborah Rich', 'Prince', 'David Cross', 'Frances Rice', 'Incidunt in quidem', 'Ut odit magni ipsum', 'married', 'Ut est assumenda di', 'tr', 'Molestiae doloribus', '1983-09-14', '2027-06-05', 'female', 'visa-documents/IpPj9AMTs31zJMNVWU3wOkcuISpbMkcTc2P3VBLn.png', 'visa-documents/SDAaUwx4SoZzkkSlKBKy2oFNmYl7rtymJETLLojd.png', 'visa-documents/ywnk3Wy3gCSWFWqKXzDULp2R24shx3pgMeJW87AS.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2025-11-19 10:39:56', '2025-11-19 10:39:56'),
+(2, NULL, NULL, '', NULL, 'business', 'multiple_entry', 'Jena', 'Fatima Mcfadden', 'Barlow', 'Dante Hood', 'Miranda Flynn', 'Enim anim velit veri', 'Reprehenderit dolori', 'married', 'Soluta laborum sit', 'au', 'Aut quia magnam quis', '1995-12-11', '2028-11-20', 'female', 'visa-documents/nwo3Trs90jdknV6P2o54jnAOlsPKZqGnRY98QS5i.png', 'visa-documents/sWbahEVXxTjk3G2XDHRiS01Di4fdUJWoQ2HtsurJ.jpg', 'visa-documents/498Vx9gXInYMDvXRcRkPBwHLql2YTVZ87W7QgtOp.jpg', 'visa-documents/1ve3sFXErv8sAUZdQ7DsMKuTla8KYCq9t2G3mabB.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2025-11-19 10:59:23', '2025-11-19 10:59:23'),
+(3, NULL, NULL, '', NULL, 'transit', '60_days', 'Talon', 'Ulla Middleton', 'Walsh', 'Myles Diaz', 'Marsden Perez', 'Sit in enim est volu', 'Nulla maiores in qui', 'widowed', 'Qui corporis sunt ea', 'cm', 'Rem magnam accusamus', '2023-01-19', '2028-08-13', 'male', 'visa-documents/lsEd0e63UFjLfJBlDvUtDh1L24W4j7wJXSKFW7wV.png', 'visa-documents/S2HNep42rt6QSDhM9NC8uh86g7R2pq3Ll9PZxeqg.png', 'visa-documents/P4sCNQoq0bNO7Q7jzyl9xP2Mc1gIGr4cpmII8B9s.png', 'visa-documents/w6FhcM7UtbnA90qptCgt93mqVpmz1sT0suUIucfj.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2025-11-19 11:03:07', '2025-11-19 11:03:07');
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `agent_permissions`
+--
+ALTER TABLE `agent_permissions`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `agent_permissions_agent_id_permission_key_unique` (`agent_id`,`permission_key`);
+
+--
+-- Indexes for table `agent_topup_requests`
+--
+ALTER TABLE `agent_topup_requests`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `agent_topup_requests_agent_id_foreign` (`agent_id`),
+  ADD KEY `agent_topup_requests_reviewed_by_foreign` (`reviewed_by`),
+  ADD KEY `agent_topup_requests_status_created_at_index` (`status`,`created_at`);
+
+--
+-- Indexes for table `agent_wallets`
+--
+ALTER TABLE `agent_wallets`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `agent_wallets_agent_id_unique` (`agent_id`);
+
+--
+-- Indexes for table `agent_wallet_transactions`
+--
+ALTER TABLE `agent_wallet_transactions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `agent_wallet_transactions_performed_by_foreign` (`performed_by`),
+  ADD KEY `agent_wallet_transactions_agent_id_type_index` (`agent_id`,`type`),
+  ADD KEY `agent_wallet_transactions_agent_id_created_at_index` (`agent_id`,`created_at`);
+
+--
+-- Indexes for table `all_amenities`
+--
+ALTER TABLE `all_amenities`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `all_amenities_agent_id_foreign` (`agent_id`);
 
 --
 -- Indexes for table `blog_categories`
@@ -23653,6 +25880,12 @@ ALTER TABLE `contact_messages`
   ADD KEY `contact_messages_created_at_index` (`created_at`);
 
 --
+-- Indexes for table `countries`
+--
+ALTER TABLE `countries`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `currencies`
 --
 ALTER TABLE `currencies`
@@ -23681,13 +25914,45 @@ ALTER TABLE `flights_airports`
 -- Indexes for table `flights_booking`
 --
 ALTER TABLE `flights_booking`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `flights_booking_agent_id_foreign` (`agent_id`);
+
+--
+-- Indexes for table `hotels`
+--
+ALTER TABLE `hotels`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_hotels_location` (`location_id`),
+  ADD KEY `hotels_agent_id_index` (`agent_id`);
 
 --
 -- Indexes for table `hotels_booking`
 --
 ALTER TABLE `hotels_booking`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `hotels_booking_agent_id_foreign` (`agent_id`);
+
+--
+-- Indexes for table `hotel_amenities`
+--
+ALTER TABLE `hotel_amenities`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `hotel_id` (`hotel_id`),
+  ADD KEY `amenity_id` (`amenity_id`);
+
+--
+-- Indexes for table `hotel_images`
+--
+ALTER TABLE `hotel_images`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `hotel_id` (`hotel_id`);
+
+--
+-- Indexes for table `hotel_policies`
+--
+ALTER TABLE `hotel_policies`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `hotel_id` (`hotel_id`);
 
 --
 -- Indexes for table `jobs`
@@ -23773,6 +26038,36 @@ ALTER TABLE `personal_access_tokens`
   ADD KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`);
 
 --
+-- Indexes for table `rooms`
+--
+ALTER TABLE `rooms`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `hotel_id` (`hotel_id`),
+  ADD KEY `room_type_id` (`room_type_id`);
+
+--
+-- Indexes for table `room_types`
+--
+ALTER TABLE `room_types`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `hotel_id` (`hotel_id`);
+
+--
+-- Indexes for table `room_type_amenities`
+--
+ALTER TABLE `room_type_amenities`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `room_type_id` (`room_type_id`),
+  ADD KEY `amenity_id` (`amenity_id`);
+
+--
+-- Indexes for table `room_type_images`
+--
+ALTER TABLE `room_type_images`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `room_type_id` (`room_type_id`);
+
+--
 -- Indexes for table `sessions`
 --
 ALTER TABLE `sessions`
@@ -23788,22 +26083,49 @@ ALTER TABLE `settings`
   ADD KEY `settings_group_key_index` (`group`,`key`);
 
 --
+-- Indexes for table `support_tickets`
+--
+ALTER TABLE `support_tickets`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `support_tickets_ticket_number_unique` (`ticket_number`),
+  ADD KEY `support_tickets_user_id_foreign` (`user_id`),
+  ADD KEY `support_tickets_agent_id_foreign` (`agent_id`);
+
+--
+-- Indexes for table `support_ticket_replies`
+--
+ALTER TABLE `support_ticket_replies`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `support_ticket_replies_support_ticket_id_foreign` (`support_ticket_id`),
+  ADD KEY `support_ticket_replies_sender_id_foreign` (`sender_id`);
+
+--
+-- Indexes for table `theme_settings`
+--
+ALTER TABLE `theme_settings`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `theme_settings_user_id_foreign` (`user_id`);
+
+--
 -- Indexes for table `tours`
 --
 ALTER TABLE `tours`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tours_agent_id_index` (`agent_id`);
 
 --
 -- Indexes for table `tours_booking`
 --
 ALTER TABLE `tours_booking`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tours_booking_agent_id_foreign` (`agent_id`);
 
 --
 -- Indexes for table `tour_exclusions`
 --
 ALTER TABLE `tour_exclusions`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tour_exclusions_agent_id_foreign` (`agent_id`);
 
 --
 -- Indexes for table `tour_images`
@@ -23816,13 +26138,15 @@ ALTER TABLE `tour_images`
 -- Indexes for table `tour_inclusions`
 --
 ALTER TABLE `tour_inclusions`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tour_inclusions_agent_id_foreign` (`agent_id`);
 
 --
 -- Indexes for table `tour_package_type`
 --
 ALTER TABLE `tour_package_type`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tour_package_type_agent_id_foreign` (`agent_id`);
 
 --
 -- Indexes for table `travel_partners`
@@ -23840,10 +26164,19 @@ ALTER TABLE `travel_partners`
   ADD KEY `travel_partners_module_id_foreign` (`module_id`);
 
 --
+-- Indexes for table `travel_partner_imports`
+--
+ALTER TABLE `travel_partner_imports`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `travel_partner_imports_travel_partner_id_foreign` (`travel_partner_id`),
+  ADD KEY `travel_partner_imports_created_by_foreign` (`created_by`);
+
+--
 -- Indexes for table `umrah`
 --
 ALTER TABLE `umrah`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `umrah_agent_id_index` (`agent_id`);
 
 --
 -- Indexes for table `umrah_bookings`
@@ -23853,13 +26186,15 @@ ALTER TABLE `umrah_bookings`
   ADD KEY `booking_ref` (`booking_code_ref`),
   ADD KEY `umrah_id` (`umrah_id`),
   ADD KEY `status` (`booking_status_flag`),
-  ADD KEY `payment_status` (`booking_payment_state`);
+  ADD KEY `payment_status` (`booking_payment_state`),
+  ADD KEY `umrah_bookings_agent_id_foreign` (`agent_id`);
 
 --
 -- Indexes for table `umrah_exclusions`
 --
 ALTER TABLE `umrah_exclusions`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `umrah_exclusions_agent_id_foreign` (`agent_id`);
 
 --
 -- Indexes for table `umrah_images`
@@ -23871,13 +26206,15 @@ ALTER TABLE `umrah_images`
 -- Indexes for table `umrah_inclusions`
 --
 ALTER TABLE `umrah_inclusions`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `umrah_inclusions_agent_id_foreign` (`agent_id`);
 
 --
 -- Indexes for table `umrah_package_type`
 --
 ALTER TABLE `umrah_package_type`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `umrah_package_type_agent_id_foreign` (`agent_id`);
 
 --
 -- Indexes for table `users`
@@ -23885,21 +26222,56 @@ ALTER TABLE `umrah_package_type`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `users_email_unique` (`email`),
+  ADD UNIQUE KEY `users_agent_code_unique` (`agent_code`),
   ADD KEY `users_user_type_status_index` (`user_type`,`status`),
   ADD KEY `users_status_customer_tier_index` (`status`,`customer_tier`),
   ADD KEY `users_last_activity_index` (`last_activity`),
   ADD KEY `users_total_spent_index` (`total_spent`),
-  ADD KEY `users_employee_id_index` (`employee_id`);
+  ADD KEY `users_employee_id_index` (`employee_id`),
+  ADD KEY `users_approved_by_foreign` (`approved_by`),
+  ADD KEY `users_parent_agent_id_index` (`parent_agent_id`),
+  ADD KEY `users_approval_status_index` (`approval_status`);
 
 --
 -- Indexes for table `visa_requests`
 --
 ALTER TABLE `visa_requests`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `visa_requests_agent_id_foreign` (`agent_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `agent_permissions`
+--
+ALTER TABLE `agent_permissions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+
+--
+-- AUTO_INCREMENT for table `agent_topup_requests`
+--
+ALTER TABLE `agent_topup_requests`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `agent_wallets`
+--
+ALTER TABLE `agent_wallets`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `agent_wallet_transactions`
+--
+ALTER TABLE `agent_wallet_transactions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `all_amenities`
+--
+ALTER TABLE `all_amenities`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `blog_categories`
@@ -23917,7 +26289,7 @@ ALTER TABLE `blog_comments`
 -- AUTO_INCREMENT for table `blog_posts`
 --
 ALTER TABLE `blog_posts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `blog_post_tags`
@@ -23971,13 +26343,37 @@ ALTER TABLE `flights_airports`
 -- AUTO_INCREMENT for table `flights_booking`
 --
 ALTER TABLE `flights_booking`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `hotels`
+--
+ALTER TABLE `hotels`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `hotels_booking`
 --
 ALTER TABLE `hotels_booking`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `hotel_amenities`
+--
+ALTER TABLE `hotel_amenities`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=169;
+
+--
+-- AUTO_INCREMENT for table `hotel_images`
+--
+ALTER TABLE `hotel_images`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=160;
+
+--
+-- AUTO_INCREMENT for table `hotel_policies`
+--
+ALTER TABLE `hotel_policies`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT for table `jobs`
@@ -23995,19 +26391,19 @@ ALTER TABLE `languages`
 -- AUTO_INCREMENT for table `locations`
 --
 ALTER TABLE `locations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9442;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9442;
 
 --
 -- AUTO_INCREMENT for table `menu_items`
 --
 ALTER TABLE `menu_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT for table `modules`
@@ -24031,7 +26427,7 @@ ALTER TABLE `pages`
 -- AUTO_INCREMENT for table `payment_gateways`
 --
 ALTER TABLE `payment_gateways`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -24040,28 +26436,70 @@ ALTER TABLE `personal_access_tokens`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `rooms`
+--
+ALTER TABLE `rooms`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=657;
+
+--
+-- AUTO_INCREMENT for table `room_types`
+--
+ALTER TABLE `room_types`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+
+--
+-- AUTO_INCREMENT for table `room_type_amenities`
+--
+ALTER TABLE `room_type_amenities`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=347;
+
+--
+-- AUTO_INCREMENT for table `room_type_images`
+--
+ALTER TABLE `room_type_images`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
 -- AUTO_INCREMENT for table `settings`
 --
 ALTER TABLE `settings`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=118;
+
+--
+-- AUTO_INCREMENT for table `support_tickets`
+--
+ALTER TABLE `support_tickets`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `support_ticket_replies`
+--
+ALTER TABLE `support_ticket_replies`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `theme_settings`
+--
+ALTER TABLE `theme_settings`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `tours`
 --
 ALTER TABLE `tours`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `tours_booking`
 --
 ALTER TABLE `tours_booking`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `tour_exclusions`
 --
 ALTER TABLE `tour_exclusions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `tour_images`
@@ -24073,19 +26511,25 @@ ALTER TABLE `tour_images`
 -- AUTO_INCREMENT for table `tour_inclusions`
 --
 ALTER TABLE `tour_inclusions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `tour_package_type`
 --
 ALTER TABLE `tour_package_type`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `travel_partners`
 --
 ALTER TABLE `travel_partners`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT for table `travel_partner_imports`
+--
+ALTER TABLE `travel_partner_imports`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `umrah`
@@ -24103,7 +26547,7 @@ ALTER TABLE `umrah_bookings`
 -- AUTO_INCREMENT for table `umrah_exclusions`
 --
 ALTER TABLE `umrah_exclusions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `umrah_images`
@@ -24115,19 +26559,19 @@ ALTER TABLE `umrah_images`
 -- AUTO_INCREMENT for table `umrah_inclusions`
 --
 ALTER TABLE `umrah_inclusions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `umrah_package_type`
 --
 ALTER TABLE `umrah_package_type`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `visa_requests`
@@ -24138,6 +26582,38 @@ ALTER TABLE `visa_requests`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `agent_permissions`
+--
+ALTER TABLE `agent_permissions`
+  ADD CONSTRAINT `agent_permissions_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `agent_topup_requests`
+--
+ALTER TABLE `agent_topup_requests`
+  ADD CONSTRAINT `agent_topup_requests_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `agent_topup_requests_reviewed_by_foreign` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `agent_wallets`
+--
+ALTER TABLE `agent_wallets`
+  ADD CONSTRAINT `agent_wallets_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `agent_wallet_transactions`
+--
+ALTER TABLE `agent_wallet_transactions`
+  ADD CONSTRAINT `agent_wallet_transactions_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `agent_wallet_transactions_performed_by_foreign` FOREIGN KEY (`performed_by`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `all_amenities`
+--
+ALTER TABLE `all_amenities`
+  ADD CONSTRAINT `all_amenities_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `blog_categories`
@@ -24170,10 +26646,174 @@ ALTER TABLE `bookings`
   ADD CONSTRAINT `bookings_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `flights_booking`
+--
+ALTER TABLE `flights_booking`
+  ADD CONSTRAINT `flights_booking_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `hotels`
+--
+ALTER TABLE `hotels`
+  ADD CONSTRAINT `fk_hotels_location` FOREIGN KEY (`location_id`) REFERENCES `locations` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `hotels_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `hotels_booking`
+--
+ALTER TABLE `hotels_booking`
+  ADD CONSTRAINT `hotels_booking_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `hotel_amenities`
+--
+ALTER TABLE `hotel_amenities`
+  ADD CONSTRAINT `hotel_amenities_ibfk_1` FOREIGN KEY (`hotel_id`) REFERENCES `hotels` (`id`),
+  ADD CONSTRAINT `hotel_amenities_ibfk_2` FOREIGN KEY (`amenity_id`) REFERENCES `all_amenities` (`id`);
+
+--
+-- Constraints for table `hotel_images`
+--
+ALTER TABLE `hotel_images`
+  ADD CONSTRAINT `hotel_images_ibfk_1` FOREIGN KEY (`hotel_id`) REFERENCES `hotels` (`id`);
+
+--
+-- Constraints for table `hotel_policies`
+--
+ALTER TABLE `hotel_policies`
+  ADD CONSTRAINT `hotel_policies_ibfk_1` FOREIGN KEY (`hotel_id`) REFERENCES `hotels` (`id`);
+
+--
+-- Constraints for table `rooms`
+--
+ALTER TABLE `rooms`
+  ADD CONSTRAINT `rooms_ibfk_1` FOREIGN KEY (`hotel_id`) REFERENCES `hotels` (`id`),
+  ADD CONSTRAINT `rooms_ibfk_2` FOREIGN KEY (`room_type_id`) REFERENCES `room_types` (`id`);
+
+--
+-- Constraints for table `room_types`
+--
+ALTER TABLE `room_types`
+  ADD CONSTRAINT `room_types_ibfk_1` FOREIGN KEY (`hotel_id`) REFERENCES `hotels` (`id`);
+
+--
+-- Constraints for table `room_type_amenities`
+--
+ALTER TABLE `room_type_amenities`
+  ADD CONSTRAINT `room_type_amenities_ibfk_1` FOREIGN KEY (`room_type_id`) REFERENCES `room_types` (`id`),
+  ADD CONSTRAINT `room_type_amenities_ibfk_2` FOREIGN KEY (`amenity_id`) REFERENCES `all_amenities` (`id`);
+
+--
+-- Constraints for table `room_type_images`
+--
+ALTER TABLE `room_type_images`
+  ADD CONSTRAINT `room_type_images_ibfk_1` FOREIGN KEY (`room_type_id`) REFERENCES `room_types` (`id`);
+
+--
+-- Constraints for table `support_tickets`
+--
+ALTER TABLE `support_tickets`
+  ADD CONSTRAINT `support_tickets_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `support_tickets_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `support_ticket_replies`
+--
+ALTER TABLE `support_ticket_replies`
+  ADD CONSTRAINT `support_ticket_replies_sender_id_foreign` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `support_ticket_replies_support_ticket_id_foreign` FOREIGN KEY (`support_ticket_id`) REFERENCES `support_tickets` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `theme_settings`
+--
+ALTER TABLE `theme_settings`
+  ADD CONSTRAINT `theme_settings_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `tours`
+--
+ALTER TABLE `tours`
+  ADD CONSTRAINT `tours_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `tours_booking`
+--
+ALTER TABLE `tours_booking`
+  ADD CONSTRAINT `tours_booking_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `tour_exclusions`
+--
+ALTER TABLE `tour_exclusions`
+  ADD CONSTRAINT `tour_exclusions_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
 -- Constraints for table `tour_images`
 --
 ALTER TABLE `tour_images`
   ADD CONSTRAINT `tour_images_tour_id_foreign` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `tour_inclusions`
+--
+ALTER TABLE `tour_inclusions`
+  ADD CONSTRAINT `tour_inclusions_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `tour_package_type`
+--
+ALTER TABLE `tour_package_type`
+  ADD CONSTRAINT `tour_package_type_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `travel_partner_imports`
+--
+ALTER TABLE `travel_partner_imports`
+  ADD CONSTRAINT `travel_partner_imports_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `travel_partner_imports_travel_partner_id_foreign` FOREIGN KEY (`travel_partner_id`) REFERENCES `travel_partners` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `umrah`
+--
+ALTER TABLE `umrah`
+  ADD CONSTRAINT `umrah_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `umrah_bookings`
+--
+ALTER TABLE `umrah_bookings`
+  ADD CONSTRAINT `umrah_bookings_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `umrah_exclusions`
+--
+ALTER TABLE `umrah_exclusions`
+  ADD CONSTRAINT `umrah_exclusions_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `umrah_inclusions`
+--
+ALTER TABLE `umrah_inclusions`
+  ADD CONSTRAINT `umrah_inclusions_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `umrah_package_type`
+--
+ALTER TABLE `umrah_package_type`
+  ADD CONSTRAINT `umrah_package_type_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `users_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `users_parent_agent_id_foreign` FOREIGN KEY (`parent_agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `visa_requests`
+--
+ALTER TABLE `visa_requests`
+  ADD CONSTRAINT `visa_requests_agent_id_foreign` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
