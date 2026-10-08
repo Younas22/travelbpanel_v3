@@ -240,13 +240,29 @@ class WebbedsController extends BaseController
                         $allocationDetails = (string) ($rateBasis['allocationDetails'] ?? '');
                         $isBookable        = (string) ($rateBasis['isBookable'] ?? 'yes');
 
-                        // Cert #19: changedOccupancy means WebBeds is returning this rate
-                        // for a DIFFERENT occupancy split than requested (e.g. it can't
-                        // fit the child in this room type) — it is still a valid, bookable
-                        // rate. Previously this was filtered out entirely, incorrectly
-                        // hiding legitimate rates from the room selection page. Surface it
-                        // instead with a flag so the frontend can show an occupancy note.
-                        $changedOccupancy = strtolower((string) ($rateBasis['changedOccupancy'] ?? '')) === 'true';
+                        // Cert #19: <changedOccupancy> is NOT a true/false flag — when
+                        // present it's a CSV of the occupancy WebBeds actually priced this
+                        // rate for (adults,children,childAge...,extraBeds), which differs
+                        // from what was requested (e.g. it substituted 3 adults/1 child for
+                        // our requested 2 adults/2 children because this room type can't
+                        // fit both children). Comparing it to the literal string "true"
+                        // never matched, so this always reported false. The element's mere
+                        // presence/non-emptiness is what signals the occupancy was changed;
+                        // <validForOccupancy> alongside it holds the actual split used, so
+                        // the frontend can show "priced for 3 adults, 1 child" etc.
+                        $changedOccupancy = trim((string) ($rateBasis['changedOccupancy'] ?? '')) !== '';
+
+                        $validForOccupancy = null;
+                        if ($changedOccupancy && !empty($rateBasis['validForOccupancy'])) {
+                            $vfo = $rateBasis['validForOccupancy'];
+                            $vfoChildAges = trim((string) ($vfo['childrenAges'] ?? ''));
+                            $validForOccupancy = [
+                                'adults'        => (int) ($vfo['adults'] ?? 0),
+                                'children'      => (int) ($vfo['children'] ?? 0),
+                                'children_ages' => $vfoChildAges !== '' ? array_map('intval', explode(',', $vfoChildAges)) : [],
+                                'extra_bed'     => (int) ($vfo['extraBed'] ?? 0),
+                            ];
+                        }
 
                         if ($total <= 0 || $isBookable !== 'yes' || empty($allocationDetails)) continue;
 
@@ -255,8 +271,10 @@ class WebbedsController extends BaseController
                         $sellPerDay = round($sellTotal / $nights, 2);
                         $netPerDay  = round($netTotal  / $nights, 2);
 
-                        $cancelRules  = $this->parse_cancellation_rules($rateBasis['cancellationRules']['rule'] ?? []);
-                        $firstPenalty = collect($cancelRules)->firstWhere('type', 'penalty');
+                        $cancelRules      = $this->parse_cancellation_rules($rateBasis['cancellationRules']['rule'] ?? []);
+                        $firstPenalty     = collect($cancelRules)->firstWhere('type', 'penalty');
+                        $cancelRestricted = collect($cancelRules)->contains('cancel_restricted', true);
+                        $amendRestricted  = collect($cancelRules)->contains('amend_restricted', true);
                         $passengersRequired = (int) ($rateBasis['passengerNamesRequiredForBooking'] ?? 1);
 
                         // Cert #21: Taxes & Fees — per WebBeds format
@@ -306,6 +324,7 @@ class WebbedsController extends BaseController
                             'status'              => $rateBasisStatus,
                             'passengers_required' => $passengersRequired,
                             'changed_occupancy'   => $changedOccupancy,
+                            'valid_for_occupancy' => $validForOccupancy,
                             'price'               => $sellTotal,
                             'actual_price'        => $netTotal,
                             'per_day'             => $sellPerDay,
@@ -330,13 +349,14 @@ class WebbedsController extends BaseController
                             'taxes_fees'          => $taxesFees,
                             'taxes_included'      => $taxesIncluded,
                             'taxes_at_property'   => $taxesAtProperty,
-                            // Cert #22: restricted flags
+                            // Cert #22: restricted flags — <amendRestricted>/
+                            // <cancelRestricted> live on individual rules inside
+                            // <cancellationRules>, not on the rateBasis itself;
+                            // true if ANY of this rate's rules is restricted.
                             'non_refundable'      => strtolower($this->xml_str($rateBasis['nonRefundable']    ?? 'no'))   === 'yes',
-                            // Cert #22: Per WebBeds — when cancelRestricted=true
-                            // display "Cancellation not allowed" and disable cancel
-                            'cancel_restricted'       => strtolower($this->xml_str($rateBasis['cancelRestricted'] ?? '')) === 'true',
-                            'amend_restricted'        => strtolower($this->xml_str($rateBasis['amendRestricted']  ?? '')) === 'true',
-                            'cancel_restricted_note'  => strtolower($this->xml_str($rateBasis['cancelRestricted'] ?? '')) === 'true'
+                            'cancel_restricted'       => $cancelRestricted,
+                            'amend_restricted'        => $amendRestricted,
+                            'cancel_restricted_note'  => $cancelRestricted
                                 ? 'Cancellation not allowed'
                                 : null,
                             // Cert #20: special promotions
@@ -1008,6 +1028,9 @@ class WebbedsController extends BaseController
                 'confirm'          => 'required|in:no,yes',
                 'payment_balance'  => 'required|numeric',
                 'service_code'     => 'nullable|string',
+                // Required only when finalizing — sourced from the confirm=no
+                // preview response the caller already received (see below).
+                'penalty_charge'   => 'required_if:confirm,yes|nullable|numeric',
                 'api_credential_1' => 'required|string',
                 'api_credential_2' => 'required|string',
                 'api_credential_3' => 'required|string',
@@ -1022,40 +1045,33 @@ class WebbedsController extends BaseController
             $bookingCode = $v['booking_code'];
             $confirm     = $v['confirm'];
 
-            // Always probe WebBeds with confirm=no first to get the authoritative,
-            // full-precision cancellation charge — never trust a client-supplied
-            // penalty value. WebBeds' <charge> element carries 4 decimal places
-            // (e.g. 75.6721) while its <formatted> sibling is rounded for display
-            // (75.67); feeding the rounded value back into a confirm=yes request
-            // leaves a non-zero <paymentBalance> residual and WebBeds rejects the
-            // cancellation. Deriving the charge ourselves on every call — even when
-            // the caller asks for confirm=yes directly — makes that class of bug
-            // impossible regardless of what the caller passes.
-            $noXml      = $this->build_cancelbooking_xml($v, $bookingCode, $password, 'no');
-            $noResponse = $this->make_curl_request($noXml, self::CURL_TIMEOUT_PRICE);
-
-            if (!$noResponse['success']) {
-                return response()->json(['success' => false, 'message' => $noResponse['message']], 500);
-            }
-
-            $noData = $this->parseXmlToArray($noResponse['body']);
-
-            if (strtoupper($noData['successful'] ?? '') !== 'TRUE') {
-                $errMsg = $noData['error']['details'] ?? ($noData['errorMessage'] ?? 'Cancel booking failed.');
-                return $this->error_response((string) $errMsg, 422);
-            }
-
-            $serviceNode  = $noData['services']['service'] ?? [];
-            if (isset($serviceNode['@attributes'])) $serviceNode = [$serviceNode];
-            $firstService = $serviceNode[0] ?? [];
-            $serviceCode  = (string) ($firstService['@attributes']['code'] ?? $v['service_code'] ?? $bookingCode);
-            $chargeNode   = $firstService['cancellationPenalty']['charge']  ?? 0;
-            $charge       = (float) (is_array($chargeNode) ? ($chargeNode[0] ?? 0) : $chargeNode);
-            $paymentBal   = (float) $v['payment_balance'] - $charge;
-
             if ($confirm === 'no') {
-                // Preview only — nothing has been cancelled yet. Lets the caller
-                // show the customer the exact charge before they confirm.
+                // Preview only — ask WebBeds for the authoritative, full-precision
+                // cancellation charge (its <charge> element carries 4 decimal
+                // places, e.g. 75.6721) so the caller can show the customer the
+                // exact amount before they confirm. Nothing is cancelled yet.
+                $noXml      = $this->build_cancelbooking_xml($v, $bookingCode, $password, 'no');
+                $noResponse = $this->make_curl_request($noXml, self::CURL_TIMEOUT_PRICE);
+
+                if (!$noResponse['success']) {
+                    return response()->json(['success' => false, 'message' => $noResponse['message']], 500);
+                }
+
+                $noData = $this->parseXmlToArray($noResponse['body']);
+
+                if (strtoupper($noData['successful'] ?? '') !== 'TRUE') {
+                    $errMsg = $noData['error']['details'] ?? ($noData['errorMessage'] ?? 'Cancel booking failed.');
+                    return $this->error_response((string) $errMsg, 422);
+                }
+
+                $serviceNode  = $noData['services']['service'] ?? [];
+                if (isset($serviceNode['@attributes'])) $serviceNode = [$serviceNode];
+                $firstService = $serviceNode[0] ?? [];
+                $serviceCode  = (string) ($firstService['@attributes']['code'] ?? $v['service_code'] ?? $bookingCode);
+                $chargeNode   = $firstService['cancellationPenalty']['charge'] ?? 0;
+                $charge       = (float) (is_array($chargeNode) ? ($chargeNode[0] ?? 0) : $chargeNode);
+                $paymentBal   = round((float) $v['payment_balance'] - $charge, 4);
+
                 return response()->json([
                     'success'         => true,
                     'booking_code'    => $bookingCode,
@@ -1068,35 +1084,47 @@ class WebbedsController extends BaseController
                 ]);
             }
 
-            // confirm=yes — finalize using the charge we just fetched from WebBeds
-            // ourselves, never a value the caller might have cached or rounded.
+            // confirm=yes — finalize using the charge the caller already has
+            // from their own earlier confirm=no preview call (above). WebBeds
+            // requires confirm=yes to carry a <testPricesAndAllocation> block
+            // asserting that exact charge (omitting it is rejected with error
+            // 320); re-probing with confirm=no again here just to rebuild that
+            // block would repeat the same request the caller already made —
+            // the redundant extra call WebBeds certification flagged — so we
+            // reuse the preview's own figures instead of re-fetching them.
+            $serviceCode = $v['service_code'] ?? $bookingCode;
+            $charge      = (float) $v['penalty_charge'];
+            $paymentBal  = round((float) $v['payment_balance'] - $charge, 4);
+
             $yesXml      = $this->build_cancelbooking_xml($v, $bookingCode, $password, 'yes', $serviceCode, $charge, $paymentBal);
             $yesResponse = $this->make_curl_request($yesXml, self::CURL_TIMEOUT_PRICE);
 
             if (!$yesResponse['success']) {
-                return response()->json(['success' => false, 'message' => 'Step2(yes) failed: ' . $yesResponse['message']], 500);
+                return response()->json(['success' => false, 'message' => 'Cancellation request failed: ' . $yesResponse['message']], 500);
             }
 
-            $yesData      = $this->parseXmlToArray($yesResponse['body']);
-            $yesSuccess   = strtoupper($yesData['successful'] ?? '') === 'TRUE';
+            $yesData = $this->parseXmlToArray($yesResponse['body']);
+
+            if (strtoupper($yesData['successful'] ?? '') !== 'TRUE') {
+                $errMsg = $yesData['error']['details'] ?? ($yesData['errorMessage'] ?? 'Cancel booking failed.');
+                return $this->error_response((string) $errMsg, 422);
+            }
+
             $productsLeft = (int) ($yesData['productsLeftOnItinerary'] ?? 0);
 
             return response()->json([
-                'success'                    => $yesSuccess,
+                'success'                    => true,
                 'booking_code'               => $bookingCode,
                 'service_code'               => $serviceCode,
                 'penalty_charge'             => $charge,
                 'payment_balance'            => $paymentBal,
                 'products_left_on_itinerary' => $productsLeft,
                 'partial_cancellation'       => $productsLeft > 0,
-                'status'                     => $yesSuccess ? 'cancelled' : 'failed',
-                'message'                    => $yesSuccess
-                    ? ($productsLeft > 0
-                        ? "Partially cancelled. {$productsLeft} service(s) still active."
-                        : 'Booking cancelled successfully.')
-                    : 'Cancellation confirmation failed.',
-                'step1_raw' => $noData,
-                'step2_raw' => $yesData,
+                'status'                     => 'cancelled',
+                'message'                    => $productsLeft > 0
+                    ? "Partially cancelled. {$productsLeft} service(s) still active."
+                    : 'Booking cancelled successfully.',
+                'raw' => $yesData,
             ]);
 
         } catch (Exception $e) {
@@ -1105,10 +1133,10 @@ class WebbedsController extends BaseController
     }
 
     /**
-     * Build a WebBeds cancelbooking XML request. For confirm=yes, $serviceCode/
-     * $penalty/$paymentBalance must be supplied (sourced from our own confirm=no
-     * probe — see hotel_cancel_booking()) to populate the testPricesAndAllocation
-     * block; for confirm=no they're omitted and no such block is sent.
+     * Build a WebBeds cancelbooking XML request. confirm=no (preview) sends no
+     * testPricesAndAllocation block; confirm=yes (finalize) requires one — see
+     * hotel_cancel_booking(), which sources $serviceCode/$penalty/$paymentBalance
+     * from the caller's own earlier confirm=no preview rather than re-probing.
      */
     private function build_cancelbooking_xml(
         array $v,
@@ -1178,9 +1206,39 @@ XMLREQ;
         $curlError = curl_error($ch);
         curl_close($ch);
 
-        if ($curlError) return ['success' => false, 'message' => "cURL error: {$curlError}"];
-        if ($httpCode !== 200) return ['success' => false, 'message' => "HTTP error: {$httpCode}"];
+        if ($curlError) {
+            $this->maybe_log_xml($xml, null);
+            return ['success' => false, 'message' => "cURL error: {$curlError}"];
+        }
+        if ($httpCode !== 200) {
+            $this->maybe_log_xml($xml, $body);
+            return ['success' => false, 'message' => "HTTP error: {$httpCode}"];
+        }
+        $this->maybe_log_xml($xml, $body);
         return ['success' => true, 'body' => $body];
+    }
+
+    /**
+     * Opt-in request/response XML capture for certification evidence — inert
+     * unless WEBBEDS_XML_LOG_DIR is set in the environment, so it never runs
+     * in normal production traffic.
+     */
+    private static int $xmlLogSeq = 0;
+
+    private function maybe_log_xml(string $requestXml, ?string $responseXml): void
+    {
+        $dir = env('WEBBEDS_XML_LOG_DIR');
+        if (!$dir) return;
+        if (!is_dir($dir)) @mkdir($dir, 0775, true);
+
+        self::$xmlLogSeq++;
+        $label = 'step';
+        if (preg_match('/command="([a-zA-Z]+)"/', $requestXml, $m)) {
+            $label = $m[1];
+        }
+        $base = sprintf('%s_%02d_%s', date('His'), self::$xmlLogSeq, $label);
+        @file_put_contents("{$dir}/{$base}_request.xml", $requestXml);
+        @file_put_contents("{$dir}/{$base}_response.xml", $responseXml ?? '');
     }
 
     // -------------------------------------------------------------------------
@@ -1758,23 +1816,49 @@ XML;
     private function parse_cancellation_rules(array $rules): array
     {
         if (empty($rules)) return [];
-        if (isset($rules['toDate']) || isset($rules['noShowPolicy'])) $rules = [$rules];
+        // A single <rule> parses to one flat associative array (its own
+        // '@attributes' key holds runno); a list of rules is a numeric array
+        // of such associative arrays. Checking for specific field names like
+        // toDate/noShowPolicy here used to miss rules that have neither —
+        // e.g. a bare <rule><amendRestricted>true</amendRestricted>
+        // <cancelRestricted>true</cancelRestricted></rule> with no charge or
+        // dates at all — which then fell into the foreach below as if it
+        // were a list, iterating over its own field VALUES as "rules" and
+        // silently producing garbage (so a restricted rule was reported as
+        // ordinary "Free cancellation").
+        if (isset($rules['@attributes'])) $rules = [$rules];
 
         $parsed = [];
         foreach ($rules as $rule) {
             if (!empty($rule['noShowPolicy'])) {
-                $parsed[] = ['type' => 'no_show', 'from_date' => null, 'to_date' => null, 'cancel_charge' => round((float) ($rule['charge'] ?? 0), 2), 'amend_charge' => null, 'description' => 'No-show charge'];
+                $parsed[] = ['type' => 'no_show', 'from_date' => null, 'to_date' => null, 'cancel_charge' => round((float) ($rule['charge'] ?? 0), 2), 'amend_charge' => null, 'description' => 'No-show charge', 'cancel_restricted' => false, 'amend_restricted' => false];
                 continue;
             }
-            $cancelCharge = round((float) ($rule['cancelCharge'] ?? 0), 2);
-            $amendCharge  = round((float) ($rule['amendCharge']  ?? 0), 2);
+
+            $cancelRestricted = strtolower((string) ($rule['cancelRestricted'] ?? '')) === 'true';
+            $amendRestricted  = strtolower((string) ($rule['amendRestricted']  ?? '')) === 'true';
+            $cancelCharge     = round((float) ($rule['cancelCharge'] ?? 0), 2);
+            $amendCharge      = round((float) ($rule['amendCharge']  ?? 0), 2);
+
+            $type = 'free';
+            $description = 'Free cancellation';
+            if ($cancelRestricted) {
+                $type = 'restricted';
+                $description = 'Cancellation not allowed';
+            } elseif ($cancelCharge > 0) {
+                $type = 'penalty';
+                $description = "Cancellation charge: {$cancelCharge}";
+            }
+
             $parsed[] = [
-                'type'          => $cancelCharge > 0 ? 'penalty' : 'free',
-                'from_date'     => $rule['fromDate'] ?? null,
-                'to_date'       => $rule['toDate']   ?? null,
-                'cancel_charge' => $cancelCharge,
-                'amend_charge'  => $amendCharge,
-                'description'   => $cancelCharge > 0 ? "Cancellation charge: {$cancelCharge}" : 'Free cancellation',
+                'type'              => $type,
+                'from_date'         => $rule['fromDate'] ?? null,
+                'to_date'           => $rule['toDate']   ?? null,
+                'cancel_charge'     => $cancelCharge,
+                'amend_charge'      => $amendCharge,
+                'description'       => $description,
+                'cancel_restricted' => $cancelRestricted,
+                'amend_restricted'  => $amendRestricted,
             ];
         }
         return $parsed;
