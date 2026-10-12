@@ -3,7 +3,7 @@
      Shared by show.blade.php's Wallet tab and the standalone wallet.blade.php page. --}}
 
 @php
-    $walletCurrency = ($wallet?->currency && $wallet->currency !== 'PKR') ? $wallet->currency : (optional(defaultCurrency())->currency_name ?? 'PKR');
+    $walletCurrency = ($wallet?->currency && $wallet->currency !== 'PKR') ? $wallet->currency : 'USD';
     $currencies = $currencies ?? allCurrencies();
 @endphp
 

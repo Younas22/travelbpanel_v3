@@ -4,7 +4,7 @@
 @section('content')
 
 @php
-    $walletCurrency = ($wallet?->currency && $wallet->currency !== 'PKR') ? $wallet->currency : (optional(defaultCurrency())->currency_name ?? 'PKR');
+    $walletCurrency = ($wallet?->currency && $wallet->currency !== 'PKR') ? $wallet->currency : 'USD';
     $currencies = $currencies ?? allCurrencies();
 @endphp
 
