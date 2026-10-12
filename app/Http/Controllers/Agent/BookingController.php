@@ -18,6 +18,14 @@ class BookingController extends Controller
         $agentId = $agent->id;
         $type    = $request->input('type', 'all');
 
+        // Admin can disable a module per agent (see AgentPermission) — a
+        // direct URL to a disabled module's tab falls back to "all" rather
+        // than silently exposing bookings the UI no longer offers a tab for.
+        $modulePermission = ['hotel' => 'module.hotels', 'flight' => 'module.flights', 'tour' => 'module.tours', 'umrah' => 'module.umrah'][$type] ?? null;
+        if ($modulePermission && !$agent->hasPermission($modulePermission)) {
+            return redirect()->route('agent.bookings.index');
+        }
+
         $hotels  = $type === 'all' || $type === 'hotel'  ? HotelBooking::where('agent_id', $agentId)->latest()->get()->map(fn($b) => $this->formatBooking($b, 'hotel'))   : collect();
         $flights = $type === 'all' || $type === 'flight' ? FlightBooking::where('agent_id', $agentId)->latest()->get()->map(fn($b) => $this->formatBooking($b, 'flight')) : collect();
         $tours   = $type === 'all' || $type === 'tour'   ? TourBooking::where('agent_id', $agentId)->latest()->get()->map(fn($b) => $this->formatBooking($b, 'tour'))     : collect();

@@ -41,6 +41,7 @@
 
     <div class="dash-stats-grid">
 
+        @if(auth()->user()->hasPermission('module.hotels'))
         <div class="dash-stat-card">
             <div class="dash-stat-icon icon-blue"><i class="bi bi-building"></i></div>
             <div>
@@ -48,7 +49,9 @@
                 <div class="dash-stat-value">{{ $stats['total_hotels'] }}</div>
             </div>
         </div>
+        @endif
 
+        @if(auth()->user()->hasPermission('module.flights'))
         <div class="dash-stat-card">
             <div class="dash-stat-icon icon-blue"><i class="bi bi-airplane"></i></div>
             <div>
@@ -56,7 +59,9 @@
                 <div class="dash-stat-value">{{ $stats['flights'] }}</div>
             </div>
         </div>
+        @endif
 
+        @if(auth()->user()->hasPermission('module.tours'))
         <div class="dash-stat-card">
             <div class="dash-stat-icon icon-green"><i class="bi bi-map"></i></div>
             <div>
@@ -64,7 +69,9 @@
                 <div class="dash-stat-value">{{ $stats['total_tours'] }}</div>
             </div>
         </div>
+        @endif
 
+        @if(auth()->user()->hasPermission('module.umrah'))
         <div class="dash-stat-card">
             <div class="dash-stat-icon icon-amber"><i class="bi bi-moon-stars"></i></div>
             <div>
@@ -72,6 +79,7 @@
                 <div class="dash-stat-value">{{ $stats['total_umrah'] }}</div>
             </div>
         </div>
+        @endif
 
         <div class="dash-stat-card">
             <div class="dash-stat-icon icon-blue"><i class="bi bi-calendar-check"></i></div>

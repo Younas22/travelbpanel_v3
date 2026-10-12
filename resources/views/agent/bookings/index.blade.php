@@ -25,22 +25,30 @@
            class="px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ $type === 'all' ? 'ap-tab-pill-active' : 'ap-tab-pill-inactive' }}">
             <i class="fas fa-th-large mr-1"></i> All
         </a>
+        @if(auth()->user()->hasPermission('module.hotels'))
         <a href="{{ route('agent.bookings.index', ['type' => 'hotel']) }}"
            class="px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ $type === 'hotel' ? 'ap-tab-pill-active' : 'ap-tab-pill-inactive' }}">
             <i class="fas fa-hotel mr-1"></i> Hotels
         </a>
+        @endif
+        @if(auth()->user()->hasPermission('module.flights'))
         <a href="{{ route('agent.bookings.index', ['type' => 'flight']) }}"
            class="px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ $type === 'flight' ? 'ap-tab-pill-active' : 'ap-tab-pill-inactive' }}">
             <i class="fas fa-plane mr-1"></i> Flights
         </a>
+        @endif
+        @if(auth()->user()->hasPermission('module.tours'))
         <a href="{{ route('agent.bookings.index', ['type' => 'tour']) }}"
            class="px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ $type === 'tour' ? 'ap-tab-pill-active' : 'ap-tab-pill-inactive' }}">
             <i class="fas fa-map-marker-alt mr-1"></i> Tours
         </a>
+        @endif
+        @if(auth()->user()->hasPermission('module.umrah'))
         <a href="{{ route('agent.bookings.index', ['type' => 'umrah']) }}"
            class="px-4 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition {{ $type === 'umrah' ? 'ap-tab-pill-active' : 'ap-tab-pill-inactive' }}">
             <i class="fas fa-moon mr-1"></i> Umrah
         </a>
+        @endif
     </div>
 
     @if($bookings->isEmpty())

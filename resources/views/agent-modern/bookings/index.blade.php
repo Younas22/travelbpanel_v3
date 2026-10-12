@@ -24,18 +24,26 @@
             <a href="{{ route('agent.bookings.index') }}" class="bk-tab {{ $type === 'all' ? 'bk-tab-active' : '' }}">
                 <i class="bi bi-grid"></i> All
             </a>
+            @if(auth()->user()->hasPermission('module.hotels'))
             <a href="{{ route('agent.bookings.index', ['type' => 'hotel']) }}" class="bk-tab {{ $type === 'hotel' ? 'bk-tab-active' : '' }}">
                 <i class="bi bi-building"></i> Hotels
             </a>
+            @endif
+            @if(auth()->user()->hasPermission('module.flights'))
             <a href="{{ route('agent.bookings.index', ['type' => 'flight']) }}" class="bk-tab {{ $type === 'flight' ? 'bk-tab-active' : '' }}">
                 <i class="bi bi-airplane"></i> Flights
             </a>
+            @endif
+            @if(auth()->user()->hasPermission('module.tours'))
             <a href="{{ route('agent.bookings.index', ['type' => 'tour']) }}" class="bk-tab {{ $type === 'tour' ? 'bk-tab-active' : '' }}">
                 <i class="bi bi-geo-alt"></i> Tours
             </a>
+            @endif
+            @if(auth()->user()->hasPermission('module.umrah'))
             <a href="{{ route('agent.bookings.index', ['type' => 'umrah']) }}" class="bk-tab {{ $type === 'umrah' ? 'bk-tab-active' : '' }}">
                 <i class="bi bi-moon-stars"></i> Umrah
             </a>
+            @endif
         </div>
 
         @if($bookings->isEmpty())
