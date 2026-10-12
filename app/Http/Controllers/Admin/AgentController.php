@@ -59,34 +59,36 @@ class AgentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'first_name'         => 'required|string|max:100',
-            'last_name'          => 'required|string|max:100',
-            'email'              => 'required|email|unique:users,email',
-            'phone'              => 'nullable|string|max:30',
-            'company_name'       => 'nullable|string|max:255',
-            'company_phone'      => 'nullable|string|max:30',
-            'company_address'    => 'nullable|string',
-            'cnic_or_reg_number' => 'nullable|string|max:100',
-            'commission_rate'    => 'nullable|numeric|min:0|max:100',
-            'password'           => 'required|min:8|confirmed',
+            'first_name'      => 'required|string|max:100',
+            'last_name'       => 'required|string|max:100',
+            'email'           => 'required|email|unique:users,email',
+            'phone'           => 'nullable|string|max:30',
+            'company_name'    => 'nullable|string|max:255',
+            'company_phone'   => 'nullable|string|max:30',
+            'company_address' => 'nullable|string',
+            'tax_number'      => 'nullable|string|max:100',
+            'commission_type' => 'required|in:fixed,percentage',
+            'commission_rate' => 'nullable|numeric|min:0' . ($request->commission_type === 'percentage' ? '|max:100' : ''),
+            'password'        => 'required|min:8|confirmed',
         ]);
 
         $agent = User::create([
-            'user_type'          => 'agent',
-            'first_name'         => $request->first_name,
-            'last_name'          => $request->last_name,
-            'email'              => $request->email,
-            'phone'              => $request->phone,
-            'company_name'       => $request->company_name,
-            'company_phone'      => $request->company_phone,
-            'company_address'    => $request->company_address,
-            'cnic_or_reg_number' => $request->cnic_or_reg_number,
-            'commission_rate'    => $request->commission_rate ?? 0,
-            'agent_code'         => User::generateAgentCode(),
-            'approval_status'    => 'active',
-            'approved_by'        => auth()->id(),
-            'approved_at'        => now(),
-            'password'           => Hash::make($request->password),
+            'user_type'       => 'agent',
+            'first_name'      => $request->first_name,
+            'last_name'       => $request->last_name,
+            'email'           => $request->email,
+            'phone'           => $request->phone,
+            'company_name'    => $request->company_name,
+            'company_phone'   => $request->company_phone,
+            'company_address' => $request->company_address,
+            'tax_number'      => $request->tax_number,
+            'commission_type' => $request->commission_type,
+            'commission_rate' => $request->commission_rate ?? 0,
+            'agent_code'      => User::generateAgentCode(),
+            'approval_status' => 'active',
+            'approved_by'     => auth()->id(),
+            'approved_at'     => now(),
+            'password'        => Hash::make($request->password),
         ]);
 
         // Create wallet
@@ -124,13 +126,15 @@ class AgentController extends Controller
             'email'           => 'required|email|unique:users,email,' . $agent->id,
             'phone'           => 'nullable|string|max:30',
             'company_name'    => 'nullable|string|max:255',
-            'commission_rate' => 'nullable|numeric|min:0|max:100',
+            'tax_number'      => 'nullable|string|max:100',
+            'commission_type' => 'required|in:fixed,percentage',
+            'commission_rate' => 'nullable|numeric|min:0' . ($request->commission_type === 'percentage' ? '|max:100' : ''),
         ]);
 
         $agent->update($request->only([
             'first_name', 'last_name', 'email', 'phone',
             'company_name', 'company_phone', 'company_address',
-            'cnic_or_reg_number', 'commission_rate', 'internal_notes',
+            'tax_number', 'commission_type', 'commission_rate', 'internal_notes',
         ]));
 
         return redirect()->route('admin.agents.show', $agent)->with('success', 'Agent updated.');

@@ -3,6 +3,23 @@
 
 @section('content')
 
+@if($zeroOutNotice)
+<div class="mb-5 p-4 rounded-xl border border-amber-200 bg-amber-50 flex items-start gap-3">
+    <i class="fas fa-circle-exclamation text-amber-500 mt-0.5"></i>
+    <div class="flex-1">
+        <p class="text-sm font-semibold text-amber-800">Your wallet balance was reset to zero by admin</p>
+        <p class="text-xs text-amber-700 mt-0.5">{{ \Illuminate\Support\Str::after($zeroOutNotice->note, 'Reason: ') }}</p>
+        <p class="text-[11px] text-amber-600 mt-1">{{ $zeroOutNotice->created_at->format('d M Y, h:i A') }}</p>
+    </div>
+    <form method="POST" action="{{ route('agent.wallet.notice.dismiss', $zeroOutNotice) }}">
+        @csrf
+        <button type="submit" class="text-xs font-semibold text-amber-700 hover:text-amber-900 px-3 py-1.5 border border-amber-300 rounded-lg hover:bg-amber-100 transition">
+            Got it
+        </button>
+    </form>
+</div>
+@endif
+
 {{-- Welcome Header --}}
 <div class="flex items-center justify-between mb-6">
     <div>
@@ -28,6 +45,7 @@
 {{-- Stats Cards — all 7 in 1 row --}}
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
 
+    @if(auth()->user()->hasPermission('module.hotels'))
     <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3 flex items-center gap-2">
         <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
             <i class="fas fa-building text-blue-500 text-sm"></i>
@@ -37,7 +55,9 @@
             <div class="text-lg font-bold text-gray-800 leading-tight truncate" title="{{ $stats['total_hotels'] }}">{{ $stats['total_hotels'] }}</div>
         </div>
     </div>
+    @endif
 
+    @if(auth()->user()->hasPermission('module.flights'))
     <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3 flex items-center gap-2">
         <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center flex-shrink-0">
             <i class="fas fa-plane text-indigo-500 text-sm"></i>
@@ -47,7 +67,9 @@
             <div class="text-lg font-bold text-gray-800 leading-tight truncate" title="{{ $stats['flights'] }}">{{ $stats['flights'] }}</div>
         </div>
     </div>
+    @endif
 
+    @if(auth()->user()->hasPermission('module.tours'))
     <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3 flex items-center gap-2">
         <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0">
             <i class="fas fa-map-location-dot text-green-500 text-sm"></i>
@@ -57,7 +79,9 @@
             <div class="text-lg font-bold text-gray-800 leading-tight truncate" title="{{ $stats['total_tours'] }}">{{ $stats['total_tours'] }}</div>
         </div>
     </div>
+    @endif
 
+    @if(auth()->user()->hasPermission('module.umrah'))
     <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3 flex items-center gap-2">
         <div class="w-8 h-8 rounded-full bg-yellow-50 flex items-center justify-center flex-shrink-0">
             <i class="fas fa-moon text-yellow-500 text-sm"></i>
@@ -67,6 +91,7 @@
             <div class="text-lg font-bold text-gray-800 leading-tight truncate" title="{{ $stats['total_umrah'] }}">{{ $stats['total_umrah'] }}</div>
         </div>
     </div>
+    @endif
 
     <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3 flex items-center gap-2">
         <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">

@@ -9,6 +9,29 @@
 
         <div class="perm-grid">
 
+            {{-- Module Access --}}
+            <div>
+                <div class="perm-section-label"><i class="bi bi-grid-3x3-gap"></i> Modules</div>
+                <p class="perm-section-hint" style="margin: -4px 0 8px;">Controls dashboard cards &amp; booking tabs shown to this agent — on by default until saved here.</p>
+                @foreach([
+                    'module.hotels'  => 'Hotels Module',
+                    'module.flights' => 'Flights Module',
+                    'module.tours'   => 'Tours Module',
+                    'module.umrah'   => 'Umrah Module',
+                ] as $key => $label)
+                    @php $moduleChecked = !isset($agentPermissions[$key]) || $agentPermissions[$key]; @endphp
+                    <div class="perm-toggle-row">
+                        <label class="perm-toggle-label" for="perm_{{ str_replace('.', '_', $key) }}">{{ $label }}</label>
+                        <label class="perm-switch">
+                            <input class="perm-switch-input" type="checkbox" name="permissions[{{ $key }}]" value="1"
+                                   id="perm_{{ str_replace('.', '_', $key) }}"
+                                {{ $moduleChecked ? 'checked' : '' }}>
+                            <span class="perm-switch-slider"></span>
+                        </label>
+                    </div>
+                @endforeach
+            </div>
+
             {{-- Wallet Permissions --}}
             <div>
                 <div class="perm-section-label"><i class="bi bi-wallet2"></i> Wallet</div>

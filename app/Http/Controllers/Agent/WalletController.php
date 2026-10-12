@@ -90,4 +90,13 @@ class WalletController extends Controller
         return redirect()->route('agent.wallet.index')
                          ->with('success', 'Top-up request submitted. Admin will review shortly.');
     }
+
+    public function dismissZeroNotice(AgentWalletTransaction $transaction)
+    {
+        abort_unless($transaction->agent_id === auth()->id(), 403);
+
+        $transaction->update(['seen_by_agent' => now()]);
+
+        return back();
+    }
 }

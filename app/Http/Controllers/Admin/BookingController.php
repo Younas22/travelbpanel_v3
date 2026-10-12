@@ -40,13 +40,15 @@ class BookingController extends Controller
             $bookings = $this->getAllBookings($request);
         }
 
-        // Commission is computed from each booking's own agent (fare x that
-        // agent's commission_rate%) — load it once here rather than in the
-        // view, and rely on it being the same relation name on every booking
-        // model regardless of which type actually produced the row (the
-        // union query in getAllBookings() always hydrates as FlightBooking,
-        // but all 4 booking models define an identical agent() relation).
-        $bookings->getCollection()->load('agent:id,first_name,last_name,company_name,commission_rate');
+        // Commission is computed from each booking's own agent via
+        // User::calculateCommission() (fare x commission_rate%, or a flat
+        // commission_rate, depending on the agent's commission_type) —
+        // load it once here rather than in the view, and rely on it being
+        // the same relation name on every booking model regardless of
+        // which type actually produced the row (the union query in
+        // getAllBookings() always hydrates as FlightBooking, but all 4
+        // booking models define an identical agent() relation).
+        $bookings->getCollection()->load('agent:id,first_name,last_name,company_name,commission_rate,commission_type');
 
         // Agents list for the filter dropdown
         $agents = User::where('user_type', User::TYPE_AGENT)

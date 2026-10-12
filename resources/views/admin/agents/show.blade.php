@@ -71,12 +71,12 @@
                             <div class="as-info-value">{{ $agent->company_phone ?? '—' }}</div>
                         </div>
                         <div class="as-info-item">
-                            <div class="as-info-label">CNIC / Reg No.</div>
-                            <div class="as-info-value">{{ $agent->cnic_or_reg_number ?? '—' }}</div>
+                            <div class="as-info-label">Tax Number</div>
+                            <div class="as-info-value">{{ $agent->tax_number ?? '—' }}</div>
                         </div>
                         <div class="as-info-item">
                             <div class="as-info-label">Commission Rate</div>
-                            <div class="as-info-value">{{ $agent->commission_rate ?? 0 }}%</div>
+                            <div class="as-info-value">{{ $agent->commission_rate ?? 0 }}{{ $agent->commission_type === 'fixed' ? ' (flat)' : '%' }}</div>
                         </div>
                         <div class="as-info-item as-info-full">
                             <div class="as-info-label">Company Address</div>

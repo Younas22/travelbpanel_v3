@@ -67,12 +67,19 @@
                         <input type="text" name="company_phone" class="form-control" value="{{ old('company_phone', $agent->company_phone) }}">
                     </div>
                     <div class="af-field">
-                        <label>CNIC / Reg No.</label>
-                        <input type="text" name="cnic_or_reg_number" class="form-control" value="{{ old('cnic_or_reg_number', $agent->cnic_or_reg_number) }}">
+                        <label>Tax Number</label>
+                        <input type="text" name="tax_number" class="form-control" value="{{ old('tax_number', $agent->tax_number) }}">
                     </div>
                     <div class="af-field">
-                        <label>Commission Rate (%)</label>
-                        <input type="number" name="commission_rate" class="form-control" min="0" max="100" step="0.01" value="{{ old('commission_rate', $agent->commission_rate) }}">
+                        <label>Commission Type <span class="af-required">*</span></label>
+                        <select name="commission_type" id="commissionType" class="form-control" required>
+                            <option value="percentage" {{ old('commission_type', $agent->commission_type) === 'percentage' ? 'selected' : '' }}>Percentage</option>
+                            <option value="fixed" {{ old('commission_type', $agent->commission_type) === 'fixed' ? 'selected' : '' }}>Fixed Amount</option>
+                        </select>
+                    </div>
+                    <div class="af-field">
+                        <label id="commissionRateLabel">Commission Rate (%)</label>
+                        <input type="number" name="commission_rate" id="commissionRate" class="form-control" min="0" max="100" step="0.01" value="{{ old('commission_rate', $agent->commission_rate) }}">
                     </div>
                 </div>
 
@@ -96,5 +103,26 @@
             </div>
         </form>
     </div>
+
+    <script>
+        (function () {
+            const typeSelect = document.getElementById('commissionType');
+            const rateInput  = document.getElementById('commissionRate');
+            const rateLabel  = document.getElementById('commissionRateLabel');
+
+            function syncCommissionFields() {
+                if (typeSelect.value === 'fixed') {
+                    rateLabel.textContent = 'Commission Amount';
+                    rateInput.removeAttribute('max');
+                } else {
+                    rateLabel.textContent = 'Commission Rate (%)';
+                    rateInput.setAttribute('max', '100');
+                }
+            }
+
+            typeSelect.addEventListener('change', syncCommissionFields);
+            syncCommissionFields();
+        })();
+    </script>
 
 @endsection

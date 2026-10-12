@@ -115,7 +115,7 @@
             $bookingAgent = $booking->relationLoaded('agent') ? $booking->agent : null;
             $commissionAmount = null;
             if ($bookingAgent && $bookingAgent->commission_rate) {
-                $rawCommission = ($booking->booking_fare_base ?? 0) * ($bookingAgent->commission_rate / 100);
+                $rawCommission = $bookingAgent->calculateCommission($booking->booking_fare_base ?? 0);
                 $commissionAmount = $__activeCurrencyForCommission
                     ? convertCurrency($rawCommission, $booking->booking_currency_origin ?? 'USD', $__activeCurrencyForCommission->currency_name)
                     : $rawCommission;

@@ -9,13 +9,14 @@ class AgentWalletTransaction extends Model
     protected $fillable = [
         'agent_id', 'type', 'amount', 'currency', 'balance_before', 'balance_after',
         'reference', 'booking_type', 'booking_id', 'note',
-        'payment_method', 'performed_by', 'status',
+        'payment_method', 'performed_by', 'status', 'seen_by_agent',
     ];
 
     protected $casts = [
         'amount'         => 'decimal:2',
         'balance_before' => 'decimal:2',
         'balance_after'  => 'decimal:2',
+        'seen_by_agent'  => 'datetime',
     ];
 
     // ─── Relations ────────────────────────────────────────────────────────────
@@ -50,6 +51,17 @@ class AgentWalletTransaction extends Model
     public function scopeByDateRange($query, $from, $to)
     {
         return $query->whereBetween('created_at', [$from, $to]);
+    }
+
+    /**
+     * Admin "Zero Out Balance" actions, not yet acknowledged by the agent —
+     * surfaced as a one-time dashboard banner so the agent sees why their
+     * balance changed, not silently discovered later in the history list.
+     */
+    public function scopeUnseenZeroOutNotices($query)
+    {
+        return $query->where('note', 'like', 'Balance zeroed out by admin%')
+                     ->whereNull('seen_by_agent');
     }
 
     // ─── Accessors ────────────────────────────────────────────────────────────

@@ -13,6 +13,13 @@ class AgentPermission extends Model
 
     // All valid permission keys
     public const ALL_PERMISSIONS = [
+        // Module access — controls which booking modules show up on the
+        // agent's dashboard stat cards and the "My Bookings" filter tabs
+        'module.hotels'   => 'Hotels Module',
+        'module.flights'  => 'Flights Module',
+        'module.tours'    => 'Tours Module',
+        'module.umrah'    => 'Umrah Module',
+
         // Wallet
         'wallet.view'     => 'View Wallet Balance',
         'wallet.request'  => 'Request Wallet Top-up',
@@ -38,11 +45,22 @@ class AgentPermission extends Model
 
     /**
      * Check if agent has a specific permission.
+     *
+     * module.* keys default to enabled when admin has never touched that
+     * agent's permissions at all (no row exists yet) — otherwise every
+     * existing agent would silently lose their dashboard cards and booking
+     * tabs the moment this module-gating feature shipped. Once admin saves
+     * the permissions form even once, the saved value (true or false) wins.
      */
     public static function hasPermission(int $agentId, string $key): bool
     {
         $permissions = static::getAgentPermissions($agentId);
-        return isset($permissions[$key]) && $permissions[$key] === true;
+
+        if (isset($permissions[$key])) {
+            return $permissions[$key] === true;
+        }
+
+        return str_starts_with($key, 'module.');
     }
 
     /**

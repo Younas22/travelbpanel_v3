@@ -3,6 +3,23 @@
 
 @section('content')
 
+    @if($zeroOutNotice)
+    <div class="mb-5 p-4 rounded-xl" style="border:1px solid #fde68a; background:#fffbeb; display:flex; align-items:flex-start; gap:12px;">
+        <i class="bi bi-exclamation-circle" style="color:#d97706; margin-top:2px;"></i>
+        <div style="flex:1;">
+            <p style="font-size:.85rem; font-weight:600; color:#92400e; margin:0;">Your wallet balance was reset to zero by admin</p>
+            <p style="font-size:.78rem; color:#b45309; margin:2px 0 0;">{{ \Illuminate\Support\Str::after($zeroOutNotice->note, 'Reason: ') }}</p>
+            <p style="font-size:.68rem; color:#d97706; margin:4px 0 0;">{{ $zeroOutNotice->created_at->format('d M Y, h:i A') }}</p>
+        </div>
+        <form method="POST" action="{{ route('agent.wallet.notice.dismiss', $zeroOutNotice) }}">
+            @csrf
+            <button type="submit" style="font-size:.78rem; font-weight:600; color:#92400e; background:#fff; border:1px solid #fde68a; border-radius:8px; padding:6px 12px; cursor:pointer;">
+                Got it
+            </button>
+        </form>
+    </div>
+    @endif
+
     <div class="dash-welcome">
         <div>
             <h4>Welcome back, {{ auth()->user()->first_name }}!</h4>

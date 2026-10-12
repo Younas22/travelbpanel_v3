@@ -42,6 +42,7 @@ class User extends Authenticatable
         'hire_date',
         'department',
         'commission_rate',
+        'commission_type',
         'total_sales',
         'total_commission',
         'email_notifications',
@@ -50,7 +51,7 @@ class User extends Authenticatable
         'internal_notes',
         'company_name', 'agent_code', 'approval_status',
         'approved_by', 'approved_at', 'rejection_reason',
-        'company_address', 'company_phone', 'company_logo', 'cnic_or_reg_number',
+        'company_address', 'company_phone', 'company_logo', 'tax_number',
         'two_factor_secret', 'two_factor_confirmed_at',
     ];
 
@@ -268,10 +269,28 @@ class User extends Authenticatable
     {
         if ($this->isAgent() && $this->commission_rate) {
             $this->increment('total_sales');
-            $commission = $saleAmount * ($this->commission_rate / 100);
-            $this->increment('total_commission', $commission);
+            $this->increment('total_commission', $this->calculateCommission($saleAmount));
             $this->save();
         }
+    }
+
+    /**
+     * commission_rate means two different things depending on
+     * commission_type: a flat amount per booking ('fixed'), or a percentage
+     * of the fare ('percentage', the historical default — existing agent
+     * rows keep this behavior unless admin explicitly switches them).
+     */
+    public function calculateCommission(float $fareAmount): float
+    {
+        if (!$this->commission_rate) {
+            return 0.0;
+        }
+
+        if ($this->commission_type === 'fixed') {
+            return (float) $this->commission_rate;
+        }
+
+        return $fareAmount * ((float) $this->commission_rate / 100);
     }
 
     public function getStatusBadgeClass()

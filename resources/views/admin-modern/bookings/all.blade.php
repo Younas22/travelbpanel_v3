@@ -173,7 +173,7 @@
                         $bookingAgent = $booking->relationLoaded('agent') ? $booking->agent : null;
                         $commissionAmount = null;
                         if ($bookingAgent && $bookingAgent->commission_rate) {
-                            $rawCommission = ($booking->booking_fare_base ?? 0) * ($bookingAgent->commission_rate / 100);
+                            $rawCommission = $bookingAgent->calculateCommission($booking->booking_fare_base ?? 0);
                             $commissionAmount = $__activeCurrencyForCommission
                                 ? convertCurrency($rawCommission, $booking->booking_currency_origin ?? 'USD', $__activeCurrencyForCommission->currency_name)
                                 : $rawCommission;
@@ -246,7 +246,7 @@
                         <td>
                             @if($commissionAmount !== null)
                                 <div class="bk-detail">{{ $__activeCurrencyForCommission->currency_name ?? $booking->booking_currency_origin }} {{ number_format($commissionAmount, 2) }}</div>
-                                <div class="bk-meta">{{ $bookingAgent->commission_rate }}%</div>
+                                <div class="bk-meta">{{ $bookingAgent->commission_rate }}{{ $bookingAgent->commission_type === 'fixed' ? ' flat' : '%' }}</div>
                             @else
                                 <span class="bk-meta">—</span>
                             @endif

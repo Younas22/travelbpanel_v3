@@ -45,6 +45,9 @@ class DashboardController extends Controller
         // Recent wallet transactions
         $recentTransactions = AgentWalletTransaction::byAgent($agentId)->latest()->take(5)->get();
 
-        return view('agent.dashboard', compact('agent', 'wallet', 'stats', 'recentBookings', 'recentTransactions'));
+        // Admin "Zero Out Balance" actions the agent hasn't acknowledged yet
+        $zeroOutNotice = AgentWalletTransaction::byAgent($agentId)->unseenZeroOutNotices()->latest()->first();
+
+        return view('agent.dashboard', compact('agent', 'wallet', 'stats', 'recentBookings', 'recentTransactions', 'zeroOutNotice'));
     }
 }

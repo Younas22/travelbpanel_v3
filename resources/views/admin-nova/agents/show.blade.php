@@ -110,12 +110,12 @@
                             <p class="text-xs text-novatext">{{ $agent->company_phone ?? '—' }}</p>
                         </div>
                         <div>
-                            <p class="text-[10px] font-semibold uppercase tracking-wide text-novamuted mb-1">CNIC / Reg No.</p>
-                            <p class="text-xs text-novatext">{{ $agent->cnic_or_reg_number ?? '—' }}</p>
+                            <p class="text-[10px] font-semibold uppercase tracking-wide text-novamuted mb-1">Tax Number</p>
+                            <p class="text-xs text-novatext">{{ $agent->tax_number ?? '—' }}</p>
                         </div>
                         <div>
                             <p class="text-[10px] font-semibold uppercase tracking-wide text-novamuted mb-1">Commission Rate</p>
-                            <p class="text-xs text-novatext">{{ $agent->commission_rate ?? 0 }}%</p>
+                            <p class="text-xs text-novatext">{{ $agent->commission_rate ?? 0 }}{{ $agent->commission_type === 'fixed' ? ' (flat)' : '%' }}</p>
                         </div>
                         <div class="sm:col-span-2">
                             <p class="text-[10px] font-semibold uppercase tracking-wide text-novamuted mb-1">Company Address</p>

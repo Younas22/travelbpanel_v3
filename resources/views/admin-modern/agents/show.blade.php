@@ -44,8 +44,8 @@
                         <div class="as-info-item"><div class="as-info-label">Agent Code</div><div class="as-info-value"><span class="as-code">{{ $agent->agent_code }}</span></div></div>
                         <div class="as-info-item"><div class="as-info-label">Company</div><div class="as-info-value">{{ $agent->company_name ?? '—' }}</div></div>
                         <div class="as-info-item"><div class="as-info-label">Company Phone</div><div class="as-info-value">{{ $agent->company_phone ?? '—' }}</div></div>
-                        <div class="as-info-item"><div class="as-info-label">CNIC / Reg No.</div><div class="as-info-value">{{ $agent->cnic_or_reg_number ?? '—' }}</div></div>
-                        <div class="as-info-item"><div class="as-info-label">Commission Rate</div><div class="as-info-value">{{ $agent->commission_rate ?? 0 }}%</div></div>
+                        <div class="as-info-item"><div class="as-info-label">Tax Number</div><div class="as-info-value">{{ $agent->tax_number ?? '—' }}</div></div>
+                        <div class="as-info-item"><div class="as-info-label">Commission Rate</div><div class="as-info-value">{{ $agent->commission_rate ?? 0 }}{{ $agent->commission_type === 'fixed' ? ' (flat)' : '%' }}</div></div>
                         <div class="as-info-item as-info-full"><div class="as-info-label">Company Address</div><div class="as-info-value">{{ $agent->company_address ?? '—' }}</div></div>
                         @if($agent->internal_notes)
                             <div class="as-info-item as-info-full"><div class="as-info-label">Internal Notes</div><div class="as-info-value as-info-muted">{{ $agent->internal_notes }}</div></div>

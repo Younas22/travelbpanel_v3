@@ -16,6 +16,32 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
 
+            {{-- Module Access --}}
+            <div>
+                <p class="text-[10px] font-semibold uppercase tracking-wide text-novamuted flex items-center gap-1.5 mb-2">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                    Modules
+                    <span class="text-novamuted normal-case font-normal">— on by default until saved here</span>
+                </p>
+                @foreach([
+                    'module.hotels'  => 'Hotels Module',
+                    'module.flights' => 'Flights Module',
+                    'module.tours'   => 'Tours Module',
+                    'module.umrah'   => 'Umrah Module',
+                ] as $key => $label)
+                    @php $moduleChecked = !isset($agentPermissions[$key]) || $agentPermissions[$key]; @endphp
+                    <div class="flex items-center justify-between gap-3 py-2.5 border-b border-novaborder last:border-0">
+                        <label for="perm_{{ str_replace('.', '_', $key) }}" class="text-xs text-novatext">{{ $label }}</label>
+                        <label class="ag-switch">
+                            <input class="perm-switch-input" type="checkbox" name="permissions[{{ $key }}]" value="1"
+                                   id="perm_{{ str_replace('.', '_', $key) }}"
+                                {{ $moduleChecked ? 'checked' : '' }}>
+                            <span class="ag-slider"></span>
+                        </label>
+                    </div>
+                @endforeach
+            </div>
+
             {{-- Wallet Permissions --}}
             <div>
                 <p class="text-[10px] font-semibold uppercase tracking-wide text-novamuted flex items-center gap-1.5 mb-2">

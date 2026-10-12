@@ -69,6 +69,7 @@ Route::prefix('agent')->name('agent.')->group(function () {
             Route::middleware('agent.permission:wallet.view')->group(function () {
                 Route::get('/',             [WalletController::class, 'index'])->name('index');
                 Route::get('/transactions', [WalletController::class, 'transactions'])->name('transactions');
+                Route::post('/notice/{transaction}/dismiss', [WalletController::class, 'dismissZeroNotice'])->name('notice.dismiss');
             });
             Route::middleware('agent.permission:wallet.request')->group(function () {
                 Route::get('/topup',  [WalletController::class, 'topupForm'])->name('topup');
