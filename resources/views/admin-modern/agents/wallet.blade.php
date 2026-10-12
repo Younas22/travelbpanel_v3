@@ -4,10 +4,8 @@
 @section('content')
 
 @php
-    $activeCurrency = activeCurrency();
-    $walletCurrency = $wallet->currency ?? 'PKR';
-    $displayCurrency = $activeCurrency->currency_name ?? $walletCurrency;
-    $toDisplay = fn($amt) => $activeCurrency ? convertCurrency($amt ?? 0, $walletCurrency, $displayCurrency) : ($amt ?? 0);
+    $walletCurrency = ($wallet?->currency && $wallet->currency !== 'PKR') ? $wallet->currency : (optional(defaultCurrency())->currency_name ?? 'PKR');
+    $currencies = $currencies ?? allCurrencies();
 @endphp
 
     <div class="agw-header">
@@ -21,15 +19,15 @@
     <div class="agw-stats">
         <div class="agw-stat">
             <div class="agw-stat-icon agw-icon-accent"><i class="bi bi-wallet2"></i></div>
-            <div><div class="agw-stat-value">{{ $displayCurrency }} {{ number_format($toDisplay($wallet->balance), 2) }}</div><div class="agw-stat-label">Current Balance</div></div>
+            <div><div class="agw-stat-value">{{ $walletCurrency }} {{ number_format($wallet->balance, 2) }}</div><div class="agw-stat-label">Current Balance</div></div>
         </div>
         <div class="agw-stat">
             <div class="agw-stat-icon agw-icon-accent"><i class="bi bi-arrow-down-circle"></i></div>
-            <div><div class="agw-stat-value">{{ $displayCurrency }} {{ number_format($toDisplay($wallet->total_credited), 2) }}</div><div class="agw-stat-label">Total Credited</div></div>
+            <div><div class="agw-stat-value">{{ $walletCurrency }} {{ number_format($wallet->total_credited, 2) }}</div><div class="agw-stat-label">Total Credited</div></div>
         </div>
         <div class="agw-stat">
             <div class="agw-stat-icon agw-icon-red"><i class="bi bi-arrow-up-circle"></i></div>
-            <div><div class="agw-stat-value">{{ $displayCurrency }} {{ number_format($toDisplay($wallet->total_debited), 2) }}</div><div class="agw-stat-label">Total Debited</div></div>
+            <div><div class="agw-stat-value">{{ $walletCurrency }} {{ number_format($wallet->total_debited, 2) }}</div><div class="agw-stat-label">Total Debited</div></div>
         </div>
     </div>
 
@@ -38,7 +36,15 @@
             <h5 class="agw-section-title agw-title-accent"><i class="bi bi-plus-circle"></i> Add Balance (Credit)</h5>
             <form method="POST" action="{{ route('admin.agents.wallet.credit', $agent) }}">
                 @csrf
-                <div class="agw-field"><label>Amount ({{ $walletCurrency }})</label><input type="number" name="amount" class="form-control" min="1" step="1" required></div>
+                <div class="agw-field"><label>Amount</label><input type="number" name="amount" class="form-control" min="1" step="1" required></div>
+                <div class="agw-field">
+                    <label>Currency</label>
+                    <select name="currency" class="form-control" required>
+                        @foreach($currencies as $c)
+                            <option value="{{ $c->currency_name }}" {{ $c->currency_name === $walletCurrency ? 'selected' : '' }}>{{ $c->currency_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="agw-field"><label>Payment Method</label><input type="text" name="payment_method" class="form-control" placeholder="e.g. Bank Transfer, Cash"></div>
                 <div class="agw-field"><label>Note</label><textarea name="note" class="form-control" rows="2"></textarea></div>
                 <button type="submit" class="agw-btn agw-btn-accent"><i class="bi bi-plus-circle"></i> Add Balance</button>
@@ -49,7 +55,7 @@
             <h5 class="agw-section-title agw-title-red"><i class="bi bi-dash-circle"></i> Deduct Balance (Debit)</h5>
             <form method="POST" action="{{ route('admin.agents.wallet.debit', $agent) }}">
                 @csrf
-                <div class="agw-field"><label>Amount ({{ $walletCurrency }})</label><input type="number" name="amount" class="form-control" min="1" step="1" required></div>
+                <div class="agw-field"><label>Amount</label><input type="number" name="amount" class="form-control" min="1" step="1" required></div>
                 <div class="agw-field"><label>Reason <span class="agw-required">*</span></label><textarea name="note" class="form-control" rows="2" required></textarea></div>
                 <button type="submit" class="agw-btn agw-btn-red" onclick="return confirm('Deduct from wallet?')"><i class="bi bi-dash-circle"></i> Deduct Balance</button>
             </form>
@@ -70,7 +76,7 @@
                 @forelse($topupRequests as $req)
                     <tr>
                         <td><span class="agw-meta">{{ $req->created_at->format('d M Y, h:i A') }}</span></td>
-                        <td><span class="agw-amount">{{ $displayCurrency }} {{ number_format($toDisplay($req->amount), 2) }}</span></td>
+                        <td><span class="agw-amount">{{ $walletCurrency }} {{ number_format($req->amount, 2) }}</span></td>
                         <td>{{ $req->payment_method ?? '—' }}</td>
                         <td>
                             @if($req->proof_url)
@@ -137,7 +143,7 @@
                 @forelse($recentTransactions as $txn)
                     <tr>
                         <td><span class="agw-type agw-type-{{ $txn->type }}">{{ ucfirst($txn->type) }}</span></td>
-                        <td><span class="agw-amount-flow agw-amount-{{ $txn->type }}">{{ $txn->type === 'credit' ? '+' : '-' }} {{ $displayCurrency }} {{ number_format($toDisplay($txn->amount), 2) }}</span></td>
+                        <td><span class="agw-amount-flow agw-amount-{{ $txn->type }}">{{ $txn->type === 'credit' ? '+' : '-' }} {{ $txn->currency ?? $walletCurrency }} {{ number_format($txn->amount, 2) }}</span></td>
                         <td><span class="agw-meta">{{ $txn->note ?? '—' }}</span></td>
                         <td><span class="agw-meta">{{ $txn->created_at->format('d M Y, h:i A') }}</span></td>
                     </tr>

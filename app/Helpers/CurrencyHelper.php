@@ -9,6 +9,21 @@ if (!function_exists('allCurrencies')) {
     }
 }
 
+if (!function_exists('defaultCurrency')) {
+    /**
+     * The currency flagged as default on admin/currencies, ignoring
+     * whatever the visitor's session currently has selected — unlike
+     * activeCurrency(), which prefers the session pick. Used wherever a
+     * record has never had a real currency assigned yet (e.g. a wallet at
+     * its untouched schema default) and needs a sensible code to show.
+     */
+    function defaultCurrency() {
+        return Currencies::where('currency_status', '1')->where('currency_default', '1')->first()
+            ?? Currencies::where('currency_status', '1')->first()
+            ?? Currencies::where('currency_default', '1')->first();
+    }
+}
+
 if (!function_exists('activeCurrency')) {
     function activeCurrency() {
         $name = session('currency');

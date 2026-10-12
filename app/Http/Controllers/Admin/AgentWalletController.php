@@ -16,14 +16,16 @@ class AgentWalletController extends Controller
         $wallet = $agent->wallet ?? AgentWallet::create(['agent_id' => $agent->id]);
         $recentTransactions = AgentWalletTransaction::byAgent($agent->id)->latest()->take(10)->get();
         $topupRequests = AgentTopupRequest::byAgent($agent->id)->latest()->take(10)->get();
+        $currencies = allCurrencies();
 
-        return view('admin.agents.wallet', compact('agent', 'wallet', 'recentTransactions', 'topupRequests'));
+        return view('admin.agents.wallet', compact('agent', 'wallet', 'recentTransactions', 'topupRequests', 'currencies'));
     }
 
     public function credit(Request $request, User $agent)
     {
         $request->validate([
             'amount'         => 'required|numeric|min:1',
+            'currency'       => 'required|string|exists:currencies,currency_name',
             'payment_method' => 'nullable|string|max:100',
             'note'           => 'nullable|string|max:500',
         ]);
@@ -35,6 +37,7 @@ class AgentWalletController extends Controller
             note:          $request->note ?? 'Manual credit by admin',
             performedBy:   auth()->id(),
             paymentMethod: $request->payment_method,
+            currency:      $request->currency,
         );
 
         return back()->with('success', $wallet->currency . ' ' . number_format($request->amount, 2) . ' added to wallet.');

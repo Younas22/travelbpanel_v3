@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class AgentWalletTransaction extends Model
 {
     protected $fillable = [
-        'agent_id', 'type', 'amount', 'balance_before', 'balance_after',
+        'agent_id', 'type', 'amount', 'currency', 'balance_before', 'balance_after',
         'reference', 'booking_type', 'booking_id', 'note',
         'payment_method', 'performed_by', 'status',
     ];
@@ -57,11 +57,5 @@ class AgentWalletTransaction extends Model
     public function getTypeBadgeClassAttribute(): string
     {
         return $this->type === 'credit' ? 'badge bg-success' : 'badge bg-danger';
-    }
-
-    public function getFormattedAmountAttribute(): string
-    {
-        $sign = $this->type === 'credit' ? '+' : '-';
-        return $sign . ' PKR ' . number_format($this->amount, 2);
     }
 }

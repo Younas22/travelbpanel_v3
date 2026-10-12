@@ -38,7 +38,11 @@ class AgentWallet extends Model
     }
 
     /**
-     * Add balance to wallet (credit).
+     * Add balance to wallet (credit). Passing $currency different from the
+     * wallet's current one relabels the wallet to work in that currency
+     * going forward — this is an admin-managed demo wallet with one running
+     * balance, not a true multi-currency ledger, so the amount is added as
+     * entered with no conversion; only the label changes.
      */
     public function credit(
         float $amount,
@@ -47,21 +51,26 @@ class AgentWallet extends Model
         string $paymentMethod = null,
         string $reference = null,
         string $bookingType = null,
-        int $bookingId = null
+        int $bookingId = null,
+        ?string $currency = null
     ): AgentWalletTransaction {
-        return DB::transaction(function () use ($amount, $note, $performedBy, $paymentMethod, $reference, $bookingType, $bookingId) {
+        return DB::transaction(function () use ($amount, $note, $performedBy, $paymentMethod, $reference, $bookingType, $bookingId, $currency) {
+            $currency = $currency ?: $this->currency;
+
             $balanceBefore = $this->balance;
             $balanceAfter  = $balanceBefore + $amount;
 
             $this->update([
                 'balance'        => $balanceAfter,
                 'total_credited' => $this->total_credited + $amount,
+                'currency'       => $currency,
             ]);
 
             return AgentWalletTransaction::create([
                 'agent_id'       => $this->agent_id,
                 'type'           => 'credit',
                 'amount'         => $amount,
+                'currency'       => $currency,
                 'balance_before' => $balanceBefore,
                 'balance_after'  => $balanceAfter,
                 'reference'      => $reference,
@@ -104,6 +113,7 @@ class AgentWallet extends Model
                 'agent_id'       => $this->agent_id,
                 'type'           => 'debit',
                 'amount'         => $amount,
+                'currency'       => $this->currency,
                 'balance_before' => $balanceBefore,
                 'balance_after'  => $balanceAfter,
                 'reference'      => $reference,
