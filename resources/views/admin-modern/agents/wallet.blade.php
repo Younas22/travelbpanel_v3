@@ -62,6 +62,43 @@
         </div>
     </div>
 
+    @if($wallet->balance > 0)
+    <div style="display:flex; justify-content:flex-end; margin-bottom:1.25rem;">
+        <button type="button" class="agw-btn" style="background:transparent; border-color:#E24B4A; color:#E24B4A;"
+                data-bs-toggle="modal" data-bs-target="#zeroBalanceModal{{ $agent->id }}">
+            <i class="bi bi-arrow-counterclockwise"></i> Zero Out Balance
+        </button>
+    </div>
+
+    <div class="modal fade" id="zeroBalanceModal{{ $agent->id }}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="{{ route('admin.agents.wallet.zero', $agent) }}">
+                    @csrf
+                    <div class="modal-header">
+                        <h6 class="modal-title">Zero Out Wallet Balance</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted" style="font-size:.85rem;">
+                            This will reset the current balance
+                            (<strong>{{ $walletCurrency }} {{ number_format($wallet->balance, 2) }}</strong>)
+                            down to zero. This action is recorded in the transaction history below.
+                        </p>
+                        <label class="form-label">Reason <span class="agw-required">*</span></label>
+                        <textarea name="reason" class="form-control" rows="3" placeholder="Why is this balance being zeroed out?" required></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="agw-btn agw-btn-outline" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="agw-btn agw-btn-red"
+                                onclick="return confirm('Reset this wallet balance to zero?')">Zero Out Balance</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <div class="agw-card">
         <div class="agw-card-header">
             <h5 class="agw-card-title"><i class="bi bi-receipt"></i> Top-Up Requests</h5>

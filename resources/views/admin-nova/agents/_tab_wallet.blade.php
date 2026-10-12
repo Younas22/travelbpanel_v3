@@ -100,6 +100,46 @@
     </div>
 </div>
 
+{{-- ===== ZERO OUT BALANCE ===== --}}
+@if(($wallet?->balance ?? 0) > 0)
+<div class="flex justify-end mb-5">
+    <button type="button" class="ag-btn-nova px-4 py-2.5 text-xs font-semibold" style="color:#EF4444; border-color:#EF4444;"
+            data-bs-toggle="modal" data-bs-target="#zeroBalanceModal{{ $agent->id }}">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.64-6.36M3 3v6h6"/></svg>
+        Zero Out Balance
+    </button>
+</div>
+
+<div class="modal fade" id="zeroBalanceModal{{ $agent->id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border-radius:1.5rem; font-family:'Plus Jakarta Sans',sans-serif;">
+            <form method="POST" action="{{ route('admin.agents.wallet.zero', $agent) }}">
+                @csrf
+                <div class="modal-header" style="border-bottom:1px solid #E5E7EB;">
+                    <h6 class="modal-title" style="font-weight:700;">Zero Out Wallet Balance</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-novamuted" style="font-size:.85rem; margin-bottom:12px;">
+                        This will reset the current balance
+                        (<strong class="text-novatext">{{ $walletCurrency }} {{ number_format($wallet?->balance ?? 0, 2) }}</strong>)
+                        down to zero. This action is recorded in the transaction history below.
+                    </p>
+                    <label class="form-label" style="font-size:.8rem; font-weight:600;">Reason <span style="color:#EF4444;">*</span></label>
+                    <textarea name="reason" class="form-control" style="border-radius:1rem;" rows="3" placeholder="Why is this balance being zeroed out?" required></textarea>
+                </div>
+                <div class="modal-footer" style="border-top:1px solid #E5E7EB;">
+                    <button type="button" data-bs-dismiss="modal"
+                            style="display:inline-flex; align-items:center; border-radius:9999px; padding:10px 20px; font-size:13px; font-weight:600; font-family:'Plus Jakarta Sans',sans-serif; background:#F7F8FC; color:#000; border:1px solid #E5E7EB; cursor:pointer;">Cancel</button>
+                    <button type="submit" onclick="return confirm('Reset this wallet balance to zero?')"
+                            style="display:inline-flex; align-items:center; border-radius:9999px; padding:10px 20px; font-size:13px; font-weight:600; font-family:'Plus Jakarta Sans',sans-serif; background:#EF4444; color:#fff; border:1px solid #EF4444; cursor:pointer;">Zero Out Balance</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
+
 {{-- ===== TOP-UP REQUESTS ===== --}}
 <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5 mb-5">
     <div class="flex flex-wrap items-center gap-2 mb-4">

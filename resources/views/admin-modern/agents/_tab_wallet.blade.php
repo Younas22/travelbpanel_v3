@@ -79,8 +79,44 @@
     </div>
 </div>
 
-<div class="wal-history-row">
+<div class="wal-history-row" style="gap:10px;">
+    @if(($wallet?->balance ?? 0) > 0)
+    <button type="button" class="wal-history-btn" style="border-color:#E24B4A; color:#E24B4A;"
+            data-bs-toggle="modal" data-bs-target="#zeroBalanceModal{{ $agent->id }}">
+        <i class="bi bi-arrow-counterclockwise"></i> Zero Out Balance
+    </button>
+    @endif
     <a href="{{ route('admin.agents.wallet.transactions', $agent) }}" class="wal-history-btn">
         <i class="bi bi-clock-history"></i> View Full Transaction History
     </a>
 </div>
+
+@if(($wallet?->balance ?? 0) > 0)
+<div class="modal fade" id="zeroBalanceModal{{ $agent->id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ route('admin.agents.wallet.zero', $agent) }}">
+                @csrf
+                <div class="modal-header">
+                    <h6 class="modal-title">Zero Out Wallet Balance</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted" style="font-size:.85rem;">
+                        This will reset the current balance
+                        (<strong>{{ $walletCurrency }} {{ number_format($wallet?->balance ?? 0, 2) }}</strong>)
+                        down to zero. This action is recorded in the transaction history below.
+                    </p>
+                    <label class="form-label">Reason <span class="wal-required">*</span></label>
+                    <textarea name="reason" class="form-control" rows="3" placeholder="Why is this balance being zeroed out?" required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="wal-btn wal-btn-accent" style="width:auto; background:#e5e7eb; color:#374151;" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="wal-btn wal-btn-red" style="width:auto;"
+                            onclick="return confirm('Reset this wallet balance to zero?')">Zero Out Balance</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif

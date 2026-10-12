@@ -458,6 +458,7 @@ Route::prefix('modules')->name('admin.modules.')->group(function () {
         Route::get('/{agent}/wallet',             [\App\Http\Controllers\Admin\AgentWalletController::class, 'index'])->name('wallet');
         Route::post('/{agent}/wallet/credit',     [\App\Http\Controllers\Admin\AgentWalletController::class, 'credit'])->name('wallet.credit');
         Route::post('/{agent}/wallet/debit',      [\App\Http\Controllers\Admin\AgentWalletController::class, 'debit'])->name('wallet.debit');
+        Route::post('/{agent}/wallet/zero',       [\App\Http\Controllers\Admin\AgentWalletController::class, 'zero'])->name('wallet.zero');
         Route::get('/{agent}/wallet/transactions',[\App\Http\Controllers\Admin\AgentWalletController::class, 'transactions'])->name('wallet.transactions');
     });
 

@@ -65,6 +65,27 @@ class AgentWalletController extends Controller
         return back()->with('success', $wallet->currency . ' ' . number_format($request->amount, 2) . ' deducted from wallet.');
     }
 
+    public function zero(Request $request, User $agent)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:500',
+        ]);
+
+        $wallet = $agent->wallet;
+
+        if (!$wallet || (float) $wallet->balance <= 0) {
+            return back()->with('error', 'This wallet is already at zero.');
+        }
+
+        $wallet->debit(
+            amount:      $wallet->balance,
+            note:        'Balance zeroed out by admin — Reason: ' . $request->reason,
+            performedBy: auth()->id(),
+        );
+
+        return back()->with('success', 'Wallet balance has been reset to zero.');
+    }
+
     public function transactions(Request $request, User $agent)
     {
         $query = AgentWalletTransaction::byAgent($agent->id)->with('performedBy');
