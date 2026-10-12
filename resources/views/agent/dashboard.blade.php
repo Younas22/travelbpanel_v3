@@ -26,7 +26,7 @@
 </div>
 
 {{-- Stats Cards — all 7 in 1 row --}}
-<div class="grid grid-cols-7 gap-3 mb-5">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
 
     <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3 flex items-center gap-2">
         <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
