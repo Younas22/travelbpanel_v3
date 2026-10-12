@@ -110,21 +110,21 @@
     <div class="dash-quick-grid">
 
         @if(auth()->user()->hasPermission('module.flights'))
-        <a href="{{ route('agent.flights.index') }}" class="dash-quick-card">
+        <a href="{{ route('flights.index') }}" class="dash-quick-card">
             <i class="bi bi-airplane" style="color: var(--success-color);"></i>
             <div class="dash-quick-label">Book Flight</div>
         </a>
         @endif
 
         @if(auth()->user()->hasPermission('module.tours'))
-        <a href="{{ route('agent.tours.index') }}" class="dash-quick-card">
+        <a href="{{ route('tours.index') }}" class="dash-quick-card">
             <i class="bi bi-map" style="color: var(--warning-color);"></i>
             <div class="dash-quick-label">Book Tour</div>
         </a>
         @endif
 
         @if(auth()->user()->hasPermission('module.umrah'))
-        <a href="{{ route('agent.umrah.index') }}" class="dash-quick-card">
+        <a href="{{ route('umrah.index') }}" class="dash-quick-card">
             <i class="bi bi-moon-stars" style="color: var(--info-color);"></i>
             <div class="dash-quick-label">Book Umrah</div>
         </a>

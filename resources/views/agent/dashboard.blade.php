@@ -129,7 +129,7 @@
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
 
     @if(auth()->user()->hasPermission('module.flights'))
-    <a href="{{ route('agent.flights.index') }}"
+    <a href="{{ route('flights.index') }}"
        class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 text-center hover:shadow-md hover:border-green-200 transition group ap-no-underline">
         <i class="fas fa-plane text-green-500 text-3xl group-hover:scale-110 transition-transform inline-block"></i>
         <div class="mt-2 text-sm font-semibold text-gray-700">Book Flight</div>
@@ -137,7 +137,7 @@
     @endif
 
     @if(auth()->user()->hasPermission('module.tours'))
-    <a href="{{ route('agent.tours.index') }}"
+    <a href="{{ route('tours.index') }}"
        class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 text-center hover:shadow-md hover:border-yellow-200 transition group ap-no-underline">
         <i class="fas fa-map-location-dot text-yellow-500 text-3xl group-hover:scale-110 transition-transform inline-block"></i>
         <div class="mt-2 text-sm font-semibold text-gray-700">Book Tour</div>
@@ -145,7 +145,7 @@
     @endif
 
     @if(auth()->user()->hasPermission('module.umrah'))
-    <a href="{{ route('agent.umrah.index') }}"
+    <a href="{{ route('umrah.index') }}"
        class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 text-center hover:shadow-md hover:border-cyan-200 transition group ap-no-underline">
         <i class="fas fa-moon text-cyan-500 text-3xl group-hover:scale-110 transition-transform inline-block"></i>
         <div class="mt-2 text-sm font-semibold text-gray-700">Book Umrah</div>
