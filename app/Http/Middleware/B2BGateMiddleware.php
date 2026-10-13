@@ -23,6 +23,8 @@ class B2BGateMiddleware
         'signin',           // login form POST handler
         'signin/enroll',    // first-time 2FA QR setup
         'signin/verify',    // 2FA code step
+        'forgot-password',  // password reset request form
+        'reset-password',   // password reset form (token in query string)
         'admin/login',
         'set-currency',
         'user/register',

@@ -159,8 +159,11 @@
                 </div>
 
                 <div class="mf-group">
-                    <label class="mf-label">Password</label>
-                    <div class="mf-pw">
+                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                        <label class="mf-label" style="margin-bottom:0;">Password</label>
+                        <a href="{{ route('password.request') }}" style="font-size:.78rem; font-weight:600; text-decoration:none;">Forgot password?</a>
+                    </div>
+                    <div class="mf-pw" style="margin-top:5px;">
                         <input type="password" name="password" id="pwField"
                                class="mf-input @error('password') is-invalid @enderror"
                                placeholder="Enter your password" required>

@@ -66,6 +66,13 @@ Route::get('/signin/enroll', [\App\Http\Controllers\Auth\TwoFactorController::cl
 Route::post('/signin/enroll', [\App\Http\Controllers\Auth\TwoFactorController::class, 'confirmEnroll'])->name('2fa.enroll.confirm');
 Route::get('/signin/verify', [\App\Http\Controllers\Auth\TwoFactorController::class, 'showVerify'])->name('2fa.show');
 Route::post('/signin/verify', [\App\Http\Controllers\Auth\TwoFactorController::class, 'verify'])->name('2fa.verify');
+
+// Forgot password — agent & user accounts only (see ForgotPasswordController).
+Route::get('/forgot-password',  [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'show'])->name('password.request');
+Route::post('/forgot-password', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'send'])->name('password.email');
+Route::get('/reset-password',   [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'showReset'])->name('password.reset');
+Route::post('/reset-password',  [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'reset'])->name('password.update');
+
 Route::post('/set-currency', [CurrencyController::class, 'setCurrency'])->name('set.currency');
 
 

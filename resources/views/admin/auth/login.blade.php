@@ -145,8 +145,11 @@
                 </div>
 
                 <div class="f-group">
-                    <label class="f-label">Password</label>
-                    <div class="f-pw">
+                    <div class="flex items-center justify-between" style="display:flex; align-items:center; justify-content:space-between;">
+                        <label class="f-label" style="margin-bottom:0;">Password</label>
+                        <a href="{{ route('password.request') }}" style="font-size:.78rem; font-weight:600; color:var(--primary); text-decoration:none;">Forgot password?</a>
+                    </div>
+                    <div class="f-pw" style="margin-top:5px;">
                         <input type="password" name="password" id="pwField"
                                class="f-input @error('password') is-invalid @enderror"
                                placeholder="Enter your password" required>
