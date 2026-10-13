@@ -8,8 +8,18 @@
     $walletCurrency = $wallet?->currency ?? 'PKR';
     $displayCurrency = $activeCurrency->currency_name ?? $walletCurrency;
     $toDisplay = fn($amt) => $activeCurrency ? convertCurrency($amt ?? 0, $walletCurrency, $displayCurrency) : ($amt ?? 0);
+    $isPrint = $isPrint ?? false;
 @endphp
 
+@if($isPrint)
+<div class="mb-5">
+    <h4 class="text-lg font-bold text-gray-800">{{ $agent->company_name ?? $agent->full_name }} — Wallet Transactions</h4>
+    <p class="text-xs text-gray-500">Generated {{ now()->format('d M Y, h:i A') }}</p>
+</div>
+<script>window.addEventListener('load', () => window.print());</script>
+@endif
+
+@unless($isPrint)
 <div class="flex items-center justify-between mb-5">
     <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-lg flex items-center justify-center ap-tint-bg">
@@ -20,10 +30,17 @@
             <p class="text-xs text-gray-400">Full transaction history</p>
         </div>
     </div>
-    <a href="{{ route('agent.wallet.index') }}"
-       class="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 ap-chip-link">
-        <i class="fas fa-arrow-left"></i> Back to Wallet
-    </a>
+    <div class="flex items-center gap-2">
+        <a href="{{ route('agent.wallet.transactions', array_merge(request()->query(), ['print' => 1])) }}"
+           target="_blank"
+           class="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 ap-chip-link">
+            <i class="fas fa-file-pdf"></i> Download PDF
+        </a>
+        <a href="{{ route('agent.wallet.index') }}"
+           class="px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 ap-chip-link">
+            <i class="fas fa-arrow-left"></i> Back to Wallet
+        </a>
+    </div>
 </div>
 
 <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
@@ -33,6 +50,7 @@
     <i class="fas fa-chevron-right text-gray-300"></i>
     <span class="text-gray-600">Transactions</span>
 </div>
+@endunless
 
 @if($wallet)
 <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-5">
@@ -66,18 +84,47 @@
 </div>
 @endif
 
+@unless($isPrint)
 <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mb-5">
     <div class="px-5 py-4 border-b border-gray-100 font-semibold text-sm text-gray-700">
         Filter Transactions
     </div>
     <div class="p-5">
-        <form method="GET" class="grid grid-cols-1 lg:grid-cols-4 gap-3 items-end">
+        <form method="GET" class="grid grid-cols-2 lg:grid-cols-4 gap-3 items-end">
             <div>
                 <label class="block text-xs font-semibold text-gray-600 mb-1.5">Type</label>
                 <select name="type" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50">
                     <option value="">All Types</option>
                     <option value="credit" {{ request('type') === 'credit' ? 'selected' : '' }}>Credit</option>
                     <option value="debit"  {{ request('type') === 'debit'  ? 'selected' : '' }}>Debit</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5">Category</label>
+                <select name="category" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50">
+                    <option value="">All</option>
+                    <option value="booking" {{ request('category') === 'booking' ? 'selected' : '' }}>Booking</option>
+                    <option value="others"  {{ request('category') === 'others'  ? 'selected' : '' }}>Others</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5">Month</label>
+                <select name="month" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50">
+                    <option value="">All Months</option>
+                    @foreach(range(1, 12) as $m)
+                        <option value="{{ $m }}" {{ (string) request('month') === (string) $m ? 'selected' : '' }}>
+                            {{ \Carbon\Carbon::create()->month($m)->format('F') }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5">Year</label>
+                <select name="year" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50">
+                    <option value="">All Years</option>
+                    @foreach($years as $y)
+                        <option value="{{ $y }}" {{ (string) request('year') === (string) $y ? 'selected' : '' }}>{{ $y }}</option>
+                    @endforeach
                 </select>
             </div>
             <div>
@@ -92,7 +139,7 @@
                        class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50"
                        value="{{ request('to') }}">
             </div>
-            <div class="flex gap-2">
+            <div class="flex gap-2 col-span-2">
                 <button type="submit"
                         class="flex-1 px-5 py-2.5 rounded-lg text-sm font-semibold text-white ap-solid-accent-btn">
                     <i class="fas fa-filter mr-1"></i> Filter
@@ -105,6 +152,7 @@
         </form>
     </div>
 </div>
+@endunless
 
 <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
     @if($transactions->isEmpty())
@@ -123,6 +171,7 @@
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">#</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Date</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Type</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Category</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Details</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Reference</th>
                     <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Amount</th>
@@ -132,13 +181,20 @@
             <tbody class="divide-y divide-gray-50">
                 @foreach($transactions as $txn)
                 <tr class="hover:bg-gray-50 transition">
-                    <td class="px-4 py-3 text-xs text-gray-400">{{ $transactions->firstItem() + $loop->index }}</td>
+                    <td class="px-4 py-3 text-xs text-gray-400">{{ $isPrint ? $loop->iteration : $transactions->firstItem() + $loop->index }}</td>
                     <td class="px-4 py-3 text-xs text-gray-400 whitespace-nowrap">{{ $txn->created_at->format('d M Y, h:i A') }}</td>
                     <td class="px-4 py-3">
                         @if($txn->type === 'credit')
                             <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">Credit</span>
                         @else
                             <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs font-medium">Debit</span>
+                        @endif
+                    </td>
+                    <td class="px-4 py-3">
+                        @if($txn->booking_type)
+                            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">Booking</span>
+                        @else
+                            <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">Others</span>
                         @endif
                     </td>
                     <td class="px-4 py-3 text-sm text-gray-600">{{ $txn->note }}</td>
@@ -152,9 +208,11 @@
             </tbody>
         </table>
     </div>
+    @unless($isPrint)
     <div class="px-5 py-4 border-t border-gray-100">
         {{ $transactions->withQueryString()->links() }}
     </div>
+    @endunless
     @endif
 </div>
 

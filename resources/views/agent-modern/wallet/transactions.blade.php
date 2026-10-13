@@ -8,8 +8,18 @@
     $walletCurrency = $wallet?->currency ?? 'PKR';
     $displayCurrency = $activeCurrency->currency_name ?? $walletCurrency;
     $toDisplay = fn($amt) => $activeCurrency ? convertCurrency($amt ?? 0, $walletCurrency, $displayCurrency) : ($amt ?? 0);
+    $isPrint = $isPrint ?? false;
 @endphp
 
+@if($isPrint)
+    <div class="mb-4">
+        <h4 class="ap-page-title">{{ $agent->company_name ?? $agent->full_name }} — Wallet Transactions</h4>
+        <p class="ap-page-sub">Generated {{ now()->format('d M Y, h:i A') }}</p>
+    </div>
+    <script>window.addEventListener('load', () => window.print());</script>
+@endif
+
+@unless($isPrint)
     <div class="ap-page-header">
         <div class="ap-page-header-left">
             <div class="ap-icon-badge"><i class="bi bi-clock-history"></i></div>
@@ -18,9 +28,14 @@
                 <p class="ap-page-sub">Full transaction history</p>
             </div>
         </div>
-        <a href="{{ route('agent.wallet.index') }}" class="ap-btn-outline">
-            <i class="bi bi-arrow-left"></i> Back to Wallet
-        </a>
+        <div class="d-flex gap-2">
+            <a href="{{ route('agent.wallet.transactions', array_merge(request()->query(), ['print' => 1])) }}" target="_blank" class="ap-btn-outline">
+                <i class="bi bi-file-earmark-pdf"></i> Download PDF
+            </a>
+            <a href="{{ route('agent.wallet.index') }}" class="ap-btn-outline">
+                <i class="bi bi-arrow-left"></i> Back to Wallet
+            </a>
+        </div>
     </div>
 
     <div class="ap-breadcrumb">
@@ -30,6 +45,7 @@
         <i class="bi bi-chevron-right"></i>
         <span>Transactions</span>
     </div>
+@endunless
 
     @if($wallet)
     <div class="wal-stats-grid">
@@ -57,6 +73,7 @@
     </div>
     @endif
 
+    @unless($isPrint)
     <div class="am-card mb-4">
         <div class="am-card-header">Filter Transactions</div>
         <div class="am-card-body">
@@ -70,6 +87,34 @@
                     </select>
                 </div>
                 <div class="col-lg-3">
+                    <label class="form-label">Category</label>
+                    <select name="category" class="form-select">
+                        <option value="">All</option>
+                        <option value="booking" {{ request('category') === 'booking' ? 'selected' : '' }}>Booking</option>
+                        <option value="others"  {{ request('category') === 'others'  ? 'selected' : '' }}>Others</option>
+                    </select>
+                </div>
+                <div class="col-lg-3">
+                    <label class="form-label">Month</label>
+                    <select name="month" class="form-select">
+                        <option value="">All Months</option>
+                        @foreach(range(1, 12) as $m)
+                            <option value="{{ $m }}" {{ (string) request('month') === (string) $m ? 'selected' : '' }}>
+                                {{ \Carbon\Carbon::create()->month($m)->format('F') }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-lg-3">
+                    <label class="form-label">Year</label>
+                    <select name="year" class="form-select">
+                        <option value="">All Years</option>
+                        @foreach($years as $y)
+                            <option value="{{ $y }}" {{ (string) request('year') === (string) $y ? 'selected' : '' }}>{{ $y }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-lg-3">
                     <label class="form-label">From Date</label>
                     <input type="date" name="from" class="form-control" value="{{ request('from') }}">
                 </div>
@@ -77,7 +122,7 @@
                     <label class="form-label">To Date</label>
                     <input type="date" name="to" class="form-control" value="{{ request('to') }}">
                 </div>
-                <div class="col-lg-3 d-flex gap-2">
+                <div class="col-lg-6 d-flex gap-2">
                     <button type="submit" class="ap-btn-primary" style="flex: 1; justify-content: center;">
                         <i class="bi bi-funnel"></i> Filter
                     </button>
@@ -86,6 +131,7 @@
             </form>
         </div>
     </div>
+    @endunless
 
     <div class="am-card">
         @if($transactions->isEmpty())
@@ -102,6 +148,7 @@
                         <th>#</th>
                         <th>Date</th>
                         <th>Type</th>
+                        <th>Category</th>
                         <th>Details</th>
                         <th>Reference</th>
                         <th class="text-end">Amount</th>
@@ -111,13 +158,20 @@
                 <tbody>
                     @foreach($transactions as $txn)
                     <tr>
-                        <td style="color: color-mix(in srgb, var(--text-color) 50%, transparent); font-size: 12px;">{{ $transactions->firstItem() + $loop->index }}</td>
+                        <td style="color: color-mix(in srgb, var(--text-color) 50%, transparent); font-size: 12px;">{{ $isPrint ? $loop->iteration : $transactions->firstItem() + $loop->index }}</td>
                         <td style="font-size: 12px; color: color-mix(in srgb, var(--text-color) 55%, transparent); white-space: nowrap;">{{ $txn->created_at->format('d M Y, h:i A') }}</td>
                         <td>
                             @if($txn->type === 'credit')
                                 <span class="badge bg-success">Credit</span>
                             @else
                                 <span class="badge bg-danger">Debit</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($txn->booking_type)
+                                <span class="badge bg-primary">Booking</span>
+                            @else
+                                <span class="badge bg-secondary">Others</span>
                             @endif
                         </td>
                         <td>{{ $txn->note }}</td>
@@ -131,9 +185,11 @@
                 </tbody>
             </table>
         </div>
+        @unless($isPrint)
         <div style="padding: var(--am-space-4) var(--am-space-5); border-top: 1px solid var(--border-color);">
             {{ $transactions->withQueryString()->links() }}
         </div>
+        @endunless
         @endif
     </div>
 

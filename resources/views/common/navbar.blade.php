@@ -81,6 +81,22 @@
 
         // Module links — driven directly from module status (not menu_items table)
         $navModules = \App\Models\Module::active()->orderBy('sort_order')->get();
+
+        // Logged-in agents only see the modules admin has allowed for them
+        // (AgentPermission module.* keys) — guests, customers and admins
+        // keep seeing every active module, unfiltered.
+        if (auth()->check() && auth()->user()->isAgent()) {
+            $navModulePermissionMap = [
+                'hotel'  => 'module.hotels',
+                'flight' => 'module.flights',
+                'tours'  => 'module.tours',
+                'umrah'  => 'module.umrah',
+                'visa'   => 'module.visa',
+            ];
+            $navModules = $navModules->filter(
+                fn($mod) => auth()->user()->hasPermission($navModulePermissionMap[$mod->slug] ?? 'module.' . $mod->slug)
+            );
+        }
         $navModIconMap = [
             'hotel'  => 'fas fa-hotel',
             'flight' => 'fas fa-plane',
@@ -109,12 +125,19 @@
         </div> -->
 
         <a class="navbar-brand flex items-center gap-2" href="{{ url('/') }}">
-            <img src="{{ getSettingImage('business_logo','branding') }}"
-                alt="TravelBookingPanel Logo"
-                class="img-fluid"
-                style="max-height: 45px; height: auto; width: auto;">
-            @if(showBusinessNameWithLogo())
-                <span class="font-bold text-base md:text-lg" style="color:#003580;">{{ getSetting('business_name', 'main', 'TravelBookingPanel') }}</span>
+            @if(auth()->check() && auth()->user()->isAgent() && auth()->user()->company_logo)
+                <img src="{{ url('public/assets/images/settings/branding/' . auth()->user()->company_logo) }}"
+                    alt="{{ auth()->user()->company_name ?? 'Company Logo' }}"
+                    class="img-fluid"
+                    style="max-height: 45px; height: auto; width: auto;">
+            @else
+                <img src="{{ getSettingImage('business_logo','branding') }}"
+                    alt="TravelBookingPanel Logo"
+                    class="img-fluid"
+                    style="max-height: 45px; height: auto; width: auto;">
+                @if(showBusinessNameWithLogo())
+                    <span class="font-bold text-base md:text-lg" style="color:#003580;">{{ getSetting('business_name', 'main', 'TravelBookingPanel') }}</span>
+                @endif
             @endif
         </a>
 

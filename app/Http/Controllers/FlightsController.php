@@ -507,13 +507,29 @@ private function toYmdFormat($date)
 
             $countries = Location::select('country', 'country_code')->distinct()->orderBy('country', 'asc')->get();
 
+            $agentWallet = auth()->check() && auth()->user()->isAgent() ? auth()->user()->wallet : null;
+
+            // Shown converted into the site's active currency (same pattern
+            // as the agent's own wallet pages), not the wallet's own PKR/SAR/etc.
+            $walletDisplayCurrency = null;
+            $walletDisplayBalance  = null;
+            if ($agentWallet) {
+                $activeCurrency        = activeCurrency();
+                $walletDisplayCurrency = $activeCurrency->currency_name ?? ($agentWallet->currency ?? 'PKR');
+                $walletDisplayBalance  = $activeCurrency
+                    ? convertCurrency($agentWallet->balance, $agentWallet->currency ?? 'PKR', $walletDisplayCurrency)
+                    : $agentWallet->balance;
+            }
+
             return view('flight.booking', [
                 'routes' => $route,
                 'booking_data' => $booking_data,
                 'payment' => $payment_gateways,
                 'countries' => $countries,
                 'session_data' => session('flight_search'),
-                'agentWallet' => auth()->check() && auth()->user()->isAgent() ? auth()->user()->wallet : null,
+                'agentWallet' => $agentWallet,
+                'walletDisplayCurrency' => $walletDisplayCurrency,
+                'walletDisplayBalance' => $walletDisplayBalance,
             ]);
         } catch (\Exception $e) {
             return $this->show_error('decryption_or_other_error', [
@@ -657,18 +673,36 @@ private function toYmdFormat($date)
             }
         }
 
-        // Wallet payment validation
+        // Wallet payment validation — the wallet keeps its own balance in its
+        // own currency (PKR/SAR/etc, see AgentWallet), which rarely matches
+        // the booking's currency, so both sides must be converted onto the
+        // same currency before comparing or debiting. Comparing the raw
+        // numbers directly (the old behavior) could pass or fail based on
+        // which currencies happened to be involved, not actual affordability.
         $agentWallet = null;
+        $walletDebitAmount = null;
         if ($payment === 'agent_wallet') {
             if (!$agentId) {
                 return back()->withInput()->with('error', 'Wallet payment is only available for agents.');
             }
             $bookingAmount = (float) str_replace(',', '', $price);
             $agentWallet   = AgentWallet::where('agent_id', $agentId)->first();
-            if (!$agentWallet || !$agentWallet->hasSufficientBalance($bookingAmount)) {
-                $available = $agentWallet ? number_format($agentWallet->balance, 2) : '0.00';
-                return back()->withInput()->with('error', "Insufficient wallet balance. Available: PKR {$available}. Please top up your wallet first.");
+            $walletCurrency = $agentWallet->currency ?? 'PKR';
+
+            $bookingAmountInWalletCurrency = $walletCurrency !== $currency
+                ? convertCurrency($bookingAmount, $currency, $walletCurrency)
+                : $bookingAmount;
+
+            if (!$agentWallet || !$agentWallet->hasSufficientBalance($bookingAmountInWalletCurrency)) {
+                $activeCurrency  = activeCurrency();
+                $displayCurrency = $activeCurrency->currency_name ?? $walletCurrency;
+                $availableDisplay = $agentWallet
+                    ? number_format(convertCurrency($agentWallet->balance, $walletCurrency, $displayCurrency), 2)
+                    : '0.00';
+                return back()->withInput()->with('error', "Insufficient wallet balance. Available: {$displayCurrency} {$availableDisplay}. Please top up your wallet first.");
             }
+
+            $walletDebitAmount = $bookingAmountInWalletCurrency;
         }
 
         $booking_payload = [
@@ -702,7 +736,7 @@ private function toYmdFormat($date)
             if ($payment === 'agent_wallet' && $agentId) {
                 $agentWallet = $agentWallet ?? AgentWallet::where('agent_id', $agentId)->first();
                 $agentWallet->debit(
-                    amount:      (float) str_replace(',', '', $price),
+                    amount:      $walletDebitAmount ?? (float) str_replace(',', '', $price),
                     note:        'Flight booking #' . $booking->booking_code_ref,
                     performedBy: $agentId,
                     bookingType: 'flight',

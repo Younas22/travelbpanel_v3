@@ -14,11 +14,13 @@ class AgentPermission extends Model
     // All valid permission keys
     public const ALL_PERMISSIONS = [
         // Module access — controls which booking modules show up on the
-        // agent's dashboard stat cards and the "My Bookings" filter tabs
+        // agent's dashboard stat cards, the "My Bookings" filter tabs, and
+        // (when the agent is logged in) the top navbar's module menu
         'module.hotels'   => 'Hotels Module',
         'module.flights'  => 'Flights Module',
         'module.tours'    => 'Tours Module',
         'module.umrah'    => 'Umrah Module',
+        'module.visa'     => 'Visa Module',
 
         // Wallet
         'wallet.view'     => 'View Wallet Balance',

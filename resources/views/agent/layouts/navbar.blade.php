@@ -7,9 +7,15 @@
 
         <!-- Logo -->
         <a class="navbar-brand" href="{{ url('/') }}">
-            <img src="{{ getSettingImage('business_logo','branding') }}"
-                alt="Logo"
-                class="img-fluid ap-logo-h-45">
+            @if(auth()->check() && auth()->user()->isAgent() && auth()->user()->company_logo)
+                <img src="{{ url('public/assets/images/settings/branding/' . auth()->user()->company_logo) }}"
+                    alt="{{ auth()->user()->company_name ?? 'Company Logo' }}"
+                    class="img-fluid ap-logo-h-45">
+            @else
+                <img src="{{ getSettingImage('business_logo','branding') }}"
+                    alt="Logo"
+                    class="img-fluid ap-logo-h-45">
+            @endif
         </a>
 
         <!-- Desktop Menu -->

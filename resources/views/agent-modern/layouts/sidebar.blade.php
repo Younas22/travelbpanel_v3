@@ -4,7 +4,11 @@
 
     <div class="am-sidebar-header">
         <a href="{{ route('agent.dashboard') }}" class="am-sidebar-brand">
-            @if(getSettingImage('favicon','branding'))
+            @if($agent->company_logo)
+                <img src="{{ url('public/assets/images/settings/branding/' . $agent->company_logo) }}"
+                     alt="{{ $agent->company_name ?? 'Company Logo' }}"
+                     class="am-sidebar-logo">
+            @elseif(getSettingImage('favicon','branding'))
                 <img src="{{ getSettingImage('business_logo','branding') }}"
                      alt="{{ getSetting('business_name', 'main', 'TravelPanel') }}"
                      class="am-sidebar-logo">
@@ -20,8 +24,6 @@
     <div class="am-sidebar-agent">
         @if($agent->profile_image)
             <img src="{{ url('public/assets/images/agents/' . $agent->profile_image) }}" class="am-sidebar-avatar">
-        @elseif($agent->company_logo)
-            <img src="{{ url('public/assets/images/settings/branding/' . $agent->company_logo) }}" class="am-sidebar-avatar">
         @else
             <div class="am-sidebar-avatar">{{ $agent->initials ?? strtoupper(substr($agent->first_name,0,1).substr($agent->last_name,0,1)) }}</div>
         @endif

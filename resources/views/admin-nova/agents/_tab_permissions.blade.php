@@ -28,6 +28,7 @@
                     'module.flights' => 'Flights Module',
                     'module.tours'   => 'Tours Module',
                     'module.umrah'   => 'Umrah Module',
+                    'module.visa'    => 'Visa Module',
                 ] as $key => $label)
                     @php $moduleChecked = !isset($agentPermissions[$key]) || $agentPermissions[$key]; @endphp
                     <div class="flex items-center justify-between gap-3 py-2.5 border-b border-novaborder last:border-0">

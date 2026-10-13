@@ -561,27 +561,34 @@
                 {{t('flightbooking.payment_methods')}}
             </h2>
 
-            @foreach($payment as $key=>$value)
-            <label class="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition" style="margin-top: 5px;">
-                <input type="radio" name="accept_payment" value="{{$value->name}}" checked class="w-5 h-5 text-blue-600">
-                <img src="{{ url('public/assets/images/settings/payment/'.$value->name.'.png') }}" alt="Stripe" class="w-12 h-12 rounded-full object-cover ml-4">
-                <div class="ml-4">
-                    <div class="font-semibold text-gray-800">{{ucfirst($value->name)}}</div>
+            @if(auth()->check() && auth()->user()->isAgent())
+                {{-- Agents always pay from their wallet — no other gateway is offered. --}}
+                @if($agentWallet)
+                <label class="flex items-center p-4 border-2 border-green-500 bg-green-50 rounded-lg cursor-pointer" style="margin-top: 5px;">
+                    <input type="radio" name="accept_payment" value="agent_wallet" checked class="w-5 h-5 text-green-600">
+                    <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center ml-4 flex-shrink-0">
+                        <i class="fas fa-wallet text-green-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <div class="font-semibold text-gray-800">Agent Wallet</div>
+                        <div class="text-sm text-gray-500">Available Balance: <span class="font-semibold text-green-600">{{ $walletDisplayCurrency }} {{ number_format($walletDisplayBalance, 2) }}</span></div>
+                    </div>
+                </label>
+                @else
+                <div class="p-4 border-2 border-red-200 bg-red-50 rounded-lg text-sm text-red-700">
+                    No wallet found for your account. Please contact admin.
                 </div>
-            </label>
-            @endforeach
-
-            @if($agentWallet)
-            <label class="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-green-500 hover:bg-green-50 transition" style="margin-top: 5px;">
-                <input type="radio" name="accept_payment" value="agent_wallet" class="w-5 h-5 text-green-600">
-                <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center ml-4 flex-shrink-0">
-                    <i class="fas fa-wallet text-green-600 text-xl"></i>
-                </div>
-                <div class="ml-4">
-                    <div class="font-semibold text-gray-800">Agent Wallet</div>
-                    <div class="text-sm text-gray-500">Available Balance: <span class="font-semibold text-green-600">PKR {{ number_format($agentWallet->balance, 2) }}</span></div>
-                </div>
-            </label>
+                @endif
+            @else
+                @foreach($payment as $key=>$value)
+                <label class="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition" style="margin-top: 5px;">
+                    <input type="radio" name="accept_payment" value="{{$value->name}}" checked class="w-5 h-5 text-blue-600">
+                    <img src="{{ url('public/assets/images/settings/payment/'.$value->name.'.png') }}" alt="Stripe" class="w-12 h-12 rounded-full object-cover ml-4">
+                    <div class="ml-4">
+                        <div class="font-semibold text-gray-800">{{ucfirst($value->name)}}</div>
+                    </div>
+                </label>
+                @endforeach
             @endif
 
         </div>

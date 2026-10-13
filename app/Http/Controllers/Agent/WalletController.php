@@ -27,14 +27,42 @@ class WalletController extends Controller
             $query->where('type', $request->type);
         }
 
+        // Booking = debited/credited for an actual flight/hotel/tour/umrah
+        // booking (booking_type is set); Others = everything else (manual
+        // admin credit/debit, zero-outs, approved top-ups).
+        if ($request->filled('category')) {
+            if ($request->category === 'booking') {
+                $query->whereNotNull('booking_type');
+            } elseif ($request->category === 'others') {
+                $query->whereNull('booking_type');
+            }
+        }
+
+        if ($request->filled('month') && $request->filled('year')) {
+            $query->whereMonth('created_at', $request->month)->whereYear('created_at', $request->year);
+        } elseif ($request->filled('year')) {
+            $query->whereYear('created_at', $request->year);
+        }
+
         if ($request->filled('from') && $request->filled('to')) {
             $query->byDateRange($request->from, $request->to . ' 23:59:59');
         }
 
-        $transactions = $query->latest()->paginate(20);
-        $wallet = $agent->wallet;
+        $query->latest();
 
-        return view('agent.wallet.transactions', compact('agent', 'wallet', 'transactions'));
+        // A "Download PDF" request prints the full filtered list (not just
+        // one page) via the browser's print-to-PDF, same pattern already
+        // used on the invoice pages elsewhere in this app.
+        $isPrint = $request->boolean('print');
+        $transactions = $isPrint ? $query->get() : $query->paginate(20);
+
+        $wallet = $agent->wallet;
+        $years  = AgentWalletTransaction::byAgent($agent->id)
+            ->selectRaw('DISTINCT YEAR(created_at) as y')
+            ->orderByDesc('y')
+            ->pluck('y');
+
+        return view('agent.wallet.transactions', compact('agent', 'wallet', 'transactions', 'years', 'isPrint'));
     }
 
     public function topupForm()

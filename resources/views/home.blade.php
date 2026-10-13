@@ -4,6 +4,22 @@
 @php
     $activeModules = getActiveModule(); // All active modules
     $active_currency = activeCurrency();
+
+    // Logged-in agents only get a booking tab for modules admin has allowed
+    // for them (same AgentPermission module.* keys as the top navbar) —
+    // guests, customers and admins keep seeing every active module.
+    if (auth()->check() && auth()->user()->isAgent()) {
+        $homeModulePermissionMap = [
+            'hotel'  => 'module.hotels',
+            'flight' => 'module.flights',
+            'tours'  => 'module.tours',
+            'umrah'  => 'module.umrah',
+            'visa'   => 'module.visa',
+        ];
+        $activeModules = $activeModules->filter(
+            fn($mod) => auth()->user()->hasPermission($homeModulePermissionMap[$mod->slug] ?? 'module.' . $mod->slug)
+        );
+    }
 @endphp
 
 <style>

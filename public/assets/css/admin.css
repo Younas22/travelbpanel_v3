@@ -8793,7 +8793,11 @@ input:checked + .status-slider:before {
 
 .agent-sidebar {
     position: sticky;
-    top: 0;
+    /* Sticks right below the also-sticky top navbar (~62px tall) instead of
+       top:0 — at top:0 it would compete with the navbar for the same spot
+       once scrolled, and its z-index being higher made it visually cover
+       the navbar rather than sit politely below it. */
+    top: 62px;
     height: calc(100vh - 62px);
     width: 33.333%;
     max-width: 300px;
@@ -8803,7 +8807,7 @@ input:checked + .status-slider:before {
     overflow-y: auto;
     flex-shrink: 0;
     box-shadow: 1px 0 3px rgba(0, 0, 0, 0.04);
-    z-index: 100;
+    z-index: 40;
     transition: transform 0.3s ease, background var(--transition-speed, .2s), border-color var(--transition-speed, .2s);
 }
 

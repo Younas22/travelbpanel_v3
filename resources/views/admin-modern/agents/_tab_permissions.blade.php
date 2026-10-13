@@ -18,6 +18,7 @@
                     'module.flights' => 'Flights Module',
                     'module.tours'   => 'Tours Module',
                     'module.umrah'   => 'Umrah Module',
+                    'module.visa'    => 'Visa Module',
                 ] as $key => $label)
                     @php $moduleChecked = !isset($agentPermissions[$key]) || $agentPermissions[$key]; @endphp
                     <div class="perm-toggle-row">
