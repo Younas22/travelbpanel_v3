@@ -14,7 +14,7 @@
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14.5h1.5"/></svg>
         </div>
         <div>
-            <p class="text-lg font-bold text-novatext">{{ $walletCurrency }} {{ number_format($wallet->balance, 2) }}</p>
+            <p class="text-lg font-bold text-novatext">{{ $walletCurrency }} {{ number_format($wallet?->balance ?? 0, 2) }}</p>
             <p class="text-[11px] text-novamuted">Current Balance</p>
         </div>
     </div>
@@ -23,7 +23,7 @@
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M18 13l-6 6-6-6"/></svg>
         </div>
         <div>
-            <p class="text-lg font-bold text-novatext">{{ $walletCurrency }} {{ number_format($wallet->total_credited, 2) }}</p>
+            <p class="text-lg font-bold text-novatext">{{ $walletCurrency }} {{ number_format($wallet?->total_credited ?? 0, 2) }}</p>
             <p class="text-[11px] text-novamuted">Total Credited</p>
         </div>
     </div>
@@ -32,7 +32,7 @@
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
         </div>
         <div>
-            <p class="text-lg font-bold text-novatext">{{ $walletCurrency }} {{ number_format($wallet->total_debited, 2) }}</p>
+            <p class="text-lg font-bold text-novatext">{{ $walletCurrency }} {{ number_format($wallet?->total_debited ?? 0, 2) }}</p>
             <p class="text-[11px] text-novamuted">Total Debited</p>
         </div>
     </div>
