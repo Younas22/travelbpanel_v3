@@ -52,7 +52,7 @@
 </div>
 @endunless
 
-@if($wallet)
+@if($wallet && !$isPrint)
 <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-5">
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
         <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ap-tint-bg">
@@ -85,31 +85,58 @@
 @endif
 
 @unless($isPrint)
-<div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mb-5">
-    <div class="px-5 py-4 border-b border-gray-100 font-semibold text-sm text-gray-700">
-        Filter Transactions
-    </div>
-    <div class="p-5">
-        <form method="GET" class="grid grid-cols-2 lg:grid-cols-4 gap-3 items-end">
-            <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1.5">Type</label>
-                <select name="type" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50">
+<style>
+    .wal-filter-card { background: #fff; border-radius: 10px; border: 1px solid #eef0f3; box-shadow: 0 1px 2px rgba(16,24,40,.04); margin-bottom: 20px; overflow: hidden; }
+    .wal-filter-head { padding: 9px 16px; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #94a3b8; border-bottom: 1px solid #f1f3f5; }
+    .wal-filter-body { padding: 12px 16px 14px; }
+    .wal-filter-row { display: flex; flex-wrap: nowrap; align-items: flex-end; gap: 8px; overflow-x: auto; }
+    .wal-field { flex: 1; min-width: 96px; }
+    .wal-field.wal-field-date { min-width: 118px; }
+    .wal-field label { display: block; font-size: 9.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #9aa4b2; margin-bottom: 4px; }
+    .wal-field select, .wal-field input[type="date"] {
+        width: 100%; border: 1px solid #e2e6ea; border-radius: 7px; background: #fff;
+        padding: 6px 8px; font-size: 12px; color: #374151; height: 32px;
+        transition: border-color .15s, box-shadow .15s;
+    }
+    .wal-field select:focus, .wal-field input[type="date"]:focus {
+        outline: none; border-color: var(--primary-color, #0C6DFD);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color, #0C6DFD) 14%, transparent);
+    }
+    .wal-filter-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .wal-btn-filter, .wal-btn-reset {
+        display: inline-flex; align-items: center; gap: 5px; height: 32px; white-space: nowrap;
+        padding: 0 13px; font-size: 11.5px; font-weight: 650; border-radius: 7px; cursor: pointer;
+        transition: box-shadow .15s, transform .08s, background .15s, border-color .15s; text-decoration: none;
+    }
+    .wal-btn-filter { border: none; color: #fff; background: var(--primary-color, #0C6DFD); box-shadow: 0 1px 2px rgba(16,24,40,.12); }
+    .wal-btn-filter:hover { box-shadow: 0 3px 8px color-mix(in srgb, var(--primary-color, #0C6DFD) 38%, transparent); }
+    .wal-btn-filter:active { transform: scale(.96); }
+    .wal-btn-reset { border: 1px solid #e2e6ea; background: #fff; color: #64748b; }
+    .wal-btn-reset:hover { background: #f8fafc; border-color: #cbd5e1; color: #374151; }
+</style>
+<div class="wal-filter-card">
+    <div class="wal-filter-head">Filter Transactions</div>
+    <div class="wal-filter-body">
+        <form method="GET" class="wal-filter-row">
+            <div class="wal-field">
+                <label>Type</label>
+                <select name="type">
                     <option value="">All Types</option>
                     <option value="credit" {{ request('type') === 'credit' ? 'selected' : '' }}>Credit</option>
                     <option value="debit"  {{ request('type') === 'debit'  ? 'selected' : '' }}>Debit</option>
                 </select>
             </div>
-            <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1.5">Category</label>
-                <select name="category" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50">
+            <div class="wal-field">
+                <label>Category</label>
+                <select name="category">
                     <option value="">All</option>
                     <option value="booking" {{ request('category') === 'booking' ? 'selected' : '' }}>Booking</option>
                     <option value="others"  {{ request('category') === 'others'  ? 'selected' : '' }}>Others</option>
                 </select>
             </div>
-            <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1.5">Month</label>
-                <select name="month" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50">
+            <div class="wal-field">
+                <label>Month</label>
+                <select name="month">
                     <option value="">All Months</option>
                     @foreach(range(1, 12) as $m)
                         <option value="{{ $m }}" {{ (string) request('month') === (string) $m ? 'selected' : '' }}>
@@ -118,36 +145,28 @@
                     @endforeach
                 </select>
             </div>
-            <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1.5">Year</label>
-                <select name="year" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50">
+            <div class="wal-field">
+                <label>Year</label>
+                <select name="year">
                     <option value="">All Years</option>
                     @foreach($years as $y)
                         <option value="{{ $y }}" {{ (string) request('year') === (string) $y ? 'selected' : '' }}>{{ $y }}</option>
                     @endforeach
                 </select>
             </div>
-            <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1.5">From Date</label>
-                <input type="date" name="from"
-                       class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50"
-                       value="{{ request('from') }}">
+            <div class="wal-field wal-field-date">
+                <label>From Date</label>
+                <input type="date" name="from" value="{{ request('from') }}">
             </div>
-            <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1.5">To Date</label>
-                <input type="date" name="to"
-                       class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50"
-                       value="{{ request('to') }}">
+            <div class="wal-field wal-field-date">
+                <label>To Date</label>
+                <input type="date" name="to" value="{{ request('to') }}">
             </div>
-            <div class="flex gap-2 col-span-2">
-                <button type="submit"
-                        class="flex-1 px-5 py-2.5 rounded-lg text-sm font-semibold text-white ap-solid-accent-btn">
-                    <i class="fas fa-filter mr-1"></i> Filter
+            <div class="wal-filter-actions">
+                <button type="submit" class="wal-btn-filter">
+                    <i class="fas fa-filter"></i> Filter
                 </button>
-                <a href="{{ route('agent.wallet.transactions') }}"
-                   class="px-4 py-2.5 rounded-lg text-sm font-semibold ap-chip-link">
-                    Reset
-                </a>
+                <a href="{{ route('agent.wallet.transactions') }}" class="wal-btn-reset">Reset</a>
             </div>
         </form>
     </div>

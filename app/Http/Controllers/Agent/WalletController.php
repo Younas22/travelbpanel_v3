@@ -57,10 +57,8 @@ class WalletController extends Controller
         $transactions = $isPrint ? $query->get() : $query->paginate(20);
 
         $wallet = $agent->wallet;
-        $years  = AgentWalletTransaction::byAgent($agent->id)
-            ->selectRaw('DISTINCT YEAR(created_at) as y')
-            ->orderByDesc('y')
-            ->pluck('y');
+        $currentYear = now()->year;
+        $years = range($currentYear, $currentYear + 10);
 
         return view('agent.wallet.transactions', compact('agent', 'wallet', 'transactions', 'years', 'isPrint'));
     }

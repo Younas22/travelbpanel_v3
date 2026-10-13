@@ -180,7 +180,7 @@
             <!-- Language + Currency pill group -->
             <div class="nav-util-pill-group">
                 <div class="nav-util-pill-item relative">
-                    <i class="fas fa-globe nav-util-icon"></i>
+                    <!-- <i class="fas fa-globe nav-util-icon"></i> -->
                     <select id="language-select" class="language-select">
                         @if(isset($activeLanguages))
                             @foreach($activeLanguages as $language)
@@ -197,7 +197,7 @@
                     </select>
                 </div>
                 <div class="nav-util-pill-item relative">
-                    <i class="fas fa-coins nav-util-icon"></i>
+                    <!-- <i class="fas fa-coins nav-util-icon"></i> -->
                     <select id="currency-select" class="currency-select">
                         @foreach($currencies as $currency)
                             <option value="{{ $currency->currency_name }}" data-flag="{{ getFlagClass($currency->currency_name) }}"
