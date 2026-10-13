@@ -24692,7 +24692,7 @@ INSERT INTO `settings` (`id`, `group`, `key`, `value`, `type`, `description`, `i
 (31, 'social', 'google_url', '', 'url', 'Google Business profile URL', 1, '2025-07-14 15:23:15', '2025-07-14 15:23:15'),
 (32, 'social', 'youtube_url', NULL, 'url', 'YouTube channel URL', 1, '2025-07-14 15:23:15', '2025-11-18 05:36:24'),
 (33, 'social', 'whatsapp_number', NULL, 'tel', 'WhatsApp business number', 1, '2025-07-14 15:23:15', '2025-11-18 05:36:24'),
-(34, 'email', 'resend_api_key', 're_ciT7pa7z_BtL2xgc7NFX7dkSnCaV39aJE', 'password', 'Resend API key for email delivery', 1, '2025-07-14 15:23:15', '2026-10-13 10:41:47'),
+(34, 'email', 'resend_api_key', '', 'password', 'Resend API key for email delivery', 1, '2025-07-14 15:23:15', '2026-10-13 10:41:47'),
 (35, 'email', 'sender_name', 'Travelbookingpanel Support', 'text', 'Name that appears in recipient inbox', 1, '2025-07-14 15:23:15', '2026-03-18 16:35:30'),
 (36, 'email', 'sender_email', 'contact@travelbookingpanel.com', 'email', 'Sender email address (must be verified domain)', 1, '2025-07-14 15:23:15', '2025-11-19 10:34:27'),
 (37, 'email', 'api_status', 'connected', 'text', 'API connection status', 1, '2025-07-14 15:23:15', '2025-07-19 06:34:22'),
