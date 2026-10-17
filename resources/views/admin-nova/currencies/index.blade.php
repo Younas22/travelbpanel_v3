@@ -61,6 +61,45 @@
         </div>
     </div>
 
+    {{-- ============ CURRENCYLAYER API ============ --}}
+    <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5 mb-4">
+        <h2 class="text-sm font-bold text-novatext mb-1">CurrencyLayer API</h2>
+        <p class="text-xs text-novamuted mb-3">
+            To update currency exchange rates automatically, please create an account at
+            <a href="https://currencylayer.com/" target="_blank" rel="noopener noreferrer" class="text-novablue font-semibold hover:underline">CurrencyLayer</a>,
+            choose a suitable plan, and obtain your API Access Key. Enter your key below and click
+            <strong class="text-novatext">Update Currency</strong> to fetch the latest exchange rates.
+            @if($currencylayerLastUpdated)
+                <span class="block mt-1 text-[11px] text-novamuted">Last updated: {{ $currencylayerLastUpdated }}</span>
+            @endif
+        </p>
+
+        <div id="currencylayerAlert" class="text-xs font-medium rounded-lg px-3 py-2 mb-3" style="display: none;"></div>
+
+        <div class="flex flex-wrap items-start gap-3">
+            <div class="flex-1 min-w-[240px]">
+                <input type="password"
+                       id="currencylayerApiKey"
+                       class="w-full text-xs rounded-lg border border-novaborder px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-novablue/30"
+                       placeholder="CurrencyLayer Access Key"
+                       value="{{ $currencylayerApiKey }}"
+                       autocomplete="off">
+                <p class="text-[11px] text-novadanger mt-1" id="currencylayerApiKeyError" style="display: none;"></p>
+            </div>
+            <button type="button" class="cr-btn-nova cr-btn-primary px-4 py-2.5 text-xs font-semibold" id="updateCurrenciesBtn" onclick="updateExchangeRates()">
+                <span id="updateCurrenciesBtnIcon">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 22v-6h6M21 8a9 9 0 0 0-15-4.9L3 8M3 16a9 9 0 0 0 15 4.9L21 16"/></svg>
+                </span>
+                <span id="updateCurrenciesBtnText">Update Currencies</span>
+            </button>
+            <a href="https://currencylayer.com/" target="_blank" rel="noopener noreferrer"
+               class="cr-btn-nova px-4 py-2.5 text-xs font-semibold" style="color:#2563EB; border-color:#2563EB;">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
+                Get API Key
+            </a>
+        </div>
+    </div>
+
     {{-- ============ BULK ACTIONS BAR ============ --}}
     <div class="cr-bulk-bar tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 mb-4 items-center justify-between" id="bulkActionsBar">
         <span class="text-xs text-novatext"><strong><span id="selectedCount">0</span></strong> currencies selected</span>
@@ -210,6 +249,93 @@
             }).catch(() => { alert('An error occurred'); this.checked = !val; });
         });
     });
+
+    function showCurrencylayerAlert(type, message) {
+        const alertBox = document.getElementById('currencylayerAlert');
+        const classesByType = {
+            success: 'bg-green-50 text-novasuccess',
+            danger: 'bg-red-50 text-novadanger'
+        };
+        alertBox.className = `text-xs font-medium rounded-lg px-3 py-2 mb-3 ${classesByType[type] || ''}`;
+        alertBox.textContent = message;
+        alertBox.style.display = 'block';
+    }
+
+    function setApiKeyError(message) {
+        const input = document.getElementById('currencylayerApiKey');
+        const error = document.getElementById('currencylayerApiKeyError');
+        if (message) {
+            input.classList.add('border-novadanger');
+            error.textContent = message;
+            error.style.display = 'block';
+        } else {
+            input.classList.remove('border-novadanger');
+            error.textContent = '';
+            error.style.display = 'none';
+        }
+    }
+
+    function updateExchangeRates() {
+        const btn = document.getElementById('updateCurrenciesBtn');
+        const btnIcon = document.getElementById('updateCurrenciesBtnIcon');
+        const btnText = document.getElementById('updateCurrenciesBtnText');
+        const apiKey = document.getElementById('currencylayerApiKey').value.trim();
+
+        document.getElementById('currencylayerAlert').style.display = 'none';
+        setApiKeyError(null);
+
+        if (!apiKey) {
+            setApiKeyError('CurrencyLayer access key is required.');
+            return;
+        }
+        if (apiKey.length < 10) {
+            setApiKeyError('Please enter a valid CurrencyLayer access key.');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.classList.add('opacity-60', 'pointer-events-none');
+        btnIcon.innerHTML = '<svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9" stroke-opacity=".25"/><path d="M21 12a9 9 0 0 0-9-9"/></svg>';
+        btnText.textContent = 'Updating...';
+
+        fetch('{{ route("admin.currencies.update_exchange_rates") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ currencylayer_api_key: apiKey })
+        })
+            .then(async (r) => {
+                const data = await r.json().catch(() => ({}));
+                return { ok: r.ok, status: r.status, data };
+            })
+            .then(({ ok, status, data }) => {
+                if (ok && data.success) {
+                    showCurrencylayerAlert('success', data.message || 'Exchange rates updated successfully.');
+                    setTimeout(() => location.reload(), 1200);
+                    return;
+                }
+
+                if (status === 422 && data.errors && data.errors.currencylayer_api_key) {
+                    setApiKeyError(data.errors.currencylayer_api_key[0]);
+                    return;
+                }
+
+                showCurrencylayerAlert('danger', data.message || 'Failed to update exchange rates.');
+            })
+            .catch(() => {
+                showCurrencylayerAlert('danger', 'An error occurred while contacting the server.');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.classList.remove('opacity-60', 'pointer-events-none');
+                btnIcon.innerHTML = '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 22v-6h6M21 8a9 9 0 0 0-15-4.9L3 8M3 16a9 9 0 0 0 15 4.9L21 16"/></svg>';
+                btnText.textContent = 'Update Currencies';
+            });
+    }
 
     document.querySelectorAll('.toggle-status').forEach(function(sw) {
         sw.addEventListener('change', function() {

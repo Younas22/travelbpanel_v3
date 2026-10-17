@@ -44,14 +44,18 @@
                         {{-- Currency Country --}}
                         <div class="crc-field">
                             <label class="crc-label">Country <span class="crc-req">*</span></label>
-                            <select name="currency_country"
+                            @php($selectedCountry = old('currency_country', $currency->currency_country))
+                            <select name="currency_country" id="currencyCountrySelect"
                                     class="crc-input @error('currency_country') is-invalid @enderror"
                                     required>
                                 <option value="">Select Country</option>
-                                @foreach(['Pakistan','USA','UK','UAE','Saudi Arabia','India','Canada'] as $country)
-                                    <option value="{{ $country }}"
-                                        {{ old('currency_country', $currency->currency_country) == $country ? 'selected' : '' }}>
-                                        {{ $country }}
+                                @if($selectedCountry && !$countries->contains('name', $selectedCountry))
+                                    <option value="{{ $selectedCountry }}" selected>{{ $selectedCountry }}</option>
+                                @endif
+                                @foreach($countries as $country)
+                                    <option value="{{ $country->name }}"
+                                        {{ $selectedCountry == $country->name ? 'selected' : '' }}>
+                                        {{ $country->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -63,7 +67,7 @@
                         {{-- Currency Rate --}}
                         <div class="crc-field">
                             <label class="crc-label">Exchange Rate <span class="crc-req">*</span></label>
-                            <input type="number" step="0.01" name="currency_rate"
+                            <input type="number" step="any" name="currency_rate"
                                    class="crc-input @error('currency_rate') is-invalid @enderror"
                                    value="{{ old('currency_rate', $currency->currency_rate) }}"
                                    required placeholder="e.g. 278.50">
@@ -120,12 +124,36 @@
                     if (!name) { e.preventDefault(); alert('Please enter the currency name.'); document.querySelector('[name="currency_name"]').focus(); return; }
                     if (!country) { e.preventDefault(); alert('Please select a country.'); document.querySelector('[name="currency_country"]').focus(); return; }
                     if (status === "") { e.preventDefault(); alert('Please select currency status.'); document.querySelector('[name="currency_status"]').focus(); return; }
-                    if (!rate || isNaN(rate) || Number(rate) <= 0) { e.preventDefault(); alert('Please enter a valid currency rate.'); document.querySelector('[name="currency_rate"]').focus(); return; }
+                    if (!rate || isNaN(rate) || rate === '-') { e.preventDefault(); alert('Please enter a valid currency rate.'); document.querySelector('[name="currency_rate"]').focus(); return; }
 
                     const btn = document.getElementById('submitBtn');
                     if (btn) { btn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Updating...'; btn.disabled = true; }
                 });
             }
+        </script>
+    @endpush
+
+    @push('styles')
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+        <style>
+            /* Match select2's rendered height/border to the rest of the .crc-input fields. */
+            .select2-container--bootstrap-5 .select2-selection { min-height: calc(1.5em + 1.5rem + 2px); }
+        </style>
+    @endpush
+
+    @push('scripts')
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $('#currencyCountrySelect').select2({
+                    theme: 'bootstrap-5',
+                    placeholder: 'Search and select a country...',
+                    allowClear: false,
+                    width: '100%'
+                });
+            });
         </script>
     @endpush
 

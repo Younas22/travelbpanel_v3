@@ -59,6 +59,47 @@
             </div>
         </div>
 
+        {{-- CurrencyLayer API --}}
+        <div class="cur-table-wrap mb-4" style="padding: 20px;">
+            <h5 class="mb-1"><i class="bi bi-key"></i> CurrencyLayer API</h5>
+            <p class="cur-page-sub mb-3">
+                To update currency exchange rates automatically, please create an account at
+                <a href="https://currencylayer.com/" target="_blank" rel="noopener noreferrer">CurrencyLayer</a>,
+                choose a suitable plan, and obtain your API Access Key. Enter your key below and click
+                <strong>Update Currency</strong> to fetch the latest exchange rates.
+                @if($currencylayerLastUpdated)
+                    <br><small class="text-muted">Last updated: {{ $currencylayerLastUpdated }}</small>
+                @endif
+            </p>
+
+            <div id="currencylayerAlert" class="alert" role="alert" style="display: none;"></div>
+
+            <form id="currencylayerForm" class="row g-2 align-items-center" onsubmit="return false;">
+                <div class="col-12 col-md-6 col-lg-5">
+                    <input type="password"
+                           id="currencylayerApiKey"
+                           name="currencylayer_api_key"
+                           class="form-control"
+                           placeholder="CurrencyLayer Access Key"
+                           value="{{ $currencylayerApiKey }}"
+                           autocomplete="off">
+                    <div class="invalid-feedback" id="currencylayerApiKeyError"></div>
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="cur-add-btn" id="updateCurrenciesBtn" onclick="updateExchangeRates()">
+                        <span id="updateCurrenciesBtnIcon"><i class="bi bi-arrow-repeat"></i></span>
+                        <span id="updateCurrenciesBtnText">Update Currencies</span>
+                    </button>
+                </div>
+                <div class="col-auto">
+                    <a href="https://currencylayer.com/" target="_blank" rel="noopener noreferrer"
+                       class="cur-add-btn" style="background: #fff; color: #0077BE; border: 1px solid #0077BE;">
+                        <i class="bi bi-box-arrow-up-right"></i> Get API Key
+                    </a>
+                </div>
+            </form>
+        </div>
+
         {{-- Bulk Actions Bar --}}
         <div class="cur-bulk-bar cur-hidden" id="bulkActionsBar">
             <span><strong><span id="selectedCount">0</span></strong> currencies selected</span>
@@ -227,6 +268,85 @@
                 }).catch(() => { alert('An error occurred'); this.checked = !val; });
             });
         });
+
+        function showCurrencylayerAlert(type, message) {
+            const alertBox = document.getElementById('currencylayerAlert');
+            alertBox.className = `alert alert-${type}`;
+            alertBox.textContent = message;
+            alertBox.style.display = 'block';
+        }
+
+        function setApiKeyError(message) {
+            const input = document.getElementById('currencylayerApiKey');
+            const error = document.getElementById('currencylayerApiKeyError');
+            if (message) {
+                input.classList.add('is-invalid');
+                error.textContent = message;
+            } else {
+                input.classList.remove('is-invalid');
+                error.textContent = '';
+            }
+        }
+
+        function updateExchangeRates() {
+            const btn = document.getElementById('updateCurrenciesBtn');
+            const btnIcon = document.getElementById('updateCurrenciesBtnIcon');
+            const btnText = document.getElementById('updateCurrenciesBtnText');
+            const apiKey = document.getElementById('currencylayerApiKey').value.trim();
+
+            document.getElementById('currencylayerAlert').style.display = 'none';
+            setApiKeyError(null);
+
+            if (!apiKey) {
+                setApiKeyError('CurrencyLayer access key is required.');
+                return;
+            }
+            if (apiKey.length < 10) {
+                setApiKeyError('Please enter a valid CurrencyLayer access key.');
+                return;
+            }
+
+            btn.disabled = true;
+            btnIcon.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            btnText.textContent = 'Updating...';
+
+            fetch('{{ route("admin.currencies.update_exchange_rates") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ currencylayer_api_key: apiKey })
+            })
+                .then(async (r) => {
+                    const data = await r.json().catch(() => ({}));
+                    return { ok: r.ok, status: r.status, data };
+                })
+                .then(({ ok, status, data }) => {
+                    if (ok && data.success) {
+                        showCurrencylayerAlert('success', data.message || 'Exchange rates updated successfully.');
+                        setTimeout(() => location.reload(), 1200);
+                        return;
+                    }
+
+                    if (status === 422 && data.errors && data.errors.currencylayer_api_key) {
+                        setApiKeyError(data.errors.currencylayer_api_key[0]);
+                        return;
+                    }
+
+                    showCurrencylayerAlert('danger', data.message || 'Failed to update exchange rates.');
+                })
+                .catch(() => {
+                    showCurrencylayerAlert('danger', 'An error occurred while contacting the server.');
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btnIcon.innerHTML = '<i class="bi bi-arrow-repeat"></i>';
+                    btnText.textContent = 'Update Currencies';
+                });
+        }
 
         document.querySelectorAll('.toggle-status').forEach(function(sw) {
             sw.addEventListener('change', function() {

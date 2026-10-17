@@ -20,17 +20,22 @@
                 </div>
                 <div>
                     <label class="cr-label">Country <span class="cr-required">*</span></label>
-                    <select name="currency_country" class="cr-input @error('currency_country') is-invalid @enderror" required>
+                    @php($selectedCountry = old('currency_country', $currency->currency_country ?? ''))
+                    @php($countryOptions = collect($countries ?? []))
+                    <select name="currency_country" id="currencyCountrySelect" class="cr-input @error('currency_country') is-invalid @enderror" required>
                         <option value="">Select Country</option>
-                        @foreach(['Pakistan','USA','UK','UAE','Saudi Arabia','India','Canada'] as $country)
-                            <option value="{{ $country }}" {{ old('currency_country', $currency->currency_country ?? '') == $country ? 'selected' : '' }}>{{ $country }}</option>
+                        @if($selectedCountry && !$countryOptions->contains('name', $selectedCountry))
+                            <option value="{{ $selectedCountry }}" selected>{{ $selectedCountry }}</option>
+                        @endif
+                        @foreach($countryOptions as $country)
+                            <option value="{{ $country->name }}" {{ $selectedCountry == $country->name ? 'selected' : '' }}>{{ $country->name }}</option>
                         @endforeach
                     </select>
                     @error('currency_country') <p class="cr-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
                     <label class="cr-label">Exchange Rate <span class="cr-required">*</span></label>
-                    <input type="number" step="0.01" name="currency_rate" class="cr-input @error('currency_rate') is-invalid @enderror"
+                    <input type="number" step="any" name="currency_rate" class="cr-input @error('currency_rate') is-invalid @enderror"
                            value="{{ old('currency_rate', $currency->currency_rate ?? '') }}" required placeholder="e.g. 278.50">
                     @error('currency_rate') <p class="cr-error">{{ $message }}</p> @enderror
                 </div>
@@ -74,11 +79,44 @@
             if (!name) { e.preventDefault(); alert('Please enter the currency name.'); form.querySelector('[name="currency_name"]').focus(); return; }
             if (!country) { e.preventDefault(); alert('Please select a country.'); form.querySelector('[name="currency_country"]').focus(); return; }
             if (status === "") { e.preventDefault(); alert('Please select currency status.'); form.querySelector('[name="currency_status"]').focus(); return; }
-            if (!rate || isNaN(rate) || Number(rate) <= 0) { e.preventDefault(); alert('Please enter a valid currency rate.'); form.querySelector('[name="currency_rate"]').focus(); return; }
+            if (!rate || isNaN(rate) || rate === '-') { e.preventDefault(); alert('Please enter a valid currency rate.'); form.querySelector('[name="currency_rate"]').focus(); return; }
 
             const btn = document.getElementById('submitBtn');
             if (btn) { btn.disabled = true; }
         });
     })();
+</script>
+@endpush
+
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    /* Keep select2's rendered box matching the rest of Nova's .cr-input fields
+       (pill radius, border color, height) instead of Select2's own default look. */
+    #crPage .select2-container .select2-selection--single {
+        height: auto; padding: 10px 14px; border: 1px solid #E5E7EB; border-radius: 14px;
+        font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px;
+    }
+    #crPage .select2-container--default .select2-selection--single .select2-selection__rendered { padding: 0; line-height: 1.3; color: #000; }
+    #crPage .select2-container--default .select2-selection--single .select2-selection__arrow { height: 100%; top: 0; right: 10px; }
+    #crPage .select2-container--default.select2-container--open .select2-selection--single { border-color: #2563EB; }
+    #crPage .select2-dropdown { border-color: #E5E7EB; border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; overflow: hidden; }
+    #crPage .select2-search--dropdown .select2-search__field { border-radius: 8px; border: 1px solid #E5E7EB; padding: 6px 10px; }
+    #crPage .select2-results__option--highlighted[aria-selected] { background-color: #2563EB; }
+</style>
+@endpush
+
+@push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#currencyCountrySelect').select2({
+            placeholder: 'Search and select a country...',
+            allowClear: false,
+            width: '100%',
+            dropdownParent: $('#crPage')
+        });
+    });
 </script>
 @endpush

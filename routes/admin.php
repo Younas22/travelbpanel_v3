@@ -221,6 +221,7 @@ Route::prefix('modules')->name('admin.modules.')->group(function () {
         Route::post('/', [CurrenciesController::class, 'store'])->name('store');
         Route::post('/toggle_default', [CurrenciesController::class, 'toggle_default'])->name('toggle_default');
         Route::post('/toggle_status', [CurrenciesController::class, 'toggle_status'])->name('toggle_status');
+        Route::post('/update-exchange-rates', [CurrenciesController::class, 'updateExchangeRates'])->name('update_exchange_rates');
         Route::post('/', [CurrenciesController::class, 'store'])->name('store');
         Route::get('/{currency}/edit', [CurrenciesController::class, 'edit'])->name('edit');
         Route::patch('/{currency}', [CurrenciesController::class, 'update'])->name('update');

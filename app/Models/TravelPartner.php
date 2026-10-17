@@ -3,6 +3,7 @@
 
 namespace App\Models;
 
+use App\Casts\SafeEncrypted;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -85,13 +86,13 @@ class TravelPartner extends Model
         'supported_countries' => 'array',
         'last_api_call' => 'datetime',
         'last_revenue_update' => 'datetime',
-        'api_credential_1' => 'encrypted',
-        'api_credential_2' => 'encrypted',
-        'api_credential_3' => 'encrypted',
-        'api_credential_4' => 'encrypted',
-        'api_credential_5' => 'encrypted',
-        'api_credential_6' => 'encrypted',
-        'db_password' => 'encrypted',
+        'api_credential_1' => SafeEncrypted::class,
+        'api_credential_2' => SafeEncrypted::class,
+        'api_credential_3' => SafeEncrypted::class,
+        'api_credential_4' => SafeEncrypted::class,
+        'api_credential_5' => SafeEncrypted::class,
+        'api_credential_6' => SafeEncrypted::class,
+        'db_password' => SafeEncrypted::class,
         'last_api_test_at' => 'datetime',
         'last_db_test_at' => 'datetime',
     ];
