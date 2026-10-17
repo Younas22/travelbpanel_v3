@@ -130,6 +130,9 @@
                     alt="{{ auth()->user()->company_name ?? 'Company Logo' }}"
                     class="img-fluid"
                     style="max-height: 45px; height: auto; width: auto;">
+                @if(auth()->user()->company_name)
+                    <span class="font-bold text-base md:text-lg" style="color:#003580;">{{ auth()->user()->company_name }}</span>
+                @endif
             @else
                 <img src="{{ getSettingImage('business_logo','branding') }}"
                     alt="TravelBookingPanel Logo"
