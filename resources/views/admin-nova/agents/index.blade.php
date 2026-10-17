@@ -287,7 +287,8 @@
                         <p class="text-[9px] text-novamuted lg:hidden">Wallet</p>
                         <p class="text-xs font-semibold text-novatext">
                             @if($agent->wallet)
-                                PKR {{ number_format($agent->wallet->balance, 0) }}
+                                @php $agWalletCur = ($agent->wallet->currency && $agent->wallet->currency !== 'PKR') ? $agent->wallet->currency : 'USD'; @endphp
+                                {{ $agWalletCur }} {{ number_format($agent->wallet->balance, 0) }}
                             @else
                                 —
                             @endif

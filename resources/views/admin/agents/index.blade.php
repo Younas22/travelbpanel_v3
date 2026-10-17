@@ -119,7 +119,8 @@
                         <td>{!! $agent->approval_status_badge !!}</td>
                         <td>
                             @if($agent->wallet)
-                                <span class="ag-wallet">PKR {{ number_format($agent->wallet->balance, 0) }}</span>
+                                @php $agWalletCur = ($agent->wallet->currency && $agent->wallet->currency !== 'PKR') ? $agent->wallet->currency : 'USD'; @endphp
+                                <span class="ag-wallet">{{ $agWalletCur }} {{ number_format($agent->wallet->balance, 0) }}</span>
                             @else
                                 <span class="ag-meta">—</span>
                             @endif
