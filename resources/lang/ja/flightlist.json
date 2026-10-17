@@ -14,5 +14,14 @@
   "direct": "直行",
   "no_flights_found": "フライトが見つかりません",
   "no_flights_message": "検索条件に一致するフライトが見つかりませんでした。目的地、日付、または乗客の詳細を調整してお試しください。",
-  "search_again": "再検索"
+  "search_again": "再検索",
+  "flight_time": "フライト時間",
+  "departure": "出発",
+  "arrival": "到着",
+  "early_morning": "早朝",
+  "morning": "午前",
+  "afternoon": "午後",
+  "evening": "夜",
+  "transit_hours": "乗り継ぎ時間",
+  "luggage": "荷物"
 }

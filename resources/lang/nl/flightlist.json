@@ -14,5 +14,14 @@
   "direct": "Direct",
   "no_flights_found": "Geen vluchten gevonden",
   "no_flights_message": "We konden geen vluchten vinden die overeenkomen met uw zoekcriteria. Probeer uw bestemming, data of passagiersgegevens aan te passen.",
-  "search_again": "Opnieuw zoeken"
+  "search_again": "Opnieuw zoeken",
+  "flight_time": "Vluchttijd",
+  "departure": "Vertrek",
+  "arrival": "Aankomst",
+  "early_morning": "Vroege Ochtend",
+  "morning": "Ochtend",
+  "afternoon": "Middag",
+  "evening": "Avond",
+  "transit_hours": "Overstaptijd",
+  "luggage": "Bagage"
 }

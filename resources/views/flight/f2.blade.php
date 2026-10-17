@@ -18,6 +18,45 @@
     </div>
 
     @if(isset($flights_data) && isset($flight_search))
+        @php
+            // Suppliers don't reliably honor the requested search currency
+            // (sandbox/test credentials especially), so the raw price +
+            // currency returned per segment can't be trusted as-is. Every
+            // displayed price is converted here into the site's active
+            // currency instead, so the list always matches whatever
+            // currency is active admin-side, regardless of what the
+            // supplier actually returned.
+            $activeCurrency = activeCurrency();
+            $toActive = function ($price, $fromCurrency) use ($activeCurrency) {
+                $clean = floatval(str_replace(',', '', $price));
+                $from = $fromCurrency ?: $activeCurrency->currency_name;
+                return $from === $activeCurrency->currency_name ? $clean : convertCurrency($clean, $from, $activeCurrency->currency_name);
+            };
+            // Total duration comes back in whichever shape the active
+            // supplier formats it in — "04h:30m" (Amadeus), "4:13" (Duffel),
+            // "4h 30m" (Sabre) — so this pulls the first two digit groups
+            // (hours, then minutes) regardless of the separator between
+            // them, for the Transit Hours filter.
+            $toMinutes = function ($duration) {
+                if (preg_match('/(\d+)\D+(\d+)/', (string) $duration, $m)) {
+                    return ((int) $m[1] * 60) + (int) $m[2];
+                }
+                return 0;
+            };
+            // Some suppliers (Duffel) return baggage as a bare piece count
+            // (0, 1, 2...) instead of a label — turn that into readable text
+            // so the Luggage filter and the card/modal baggage display agree.
+            $baggageLabel = function ($raw) {
+                if ($raw === null || $raw === '') {
+                    return 'No Luggage';
+                }
+                if (is_numeric($raw)) {
+                    $n = (int) $raw;
+                    return $n <= 0 ? 'No Luggage' : ($n . ' ' . ($n === 1 ? 'Piece' : 'Pieces'));
+                }
+                return (string) $raw;
+            };
+        @endphp
         <!-- Search Info Bar -->
         <div class="bg-white border-b border-gray-200">
             <div class="max-w-7xl mx-auto px-4 py-3">
@@ -107,13 +146,74 @@
                             </div>
                         </div>
 
+                        <!-- Flight Time -->
+                        @php
+                            $timeBuckets = [
+                                'early_morning' => ['label' => t('flightlist.early_morning'), 'range' => '00-06', 'from' => 0, 'to' => 6, 'icon' => 'fa-cloud-moon', 'tint' => '#ECFDF5'],
+                                'morning'       => ['label' => t('flightlist.morning'), 'range' => '06-12', 'from' => 6, 'to' => 12, 'icon' => 'fa-sun', 'tint' => '#ECFDF5'],
+                                'afternoon'     => ['label' => t('flightlist.afternoon'), 'range' => '12-18', 'from' => 12, 'to' => 18, 'icon' => 'fa-cloud-sun', 'tint' => '#EFF4FA'],
+                                'evening'       => ['label' => t('flightlist.evening'), 'range' => '18-24', 'from' => 18, 'to' => 24, 'icon' => 'fa-moon', 'tint' => '#EFF4FA'],
+                            ];
+                        @endphp
+                        <style>
+                            .ft-row { padding: 12px 14px; border-radius: 12px; transition: box-shadow .15s; }
+                            .ft-row:has(input:checked) { box-shadow: inset 0 0 0 2px #059669; }
+                            .ft-tab-btn { flex: 1; padding: 8px 0; border-radius: 9999px; font-size: 13px; font-weight: 600; transition: all .15s; cursor: pointer; }
+                        </style>
+                        <div class="mb-6 pb-6 border-b border-gray-200">
+                            <button type="button" id="flightTimeToggle" class="w-full flex items-center justify-between text-left">
+                                <span class="text-sm font-bold text-gray-900">{{t('flightlist.flight_time')}}</span>
+                                <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform" id="flightTimeChevron"></i>
+                            </button>
+
+                            <div id="flightTimeBody" class="mt-4">
+                                <div class="flex gap-1 p-1 bg-gray-50 rounded-full mb-4">
+                                    <button type="button" class="ft-tab-btn ft-tab-active" data-tab="departure" style="background:#ECFDF5; color:#059669;">
+                                        {{t('flightlist.departure')}}
+                                    </button>
+                                    <button type="button" class="ft-tab-btn" data-tab="arrival" style="background:#fff; color:#111827; border:1px solid #E5E7EB;">
+                                        {{t('flightlist.arrival')}}
+                                    </button>
+                                </div>
+
+                                <div id="ft-panel-departure" class="space-y-2.5">
+                                    @foreach($timeBuckets as $key => $bucket)
+                                    <label class="ft-row flex items-center justify-between cursor-pointer" style="background:{{ $bucket['tint'] }};">
+                                        <span class="flex items-center gap-3">
+                                            <i class="fas {{ $bucket['icon'] }}" style="color:#475569; width:16px;"></i>
+                                            <span class="text-sm font-medium text-gray-800">{{ $bucket['label'] }}</span>
+                                        </span>
+                                        <span class="flex items-center gap-2">
+                                            <span class="text-xs text-gray-500">{{ $bucket['range'] }}</span>
+                                            <input type="checkbox" class="dep-time-checkbox" value="{{ $key }}" style="display:none;">
+                                        </span>
+                                    </label>
+                                    @endforeach
+                                </div>
+
+                                <div id="ft-panel-arrival" class="space-y-2.5 hidden">
+                                    @foreach($timeBuckets as $key => $bucket)
+                                    <label class="ft-row flex items-center justify-between cursor-pointer" style="background:{{ $bucket['tint'] }};">
+                                        <span class="flex items-center gap-3">
+                                            <i class="fas {{ $bucket['icon'] }}" style="color:#475569; width:16px;"></i>
+                                            <span class="text-sm font-medium text-gray-800">{{ $bucket['label'] }}</span>
+                                        </span>
+                                        <span class="flex items-center gap-2">
+                                            <span class="text-xs text-gray-500">{{ $bucket['range'] }}</span>
+                                            <input type="checkbox" class="arr-time-checkbox" value="{{ $key }}" style="display:none;">
+                                        </span>
+                                    </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Price -->
                         @php
                             $prices = [];
                             foreach ($flights_data as $item) {
                                 if (isset($item['segments'][0][0]['price'])) {
-                                    $cleanPrice = floatval(str_replace(',', '', $item['segments'][0][0]['price']));
-                                    $prices[] = $cleanPrice;
+                                    $prices[] = $toActive($item['segments'][0][0]['price'], $item['segments'][0][0]['currency'] ?? null);
                                 }
                             }
                             $minPrice = !empty($prices) ? min($prices) : 0;
@@ -123,8 +223,50 @@
                             <p class="text-xs font-bold text-gray-600 mb-3">{{t('flightlist.price')}}</p>
                             <input type="range" min="{{ $minPrice }}" max="{{ $maxPrice }}" value="{{ $maxPrice }}" id="priceSlider" class="w-full accent-[#0077BE]">
                             <div class="flex justify-between text-xs text-gray-600 mt-2">
-                                <span>{{ $minPrice }}</span>
-                                <span id="priceValue">{{ $maxPrice }}</span>
+                                <span class="inline-flex items-center gap-1"><span class="{{ getFlagClass($activeCurrency->currency_name) }}"></span>{{ $activeCurrency->currency_name }} {{ number_format($minPrice, 2) }}</span>
+                                <span class="inline-flex items-center gap-1"><span class="{{ getFlagClass($activeCurrency->currency_name) }}"></span>{{ $activeCurrency->currency_name }} <span id="priceValue">{{ number_format($maxPrice, 2) }}</span></span>
+                            </div>
+                        </div>
+
+                        <!-- Transit Hours -->
+                        @php
+                            $durations = [];
+                            foreach ($flights_data as $item) {
+                                if (isset($item['segments'][0][0]['total_duration'])) {
+                                    $durations[] = $toMinutes($item['segments'][0][0]['total_duration']);
+                                }
+                            }
+                            $minDuration = !empty($durations) ? min($durations) : 0;
+                            $maxDuration = !empty($durations) ? max($durations) : 0;
+                        @endphp
+                        <div class="mb-6 pb-6 border-b border-gray-200">
+                            <p class="text-xs font-bold text-gray-600 mb-3">{{t('flightlist.transit_hours')}}</p>
+                            <input type="range" min="{{ $minDuration }}" max="{{ $maxDuration }}" value="{{ $maxDuration }}" id="durationSlider" class="w-full accent-[#0077BE]">
+                            <div class="flex justify-between text-xs text-gray-600 mt-2">
+                                <span>{{ floor($minDuration / 60) }}h</span>
+                                <span id="durationValue">{{ ceil($maxDuration / 60) }}h</span>
+                            </div>
+                        </div>
+
+                        <!-- Luggage -->
+                        @php
+                            $displayed_baggage = [];
+                            foreach ($flights_data as $item) {
+                                $baggage = $baggageLabel($item['segments'][0][0]['baggage'] ?? null);
+                                if (!in_array($baggage, $displayed_baggage)) {
+                                    $displayed_baggage[] = $baggage;
+                                }
+                            }
+                        @endphp
+                        <div class="mb-6 pb-6 border-b border-gray-200">
+                            <p class="text-xs font-bold text-gray-600 mb-3">{{t('flightlist.luggage')}}</p>
+                            <div class="space-y-2">
+                                @foreach($displayed_baggage as $baggage)
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" class="w-4 h-4 accent-[#0077BE] baggage-checkbox" value="{{ $baggage }}">
+                                    <span class="text-sm text-gray-700">{{ $baggage }}</span>
+                                </label>
+                                @endforeach
                             </div>
                         </div>
 
@@ -180,7 +322,11 @@
                         <div class="flight-card bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition"
                              data-stops="{{ count($segment['segments'][0]) - 1 }}"
                              data-airline="{{ $segment['segments'][0][0]['carrier']['operating'] }}"
-                             data-price="{{ floatval(str_replace(',', '', $segment['segments'][0][0]['price'])) }}">
+                             data-price="{{ $toActive($segment['segments'][0][0]['price'], $segment['segments'][0][0]['currency'] ?? null) }}"
+                             data-dep-hour="{{ $segment['segments'][0][0]['departure']['hour'] ?? '' }}"
+                             data-arr-hour="{{ end($segment['segments'][0])['arrival']['hour'] ?? '' }}"
+                             data-baggage="{{ $baggageLabel($segment['segments'][0][0]['baggage'] ?? null) }}"
+                             data-duration="{{ $toMinutes($segment['segments'][0][0]['total_duration'] ?? '') }}">
 
                             <div class="flex">
                                 <!-- Airline Logo -->
@@ -205,7 +351,7 @@
                                         </div>
                                         <div class="text-right">
                                             <p class="text-xs text-gray-600">{{t('flightlist.total_fare')}}</p>
-                                            <p class="text-2xl font-bold text-[#0077BE]">{{ $segment['segments'][0][0]['currency'] }} {{ $segment['segments'][0][0]['price'] }}</p>
+                                            <p class="text-2xl font-bold text-[#0077BE] inline-flex items-center gap-1.5"><span class="{{ getFlagClass($activeCurrency->currency_name) }}"></span>{{ $activeCurrency->currency_name }} {{ number_format($toActive($segment['segments'][0][0]['price'], $segment['segments'][0][0]['currency'] ?? null), 2) }}</p>
                                         </div>
                                     </div>
 
@@ -243,7 +389,7 @@
                                             </div>
                                             <div class="flex items-center gap-2">
                                                 <i class="fas fa-suitcase-rolling text-gray-600"></i>
-                                                <span class="text-sm text-gray-700">{{ $segment['segments'][0][0]['baggage'] ?? 'No Luggage' }}</span>
+                                                <span class="text-sm text-gray-700">{{ $baggageLabel($segment['segments'][0][0]['baggage'] ?? null) }}</span>
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-2">
@@ -303,7 +449,7 @@
                                                 </div>
                                                 <div class="flex gap-2 justify-end">
                                                     <i class="fas fa-suitcase-rolling text-gray-600 text-xs"></i>
-                                                    <p class="text-xs text-gray-600">{{ $seg['baggage'] ?? 'No Luggage' }}</p>
+                                                    <p class="text-xs text-gray-600">{{ $baggageLabel($seg['baggage'] ?? null) }}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -352,7 +498,11 @@
                         <div class="flight-card bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition"
                              data-stops="{{ count($segment['segments'][0]) - 1 }}"
                              data-airline="{{ $segment['segments'][0][0]['carrier']['operating'] }}"
-                             data-price="{{ floatval(str_replace(',', '', $segment['segments'][0][0]['price'])) }}">
+                             data-price="{{ $toActive($segment['segments'][0][0]['price'], $segment['segments'][0][0]['currency'] ?? null) }}"
+                             data-dep-hour="{{ $segment['segments'][0][0]['departure']['hour'] ?? '' }}"
+                             data-arr-hour="{{ end($segment['segments'][0])['arrival']['hour'] ?? '' }}"
+                             data-baggage="{{ $baggageLabel($segment['segments'][0][0]['baggage'] ?? null) }}"
+                             data-duration="{{ $toMinutes($segment['segments'][0][0]['total_duration'] ?? '') }}">
 
                             <div class="flex">
                                 <!-- Airline Logo -->
@@ -376,7 +526,7 @@
                                         </div>
                                         <div class="text-right">
                                             <p class="text-xs text-gray-600">{{t('flightlist.total_fare')}}</p>
-                                            <p class="text-2xl font-bold text-[#0077BE]">{{ $segment['segments'][0][0]['currency'] }} {{ $segment['segments'][0][0]['price'] }}</p>
+                                            <p class="text-2xl font-bold text-[#0077BE] inline-flex items-center gap-1.5"><span class="{{ getFlagClass($activeCurrency->currency_name) }}"></span>{{ $activeCurrency->currency_name }} {{ number_format($toActive($segment['segments'][0][0]['price'], $segment['segments'][0][0]['currency'] ?? null), 2) }}</p>
                                         </div>
                                     </div>
 
@@ -442,7 +592,7 @@
                                             </div>
                                             <div class="flex items-center gap-2">
                                                 <i class="fas fa-suitcase-rolling text-gray-600"></i>
-                                                <span class="text-sm text-gray-700">{{ $segment['segments'][0][0]['baggage'] ?? 'No Luggage' }}</span>
+                                                <span class="text-sm text-gray-700">{{ $baggageLabel($segment['segments'][0][0]['baggage'] ?? null) }}</span>
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-2">
@@ -502,7 +652,7 @@
                                                 </div>
                                                 <div class="flex gap-2 justify-end">
                                                     <i class="fas fa-suitcase-rolling text-gray-600 text-xs"></i>
-                                                    <p class="text-xs text-gray-600">{{ $seg['baggage'] ?? 'No Luggage' }}</p>
+                                                    <p class="text-xs text-gray-600">{{ $baggageLabel($seg['baggage'] ?? null) }}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -571,7 +721,7 @@
                                                 </div>
                                                 <div class="flex gap-2 justify-end">
                                                     <i class="fas fa-suitcase-rolling text-gray-600 text-xs"></i>
-                                                    <p class="text-xs text-gray-600">{{ $seg['baggage'] ?? 'No Luggage' }}</p>
+                                                    <p class="text-xs text-gray-600">{{ $baggageLabel($seg['baggage'] ?? null) }}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -691,16 +841,36 @@
         document.addEventListener('DOMContentLoaded', function() {
             let selectedStops = '';
             let selectedAirlines = [];
+            let selectedDepTimes = [];
+            let selectedArrTimes = [];
+            let selectedBaggage = [];
             let maxPrice = {{ $maxPrice }};
+            let maxDuration = {{ $maxDuration }};
+
+            const timeBuckets = {
+                early_morning: [0, 6],
+                morning: [6, 12],
+                afternoon: [12, 18],
+                evening: [18, 24],
+            };
 
             const flightCards = document.querySelectorAll('.flight-card');
             const priceSlider = document.getElementById('priceSlider');
             const priceValue = document.getElementById('priceValue');
+            const durationSlider = document.getElementById('durationSlider');
+            const durationValue = document.getElementById('durationValue');
 
             // Price filter
             priceSlider.addEventListener('input', function() {
                 maxPrice = this.value;
-                priceValue.textContent = maxPrice;
+                priceValue.textContent = parseFloat(maxPrice).toFixed(2);
+                filterFlights();
+            });
+
+            // Transit hours filter
+            durationSlider.addEventListener('input', function() {
+                maxDuration = this.value;
+                durationValue.textContent = Math.ceil(maxDuration / 60) + 'h';
                 filterFlights();
             });
 
@@ -725,6 +895,80 @@
                 });
             });
 
+            // Flight time (departure) filter
+            document.querySelectorAll('.dep-time-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        selectedDepTimes.push(this.value);
+                    } else {
+                        selectedDepTimes = selectedDepTimes.filter(v => v !== this.value);
+                    }
+                    filterFlights();
+                });
+            });
+
+            // Flight time (arrival) filter
+            document.querySelectorAll('.arr-time-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        selectedArrTimes.push(this.value);
+                    } else {
+                        selectedArrTimes = selectedArrTimes.filter(v => v !== this.value);
+                    }
+                    filterFlights();
+                });
+            });
+
+            // Luggage filter
+            document.querySelectorAll('.baggage-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        selectedBaggage.push(this.value);
+                    } else {
+                        selectedBaggage = selectedBaggage.filter(v => v !== this.value);
+                    }
+                    filterFlights();
+                });
+            });
+
+            // Flight Time: collapse toggle
+            const flightTimeToggle = document.getElementById('flightTimeToggle');
+            const flightTimeBody = document.getElementById('flightTimeBody');
+            const flightTimeChevron = document.getElementById('flightTimeChevron');
+            if (flightTimeToggle) {
+                flightTimeToggle.addEventListener('click', function() {
+                    flightTimeBody.classList.toggle('hidden');
+                    flightTimeChevron.style.transform = flightTimeBody.classList.contains('hidden') ? 'rotate(-90deg)' : 'rotate(0deg)';
+                });
+            }
+
+            // Flight Time: Departure / Arrival tab switch
+            document.querySelectorAll('.ft-tab-btn').forEach(tabBtn => {
+                tabBtn.addEventListener('click', function() {
+                    const tab = this.dataset.tab;
+
+                    document.querySelectorAll('.ft-tab-btn').forEach(btn => {
+                        const active = btn === this;
+                        btn.style.background = active ? '#ECFDF5' : '#fff';
+                        btn.style.color = active ? '#059669' : '#111827';
+                        btn.style.border = active ? 'none' : '1px solid #E5E7EB';
+                    });
+
+                    document.getElementById('ft-panel-departure').classList.toggle('hidden', tab !== 'departure');
+                    document.getElementById('ft-panel-arrival').classList.toggle('hidden', tab !== 'arrival');
+                });
+            });
+
+            function hourMatchesAnyBucket(hour, bucketKeys) {
+                if (bucketKeys.length === 0) return true;
+                if (hour === '' || hour === null || hour === undefined) return false;
+                hour = parseInt(hour, 10);
+                return bucketKeys.some(key => {
+                    const range = timeBuckets[key];
+                    return range && hour >= range[0] && hour < range[1];
+                });
+            }
+
             function filterFlights() {
                 let visibleCount = 0;
 
@@ -732,12 +976,18 @@
                     const cardStops = card.dataset.stops;
                     const cardAirline = card.dataset.airline;
                     const cardPrice = parseFloat(card.dataset.price);
+                    const cardDuration = parseFloat(card.dataset.duration);
+                    const cardBaggage = card.dataset.baggage;
 
                     const stopsMatch = selectedStops === '' || selectedStops === cardStops;
                     const airlineMatch = selectedAirlines.length === 0 || selectedAirlines.includes(cardAirline);
                     const priceMatch = cardPrice <= maxPrice;
+                    const durationMatch = isNaN(cardDuration) || cardDuration <= maxDuration;
+                    const baggageMatch = selectedBaggage.length === 0 || selectedBaggage.includes(cardBaggage);
+                    const depTimeMatch = hourMatchesAnyBucket(card.dataset.depHour, selectedDepTimes);
+                    const arrTimeMatch = hourMatchesAnyBucket(card.dataset.arrHour, selectedArrTimes);
 
-                    if (stopsMatch && airlineMatch && priceMatch) {
+                    if (stopsMatch && airlineMatch && priceMatch && durationMatch && baggageMatch && depTimeMatch && arrTimeMatch) {
                         card.style.display = 'block';
                         visibleCount++;
                     } else {

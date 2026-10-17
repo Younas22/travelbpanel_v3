@@ -14,5 +14,14 @@
   "direct": "직항",
   "no_flights_found": "항공편을 찾을 수 없습니다",
   "no_flights_message": "검색 조건에 맞는 항공편을 찾을 수 없습니다. 목적지, 날짜 또는 승객 정보를 조정해보세요.",
-  "search_again": "다시 검색"
+  "search_again": "다시 검색",
+  "flight_time": "항공편 시간",
+  "departure": "출발",
+  "arrival": "도착",
+  "early_morning": "새벽",
+  "morning": "오전",
+  "afternoon": "오후",
+  "evening": "저녁",
+  "transit_hours": "환승 시간",
+  "luggage": "수하물"
 }

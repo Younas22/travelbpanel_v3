@@ -14,5 +14,14 @@
   "direct": "Directe",
   "no_flights_found": "No Flights Found",
   "no_flights_message": "We couldn’t find any flights matching your search criteria. Try adjusting your destination, dates, or passenger details.",
-  "search_again": "Search Again"
+  "search_again": "Search Again",
+  "flight_time": "Flight Time",
+  "departure": "Departure",
+  "arrival": "Arrival",
+  "early_morning": "Early Morning",
+  "morning": "Morning",
+  "afternoon": "Afternoon",
+  "evening": "Evening",
+  "transit_hours": "Transit Hours",
+  "luggage": "Luggage"
 }

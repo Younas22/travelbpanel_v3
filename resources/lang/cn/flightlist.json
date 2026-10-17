@@ -14,5 +14,14 @@
   "direct": "直达",
   "no_flights_found": "未找到航班",
   "no_flights_message": "我们找不到符合您搜索条件的航班。请尝试调整目的地、日期或乘客详情。",
-  "search_again": "再次搜索"
+  "search_again": "再次搜索",
+  "flight_time": "航班时间",
+  "departure": "出发",
+  "arrival": "到达",
+  "early_morning": "凌晨",
+  "morning": "上午",
+  "afternoon": "下午",
+  "evening": "晚上",
+  "transit_hours": "中转时长",
+  "luggage": "行李"
 }

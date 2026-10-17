@@ -14,5 +14,14 @@
   "direct": "Direkt",
   "no_flights_found": "Uçuş Bulunamadı",
   "no_flights_message": "Arama kriterlerinize uygun uçuş bulamadık. Destinasyonunuzu, tarihlerinizi veya yolcu bilgilerinizi ayarlamayı deneyin.",
-  "search_again": "Tekrar Ara"
+  "search_again": "Tekrar Ara",
+  "flight_time": "Uçuş Saati",
+  "departure": "Kalkış",
+  "arrival": "Varış",
+  "early_morning": "Sabaha Karşı",
+  "morning": "Sabah",
+  "afternoon": "Öğleden Sonra",
+  "evening": "Akşam",
+  "transit_hours": "Aktarma Süresi",
+  "luggage": "Bagaj"
 }

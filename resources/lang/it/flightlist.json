@@ -14,5 +14,14 @@
   "direct": "Diretto",
   "no_flights_found": "Nessun Volo Trovato",
   "no_flights_message": "Non siamo riusciti a trovare voli corrispondenti ai tuoi criteri di ricerca. Prova a modificare la destinazione, le date o i dettagli dei passeggeri.",
-  "search_again": "Cerca di Nuovo"
+  "search_again": "Cerca di Nuovo",
+  "flight_time": "Orario di Volo",
+  "departure": "Partenza",
+  "arrival": "Arrivo",
+  "early_morning": "Primo Mattino",
+  "morning": "Mattina",
+  "afternoon": "Pomeriggio",
+  "evening": "Sera",
+  "transit_hours": "Ore di Scalo",
+  "luggage": "Bagaglio"
 }

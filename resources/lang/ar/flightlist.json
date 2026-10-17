@@ -14,5 +14,14 @@
   "direct": "مباشر",
   "no_flights_found": "لا توجد رحلات متاحة",
   "no_flights_message": "لم نتمكن من العثور على رحلات تطابق معايير البحث الخاصة بك. حاول تعديل الوجهة أو التواريخ أو عدد المسافرين.",
-  "search_again": "ابحث مرة أخرى"
+  "search_again": "ابحث مرة أخرى",
+  "flight_time": "وقت الرحلة",
+  "departure": "المغادرة",
+  "arrival": "الوصول",
+  "early_morning": "الفجر",
+  "morning": "الصباح",
+  "afternoon": "بعد الظهر",
+  "evening": "المساء",
+  "transit_hours": "ساعات التوقف",
+  "luggage": "الأمتعة"
 }

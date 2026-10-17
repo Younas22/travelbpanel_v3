@@ -14,5 +14,14 @@
   "direct": "Direkt",
   "no_flights_found": "Keine Flüge gefunden",
   "no_flights_message": "Wir konnten keine Flüge finden, die Ihren Suchkriterien entsprechen. Versuchen Sie, Ihr Ziel, Ihre Daten oder Ihre Passagierdetails anzupassen.",
-  "search_again": "Erneut suchen"
+  "search_again": "Erneut suchen",
+  "flight_time": "Flugzeit",
+  "departure": "Abflug",
+  "arrival": "Ankunft",
+  "early_morning": "Früher Morgen",
+  "morning": "Morgen",
+  "afternoon": "Nachmittag",
+  "evening": "Abend",
+  "transit_hours": "Umsteigezeit",
+  "luggage": "Gepäck"
 }

@@ -14,5 +14,14 @@
   "direct": "Direct",
   "no_flights_found": "Aucun Vol Trouvé",
   "no_flights_message": "Nous n'avons trouvé aucun vol correspondant à vos critères de recherche. Essayez d'ajuster votre destination, vos dates ou les détails des passagers.",
-  "search_again": "Rechercher à Nouveau"
+  "search_again": "Rechercher à Nouveau",
+  "flight_time": "Heure de Vol",
+  "departure": "Départ",
+  "arrival": "Arrivée",
+  "early_morning": "Tôt le Matin",
+  "morning": "Matin",
+  "afternoon": "Après-midi",
+  "evening": "Soir",
+  "transit_hours": "Heures d'Escale",
+  "luggage": "Bagages"
 }
