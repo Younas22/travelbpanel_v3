@@ -366,46 +366,46 @@
                              data-baggage="{{ $baggageLabel($segment['segments'][0][0]['baggage'] ?? null) }}"
                              data-duration="{{ $toMinutes($segment['segments'][0][0]['total_duration'] ?? '') }}">
 
-                            <div class="flex">
+                            <div class="flex flex-col sm:flex-row">
                                 <!-- Airline Logo -->
-                                <div class="w-32 flex items-center justify-center border-r border-gray-200 p-4">
+                                <div class="sm:w-16 w-full flex items-center justify-center sm:border-r border-b sm:border-b-0 border-gray-200 p-2">
                                     <img
                                         src="https://assets.duffel.com/img/airlines/for-light-background/full-color-logo/{{ $segment['segments'][0][0]['carrier']['operating'] }}.svg"
                                         alt="Airline Logo"
-                                        class="w-20 h-20 object-contain"
+                                        class="w-9 h-9 object-contain"
                                         onerror="this.onerror=null;this.src='{{ url('public/assets/images/list-plane.png') }}';"
                                     />
                                 </div>
 
                                 <!-- Flight Details -->
-                                <div class="flex-1 p-6">
-                                    <div class="flex justify-between items-start mb-4">
+                                <div class="flex-1 p-3">
+                                    <div class="flex justify-between items-start mb-1.5">
                                         <div>
-                                            <p class="text-xs text-gray-600 font-semibold">
+                                            <p class="text-[10px] leading-tight text-gray-600 font-semibold">
                                                 {{ $segment['segments'][0][0]['departure']['airport'] }} to {{ end($segment['segments'][0])['arrival']['airport'] }} •
                                                 {{ count($segment['segments'][0]) - 1 == 0 ? 'Direct' : (count($segment['segments'][0]) - 1 . ' Stop') }}
                                             </p>
-                                            <p class="text-sm text-gray-500">{{ $segment['segments'][0][0]['departure']['date_convert'] }}</p>
+                                            <p class="text-[10px] leading-tight text-gray-500">{{ $segment['segments'][0][0]['departure']['date_convert'] }}</p>
                                         </div>
                                         <div class="text-right">
-                                            <p class="text-xs text-gray-600">{{t('flightlist.total_fare')}}</p>
-                                            <p class="text-2xl font-bold text-[#0077BE] inline-flex items-center gap-1.5"><span class="{{ getFlagClass($activeCurrency->currency_name) }}"></span>{{ $activeCurrency->currency_name }} {{ number_format($toActive($segment['segments'][0][0]['price'], $segment['segments'][0][0]['currency'] ?? null), 2) }}</p>
+                                            <p class="text-[9px] leading-tight text-gray-600">{{t('flightlist.total_fare')}}</p>
+                                            <p class="text-base leading-tight font-bold text-[#0077BE] inline-flex items-center gap-1"><span class="{{ getFlagClass($activeCurrency->currency_name) }}" style="font-size:10px;"></span>{{ $activeCurrency->currency_name }} {{ number_format($toActive($segment['segments'][0][0]['price'], $segment['segments'][0][0]['currency'] ?? null), 2) }}</p>
                                         </div>
                                     </div>
 
-                                    <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+                                    <div class="flex items-center justify-between mb-1.5 pb-1.5 border-b border-gray-200">
                                         <div class="flex-1">
-                                            <p class="text-3xl font-bold text-gray-900">{{ $segment['segments'][0][0]['departure']['time'] }}</p>
-                                            <p class="text-sm font-semibold text-gray-700">{{ $segment['segments'][0][0]['departure']['airport'] }}</p>
+                                            <p class="text-lg leading-none font-bold text-gray-900">{{ $segment['segments'][0][0]['departure']['time'] }}</p>
+                                            <p class="text-[10px] font-semibold text-gray-700 mt-0.5">{{ $segment['segments'][0][0]['departure']['airport'] }}</p>
                                         </div>
                                         <div class="flex-1 text-center">
-                                            <div class="flex items-center justify-center mb-2">
+                                            <div class="flex items-center justify-center mb-0.5">
                                                 <div class="flex-1 h-0.5 bg-gray-300"></div>
-                                                <i class="fas fa-plane text-gray-400 mx-4"></i>
+                                                <i class="fas fa-plane text-gray-400 mx-2 text-[10px]"></i>
                                                 <div class="flex-1 h-0.5 bg-gray-300"></div>
                                             </div>
-                                            <p class="text-xs text-gray-600">{{ $segment['segments'][0][0]['total_duration'] }}</p>
-                                            <p class="text-xs font-semibold text-[#0077BE]">
+                                            <p class="text-[9px] leading-tight text-gray-600">{{ $segment['segments'][0][0]['total_duration'] }}</p>
+                                            <p class="text-[9px] leading-tight font-semibold text-[#0077BE]">
                                                 @if(count($segment['segments'][0]) - 1 == 0)
                                                     {{t('flightlist.direct')}}
                                                 @else
@@ -414,31 +414,31 @@
                                             </p>
                                         </div>
                                         <div class="flex-1 text-right">
-                                            <p class="text-3xl font-bold text-gray-900">{{ end($segment['segments'][0])['arrival']['time'] }}</p>
-                                            <p class="text-sm font-semibold text-gray-700">{{ end($segment['segments'][0])['arrival']['airport'] }}</p>
+                                            <p class="text-lg leading-none font-bold text-gray-900">{{ end($segment['segments'][0])['arrival']['time'] }}</p>
+                                            <p class="text-[10px] font-semibold text-gray-700 mt-0.5">{{ end($segment['segments'][0])['arrival']['airport'] }}</p>
                                         </div>
                                     </div>
 
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center gap-4">
-                                            <div class="flex items-center gap-2">
-                                                <i class="fas fa-suitcase text-gray-600"></i>
-                                                <span class="text-sm text-gray-700">{{ $segment['segments'][0][0]['cabin_baggage'] ?? '7 kg' }}</span>
+                                    <div class="flex items-center justify-between flex-wrap gap-1.5">
+                                        <div class="flex items-center gap-3">
+                                            <div class="flex items-center gap-1">
+                                                <i class="fas fa-suitcase text-gray-600 text-[10px]"></i>
+                                                <span class="text-[10px] text-gray-700">{{ $segment['segments'][0][0]['cabin_baggage'] ?? '7 kg' }}</span>
                                             </div>
-                                            <div class="flex items-center gap-2">
-                                                <i class="fas fa-suitcase-rolling text-gray-600"></i>
-                                                <span class="text-sm text-gray-700">{{ $baggageLabel($segment['segments'][0][0]['baggage'] ?? null) }}</span>
+                                            <div class="flex items-center gap-1">
+                                                <i class="fas fa-suitcase-rolling text-gray-600 text-[10px]"></i>
+                                                <span class="text-[10px] text-gray-700">{{ $baggageLabel($segment['segments'][0][0]['baggage'] ?? null) }}</span>
                                             </div>
                                         </div>
-                                        <div class="flex items-center gap-2">
-                                            <button onclick="openModal{{ $modalCounter }}()" class="p-2 hover:bg-gray-100 rounded-lg transition" title="Details">
-                                                <i class="fas fa-circle-info text-gray-600"></i>
+                                        <div class="flex items-center gap-1.5">
+                                            <button onclick="openModal{{ $modalCounter }}()" class="p-1 hover:bg-gray-100 rounded-lg transition" title="Details">
+                                                <i class="fas fa-circle-info text-gray-600 text-xs"></i>
                                             </button>
                                             <form action="{{ route('flights.booking') }}" method="post" class="inline">
                                                 @csrf
                                                 <input name="routes" type="hidden" value="{{ encrypt(json_encode($segment))}}">
                                                 <input name="booking_data" type="hidden" value="{{ encrypt(json_encode($segment['segments'][0][0]['booking_data'])) }}">
-                                                <button type="submit" class="px-6 py-2 bg-[#0077BE] text-white rounded-full font-semibold text-sm hover:bg-blue-700">
+                                                <button type="submit" class="px-3 py-1.5 bg-[#0077BE] text-white rounded-full font-semibold text-[11px] hover:bg-blue-700">
                                                     {{t('flightlist.book')}} →
                                                 </button>
                                             </form>
@@ -542,46 +542,46 @@
                              data-baggage="{{ $baggageLabel($segment['segments'][0][0]['baggage'] ?? null) }}"
                              data-duration="{{ $toMinutes($segment['segments'][0][0]['total_duration'] ?? '') }}">
 
-                            <div class="flex">
+                            <div class="flex flex-col sm:flex-row">
                                 <!-- Airline Logo -->
-                                <div class="w-32 flex items-center justify-center border-r border-gray-200 p-4">
+                                <div class="sm:w-16 w-full flex items-center justify-center sm:border-r border-b sm:border-b-0 border-gray-200 p-2">
                                     <img
                                         src="https://assets.duffel.com/img/airlines/for-light-background/full-color-logo/{{ $segment['segments'][0][0]['carrier']['operating'] }}.svg"
                                         alt="Airline Logo"
-                                        class="w-20 h-20 object-contain"
+                                        class="w-9 h-9 object-contain"
                                         onerror="this.onerror=null;this.src='{{ url('public/assets/images/list-plane.png') }}';"
                                     />
                                 </div>
 
                                 <!-- Flight Details -->
-                                <div class="flex-1 p-6">
-                                    <div class="flex justify-between items-start mb-4">
+                                <div class="flex-1 p-3">
+                                    <div class="flex justify-between items-start mb-1.5">
                                         <div>
-                                            <p class="text-xs text-gray-600 font-semibold">{{ $segment['segments'][0][0]['departure']['airport'] }} ↔ {{ end($segment['segments'][0])['arrival']['airport'] }} • Round Trip</p>
-                                            <p class="text-sm text-gray-500">
+                                            <p class="text-[10px] leading-tight text-gray-600 font-semibold">{{ $segment['segments'][0][0]['departure']['airport'] }} ↔ {{ end($segment['segments'][0])['arrival']['airport'] }} • Round Trip</p>
+                                            <p class="text-[10px] leading-tight text-gray-500">
                                                 {{ $segment['segments'][0][0]['departure']['date_convert'] }} - {{ $segment['segments'][1][0]['departure']['date_convert'] }}
                                             </p>
                                         </div>
                                         <div class="text-right">
-                                            <p class="text-xs text-gray-600">{{t('flightlist.total_fare')}}</p>
-                                            <p class="text-2xl font-bold text-[#0077BE] inline-flex items-center gap-1.5"><span class="{{ getFlagClass($activeCurrency->currency_name) }}"></span>{{ $activeCurrency->currency_name }} {{ number_format($toActive($segment['segments'][0][0]['price'], $segment['segments'][0][0]['currency'] ?? null), 2) }}</p>
+                                            <p class="text-[9px] leading-tight text-gray-600">{{t('flightlist.total_fare')}}</p>
+                                            <p class="text-base leading-tight font-bold text-[#0077BE] inline-flex items-center gap-1"><span class="{{ getFlagClass($activeCurrency->currency_name) }}" style="font-size:10px;"></span>{{ $activeCurrency->currency_name }} {{ number_format($toActive($segment['segments'][0][0]['price'], $segment['segments'][0][0]['currency'] ?? null), 2) }}</p>
                                         </div>
                                     </div>
 
                                     <!-- Outbound -->
-                                    <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+                                    <div class="flex items-center justify-between mb-1 pb-1 border-b border-gray-200">
                                         <div class="flex-1">
-                                            <p class="text-3xl font-bold text-gray-900">{{ $segment['segments'][0][0]['departure']['time'] }}</p>
-                                            <p class="text-sm font-semibold text-gray-700">{{ $segment['segments'][0][0]['departure']['airport'] }}</p>
+                                            <p class="text-sm leading-none font-bold text-gray-900">{{ $segment['segments'][0][0]['departure']['time'] }}</p>
+                                            <p class="text-[9px] font-semibold text-gray-700 mt-0.5">{{ $segment['segments'][0][0]['departure']['airport'] }}</p>
                                         </div>
                                         <div class="flex-1 text-center">
-                                            <div class="flex items-center justify-center mb-2">
+                                            <div class="flex items-center justify-center">
                                                 <div class="flex-1 h-0.5 bg-gray-300"></div>
-                                                <i class="fas fa-plane text-gray-400 mx-4"></i>
+                                                <i class="fas fa-plane text-gray-400 mx-1.5 text-[9px]"></i>
                                                 <div class="flex-1 h-0.5 bg-gray-300"></div>
                                             </div>
-                                            <p class="text-xs text-gray-600">{{ $segment['segments'][0][0]['total_duration'] }}</p>
-                                            <p class="text-xs font-semibold text-[#0077BE]">
+                                            <p class="text-[8px] leading-tight text-gray-600">{{ $segment['segments'][0][0]['total_duration'] }}</p>
+                                            <p class="text-[8px] leading-tight font-semibold text-[#0077BE]">
                                                 @if(count($segment['segments'][0]) - 1 == 0)
                                                     {{t('flightlist.direct')}}
                                                 @else
@@ -590,25 +590,25 @@
                                             </p>
                                         </div>
                                         <div class="flex-1 text-right">
-                                            <p class="text-3xl font-bold text-gray-900">{{ end($segment['segments'][0])['arrival']['time'] }}</p>
-                                            <p class="text-sm font-semibold text-gray-700">{{ end($segment['segments'][0])['arrival']['airport'] }}</p>
+                                            <p class="text-sm leading-none font-bold text-gray-900">{{ end($segment['segments'][0])['arrival']['time'] }}</p>
+                                            <p class="text-[9px] font-semibold text-gray-700 mt-0.5">{{ end($segment['segments'][0])['arrival']['airport'] }}</p>
                                         </div>
                                     </div>
 
                                     <!-- Return -->
-                                    <div class="flex items-center justify-between mb-4 pb-4">
+                                    <div class="flex items-center justify-between mb-1.5 pb-1.5">
                                         <div class="flex-1">
-                                            <p class="text-3xl font-bold text-gray-900">{{ $segment['segments'][1][0]['departure']['time'] }}</p>
-                                            <p class="text-sm font-semibold text-gray-700">{{ $segment['segments'][1][0]['departure']['airport'] }}</p>
+                                            <p class="text-sm leading-none font-bold text-gray-900">{{ $segment['segments'][1][0]['departure']['time'] }}</p>
+                                            <p class="text-[9px] font-semibold text-gray-700 mt-0.5">{{ $segment['segments'][1][0]['departure']['airport'] }}</p>
                                         </div>
                                         <div class="flex-1 text-center">
-                                            <div class="flex items-center justify-center mb-2">
+                                            <div class="flex items-center justify-center">
                                                 <div class="flex-1 h-0.5 bg-gray-300"></div>
-                                                <i class="fas fa-plane text-gray-400 mx-4"></i>
+                                                <i class="fas fa-plane text-gray-400 mx-1.5 text-[9px]"></i>
                                                 <div class="flex-1 h-0.5 bg-gray-300"></div>
                                             </div>
-                                            <p class="text-xs text-gray-600">{{ $segment['segments'][1][0]['total_duration'] }}</p>
-                                            <p class="text-xs font-semibold text-[#0077BE]">
+                                            <p class="text-[8px] leading-tight text-gray-600">{{ $segment['segments'][1][0]['total_duration'] }}</p>
+                                            <p class="text-[8px] leading-tight font-semibold text-[#0077BE]">
                                                 @if(count($segment['segments'][1]) - 1 == 0)
                                                     {{t('flightlist.direct')}}
                                                 @else
@@ -617,31 +617,31 @@
                                             </p>
                                         </div>
                                         <div class="flex-1 text-right">
-                                            <p class="text-3xl font-bold text-gray-900">{{ end($segment['segments'][1])['arrival']['time'] }}</p>
-                                            <p class="text-sm font-semibold text-gray-700">{{ end($segment['segments'][1])['arrival']['airport'] }}</p>
+                                            <p class="text-sm leading-none font-bold text-gray-900">{{ end($segment['segments'][1])['arrival']['time'] }}</p>
+                                            <p class="text-[9px] font-semibold text-gray-700 mt-0.5">{{ end($segment['segments'][1])['arrival']['airport'] }}</p>
                                         </div>
                                     </div>
 
-                                    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
-                                        <div class="flex items-center gap-4">
-                                            <div class="flex items-center gap-2">
-                                                <i class="fas fa-suitcase text-gray-600"></i>
-                                                <span class="text-sm text-gray-700">{{ $segment['segments'][0][0]['cabin_baggage'] ?? '7 kg' }}</span>
+                                    <div class="flex items-center justify-between flex-wrap gap-1.5 pt-1.5 border-t border-gray-200">
+                                        <div class="flex items-center gap-3">
+                                            <div class="flex items-center gap-1">
+                                                <i class="fas fa-suitcase text-gray-600 text-[10px]"></i>
+                                                <span class="text-[10px] text-gray-700">{{ $segment['segments'][0][0]['cabin_baggage'] ?? '7 kg' }}</span>
                                             </div>
-                                            <div class="flex items-center gap-2">
-                                                <i class="fas fa-suitcase-rolling text-gray-600"></i>
-                                                <span class="text-sm text-gray-700">{{ $baggageLabel($segment['segments'][0][0]['baggage'] ?? null) }}</span>
+                                            <div class="flex items-center gap-1">
+                                                <i class="fas fa-suitcase-rolling text-gray-600 text-[10px]"></i>
+                                                <span class="text-[10px] text-gray-700">{{ $baggageLabel($segment['segments'][0][0]['baggage'] ?? null) }}</span>
                                             </div>
                                         </div>
-                                        <div class="flex items-center gap-2">
-                                            <button onclick="openRoundModal{{ $modalCounter }}()" class="p-2 hover:bg-gray-100 rounded-lg transition" title="Details">
-                                                <i class="fas fa-circle-info text-gray-600"></i>
+                                        <div class="flex items-center gap-1.5">
+                                            <button onclick="openRoundModal{{ $modalCounter }}()" class="p-1 hover:bg-gray-100 rounded-lg transition" title="Details">
+                                                <i class="fas fa-circle-info text-gray-600 text-xs"></i>
                                             </button>
                                             <form action="{{ route('flights.booking') }}" method="post" class="inline">
                                                 @csrf
                                                 <input name="routes" type="hidden" value="{{ encrypt(json_encode($segment))}}">
                                                 <input name="booking_data" type="hidden" value="{{ encrypt(json_encode($segment['segments'][0][0]['booking_data'])) }}">
-                                                <button type="submit" class="px-6 py-2 bg-[#0077BE] text-white rounded-full font-semibold text-sm hover:bg-blue-700">
+                                                <button type="submit" class="px-3 py-1.5 bg-[#0077BE] text-white rounded-full font-semibold text-[11px] hover:bg-blue-700">
                                                     {{t('flightlist.book')}} →
                                                 </button>
                                             </form>
