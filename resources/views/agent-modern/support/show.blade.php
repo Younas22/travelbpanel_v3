@@ -30,7 +30,7 @@
         <div class="am-card-body d-flex align-items-start justify-content-between flex-wrap gap-3">
             <div>
                 <h4 class="fw-bold mb-1">{{ $ticket->subject }}</h4>
-                <p class="text-muted small font-monospace mb-0">{{ $ticket->ticket_number }} &bull; Opened {{ $ticket->created_at->format('M d, Y \a\t h:i A') }}</p>
+                <p class="text-muted small font-monospace mb-0">{{ $ticket->ticket_number }} &bull; Opened {{ displayDateTime($ticket->created_at, 'M d, Y \a\t') }}</p>
             </div>
             <div class="d-flex align-items-center gap-2">
                 <span class="badge bg-primary">{{ ucfirst($ticket->priority) }} priority</span>

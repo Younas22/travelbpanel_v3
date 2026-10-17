@@ -122,7 +122,7 @@
                         <td class="text-novamuted">{{ $txn->currency ?? $walletCurrency }} {{ number_format($txn->balance_after, 2) }}</td>
                         <td class="text-novamuted">{{ $txn->note ?? '—' }}</td>
                         <td class="text-novamuted">{{ $txn->performedBy?->full_name ?? '—' }}</td>
-                        <td class="text-novamuted whitespace-nowrap">{{ $txn->created_at->format('d M Y, h:i A') }}</td>
+                        <td class="text-novamuted whitespace-nowrap">{{ displayDateTime($txn->created_at) }}</td>
                     </tr>
                 @empty
                     <tr>

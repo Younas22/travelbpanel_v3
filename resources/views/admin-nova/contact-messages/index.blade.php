@@ -273,8 +273,8 @@
 
                     <div class="lg:w-28 lg:flex-shrink-0">
                         <p class="text-[9px] text-novamuted lg:hidden">Received</p>
-                        <p class="text-xs text-novatext">{{ $message->created_at->format('d M Y') }}</p>
-                        <p class="text-[10px] text-novamuted">{{ $message->created_at->format('h:i A') }}</p>
+                        <p class="text-xs text-novatext">{{ $message->created_at->copy()->timezone(siteTimezone())->format('d M Y') }}</p>
+                        <p class="text-[10px] text-novamuted">{{ displayTime($message->created_at) }}</p>
                     </div>
 
                     <div class="flex items-center gap-1.5 lg:flex-shrink-0" style="width:90px;">

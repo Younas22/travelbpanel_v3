@@ -14,7 +14,7 @@
 @if($isPrint)
 <div class="mb-5">
     <h4 class="text-lg font-bold text-gray-800">{{ $agent->company_name ?? $agent->full_name }} — Wallet Transactions</h4>
-    <p class="text-xs text-gray-500">Generated {{ now()->format('d M Y, h:i A') }}</p>
+    <p class="text-xs text-gray-500">Generated {{ displayDateTime(now()) }}</p>
 </div>
 <script>window.addEventListener('load', () => window.print());</script>
 @endif
@@ -201,7 +201,7 @@
                 @foreach($transactions as $txn)
                 <tr class="hover:bg-gray-50 transition">
                     <td class="px-4 py-3 text-xs text-gray-400">{{ $isPrint ? $loop->iteration : $transactions->firstItem() + $loop->index }}</td>
-                    <td class="px-4 py-3 text-xs text-gray-400 whitespace-nowrap">{{ $txn->created_at->format('d M Y, h:i A') }}</td>
+                    <td class="px-4 py-3 text-xs text-gray-400 whitespace-nowrap">{{ displayDateTime($txn->created_at) }}</td>
                     <td class="px-4 py-3">
                         @if($txn->type === 'credit')
                             <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">Credit</span>

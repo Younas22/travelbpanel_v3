@@ -57,7 +57,7 @@
                             @endif
                         </td>
                         <td><span class="{{ $req->status_badge_class }}">{{ ucfirst($req->status) }}</span></td>
-                        <td class="small text-muted">{{ $req->created_at->format('d M Y, h:i A') }}</td>
+                        <td class="small text-muted">{{ displayDateTime($req->created_at) }}</td>
                         <td>
                             @if($req->status === 'pending')
                             <div class="d-flex gap-1">

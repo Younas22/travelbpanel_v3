@@ -95,7 +95,7 @@
             <tbody class="divide-y divide-gray-50">
                 @foreach($recentTransactions as $txn)
                 <tr class="hover:bg-gray-50 transition">
-                    <td class="px-4 py-3 text-xs text-gray-400 whitespace-nowrap">{{ $txn->created_at->format('d M Y, h:i A') }}</td>
+                    <td class="px-4 py-3 text-xs text-gray-400 whitespace-nowrap">{{ displayDateTime($txn->created_at) }}</td>
                     <td class="px-4 py-3">
                         @if($txn->type === 'credit')
                             <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-medium">Credit</span>

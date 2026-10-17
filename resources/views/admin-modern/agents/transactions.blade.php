@@ -61,7 +61,7 @@
                         <td><span class="wt-meta">{{ $txn->currency ?? $walletCurrency }} {{ number_format($txn->balance_after, 2) }}</span></td>
                         <td>{{ $txn->note ?? '—' }}</td>
                         <td>{{ $txn->performedBy?->full_name ?? '—' }}</td>
-                        <td><span class="wt-meta">{{ $txn->created_at->format('d M Y, h:i A') }}</span></td>
+                        <td><span class="wt-meta">{{ displayDateTime($txn->created_at) }}</span></td>
                     </tr>
                 @empty
                     <tr>

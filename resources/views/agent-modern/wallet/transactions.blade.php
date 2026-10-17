@@ -14,7 +14,7 @@
 @if($isPrint)
     <div class="mb-4">
         <h4 class="ap-page-title">{{ $agent->company_name ?? $agent->full_name }} — Wallet Transactions</h4>
-        <p class="ap-page-sub">Generated {{ now()->format('d M Y, h:i A') }}</p>
+        <p class="ap-page-sub">Generated {{ displayDateTime(now()) }}</p>
     </div>
     <script>window.addEventListener('load', () => window.print());</script>
 @endif
@@ -188,7 +188,7 @@
                     @foreach($transactions as $txn)
                     <tr>
                         <td style="color: color-mix(in srgb, var(--text-color) 50%, transparent); font-size: 12px;">{{ $isPrint ? $loop->iteration : $transactions->firstItem() + $loop->index }}</td>
-                        <td style="font-size: 12px; color: color-mix(in srgb, var(--text-color) 55%, transparent); white-space: nowrap;">{{ $txn->created_at->format('d M Y, h:i A') }}</td>
+                        <td style="font-size: 12px; color: color-mix(in srgb, var(--text-color) 55%, transparent); white-space: nowrap;">{{ displayDateTime($txn->created_at) }}</td>
                         <td>
                             @if($txn->type === 'credit')
                                 <span class="badge bg-success">Credit</span>

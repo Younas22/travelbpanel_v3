@@ -65,8 +65,8 @@
             <div class="card">
                 <div class="card-header"><h5 class="mb-0">Room Details</h5></div>
                 <div class="card-body">
-                    <p class="mb-2"><strong>Created:</strong> {{ $room->created_at->format('d M Y, h:i A') }}</p>
-                    <p class="mb-0"><strong>Last Updated:</strong> {{ $room->updated_at->format('d M Y, h:i A') }}</p>
+                    <p class="mb-2"><strong>Created:</strong> {{ displayDateTime($room->created_at) }}</p>
+                    <p class="mb-0"><strong>Last Updated:</strong> {{ displayDateTime($room->updated_at) }}</p>
                 </div>
             </div>
         </div>

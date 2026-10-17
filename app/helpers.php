@@ -90,6 +90,62 @@ if (!function_exists('getSetting')) {
     }
 }
 
+// Site-wide timezone + 12h/24h clock format, configurable from Admin >
+// Settings > Website > System. Every user-facing time display in the app
+// should go through displayTime()/displayDateTime() below instead of
+// hardcoding ->format('h:i A') or ->format('H:i'), so changing the setting
+// updates the whole site at once.
+if (!function_exists('siteTimezone')) {
+    function siteTimezone()
+    {
+        return getSetting('timezone', 'system') ?: config('app.timezone', 'UTC');
+    }
+}
+
+if (!function_exists('siteTimeFormat')) {
+    function siteTimeFormat()
+    {
+        return getSetting('time_format', 'system') === '24' ? 'H:i' : 'h:i A';
+    }
+}
+
+if (!function_exists('displayTime')) {
+    /**
+     * Render a datetime's time portion in the site's configured timezone
+     * and 12h/24h format.
+     */
+    function displayTime($datetime)
+    {
+        if (!$datetime) {
+            return '';
+        }
+
+        $carbon = $datetime instanceof \Carbon\Carbon ? $datetime : \Carbon\Carbon::parse($datetime);
+
+        return $carbon->copy()->timezone(siteTimezone())->format(siteTimeFormat());
+    }
+}
+
+if (!function_exists('displayDateTime')) {
+    /**
+     * Render a datetime as "<date part>, <site time format>" (e.g.
+     * "13 Oct 2026, 06:09 PM"), converted to the site's configured
+     * timezone. $datePart is the Carbon format for everything before the
+     * time — pass it without the time tokens, e.g. 'd M Y,' or 'M d, Y \a\t'.
+     */
+    function displayDateTime($datetime, $datePart = 'd M Y,')
+    {
+        if (!$datetime) {
+            return '';
+        }
+
+        $carbon = $datetime instanceof \Carbon\Carbon ? $datetime : \Carbon\Carbon::parse($datetime);
+        $local  = $carbon->copy()->timezone(siteTimezone());
+
+        return trim($local->format($datePart)) . ' ' . $local->format(siteTimeFormat());
+    }
+}
+
 
 // Helper function for the Agent Signup link — admin can override it (System
 // Settings > Agent Signup URL) to point at a custom page instead of the

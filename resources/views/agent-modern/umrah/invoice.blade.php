@@ -29,7 +29,7 @@
                 <table class="table table-sm table-borderless">
                     <tr><td class="text-muted">Package</td><td><strong>{{ $booking->umrah_name ?? 'N/A' }}</strong></td></tr>
                     <tr><td class="text-muted">Passengers</td><td>{{ $booking->booking_adult_count }} Adults, {{ $booking->booking_child_count }} Children</td></tr>
-                    <tr><td class="text-muted">Booking Date</td><td>{{ $booking->created_at->format('d M Y, h:i A') }}</td></tr>
+                    <tr><td class="text-muted">Booking Date</td><td>{{ displayDateTime($booking->created_at) }}</td></tr>
                 </table>
             </div>
             <div class="col-md-6">

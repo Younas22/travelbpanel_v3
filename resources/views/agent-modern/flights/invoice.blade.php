@@ -43,7 +43,7 @@
                     <tr><td class="text-muted">Amount Paid</td><td><strong class="text-success">{{ $booking->booking_currency_origin }} {{ number_format($booking->booking_fare_base, 2) }}</strong></td></tr>
                     <tr><td class="text-muted">Payment Method</td><td>Agent Wallet</td></tr>
                     <tr><td class="text-muted">Payment Status</td><td><span class="badge bg-success">Paid</span></td></tr>
-                    <tr><td class="text-muted">Booking Date</td><td>{{ $booking->created_at->format('d M Y, h:i A') }}</td></tr>
+                    <tr><td class="text-muted">Booking Date</td><td>{{ displayDateTime($booking->created_at) }}</td></tr>
                     <tr><td class="text-muted">Agent</td><td>{{ auth()->user()->company_name }}</td></tr>
                 </table>
             </div>

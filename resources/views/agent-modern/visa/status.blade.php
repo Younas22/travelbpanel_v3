@@ -37,7 +37,7 @@
                 <table class="table table-sm table-borderless">
                     <tr><td class="text-muted">Visa Type</td><td><strong>{{ strtoupper($visaRequest->visa_type) }}</strong></td></tr>
                     <tr><td class="text-muted">Plan</td><td>{{ ucfirst($visaRequest->visa_plan) }}</td></tr>
-                    <tr><td class="text-muted">Submitted</td><td>{{ $visaRequest->created_at->format('d M Y, h:i A') }}</td></tr>
+                    <tr><td class="text-muted">Submitted</td><td>{{ displayDateTime($visaRequest->created_at) }}</td></tr>
                 </table>
             </div>
             <div>

@@ -293,6 +293,37 @@
                             </div>
 
                             <div class="form-group">
+                                <label class="form-label">Timezone</label>
+                                <div class="form-text mb-2">Used to display all dates and times across the site (bookings, invoices, transactions, flight times, etc.)</div>
+                                @php $tz = $settings['system']['timezone'] ?? 'UTC'; @endphp
+                                <select class="form-control" name="timezone">
+                                    @foreach(\DateTimeZone::listIdentifiers() as $tzId)
+                                        <option value="{{ $tzId }}" {{ $tz === $tzId ? 'selected' : '' }}>{{ $tzId }} (UTC{{ \Carbon\Carbon::now(new \DateTimeZone($tzId))->format('P') }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Time Format</label>
+                                <div class="form-text mb-2">Controls whether times across the site show as 12-hour (06:09 PM) or 24-hour (18:09)</div>
+                                @php $tf = $settings['system']['time_format'] ?? '12'; @endphp
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="time_format" id="tf_12" value="12" {{ $tf == '12' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="tf_12">
+                                            <strong>12-hour</strong> &mdash; e.g. 06:09 PM
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="time_format" id="tf_24" value="24" {{ $tf == '24' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="tf_24">
+                                            <strong>24-hour</strong> &mdash; e.g. 18:09
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="form-label">Google Analytics Tracking ID</label>
                                 <input type="text" class="form-control" name="google_analytics_id" 
                                        value="{{ $settings['system']['google_analytics_id'] ?? '' }}" 
@@ -798,6 +829,21 @@ document.addEventListener('DOMContentLoaded', function() {
     setupFilePreview('faviconUpload', '.current-image img');
     setupFilePreview('coverUpload', '.current-image img');
 });
+</script>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('select[name="timezone"]').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Search and select a timezone...',
+            allowClear: false,
+            width: '100%'
+        });
+    });
 </script>
 
 @endsection

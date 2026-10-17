@@ -355,7 +355,7 @@ class ContactController extends Controller
                                 <td style="padding: 12px 0; font-weight: 600; color: #555; font-size: 14px;">
                                     <span style="background: #e3f2fd; padding: 4px 8px; border-radius: 8px; display: inline-block;">📅 Submitted</span>
                                 </td>
-                                <td style="padding: 12px 0; font-size: 15px; color: #666;">' . $contactMessage->created_at->format('M d, Y h:i A') . '</td>
+                                <td style="padding: 12px 0; font-size: 15px; color: #666;">' . displayDateTime($contactMessage->created_at, 'M d, Y') . '</td>
                             </tr>
                             <tr style="border-top: 1px solid #f0f0f0;">
                                 <td style="padding: 12px 0; font-weight: 600; color: #555; font-size: 14px;">

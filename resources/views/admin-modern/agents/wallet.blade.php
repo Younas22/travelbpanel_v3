@@ -112,7 +112,7 @@
                 <tbody>
                 @forelse($topupRequests as $req)
                     <tr>
-                        <td><span class="agw-meta">{{ $req->created_at->format('d M Y, h:i A') }}</span></td>
+                        <td><span class="agw-meta">{{ displayDateTime($req->created_at) }}</span></td>
                         <td><span class="agw-amount">{{ $walletCurrency }} {{ number_format($req->amount, 2) }}</span></td>
                         <td>{{ $req->payment_method ?? '—' }}</td>
                         <td>
@@ -182,7 +182,7 @@
                         <td><span class="agw-type agw-type-{{ $txn->type }}">{{ ucfirst($txn->type) }}</span></td>
                         <td><span class="agw-amount-flow agw-amount-{{ $txn->type }}">{{ $txn->type === 'credit' ? '+' : '-' }} {{ $txn->currency ?? $walletCurrency }} {{ number_format($txn->amount, 2) }}</span></td>
                         <td><span class="agw-meta">{{ $txn->note ?? '—' }}</span></td>
-                        <td><span class="agw-meta">{{ $txn->created_at->format('d M Y, h:i A') }}</span></td>
+                        <td><span class="agw-meta">{{ displayDateTime($txn->created_at) }}</span></td>
                     </tr>
                 @empty
                     <tr><td colspan="4" class="agw-empty-cell">No transactions yet.</td></tr>

@@ -143,6 +143,8 @@ private function getValidationRules($group)
         'system' => [
             'business_model' => 'nullable|string|in:both,b2b,b2c',
             'agent_signup_url' => 'nullable|string|max:255',
+            'timezone' => 'nullable|string|timezone|max:100',
+            'time_format' => 'nullable|string|in:12,24',
             'google_analytics_id' => 'nullable|string|max:50',
             'google_tag_manager_id' => 'nullable|string|max:50',
             'facebook_pixel_id' => 'nullable|string|max:50',

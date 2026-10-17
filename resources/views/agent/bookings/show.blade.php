@@ -199,7 +199,7 @@
 
                     <div class="grid grid-cols-3 gap-2 py-2.5">
                         <dt class="text-xs font-semibold text-gray-500">Booked On</dt>
-                        <dd class="col-span-2 text-sm text-gray-800">{{ $booking->created_at->format('d M Y, h:i A') }}</dd>
+                        <dd class="col-span-2 text-sm text-gray-800">{{ displayDateTime($booking->created_at) }}</dd>
                     </div>
                 </dl>
             </div>

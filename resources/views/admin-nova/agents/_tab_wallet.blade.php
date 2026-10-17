@@ -167,7 +167,7 @@
             <tbody>
             @forelse($topupRequests as $req)
                 <tr>
-                    <td class="text-novamuted whitespace-nowrap">{{ $req->created_at->format('d M Y, h:i A') }}</td>
+                    <td class="text-novamuted whitespace-nowrap">{{ displayDateTime($req->created_at) }}</td>
                     <td class="font-semibold text-novatext">{{ $walletCurrency }} {{ number_format($req->amount, 2) }}</td>
                     <td>{{ $req->payment_method ?? '—' }}</td>
                     <td>
@@ -262,7 +262,7 @@
                     </td>
                     <td class="font-semibold {{ $txn->type === 'credit' ? 'text-novasuccess' : 'text-novadanger' }}">{{ $txn->type === 'credit' ? '+' : '-' }} {{ $txn->currency ?? $walletCurrency }} {{ number_format($txn->amount, 2) }}</td>
                     <td class="text-novamuted">{{ $txn->note ?? '—' }}</td>
-                    <td class="text-novamuted whitespace-nowrap">{{ $txn->created_at->format('d M Y, h:i A') }}</td>
+                    <td class="text-novamuted whitespace-nowrap">{{ displayDateTime($txn->created_at) }}</td>
                 </tr>
             @empty
                 <tr><td colspan="4" class="text-center text-novamuted py-8">No transactions yet.</td></tr>

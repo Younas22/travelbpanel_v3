@@ -48,12 +48,12 @@
                     @endif
                     <div class="col-md-6">
                         <label class="text-muted small">Submitted</label>
-                        <div>{{ $topupRequest->created_at->format('d M Y, h:i A') }}</div>
+                        <div>{{ displayDateTime($topupRequest->created_at) }}</div>
                     </div>
                     @if($topupRequest->reviewed_by)
                     <div class="col-md-6">
                         <label class="text-muted small">Reviewed By</label>
-                        <div>{{ $topupRequest->reviewedBy?->full_name }} — {{ $topupRequest->reviewed_at?->format('d M Y, h:i A') }}</div>
+                        <div>{{ $topupRequest->reviewedBy?->full_name }} — {{ displayDateTime($topupRequest->reviewed_at) }}</div>
                     </div>
                     @endif
                     @if($topupRequest->rejection_note)

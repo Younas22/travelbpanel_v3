@@ -30,7 +30,7 @@
     <div class="flex items-start justify-between flex-wrap gap-3">
         <div>
             <h4 class="text-lg font-bold text-gray-800">{{ $ticket->subject }}</h4>
-            <p class="text-xs text-gray-400 font-mono mt-1">{{ $ticket->ticket_number }} &bull; Opened {{ $ticket->created_at->format('M d, Y \a\t h:i A') }}</p>
+            <p class="text-xs text-gray-400 font-mono mt-1">{{ $ticket->ticket_number }} &bull; Opened {{ displayDateTime($ticket->created_at, 'M d, Y \a\t') }}</p>
         </div>
         <div class="flex items-center gap-2">
             <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 text-blue-700">{{ ucfirst($ticket->priority) }} priority</span>

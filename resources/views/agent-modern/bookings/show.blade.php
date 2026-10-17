@@ -124,7 +124,7 @@
                         <div class="bk-detail-row"><div class="bk-detail-label">Passport Validity</div><div class="bk-detail-value">{{ $booking->passport_issue_date?->format('d M Y') ?? '—' }} &rarr; {{ $booking->passport_expiry_date?->format('d M Y') ?? '—' }}</div></div>
                     @endif
 
-                    <div class="bk-detail-row"><div class="bk-detail-label">Booked On</div><div class="bk-detail-value">{{ $booking->created_at->format('d M Y, h:i A') }}</div></div>
+                    <div class="bk-detail-row"><div class="bk-detail-label">Booked On</div><div class="bk-detail-value">{{ displayDateTime($booking->created_at) }}</div></div>
                 </div>
             </div>
         </div>

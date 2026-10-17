@@ -9,7 +9,7 @@
         <div style="flex:1;">
             <p style="font-size:.85rem; font-weight:600; color:#92400e; margin:0;">Your wallet balance was reset to zero by admin</p>
             <p style="font-size:.78rem; color:#b45309; margin:2px 0 0;">{{ \Illuminate\Support\Str::after($zeroOutNotice->note, 'Reason: ') }}</p>
-            <p style="font-size:.68rem; color:#d97706; margin:4px 0 0;">{{ $zeroOutNotice->created_at->format('d M Y, h:i A') }}</p>
+            <p style="font-size:.68rem; color:#d97706; margin:4px 0 0;">{{ displayDateTime($zeroOutNotice->created_at) }}</p>
         </div>
         <form method="POST" action="{{ route('agent.wallet.notice.dismiss', $zeroOutNotice) }}">
             @csrf
