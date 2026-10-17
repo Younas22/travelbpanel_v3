@@ -109,7 +109,12 @@
                 <!-- Sidebar -->
                 <div class="lg:col-span-1">
                     <div class="bg-white rounded-lg shadow-sm p-5 sticky top-20">
-                        <h3 class="text-sm font-bold text-gray-900 mb-4">{{t('flightlist.filters')}}</h3>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-bold text-gray-900">{{t('flightlist.filters')}}</h3>
+                            <button type="button" id="resetFiltersBtn" class="text-xs font-semibold text-[#0077BE] hover:underline">
+                                {{t('flightlist.reset_filters')}}
+                            </button>
+                        </div>
 
                         <!-- Stops (Radio Buttons) -->
                         @php
@@ -156,8 +161,8 @@
                             ];
                         @endphp
                         <style>
-                            .ft-row { padding: 12px 14px; border-radius: 12px; transition: box-shadow .15s; }
-                            .ft-row:has(input:checked) { box-shadow: inset 0 0 0 2px #059669; }
+                            .ft-row { padding: 12px 14px; border-radius: 12px; background: #fff; border: 1px solid #F1F5F9; transition: background .15s, box-shadow .15s, border-color .15s; }
+                            .ft-row:has(input:checked) { background: var(--tint); border-color: transparent; box-shadow: inset 0 0 0 2px #059669; }
                             .ft-tab-btn { flex: 1; padding: 8px 0; border-radius: 9999px; font-size: 13px; font-weight: 600; transition: all .15s; cursor: pointer; }
                         </style>
                         <div class="mb-6 pb-6 border-b border-gray-200">
@@ -178,7 +183,7 @@
 
                                 <div id="ft-panel-departure" class="space-y-2.5">
                                     @foreach($timeBuckets as $key => $bucket)
-                                    <label class="ft-row flex items-center justify-between cursor-pointer" style="background:{{ $bucket['tint'] }};">
+                                    <label class="ft-row flex items-center justify-between cursor-pointer" style="--tint: {{ $bucket['tint'] }};">
                                         <span class="flex items-center gap-3">
                                             <i class="fas {{ $bucket['icon'] }}" style="color:#475569; width:16px;"></i>
                                             <span class="text-sm font-medium text-gray-800">{{ $bucket['label'] }}</span>
@@ -193,7 +198,7 @@
 
                                 <div id="ft-panel-arrival" class="space-y-2.5 hidden">
                                     @foreach($timeBuckets as $key => $bucket)
-                                    <label class="ft-row flex items-center justify-between cursor-pointer" style="background:{{ $bucket['tint'] }};">
+                                    <label class="ft-row flex items-center justify-between cursor-pointer" style="--tint: {{ $bucket['tint'] }};">
                                         <span class="flex items-center gap-3">
                                             <i class="fas {{ $bucket['icon'] }}" style="color:#475569; width:16px;"></i>
                                             <span class="text-sm font-medium text-gray-800">{{ $bucket['label'] }}</span>
@@ -219,12 +224,40 @@
                             $minPrice = !empty($prices) ? min($prices) : 0;
                             $maxPrice = !empty($prices) ? max($prices) : 0;
                         @endphp
+                        <style>
+                            .dual-range { position: relative; height: 24px; }
+                            .dual-range input[type=range] {
+                                position: absolute; top: 0; left: 0; width: 100%; height: 24px;
+                                margin: 0; background: transparent; pointer-events: none;
+                                -webkit-appearance: none; appearance: none;
+                            }
+                            .dual-range input[type=range]::-webkit-slider-runnable-track { -webkit-appearance: none; background: transparent; }
+                            .dual-range input[type=range]::-moz-range-track { background: transparent; border: none; }
+                            .dual-range input[type=range]::-webkit-slider-thumb {
+                                pointer-events: auto; -webkit-appearance: none; appearance: none;
+                                width: 18px; height: 18px; border-radius: 50%;
+                                background: #fff; border: 2px solid #0077BE; cursor: pointer;
+                                margin-top: 3px; box-shadow: 0 1px 3px rgba(0,0,0,.25); position: relative; z-index: 3;
+                            }
+                            .dual-range input[type=range]::-moz-range-thumb {
+                                pointer-events: auto; width: 18px; height: 18px; border-radius: 50%;
+                                background: #fff; border: 2px solid #0077BE; cursor: pointer;
+                            }
+                            .dual-range .track-bg { position: absolute; top: 10px; left: 0; right: 0; height: 4px; background: #E5E7EB; border-radius: 2px; }
+                            .dual-range .track-fill { position: absolute; top: 10px; height: 4px; background: #0077BE; border-radius: 2px; }
+                        </style>
+
                         <div class="mb-6 pb-6 border-b border-gray-200">
                             <p class="text-xs font-bold text-gray-600 mb-3">{{t('flightlist.price')}}</p>
-                            <input type="range" min="{{ $minPrice }}" max="{{ $maxPrice }}" value="{{ $maxPrice }}" id="priceSlider" class="w-full accent-[#0077BE]">
-                            <div class="flex justify-between text-xs text-gray-600 mt-2">
-                                <span class="inline-flex items-center gap-1"><span class="{{ getFlagClass($activeCurrency->currency_name) }}"></span>{{ $activeCurrency->currency_name }} {{ number_format($minPrice, 2) }}</span>
-                                <span class="inline-flex items-center gap-1"><span class="{{ getFlagClass($activeCurrency->currency_name) }}"></span>{{ $activeCurrency->currency_name }} <span id="priceValue">{{ number_format($maxPrice, 2) }}</span></span>
+                            <div class="dual-range mb-2">
+                                <div class="track-bg"></div>
+                                <div class="track-fill" id="priceTrackFill"></div>
+                                <input type="range" min="{{ $minPrice }}" max="{{ $maxPrice }}" step="0.01" value="{{ $minPrice }}" id="priceMinSlider">
+                                <input type="range" min="{{ $minPrice }}" max="{{ $maxPrice }}" step="0.01" value="{{ $maxPrice }}" id="priceMaxSlider">
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-600">
+                                <span class="inline-flex items-center gap-1"><span class="{{ getFlagClass($activeCurrency->currency_name) }}"></span>{{ $activeCurrency->currency_name }} <span id="priceMinValue">{{ number_format($minPrice, 2) }}</span></span>
+                                <span class="inline-flex items-center gap-1"><span class="{{ getFlagClass($activeCurrency->currency_name) }}"></span>{{ $activeCurrency->currency_name }} <span id="priceMaxValue">{{ number_format($maxPrice, 2) }}</span></span>
                             </div>
                         </div>
 
@@ -241,10 +274,15 @@
                         @endphp
                         <div class="mb-6 pb-6 border-b border-gray-200">
                             <p class="text-xs font-bold text-gray-600 mb-3">{{t('flightlist.transit_hours')}}</p>
-                            <input type="range" min="{{ $minDuration }}" max="{{ $maxDuration }}" value="{{ $maxDuration }}" id="durationSlider" class="w-full accent-[#0077BE]">
-                            <div class="flex justify-between text-xs text-gray-600 mt-2">
-                                <span>{{ floor($minDuration / 60) }}h</span>
-                                <span id="durationValue">{{ ceil($maxDuration / 60) }}h</span>
+                            <div class="dual-range mb-2">
+                                <div class="track-bg"></div>
+                                <div class="track-fill" id="durationTrackFill"></div>
+                                <input type="range" min="{{ $minDuration }}" max="{{ $maxDuration }}" value="{{ $minDuration }}" id="durationMinSlider">
+                                <input type="range" min="{{ $minDuration }}" max="{{ $maxDuration }}" value="{{ $maxDuration }}" id="durationMaxSlider">
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-600">
+                                <span id="durationMinValue">{{ floor($minDuration / 60) }}h</span>
+                                <span id="durationMaxValue">{{ ceil($maxDuration / 60) }}h</span>
                             </div>
                         </div>
 
@@ -844,7 +882,9 @@
             let selectedDepTimes = [];
             let selectedArrTimes = [];
             let selectedBaggage = [];
+            let minPrice = {{ $minPrice }};
             let maxPrice = {{ $maxPrice }};
+            let minDuration = {{ $minDuration }};
             let maxDuration = {{ $maxDuration }};
 
             const timeBuckets = {
@@ -855,24 +895,64 @@
             };
 
             const flightCards = document.querySelectorAll('.flight-card');
-            const priceSlider = document.getElementById('priceSlider');
-            const priceValue = document.getElementById('priceValue');
-            const durationSlider = document.getElementById('durationSlider');
-            const durationValue = document.getElementById('durationValue');
 
-            // Price filter
-            priceSlider.addEventListener('input', function() {
-                maxPrice = this.value;
-                priceValue.textContent = parseFloat(maxPrice).toFixed(2);
-                filterFlights();
-            });
+            // Wires up a pair of overlapping range inputs as one dual-handle
+            // slider: keeps the handles from crossing, positions the filled
+            // track between them, and reports the live [min, max] back via
+            // onChange on every drag.
+            function setupDualRange(minInput, maxInput, trackFill, onChange, formatValue) {
+                const rangeMin = parseFloat(minInput.min);
+                const rangeMax = parseFloat(minInput.max);
+                const span = (rangeMax - rangeMin) || 1;
 
-            // Transit hours filter
-            durationSlider.addEventListener('input', function() {
-                maxDuration = this.value;
-                durationValue.textContent = Math.ceil(maxDuration / 60) + 'h';
-                filterFlights();
-            });
+                function update() {
+                    let lo = parseFloat(minInput.value);
+                    let hi = parseFloat(maxInput.value);
+
+                    if (lo > hi) {
+                        [lo, hi] = [hi, lo];
+                        minInput.value = lo;
+                        maxInput.value = hi;
+                    }
+
+                    const loPct = ((lo - rangeMin) / span) * 100;
+                    const hiPct = ((hi - rangeMin) / span) * 100;
+                    trackFill.style.left = loPct + '%';
+                    trackFill.style.width = Math.max(hiPct - loPct, 0) + '%';
+
+                    onChange(lo, hi, formatValue);
+                }
+
+                minInput.addEventListener('input', update);
+                maxInput.addEventListener('input', update);
+                update();
+            }
+
+            setupDualRange(
+                document.getElementById('priceMinSlider'),
+                document.getElementById('priceMaxSlider'),
+                document.getElementById('priceTrackFill'),
+                function(lo, hi) {
+                    minPrice = lo;
+                    maxPrice = hi;
+                    document.getElementById('priceMinValue').textContent = lo.toFixed(2);
+                    document.getElementById('priceMaxValue').textContent = hi.toFixed(2);
+                    filterFlights();
+                }
+            );
+
+            setupDualRange(
+                document.getElementById('durationMinSlider'),
+                document.getElementById('durationMaxSlider'),
+                document.getElementById('durationTrackFill'),
+                function(lo, hi) {
+                    minDuration = lo;
+                    maxDuration = hi;
+                    document.getElementById('durationMinValue').textContent = Math.floor(lo / 60) + 'h';
+                    document.getElementById('durationMaxValue').textContent = Math.ceil(hi / 60) + 'h';
+                    filterFlights();
+                }
+            );
 
             // Stops filter
             document.querySelectorAll('input[name="stops"]').forEach(radio => {
@@ -959,6 +1039,38 @@
                 });
             });
 
+            // Reset Filters
+            const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+            if (resetFiltersBtn) {
+                resetFiltersBtn.addEventListener('click', function() {
+                    selectedStops = '';
+                    selectedAirlines = [];
+                    selectedDepTimes = [];
+                    selectedArrTimes = [];
+                    selectedBaggage = [];
+
+                    document.querySelectorAll('input[name="stops"]').forEach(radio => {
+                        radio.checked = radio.value === '';
+                    });
+                    document.querySelectorAll('.airline-checkbox, .dep-time-checkbox, .arr-time-checkbox, .baggage-checkbox').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+
+                    ['priceMinSlider', 'durationMinSlider'].forEach(id => {
+                        const el = document.getElementById(id);
+                        el.value = el.min;
+                        el.dispatchEvent(new Event('input'));
+                    });
+                    ['priceMaxSlider', 'durationMaxSlider'].forEach(id => {
+                        const el = document.getElementById(id);
+                        el.value = el.max;
+                        el.dispatchEvent(new Event('input'));
+                    });
+
+                    filterFlights();
+                });
+            }
+
             function hourMatchesAnyBucket(hour, bucketKeys) {
                 if (bucketKeys.length === 0) return true;
                 if (hour === '' || hour === null || hour === undefined) return false;
@@ -981,8 +1093,8 @@
 
                     const stopsMatch = selectedStops === '' || selectedStops === cardStops;
                     const airlineMatch = selectedAirlines.length === 0 || selectedAirlines.includes(cardAirline);
-                    const priceMatch = cardPrice <= maxPrice;
-                    const durationMatch = isNaN(cardDuration) || cardDuration <= maxDuration;
+                    const priceMatch = isNaN(cardPrice) || (cardPrice >= minPrice && cardPrice <= maxPrice);
+                    const durationMatch = isNaN(cardDuration) || (cardDuration >= minDuration && cardDuration <= maxDuration);
                     const baggageMatch = selectedBaggage.length === 0 || selectedBaggage.includes(cardBaggage);
                     const depTimeMatch = hourMatchesAnyBucket(card.dataset.depHour, selectedDepTimes);
                     const arrTimeMatch = hourMatchesAnyBucket(card.dataset.arrHour, selectedArrTimes);

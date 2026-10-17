@@ -23,5 +23,6 @@
   "afternoon": "بعد الظهر",
   "evening": "المساء",
   "transit_hours": "ساعات التوقف",
-  "luggage": "الأمتعة"
+  "luggage": "الأمتعة",
+  "reset_filters": "إعادة تعيين الفلاتر"
 }

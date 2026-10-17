@@ -23,5 +23,6 @@
   "afternoon": "下午",
   "evening": "晚上",
   "transit_hours": "中转时长",
-  "luggage": "行李"
+  "luggage": "行李",
+  "reset_filters": "重置筛选"
 }

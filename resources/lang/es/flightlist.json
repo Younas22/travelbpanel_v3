@@ -23,5 +23,6 @@
   "afternoon": "Tarde",
   "evening": "Noche",
   "transit_hours": "Horas de Escala",
-  "luggage": "Equipaje"
+  "luggage": "Equipaje",
+  "reset_filters": "Restablecer Filtros"
 }

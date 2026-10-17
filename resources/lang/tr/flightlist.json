@@ -23,5 +23,6 @@
   "afternoon": "Öğleden Sonra",
   "evening": "Akşam",
   "transit_hours": "Aktarma Süresi",
-  "luggage": "Bagaj"
+  "luggage": "Bagaj",
+  "reset_filters": "Filtreleri Sıfırla"
 }

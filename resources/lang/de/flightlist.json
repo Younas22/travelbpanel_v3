@@ -23,5 +23,6 @@
   "afternoon": "Nachmittag",
   "evening": "Abend",
   "transit_hours": "Umsteigezeit",
-  "luggage": "Gepäck"
+  "luggage": "Gepäck",
+  "reset_filters": "Filter zurücksetzen"
 }

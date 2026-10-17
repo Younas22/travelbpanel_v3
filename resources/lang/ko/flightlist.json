@@ -23,5 +23,6 @@
   "afternoon": "오후",
   "evening": "저녁",
   "transit_hours": "환승 시간",
-  "luggage": "수하물"
+  "luggage": "수하물",
+  "reset_filters": "필터 초기화"
 }

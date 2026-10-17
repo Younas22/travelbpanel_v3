@@ -23,5 +23,6 @@
   "afternoon": "午後",
   "evening": "夜",
   "transit_hours": "乗り継ぎ時間",
-  "luggage": "荷物"
+  "luggage": "荷物",
+  "reset_filters": "フィルターをリセット"
 }

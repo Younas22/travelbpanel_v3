@@ -23,5 +23,6 @@
   "afternoon": "Pomeriggio",
   "evening": "Sera",
   "transit_hours": "Ore di Scalo",
-  "luggage": "Bagaglio"
+  "luggage": "Bagaglio",
+  "reset_filters": "Reimposta Filtri"
 }

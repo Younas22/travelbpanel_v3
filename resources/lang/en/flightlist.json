@@ -23,5 +23,6 @@
   "afternoon": "Afternoon",
   "evening": "Evening",
   "transit_hours": "Transit Hours",
-  "luggage": "Luggage"
+  "luggage": "Luggage",
+  "reset_filters": "Reset Filters"
 }

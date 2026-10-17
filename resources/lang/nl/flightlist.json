@@ -23,5 +23,6 @@
   "afternoon": "Middag",
   "evening": "Avond",
   "transit_hours": "Overstaptijd",
-  "luggage": "Bagage"
+  "luggage": "Bagage",
+  "reset_filters": "Filters Resetten"
 }

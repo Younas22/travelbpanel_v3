@@ -23,5 +23,6 @@
   "afternoon": "День",
   "evening": "Вечер",
   "transit_hours": "Время пересадки",
-  "luggage": "Багаж"
+  "luggage": "Багаж",
+  "reset_filters": "Сбросить фильтры"
 }
