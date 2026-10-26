@@ -48,5 +48,9 @@
     "min_stay_note": "A minimum stay of :nights night(s) is required for this rate.",
     "taxes_and_fees": "Taxes & Fees",
     "included_in_price": "Included in price",
-    "payable_at_property": "Payable at property"
+    "payable_at_property": "Payable at property",
+    "booking_date": "Booking date",
+    "not_allowed": "Not allowed",
+    "free": "Free",
+    "total_taxes": "Total Taxes"
 }

@@ -636,7 +636,7 @@
         for (let i = 1; i <= count; i++) {
             const previousValue = existingAges[i - 1] || hotelChildAgesFromSession[i - 1] || '';
             let options = '<option value="">{{ t("hotel.selectChildAge") }}</option>';
-            for (let age = 2; age <= 11; age++) {
+            for (let age = 0; age <= 17; age++) {
                 options += `<option value="${age}" ${String(age) === previousValue ? 'selected' : ''}>${age} {{ t("hotel.years") }}</option>`;
             }
             html += `

@@ -752,7 +752,7 @@
                                 <!-- Room Header -->
                                 <div class="room-card" style="margin-bottom: 0;">
                                     <div class="room-card-header">
-                                        <img src="{{ $room['images'][0] ?? $hotel['imgs'][0] }}" alt="{{ $room['name'] }}" class="room-card-image">
+                                        <img src="{{ $room['images'][0] ?? $hotel['imgs'][0] ?? asset('public/assets/images/placeholder/default.jpg') }}" alt="{{ $room['name'] }}" class="room-card-image">
                                         <div class="room-card-info">
                                             <div class="room-name">{{ $room['name'] }}</div>
                                             <div class="room-features">
@@ -789,6 +789,36 @@
                                                     <div class="option-notice restricted">
                                                         <i class="fas fa-ban"></i>
                                                         <span>{{ $option['cancel_restricted_note'] ?? 'Cancellation not allowed' }}</span>
+                                                    </div>
+                                                @endif
+
+                                                @if(!empty($option['cancellation_rules']))
+                                                    <div class="option-taxes">
+                                                        <div class="option-taxes-title">{{ t('hoteldetails.cancellation_policy') }}</div>
+                                                        @foreach($option['cancellation_rules'] as $rule)
+                                                            <div class="option-taxes-row">
+                                                                <span>
+                                                                    @if($rule['type'] === 'no_show')
+                                                                        {{ $rule['description'] }}
+                                                                    @elseif($rule['from_date'] || $rule['to_date'])
+                                                                        {{ $rule['from_date'] ? \Carbon\Carbon::parse($rule['from_date'])->format('d M Y H:i') : t('hoteldetails.booking_date') }}
+                                                                        &ndash;
+                                                                        {{ $rule['to_date'] ? \Carbon\Carbon::parse($rule['to_date'])->format('d M Y H:i') : t('hoteldetails.checkin_label') }}
+                                                                    @else
+                                                                        {{ $rule['description'] }}
+                                                                    @endif
+                                                                </span>
+                                                                <span>
+                                                                    @if($rule['type'] === 'restricted')
+                                                                        <span class="tag at-property">{{ t('hoteldetails.not_allowed') }}</span>
+                                                                    @elseif($rule['cancel_charge'] > 0)
+                                                                        {{ number_format($rule['cancel_charge'], 2) }} {{ $room['currency'] }}
+                                                                    @else
+                                                                        <span class="tag included">{{ t('hoteldetails.free') }}</span>
+                                                                    @endif
+                                                                </span>
+                                                            </div>
+                                                        @endforeach
                                                     </div>
                                                 @endif
 
@@ -863,6 +893,11 @@
                                                     <div>
                                                         <div class="option-price">{{ number_format($option['price'], 2) }}</div>
                                                         <div class="option-per-night">{{ $room['currency'] }} {{ t('hoteldetails.currency_total') }}</div>
+                                                        @if(!empty($option['taxes_at_property']))
+                                                            <div class="option-per-night" style="color: #92400e;">
+                                                                + {{ number_format(collect($option['taxes_at_property'])->sum('amount'), 2) }} {{ $room['currency'] }} {{ t('hoteldetails.payable_at_property') }}
+                                                            </div>
+                                                        @endif
                                                     </div>
                                                     <div style="text-align: right;">
                                                         <div style="font-size: 14px; font-weight: 600; color: #374151;">

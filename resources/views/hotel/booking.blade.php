@@ -249,6 +249,13 @@
                         // figures captured at search time if that re-check didn't run.
                         $taxesIncluded   = $fresh_taxes_and_fees['included_in_price']   ?? ($booking_option['taxes_included']    ?? []);
                         $taxesAtProperty = $fresh_taxes_and_fees['payable_at_property'] ?? ($booking_option['taxes_at_property'] ?? []);
+                        // <totalTaxes> is mandatory to disclose per WebBeds — it's
+                        // already included within the room price shown above, so
+                        // this is a disclosure line only, never added again.
+                        $totalTaxes      = $fresh_taxes_and_fees['total_taxes'] ?? null;
+                        $totalTaxesCurrency = $fresh_taxes_and_fees['currency']
+                            ?? ($taxesIncluded[0]['currency'] ?? null)
+                            ?? ($taxesAtProperty[0]['currency'] ?? '');
                     @endphp
 
                     @if(!empty($booking_option['non_refundable']) || !empty($booking_option['cancel_restricted']) || (!empty($booking_option['min_stay']) && (int) $booking_option['min_stay'] > 0))
@@ -273,9 +280,15 @@
                         </div>
                     @endif
 
-                    @if(!empty($taxesIncluded) || !empty($taxesAtProperty))
+                    @if(!empty($taxesIncluded) || !empty($taxesAtProperty) || $totalTaxes !== null)
                         <div class="space-y-1 mb-5 pb-5 border-b border-gray-200">
                             <div class="text-sm font-semibold text-gray-700 mb-1">{{ t('hoteldetails.taxes_and_fees') }}</div>
+                            @if($totalTaxes !== null)
+                                <div class="flex justify-between text-xs text-gray-700 font-medium">
+                                    <span>{{ t('hoteldetails.total_taxes') }}</span>
+                                    <span>{{ number_format($totalTaxes, 2) }} {{ $totalTaxesCurrency }}</span>
+                                </div>
+                            @endif
                             @foreach($taxesIncluded as $tax)
                                 <div class="flex justify-between text-xs text-gray-600">
                                     <span>{{ $tax['description'] ?: ($tax['name'] ?? $tax['type'] ?? '') }} <span class="text-green-700">({{ t('hoteldetails.included_in_price') }})</span></span>
