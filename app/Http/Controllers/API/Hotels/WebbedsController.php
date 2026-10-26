@@ -308,14 +308,33 @@ class WebbedsController extends BaseController
                                 fn($r) => $r['type'] === 'free' && $r['cancel_charge'] == 0
                             );
 
-                        // Cert #20: specials per rateBasis
-                        $specialsRaw = $roomType['specials']['special'] ?? [];
-                        if (!empty($specialsRaw) && isset($specialsRaw['@attributes'])) $specialsRaw = [$specialsRaw];
-                        $specials = array_map(fn($s) => [
+                        // Cert #20: specials per rateBasis. <specials><special
+                        // runno="N"> under the room type lists every promotion
+                        // CONFIGURED on this room. <specialsApplied><special>
+                        // under each rateBasis is NOT a 0/1 "applied" boolean —
+                        // confirmed directly by WebBeds: its value is the
+                        // runno of the one <special> entry that applies to
+                        // THIS specific rate. A rate can reference any runno
+                        // (0, 1, ...), so only the matching special(s) by
+                        // runno are shown — never "all" and never "none"
+                        // just because the value happens to be "0".
+                        $allSpecialsRaw = $roomType['specials']['special'] ?? [];
+                        if (!empty($allSpecialsRaw) && isset($allSpecialsRaw['@attributes'])) $allSpecialsRaw = [$allSpecialsRaw];
+                        $allSpecials = array_map(fn($s) => [
+                            'runno'    => (string) ($s['@attributes']['runno'] ?? ''),
                             'type'     => $s['type']        ?? '',
                             'name'     => $s['specialName'] ?? '',
                             'discount' => $s['discount']    ?? '',
-                        ], is_array($specialsRaw) ? $specialsRaw : []);
+                        ], is_array($allSpecialsRaw) ? $allSpecialsRaw : []);
+
+                        $appliedRunnoRaw = $rateBasis['specialsApplied']['special'] ?? [];
+                        if (!is_array($appliedRunnoRaw)) $appliedRunnoRaw = [$appliedRunnoRaw];
+                        $appliedRunnos = array_map('strval', array_filter($appliedRunnoRaw, fn($v) => $v !== null && $v !== ''));
+
+                        $specials = array_values(array_filter(
+                            $allSpecials,
+                            fn($s) => in_array($s['runno'], $appliedRunnos, true)
+                        ));
 
                         $options[] = [
                             'id'                  => $rateBasisRunno,
@@ -353,7 +372,18 @@ class WebbedsController extends BaseController
                             // <cancelRestricted> live on individual rules inside
                             // <cancellationRules>, not on the rateBasis itself;
                             // true if ANY of this rate's rules is restricted.
-                            'non_refundable'      => strtolower($this->xml_str($rateBasis['nonRefundable']    ?? 'no'))   === 'yes',
+                            //
+                            // non_refundable must be the exact inverse of
+                            // is_refundable above — both are derived from the
+                            // same <cancellationRules> analysis (a rate with no
+                            // free-cancellation window IS non-refundable, full
+                            // stop). A literal <nonRefundable> XML attribute is
+                            // rarely present at all, so relying on it alone
+                            // (the previous behavior) left every such rate
+                            // mislabeled "Refundable" by default — confirmed by
+                            // WebBeds against a real non-refundable rate.
+                            'non_refundable'      => !$isRefundable
+                                || strtolower($this->xml_str($rateBasis['nonRefundable'] ?? 'no')) === 'yes',
                             'cancel_restricted'       => $cancelRestricted,
                             'amend_restricted'        => $amendRestricted,
                             'cancel_restricted_note'  => $cancelRestricted
@@ -518,12 +548,37 @@ class WebbedsController extends BaseController
             $allocationDetails = $optionData->allocation_details ?? $roomData->room_data->allocation_details ?? '';
             $passengersFromOpt = (int) ($optionData->passengers_required ?? $roomData->room_data->passengers_required ?? 1);
 
+            // Cert #19 — Changed Occupancy: per WebBeds' spec, confirmed
+            // directly by them, the VALID occupancy (valid_for_occupancy) is
+            // used ONLY in the savebooking request's adultsCode/children —
+            // never in searchhotels, getrooms, or getrooms-with-blocking,
+            // which must always carry the originally-searched occupancy
+            // throughout. savebooking's actualAdults/actualChildren always
+            // carry that original request alongside the valid adultsCode/
+            // children. A normal (non-changed) rate keeps both the same.
+            // $bookingAdults/$bookingChildrenAges/$extraBed below are used
+            // exclusively for the savebooking room block further down — NOT
+            // for the getroomsblock pre-check, which intentionally still uses
+            // $adults/$children (original) a few lines below.
+            $hasChangedOccupancy = !empty($optionData->changed_occupancy) && !empty($optionData->valid_for_occupancy);
+            if ($hasChangedOccupancy) {
+                $vfo           = $optionData->valid_for_occupancy;
+                $bookingAdults = (int) ($vfo->adults ?? $adults);
+                $bookingChildrenAges = array_map('intval', $vfo->children_ages ?? []);
+                $extraBed      = (int) ($vfo->extra_bed ?? 0);
+            } else {
+                $bookingAdults       = $adults;
+                $bookingChildrenAges = $children;
+                $extraBed            = 0;
+            }
+
             $customerReference = strtoupper('WB-' . $productId . '-' . date('Ymd', strtotime($checkin)) . '-' . substr(bin2hex(random_bytes(3)), 0, 6));
 
             $guest              = json_decode($v['guest']);
-            $childCount         = count($children);
-            // DOTW needs a name per occupant (adults + children)
-            $passengersRequired = max($passengersFromOpt, $adults + $childCount);
+            // DOTW needs a name per occupant of the VALID (bookable) occupancy,
+            // not the originally-searched one — see Cert #19 above.
+            $childCount         = count($bookingChildrenAges);
+            $passengersRequired = max($passengersFromOpt, $bookingAdults + $childCount);
 
             // Build passengers from guest input. Each guest may flag itself as a
             // child (type/is_child); otherwise it's treated as an adult.
@@ -561,7 +616,13 @@ class WebbedsController extends BaseController
             // before savebooking. Run it here so it is ALWAYS executed and logged as
             // part of the booking, and use its freshly blocked allocationDetails for
             // savebooking. This gates the booking: if the block fails, we stop.
-            // $children is already sanitized to real ages (1..17)
+            //
+            // Confirmed directly by WebBeds: searchhotels, getrooms (simple), AND
+            // getrooms-with-blocking must ALL carry the ORIGINAL searched occupancy
+            // — never the valid/adjusted one. Only savebooking's adultsCode/children
+            // use the valid occupancy (with actualAdults/actualChildren carrying the
+            // original) — see Cert #19 below. Using the adjusted occupancy here was
+            // an incorrect assumption and would cause live-environment errors.
             $childAgesForBlock = $children;
 
             $blockParams = [
@@ -641,10 +702,15 @@ class WebbedsController extends BaseController
                     'room_type_code'       => $roomTypeCode,
                     'rate_basis_id'        => $selectedRateBasis,
                     'allocation_details'   => $allocationDetails,
-                    'adults'               => $adults,
+                    // adults/children = VALID occupancy this rate was priced
+                    // for; actual_adults/actual_children = what the user
+                    // actually searched. Identical for a normal rate — see
+                    // Cert #19 above for the changed-occupancy case.
+                    'adults'               => $bookingAdults,
                     'actual_adults'        => $adults,
-                    'children'             => $children,
-                    'extra_bed'            => 0,
+                    'children'             => $bookingChildrenAges,
+                    'actual_children'      => $children,
+                    'extra_bed'            => $extraBed,
                     'nationality'          => $nationality,
                     'country_of_residence' => $residence,
                     'passengers'           => $passengers,
@@ -890,7 +956,13 @@ class WebbedsController extends BaseController
                 'status'            => 'confirmed',
                 'message'           => 'Booking confirmed successfully.',
                 'cancel_info'       => [
-                    'booking_code'                 => $cancelServiceCode,
+                    // <bookingCode> for cancelbooking must be the itinerary-level
+                    // code (same as booking_pnr above), NOT the service/product
+                    // code — WebBeds rejects the service code with "Wrong booking
+                    // code, cancellation period expired or this booking is
+                    // already cancelled" (error 210) even though it's a valid
+                    // code, just the wrong one for this command.
+                    'booking_code'                 => $bookingNode['bookingCode'],
                     'service_code'                 => $cancelServiceCode,
                     'payment_balance'              => $paymentBalance,
                     'within_cancellation_deadline' => $withinCancelDeadline,
@@ -1026,11 +1098,10 @@ class WebbedsController extends BaseController
             $validator = Validator::make($request->all(), [
                 'booking_code'     => 'required|string',
                 'confirm'          => 'required|in:no,yes',
-                'payment_balance'  => 'required|numeric',
+                // Required only for the confirm=no preview — the original,
+                // un-adjusted outstanding balance for the booking.
+                'payment_balance'  => 'required_if:confirm,no|nullable|numeric',
                 'service_code'     => 'nullable|string',
-                // Required only when finalizing — sourced from the confirm=no
-                // preview response the caller already received (see below).
-                'penalty_charge'   => 'required_if:confirm,yes|nullable|numeric',
                 'api_credential_1' => 'required|string',
                 'api_credential_2' => 'required|string',
                 'api_credential_3' => 'required|string',
@@ -1072,6 +1143,17 @@ class WebbedsController extends BaseController
                 $charge       = (float) (is_array($chargeNode) ? ($chargeNode[0] ?? 0) : $chargeNode);
                 $paymentBal   = round((float) $v['payment_balance'] - $charge, 4);
 
+                // Cache the authoritative preview figures server-side so the
+                // confirm=yes finalize step below uses these exact values
+                // instead of trusting whatever the client echoes back — the
+                // client previously re-sent the already-adjusted payment_balance,
+                // which then got the charge subtracted a second time.
+                Cache::put(
+                    $this->cancel_booking_preview_cache_key($bookingCode),
+                    ['service_code' => $serviceCode, 'penalty_charge' => $charge, 'payment_balance' => $paymentBal],
+                    now()->addMinutes(15)
+                );
+
                 return response()->json([
                     'success'         => true,
                     'booking_code'    => $bookingCode,
@@ -1084,17 +1166,24 @@ class WebbedsController extends BaseController
                 ]);
             }
 
-            // confirm=yes — finalize using the charge the caller already has
-            // from their own earlier confirm=no preview call (above). WebBeds
-            // requires confirm=yes to carry a <testPricesAndAllocation> block
-            // asserting that exact charge (omitting it is rejected with error
-            // 320); re-probing with confirm=no again here just to rebuild that
-            // block would repeat the same request the caller already made —
-            // the redundant extra call WebBeds certification flagged — so we
-            // reuse the preview's own figures instead of re-fetching them.
-            $serviceCode = $v['service_code'] ?? $bookingCode;
-            $charge      = (float) $v['penalty_charge'];
-            $paymentBal  = round((float) $v['payment_balance'] - $charge, 4);
+            // confirm=yes — finalize using the exact figures computed during
+            // the caller's own earlier confirm=no preview (above), pulled from
+            // server-side cache rather than trusting client-supplied values.
+            // WebBeds requires confirm=yes to carry a <testPricesAndAllocation>
+            // block asserting that exact charge (omitting it is rejected with
+            // error 320); re-probing with confirm=no again here just to rebuild
+            // that block would repeat the same request the caller already made
+            // — the redundant extra call WebBeds certification flagged — so we
+            // reuse the cached preview's own figures instead of re-fetching or
+            // re-deriving them from client input.
+            $preview = Cache::get($this->cancel_booking_preview_cache_key($bookingCode));
+            if (!$preview) {
+                return $this->error_response('Cancellation preview expired or missing. Call again with confirm=no first.', 422);
+            }
+
+            $serviceCode = $preview['service_code'];
+            $charge      = $preview['penalty_charge'];
+            $paymentBal  = $preview['payment_balance'];
 
             $yesXml      = $this->build_cancelbooking_xml($v, $bookingCode, $password, 'yes', $serviceCode, $charge, $paymentBal);
             $yesResponse = $this->make_curl_request($yesXml, self::CURL_TIMEOUT_PRICE);
@@ -1111,6 +1200,8 @@ class WebbedsController extends BaseController
             }
 
             $productsLeft = (int) ($yesData['productsLeftOnItinerary'] ?? 0);
+
+            Cache::forget($this->cancel_booking_preview_cache_key($bookingCode));
 
             return response()->json([
                 'success'                    => true,
@@ -1132,11 +1223,24 @@ class WebbedsController extends BaseController
         }
     }
 
+    private function cancel_booking_preview_cache_key(string $bookingCode): string
+    {
+        return 'webbeds:cancelbooking_preview:' . $bookingCode;
+    }
+
     /**
      * Build a WebBeds cancelbooking XML request. confirm=no (preview) sends no
      * testPricesAndAllocation block; confirm=yes (finalize) requires one — see
      * hotel_cancel_booking(), which sources $serviceCode/$penalty/$paymentBalance
-     * from the caller's own earlier confirm=no preview rather than re-probing.
+     * from the caller's own earlier confirm=no preview (cached server-side)
+     * rather than trusting client input or re-probing.
+     *
+     * <bookingType> must be "1" here — confirmed directly by WebBeds support
+     * against our own test booking (PNR 1077297753): it is NOT the same value
+     * as bookitinerary's own <bookingType> (which is "2" for hotel bookings —
+     * see build_save_booking_xml()). Sending "2" here, on the assumption the
+     * two had to match, was the actual cause of every cancellation attempt
+     * failing with error 210 ("Wrong booking code...").
      */
     private function build_cancelbooking_xml(
         array $v,
@@ -1207,38 +1311,12 @@ XMLREQ;
         curl_close($ch);
 
         if ($curlError) {
-            $this->maybe_log_xml($xml, null);
             return ['success' => false, 'message' => "cURL error: {$curlError}"];
         }
         if ($httpCode !== 200) {
-            $this->maybe_log_xml($xml, $body);
             return ['success' => false, 'message' => "HTTP error: {$httpCode}"];
         }
-        $this->maybe_log_xml($xml, $body);
         return ['success' => true, 'body' => $body];
-    }
-
-    /**
-     * Opt-in request/response XML capture for certification evidence — inert
-     * unless WEBBEDS_XML_LOG_DIR is set in the environment, so it never runs
-     * in normal production traffic.
-     */
-    private static int $xmlLogSeq = 0;
-
-    private function maybe_log_xml(string $requestXml, ?string $responseXml): void
-    {
-        $dir = env('WEBBEDS_XML_LOG_DIR');
-        if (!$dir) return;
-        if (!is_dir($dir)) @mkdir($dir, 0775, true);
-
-        self::$xmlLogSeq++;
-        $label = 'step';
-        if (preg_match('/command="([a-zA-Z]+)"/', $requestXml, $m)) {
-            $label = $m[1];
-        }
-        $base = sprintf('%s_%02d_%s', date('His'), self::$xmlLogSeq, $label);
-        @file_put_contents("{$dir}/{$base}_request.xml", $requestXml);
-        @file_put_contents("{$dir}/{$base}_response.xml", $responseXml ?? '');
     }
 
     // -------------------------------------------------------------------------
@@ -1413,28 +1491,45 @@ XML;
         $roomsXml  = '';
 
         foreach ($v['rooms'] as $index => $room) {
-            $children     = $this->parse_child_ages($room['children'] ?? []);
-            $childCount   = count($children);
-            $adultsCode   = (int) $room['adults'];
-            $actualAdults = (int) ($room['actual_adults'] ?? $adultsCode);
-            $extraBed     = (int) ($room['extra_bed'] ?? 0);
-            $nationality  = $room['nationality']          ?: '167';
-            $residence    = $room['country_of_residence'] ?: '167';
+            // Cert #19: for a rate with changed occupancy, <children>/<adultsCode>
+            // must carry the VALID (possibly-adjusted) occupancy WebBeds priced
+            // this rate for, while <actualChildren>/<actualAdults> always carry
+            // what the user actually searched/requested — these two can differ
+            // in both count and values (e.g. a 12-year-old "promoted" to an
+            // adult because this roomType's child age ceiling is 11). The
+            // caller (hotel_booking()) is responsible for populating 'children'
+            // vs 'actual_children' correctly per WebBeds' Changed Occupancy spec;
+            // for a normal (non-changed) rate both are simply the same values.
+            $children       = $this->parse_child_ages($room['children'] ?? []);
+            $actualChildren = $this->parse_child_ages($room['actual_children'] ?? $room['children'] ?? []);
+            $childCount     = count($children);
+            $adultsCode     = (int) $room['adults'];
+            $actualAdults   = (int) ($room['actual_adults'] ?? $adultsCode);
+            $extraBed       = (int) ($room['extra_bed'] ?? 0);
+            $nationality    = $room['nationality']          ?: '167';
+            $residence      = $room['country_of_residence'] ?: '167';
 
-            // Required passengers = adults + children
+            // Required passengers = adults + children (the VALID occupancy —
+            // this is who actually occupies the room per WebBeds' booking)
             $requiredPassengers = $adultsCode + $childCount;
 
             if ($childCount === 0) {
-                $childrenXml       = '<children no="0"></children>';
+                $childrenXml = '<children no="0"></children>';
+            } else {
+                $childrenXml = '<children no="' . $childCount . '">';
+                foreach (array_values($children) as $ci => $age) {
+                    $childrenXml .= '<child runno="' . $ci . '">' . $age . '</child>';
+                }
+                $childrenXml .= '</children>';
+            }
+
+            if (empty($actualChildren)) {
                 $actualChildrenXml = '<actualChildren no="0"></actualChildren>';
             } else {
-                $childrenXml       = '<children no="' . $childCount . '">';
-                $actualChildrenXml = '<actualChildren no="' . $childCount . '">';
-                foreach (array_values($children) as $ci => $age) {
-                    $childrenXml       .= '<child runno="' . $ci . '">' . $age . '</child>';
+                $actualChildrenXml = '<actualChildren no="' . count($actualChildren) . '">';
+                foreach (array_values($actualChildren) as $ci => $age) {
                     $actualChildrenXml .= '<actualChild runno="' . $ci . '">' . $age . '</actualChild>';
                 }
-                $childrenXml       .= '</children>';
                 $actualChildrenXml .= '</actualChildren>';
             }
 
