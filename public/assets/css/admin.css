@@ -9694,3 +9694,32 @@ input:checked + .status-slider:before {
 .tbp-partner-edit-cred-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 20px; }
 @media (max-width: 640px) { .tbp-partner-edit-cred-grid { grid-template-columns: 1fr; } }
 .tbp-partner-edit-field .form-control.tbp-partner-edit-cred-input { height: 50px; font-size: 0.9375rem; padding-left: 16px; padding-right: 48px; }
+
+/* ---- WebBeds city import (Edit Travel Partner → Import Data) ---- */
+.tbp-webbeds-import-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+@media (max-width: 900px) { .tbp-webbeds-import-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.tbp-webbeds-import-stat { border: 1px solid var(--border-color); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+.tbp-webbeds-import-stat span { font-size: 0.75rem; color: var(--bs-secondary-color); }
+.tbp-webbeds-import-stat strong { font-size: 1.125rem; color: var(--text-color); }
+.tbp-webbeds-import-stat.is-green strong { color: #16a34a; }
+.tbp-webbeds-import-stat.is-amber strong { color: #d97706; }
+.tbp-webbeds-import-stat.is-red strong { color: #dc2626; }
+.tbp-webbeds-import-progress { border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; margin-bottom: 14px; }
+.tbp-webbeds-import-progress-head { display: flex; justify-content: space-between; font-size: 0.8125rem; color: var(--text-color); margin-bottom: 8px; }
+.tbp-webbeds-import-bar { height: 8px; background: var(--body-bg); border-radius: 999px; overflow: hidden; margin-bottom: 8px; }
+.tbp-webbeds-import-bar-fill { height: 100%; background: var(--primary-color); border-radius: 999px; transition: width .4s ease; }
+.tbp-webbeds-import-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.tbp-webbeds-import-cron { border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; background: var(--body-bg); }
+.tbp-webbeds-import-cron-title { font-weight: 700; font-size: 0.875rem; color: var(--text-color); display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.tbp-webbeds-import-cron .tbp-partner-edit-hint { margin: 0 0 10px; display: block; }
+.tbp-webbeds-import-label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-color); margin: 10px 0 6px; }
+.tbp-webbeds-import-copy { display: flex; gap: 8px; }
+.tbp-webbeds-import-copy .form-control { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.75rem; background: var(--card-bg); }
+.tbp-webbeds-import-filters { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 10px; margin-bottom: 10px; }
+@media (max-width: 640px) { .tbp-webbeds-import-filters { grid-template-columns: 1fr; } .tbp-webbeds-import-copy { flex-wrap: wrap; } }
+.tbp-webbeds-import-badge-pending { background: #f1f5f9; color: #475569; }
+.tbp-webbeds-import-badge-outdated { background: #fff4e5; color: #b45309; }
+.tbp-webbeds-import-city-btn { padding: 5px 10px; font-size: 0.75rem; }
+.tbp-webbeds-import-pager { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 10px; }
+.tbp-webbeds-import-pager > div { display: flex; gap: 6px; }
+.tbp-webbeds-import-pager .tbp-partner-edit-btn { padding: 6px 12px; }

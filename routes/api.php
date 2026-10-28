@@ -170,3 +170,6 @@ Route::controller(DuffelController::class)->group(function(){
     Route::post('duffel/booking', 'booking');
 });
 
+
+// Monthly WebBeds city/hotel import — hit by the server cron (secret token in the URL).
+Route::get('cron/webbeds/city-import/{token}', [\App\Http\Controllers\Admin\WebbedsCityImportController::class, 'cron'])->name('cron.webbeds.city-import');

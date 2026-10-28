@@ -314,10 +314,13 @@
                                 <div class="tbp-partner-edit-card-icon"><i class="bi bi-cloud-arrow-up"></i></div>
                                 <div>
                                     <div class="tbp-partner-edit-card-title">Import Data</div>
-                                    <div class="tbp-partner-edit-card-desc">Upload and manage data imports for this supplier.</div>
+                                    <div class="tbp-partner-edit-card-desc">{{ $supplierSlug === 'webbeds' ? 'Import hotels for every WebBeds city into the local database — refreshed automatically every month.' : 'Upload and manage data imports for this supplier.' }}</div>
                                 </div>
                             </div>
                             <div class="tbp-partner-edit-card-body">
+                                @if($supplierSlug === 'webbeds')
+                                    @include('admin.travel-partners._webbeds-import')
+                                @else
                                 <div class="tbp-partner-edit-grid tbp-partner-edit-grid-2">
                                     <div class="tbp-partner-edit-field">
                                         <label>Import Type</label>
@@ -377,6 +380,7 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                @endif
                             </div>
                         </div>
                     </section>
