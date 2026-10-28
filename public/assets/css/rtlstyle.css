@@ -8310,13 +8310,31 @@ a i {
     position: relative;
     padding: 0;
     color: #000000;
-    background: #F3F8FE url('../images/footer/footer-skyline-bg.png') center top / 100% auto no-repeat;
+    background: #F5F9FE;
+}
+
+/* The supplied travelscape artwork, scaled by width and anchored to the
+   bottom of the main area. Its solid blue band (4.98% of its width) is
+   pushed just below that edge; the .sf-bottom bar continues it. */
+.sf-main {
+    min-height: min(28.4vw, 560px); /* the artwork's height above its blue band, capped on very wide screens */
+    background: #F5F9FE url('../images/footer/footer-travelscape-bg.png') center bottom -5vw / 100% auto no-repeat;
+}
+
+/* Desktop below 1920px: the content is taller than the width-scaled artwork,
+   so scale it to the area's height instead (its band, the bottom 14.9%,
+   then falls just below the area), keeping the map and skyline in view. */
+@media (min-width: 1024px) and (max-width: 1919px) {
+    .sf-main {
+        background-size: auto calc(100% * 725 / 617);
+        background-position: 70% top;
+    }
 }
 
 .site-footer-inner {
     max-width: 1328px;
     margin: 0 auto;
-    padding: max(64px, calc(7.2vw + 8px)) 24px 0;
+    padding: 64px 24px max(56px, 9vw);
 }
 
 .site-footer a {
@@ -8332,7 +8350,6 @@ a i {
 .sf-grid {
     display: grid;
     grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 1.25fr);
-    padding-bottom: 40px;
 }
 
 .sf-col {
@@ -8417,8 +8434,28 @@ a i {
 
 .sf-contact-text {
     display: flex;
+    flex: 1 1 auto;
     flex-direction: column;
     min-width: 0;
+}
+
+.sf-contact-go {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 9999px;
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563EB;
+    font-size: 11px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sf-contact:hover .sf-contact-go {
+    background: #2563EB;
+    color: #FFFFFF;
 }
 
 .sf-contact-label {
@@ -8451,18 +8488,19 @@ a i {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 9999px;
-    background: rgba(37, 99, 235, 0.1);
-    color: #2563EB;
-    font-size: 15px;
+    background: transparent;
+    color: #FFFFFF;
+    font-size: 13px;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .sf-social a:hover {
-    background: #2563EB;
-    color: #FFFFFF;
+    background: #FFFFFF;
+    color: #2563EB;
 }
 
 /* Link columns */
@@ -8596,15 +8634,31 @@ a i {
 
 /* Bottom bar */
 .sf-bottom {
+    background: #2563EB;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 13px;
+}
+
+.sf-bottom-inner {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 12px 24px;
-    padding: 20px 0 24px;
-    border-top: 1px solid rgba(37, 99, 235, 0.16);
-    color: rgba(0, 0, 0, 0.7);
-    font-size: 13px;
+    max-width: 1328px;
+    margin: 0 auto;
+    padding: 18px 24px;
+}
+
+.sf-bottom-end {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 24px;
+}
+
+.site-footer .sf-bottom a:focus-visible {
+    outline-color: #FFFFFF;
 }
 
 .sf-copy {
@@ -8616,19 +8670,19 @@ a i {
 
 .sf-copy strong,
 .sf-copy a {
-    color: #2563EB;
+    color: #FFFFFF;
     font-weight: 600;
 }
 
 .sf-copy .fa-heart {
     margin: 0 2px;
-    color: #2563EB;
+    color: #FFFFFF;
 }
 
 .sf-sep {
     width: 1px;
     height: 14px;
-    background: rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.4);
 }
 
 .sf-legal {
@@ -8639,8 +8693,8 @@ a i {
 
 .sf-legal a {
     padding: 0 16px;
-    border-left: 1px solid rgba(0, 0, 0, 0.15);
-    color: rgba(0, 0, 0, 0.75);
+    border-left: 1px solid rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.9);
     line-height: 1.2;
     transition: color 0.2s ease;
 }
@@ -8654,7 +8708,8 @@ a i {
 }
 
 .sf-legal a:hover {
-    color: #2563EB;
+    color: #FFFFFF;
+    text-decoration: underline;
 }
 
 @media (max-width: 1023px) {
@@ -8675,12 +8730,20 @@ a i {
 
 @media (max-width: 639px) {
     .site-footer-inner {
-        padding: 56px 16px 0;
+        padding: 48px 16px max(48px, 12vw);
     }
 
     .sf-grid {
         row-gap: 28px;
-        padding-bottom: 28px;
+    }
+
+    .sf-bottom-inner {
+        padding: 18px 16px 22px;
+    }
+
+    .sf-bottom-end {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     .sf-brand,
@@ -8704,7 +8767,7 @@ a i {
         max-width: none;
     }
 
-    .sf-bottom {
+    .sf-bottom-inner {
         flex-direction: column;
         align-items: flex-start;
     }
@@ -8778,7 +8841,11 @@ a i {
 
 .sf-legal a {
     border-left: 0;
-    border-right: 1px solid rgba(0, 0, 0, 0.15);
+    border-right: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.sf-contact-go i {
+    transform: scaleX(-1);
 }
 
 .sf-legal a:first-child {

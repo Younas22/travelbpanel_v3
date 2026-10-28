@@ -162,8 +162,20 @@
             margin-bottom: 8px;
         }
 
+        /* phones: wrap the tabs onto rows so every module is visible and
+           tappable, instead of hiding some off-screen in a sideways scroll */
         .tab-buttons {
+            flex-wrap: wrap;
+            justify-content: center;
             padding: 4px;
+            border-radius: 22px;
+            overflow: visible;
+        }
+
+        .tab-buttons > .tab-btn:first-child,
+        .tab-buttons > .tab-btn:last-child {
+            margin-left: 0;
+            margin-right: 0;
         }
 
         .tab-btn {

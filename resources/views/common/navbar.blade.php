@@ -68,6 +68,57 @@
         color: rgba(0, 0, 0, .45);
     }
 
+    /* Mobile menu: currency + language use the same round pills and round
+       flags as the desktop bar (selector chain matches common/header). */
+    .nav-mobile-card .select2-container--default .select2-selection--single {
+        height: 44px !important;
+        border: 1px solid rgba(0, 0, 0, .1) !important;
+        border-radius: 999px !important;
+        background: #fff !important;
+        display: flex !important;
+        align-items: center;
+    }
+    .nav-mobile-card .select2-container--default .select2-selection--single .select2-selection__rendered {
+        display: flex;
+        align-items: center;
+        padding: 0 30px 0 8px !important;
+        font-weight: 400;
+        font-size: 13px !important;
+        color: #000;
+        line-height: 42px !important;
+    }
+    [dir="rtl"] .nav-mobile-card .select2-container--default .select2-selection--single .select2-selection__rendered {
+        padding: 0 8px 0 30px !important;
+    }
+    .nav-mobile-card .select2-selection__rendered .fi {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, .08);
+    }
+    .nav-mobile-card .select2-container--default .select2-selection--single .select2-selection__arrow {
+        top: 0 !important;
+        height: 42px !important;
+        right: 10px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    [dir="rtl"] .nav-mobile-card .select2-container--default .select2-selection--single .select2-selection__arrow {
+        right: auto !important;
+        left: 10px !important;
+    }
+    .nav-mobile-card .select2-selection__arrow b { display: none !important; }
+    .nav-mobile-card .select2-selection__arrow::after {
+        content: '\f078';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        font-size: 9px;
+        color: rgba(0, 0, 0, .45);
+    }
+
     .btn-signin-pill {
         display: inline-flex;
         align-items: center;

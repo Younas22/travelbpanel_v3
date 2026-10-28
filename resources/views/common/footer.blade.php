@@ -92,39 +92,104 @@
         $footerBusinessName = getSetting('business_name', 'main');
     @endphp
     <footer class="site-footer">
-        <div class="site-footer-inner">
+        <div class="sf-main">
+            <div class="site-footer-inner">
 
-            <!-- Main Footer Grid -->
-            <div class="sf-grid">
+                <!-- Main Footer Grid -->
+                <div class="sf-grid">
 
-                <!-- Brand -->
-                <div class="sf-col sf-brand">
-                    <a href="{{ url('/') }}" class="sf-logo">
-                        <img src="{{ getSettingImage('business_logo', 'branding') }}" alt="{{ $footerBusinessName ?: 'Logo' }}">
-                        @if(showBusinessNameWithLogo())
-                            <span>{{ getSetting('business_name', 'main', 'TravelBookingPanel') }}</span>
-                        @endif
-                    </a>
-
-                    <p class="sf-desc"><?= getSetting('meta_description', 'seo') ?></p>
-
-                    <div class="sf-contacts">
-                        <a href="mailto:{{ $contactEmail }}" class="sf-contact">
-                            <span class="sf-contact-icon"><i class="fas fa-envelope"></i></span>
-                            <span class="sf-contact-text">
-                                <span class="sf-contact-label">{{ t('footer.email_us') }}</span>
-                                <span class="sf-contact-value">{{ $contactEmail }}</span>
-                            </span>
+                    <!-- Brand -->
+                    <div class="sf-col sf-brand">
+                        <a href="{{ url('/') }}" class="sf-logo">
+                            <img src="{{ getSettingImage('business_logo', 'branding') }}" alt="{{ $footerBusinessName ?: 'Logo' }}">
+                            @if(showBusinessNameWithLogo())
+                                <span>{{ getSetting('business_name', 'main', 'TravelBookingPanel') }}</span>
+                            @endif
                         </a>
-                        <a href="{{ $whatsappLink }}" target="_blank" rel="noopener" class="sf-contact">
-                            <span class="sf-contact-icon"><i class="fab fa-whatsapp"></i></span>
-                            <span class="sf-contact-text">
-                                <span class="sf-contact-label">{{ t('footer.whatsapp') }}</span>
-                                <span class="sf-contact-value" dir="ltr">{{ $phone }}</span>
-                            </span>
-                        </a>
+
+                        <p class="sf-desc"><?= getSetting('meta_description', 'seo') ?></p>
+
+                        <div class="sf-contacts">
+                            <a href="mailto:{{ $contactEmail }}" class="sf-contact">
+                                <span class="sf-contact-icon"><i class="fas fa-envelope"></i></span>
+                                <span class="sf-contact-text">
+                                    <span class="sf-contact-label">{{ t('footer.email_us') }}</span>
+                                    <span class="sf-contact-value">{{ $contactEmail }}</span>
+                                </span>
+                                <span class="sf-contact-go" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                            <a href="{{ $whatsappLink }}" target="_blank" rel="noopener" class="sf-contact">
+                                <span class="sf-contact-icon"><i class="fab fa-whatsapp"></i></span>
+                                <span class="sf-contact-text">
+                                    <span class="sf-contact-label">{{ t('footer.whatsapp') }}</span>
+                                    <span class="sf-contact-value" dir="ltr">{{ $phone }}</span>
+                                </span>
+                                <span class="sf-contact-go" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
                     </div>
 
+                    <!-- Quick Links -->
+                    <div class="sf-col">
+                        <h4 class="sf-heading">{{ t('footer.quick_links') }}</h4>
+                        <ul class="sf-links">
+                            @foreach (get_menu_items('footer_quick_links') as $item)
+                                <li><a href="{{ $item->full_url }}"><i class="fas fa-chevron-right"></i> {{ t('footer.'.$item->name) }}</a></li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    <!-- Our Services — driven by active modules -->
+                    <div class="sf-col">
+                        <h4 class="sf-heading">{{ t('footer.our_services') }}</h4>
+                        <ul class="sf-links">
+                            @foreach (\App\Models\Module::active()->orderBy('sort_order')->get() as $fMod)
+                                @php $fUrl = $fMod->slug === 'visa' ? route('visa.create') : url($footerModUrlMap[$fMod->slug] ?? '/'.$fMod->slug); @endphp
+                                <li><a href="{{ $fUrl }}"><i class="fas fa-chevron-right"></i> {{ t('footer.'.$fMod->name) }}</a></li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    <!-- Newsletter -->
+                    <div class="sf-col sf-newsletter">
+                        <h4 class="sf-heading">{{ t('footer.newsletter') }}</h4>
+                        <p class="sf-newsletter-desc">{{ t('footer.newsletter_desc') }}</p>
+                        <form id="newsletterForm" class="sf-subscribe">
+                            @csrf
+                            <i class="fas fa-envelope sf-subscribe-icon" aria-hidden="true"></i>
+                            <input
+                                type="email"
+                                id="newsletterEmail"
+                                name="email"
+                                placeholder="{{ t('footer.your_email') }}"
+                                aria-label="{{ t('footer.your_email') }}"
+                                required
+                            >
+                            <button type="submit" id="newsletterBtn" title="{{ t('footer.subscribe_now') }}">
+                                <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                                <span id="newsletterBtnText" class="sr-only">{{ t('footer.subscribe_now') }}</span>
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="sf-bottom">
+            <div class="sf-bottom-inner">
+                <div class="sf-copy">
+                    <span>© <?= date('Y'); ?> <strong>{{ $footerBusinessName }}</strong></span>
+                    <span class="sf-sep" aria-hidden="true"></span>
+                    <span>{{ t('footer.made_by') }} <i class="fas fa-heart"></i> <a href="https://travelbookingpanel.com/">TravelBookingPanel</a></span>
+                </div>
+                <div class="sf-bottom-end">
+                    <nav class="sf-legal">
+                        @foreach (get_menu_items('footer_support') as $item)
+                            <a href="{{ $item->full_url }}">{{ t('footer.'.$item->name) }}</a>
+                        @endforeach
+                    </nav>
                     <div class="sf-social">
                         @if(!empty($socialLinks['facebook_url']))
                             <a href="{{ $socialLinks['facebook_url'] }}" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
@@ -146,66 +211,7 @@
                         @endif
                     </div>
                 </div>
-
-                <!-- Quick Links -->
-                <div class="sf-col">
-                    <h4 class="sf-heading">{{ t('footer.quick_links') }}</h4>
-                    <ul class="sf-links">
-                        @foreach (get_menu_items('footer_quick_links') as $item)
-                            <li><a href="{{ $item->full_url }}"><i class="fas fa-chevron-right"></i> {{ t('footer.'.$item->name) }}</a></li>
-                        @endforeach
-                    </ul>
-                </div>
-
-                <!-- Our Services — driven by active modules -->
-                <div class="sf-col">
-                    <h4 class="sf-heading">{{ t('footer.our_services') }}</h4>
-                    <ul class="sf-links">
-                        @foreach (\App\Models\Module::active()->orderBy('sort_order')->get() as $fMod)
-                            @php $fUrl = $fMod->slug === 'visa' ? route('visa.create') : url($footerModUrlMap[$fMod->slug] ?? '/'.$fMod->slug); @endphp
-                            <li><a href="{{ $fUrl }}"><i class="fas fa-chevron-right"></i> {{ t('footer.'.$fMod->name) }}</a></li>
-                        @endforeach
-                    </ul>
-                </div>
-
-                <!-- Newsletter -->
-                <div class="sf-col sf-newsletter">
-                    <h4 class="sf-heading">{{ t('footer.newsletter') }}</h4>
-                    <p class="sf-newsletter-desc">{{ t('footer.newsletter_desc') }}</p>
-                    <form id="newsletterForm" class="sf-subscribe">
-                        @csrf
-                        <i class="fas fa-envelope sf-subscribe-icon" aria-hidden="true"></i>
-                        <input
-                            type="email"
-                            id="newsletterEmail"
-                            name="email"
-                            placeholder="{{ t('footer.your_email') }}"
-                            aria-label="{{ t('footer.your_email') }}"
-                            required
-                        >
-                        <button type="submit" id="newsletterBtn" title="{{ t('footer.subscribe_now') }}">
-                            <i class="fas fa-paper-plane" aria-hidden="true"></i>
-                            <span id="newsletterBtnText" class="sr-only">{{ t('footer.subscribe_now') }}</span>
-                        </button>
-                    </form>
-                </div>
-
             </div>
-
-            <!-- Footer Bottom -->
-            <div class="sf-bottom">
-                <div class="sf-copy">
-                    <span>© <?= date('Y'); ?> <strong>{{ $footerBusinessName }}</strong></span>
-                    <span class="sf-sep" aria-hidden="true"></span>
-                    <span>{{ t('footer.made_by') }} <i class="fas fa-heart"></i> <a href="https://travelbookingpanel.com/">TravelBookingPanel</a></span>
-                </div>
-                <nav class="sf-legal">
-                    @foreach (get_menu_items('footer_support') as $item)
-                        <a href="{{ $item->full_url }}">{{ t('footer.'.$item->name) }}</a>
-                    @endforeach
-                </nav>
-            </div>
-
         </div>
     </footer>
     @endunless
