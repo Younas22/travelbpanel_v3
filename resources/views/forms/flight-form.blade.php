@@ -176,12 +176,18 @@
     <form id="flightSearchForm" onsubmit="return submitFlightForm(event)">
         <div class="flex flex-col gap-2">
             <!-- Trip Type Toggle -->
-            <div class="flex gap-2 mb-2">
+            <div class="flex items-center gap-2 mb-2">
                 <button type="button" id="roundTripBtn" class="trip-type-btn @if(isset($flight_search['trip_type']) && $flight_search['trip_type'] == 'round') active @endif">
                     <i class="fas fa-exchange-alt mr-2"></i>{{t('flightform.round_trip')}}
                 </button>
                 <button type="button" id="oneWayBtn" class="trip-type-btn @if(session('flight_search.trip_type') == 'oneway') active @elseif(!session('flight_search.trip_type')) active @endif">
                     <i class="fas fa-long-arrow-alt-right mr-2"></i>{{t('flightform.one_way')}}
+                </button>
+                <!-- AI search entry point (homepage only; behaviour to be wired up later) -->
+                <button type="button" id="aiSearchBtn" class="ai-search-btn" title="Search with AI" aria-label="Search with AI">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                    <span>Search with AI</span>
+                    <span class="ai-search-new">New</span>
                 </button>
             </div>
 

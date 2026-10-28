@@ -5,30 +5,6 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        .travel-bg {
-            background-image:
-                linear-gradient(135deg, rgba(3, 70, 250, 0.95) 0%, rgba(2, 48, 173, 0.92) 100%),
-                url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
-
-        /* Brand color pass — #0346FA replaces the previous lighter-blue
-           accents; layout/structure unchanged. */
-        footer.travel-bg .bg-blue-400,
-        footer.travel-bg .bg-blue-500 {
-            background-color: #0346FA !important;
-        }
-
-        #newsletterBtn {
-            color: #0346FA !important;
-        }
-
-        #newsletterEmail:focus {
-            --tw-ring-color: #0346FA;
-        }
-
         .glass-effect {
             background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(10px);
@@ -41,46 +17,6 @@
 
         .hover-lift:hover {
             transform: translateY(-5px);
-        }
-
-        .wave {
-            position: absolute;
-            top: -2px;
-            left: 0;
-            width: 100%;
-            overflow: hidden;
-            line-height: 0;
-        }
-
-        .wave svg {
-            position: relative;
-            display: block;
-            width: calc(100% + 1.3px);
-            height: 80px;
-        }
-
-        .wave .shape-fill {
-            fill: #EFF4F9;
-        }
-
-        .footer-link {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .footer-link::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: #0346FA;
-            transition: width 0.3s ease;
-        }
-
-        .footer-link:hover::after {
-            width: 100%;
         }
 
         @keyframes float {
@@ -144,175 +80,112 @@
 
 
 
-    <!-- UNIQUE FOOTER WITH TRAVEL BACKGROUND -->
+    <!-- SITE FOOTER -->
     @unless($hideFooter ?? false)
-    <footer class="relative travel-bg text-white overflow-hidden">
-
-        <!-- Decorative Wave -->
-        <div class="wave">
-            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
-            </svg>
-        </div>
-
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
+    @php
+        $phone = getSetting('contact_phone', 'contact');
+        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+        $whatsappLink = 'https://wa.me/' . $cleanPhone;
+        $contactEmail = getSetting('contact_email', 'contact');
+        $socialLinks = getSetting('all', 'social');
+        $footerModUrlMap = ['hotel'=>'/hotels','flight'=>'/flights','visa'=>'/visa','tours'=>'/tours','umrah'=>'/umrah'];
+        $footerBusinessName = getSetting('business_name', 'main');
+    @endphp
+    <footer class="site-footer">
+        <div class="site-footer-inner">
 
             <!-- Main Footer Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 mb-12">
+            <div class="sf-grid">
 
-                <!-- Brand Section - Takes more space -->
-                <div class="lg:col-span-5">
-                    <!-- Logo with Fallback -->
-
-                    <div class="flex items-center gap-3 mb-6">
-                        <img
-                            src="{{ getSettingImage('business_logo_white', 'branding') }}"
-                            alt="Logo"
-                            class="w-32 h-32 object-contain"
-                            style="max-height: 60px; width: auto; height: auto;"
-                        >
+                <!-- Brand -->
+                <div class="sf-col sf-brand">
+                    <a href="{{ url('/') }}" class="sf-logo">
+                        <img src="{{ getSettingImage('business_logo', 'branding') }}" alt="{{ $footerBusinessName ?: 'Logo' }}">
                         @if(showBusinessNameWithLogo())
-                            <span class="text-white font-bold text-xl">{{ getSetting('business_name', 'main', 'TravelBookingPanel') }}</span>
+                            <span>{{ getSetting('business_name', 'main', 'TravelBookingPanel') }}</span>
                         @endif
+                    </a>
+
+                    <p class="sf-desc"><?= getSetting('meta_description', 'seo') ?></p>
+
+                    <div class="sf-contacts">
+                        <a href="mailto:{{ $contactEmail }}" class="sf-contact">
+                            <span class="sf-contact-icon"><i class="fas fa-envelope"></i></span>
+                            <span class="sf-contact-text">
+                                <span class="sf-contact-label">{{ t('footer.email_us') }}</span>
+                                <span class="sf-contact-value">{{ $contactEmail }}</span>
+                            </span>
+                        </a>
+                        <a href="{{ $whatsappLink }}" target="_blank" rel="noopener" class="sf-contact">
+                            <span class="sf-contact-icon"><i class="fab fa-whatsapp"></i></span>
+                            <span class="sf-contact-text">
+                                <span class="sf-contact-label">{{ t('footer.whatsapp') }}</span>
+                                <span class="sf-contact-value" dir="ltr">{{ $phone }}</span>
+                            </span>
+                        </a>
                     </div>
 
-
-                    <p class="text-blue-100 text-sm leading-relaxed mb-6">
-                        <?= getSetting('meta_description', 'seo') ?>
-                    </p>
-
-                    <!-- Contact Cards -->
-                    <div class="space-y-3 mb-6">
-                        <div class="glass-effect rounded-lg p-3 flex items-center gap-3 hover-lift">
-                            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-envelope text-white"></i>
-                            </div>
-                            <div>
-                                <div class="text-xs text-blue-200">{{t('footer.email_us')}}</div>
-                                <div class="text-sm font-semibold"><?=getSetting('contact_email', 'contact')?></div>
-                            </div>
-                        </div>
-
-                        <div class="glass-effect rounded-lg p-3 flex items-center gap-3 hover-lift">
-                            <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i class="fab fa-whatsapp text-white"></i>
-                            </div>
-                            <div>
-                            <div class="text-xs text-blue-200">{{ t('footer.whatsapp') }}</div>
-
-                            @php
-                            $phone = getSetting('contact_phone', 'contact');
-                            $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
-                            $whatsappLink = 'https://wa.me/' . $cleanPhone;
-                            @endphp
-
-                            <div class="text-sm font-semibold">
-                            <a href="{{ $whatsappLink }}" target="_blank">
-                            {{ $phone }}
-                            </a>
-                            </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    @php
-                        $socialLinks = getSetting('all', 'social');
-                    @endphp
-
-                    <div class="flex gap-3">
+                    <div class="sf-social">
                         @if(!empty($socialLinks['facebook_url']))
-                            <a href="{{ $socialLinks['facebook_url'] }}" target="_blank" class="social-icon w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center hover:bg-blue-500 transition-colors relative z-10">
-                                <i class="fab fa-facebook-f text-white relative z-10"></i>
-                            </a>
+                            <a href="{{ $socialLinks['facebook_url'] }}" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
                         @endif
-
                         @if(!empty($socialLinks['twitter_url']))
-                            <a href="{{ $socialLinks['twitter_url'] }}" target="_blank" class="social-icon w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center hover:bg-sky-500 transition-colors relative z-10">
-                                <i class="fab fa-twitter text-white relative z-10"></i>
-                            </a>
+                            <a href="{{ $socialLinks['twitter_url'] }}" target="_blank" rel="noopener" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
                         @endif
-
                         @if(!empty($socialLinks['instagram_url']))
-                            <a href="{{ $socialLinks['instagram_url'] }}" target="_blank" class="social-icon w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center hover:bg-pink-500 transition-colors relative z-10">
-                                <i class="fab fa-instagram text-white relative z-10"></i>
-                            </a>
+                            <a href="{{ $socialLinks['instagram_url'] }}" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                         @endif
-
                         @if(!empty($socialLinks['linkedin_url']))
-                            <a href="{{ $socialLinks['linkedin_url'] }}" target="_blank" class="social-icon w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center hover:bg-blue-700 transition-colors relative z-10">
-                                <i class="fab fa-linkedin-in text-white relative z-10"></i>
-                            </a>
+                            <a href="{{ $socialLinks['linkedin_url'] }}" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
                         @endif
-
                         @if(!empty($socialLinks['youtube_url']))
-                            <a href="{{ $socialLinks['youtube_url'] }}" target="_blank" class="social-icon w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center hover:bg-red-600 transition-colors relative z-10">
-                                <i class="fab fa-youtube text-white relative z-10"></i>
-                            </a>
+                            <a href="{{ $socialLinks['youtube_url'] }}" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
                         @endif
-
                         @if(!empty($socialLinks['whatsapp_number']))
-                            <a href="https://wa.me/{{ preg_replace('/\D/', '', $socialLinks['whatsapp_number']) }}" target="_blank" class="social-icon w-11 h-11 bg-white/10 rounded-xl flex items-center justify-center hover:bg-green-500 transition-colors relative z-10">
-                                <i class="fab fa-whatsapp text-white relative z-10"></i>
-                            </a>
+                            <a href="https://wa.me/{{ preg_replace('/\D/', '', $socialLinks['whatsapp_number']) }}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                         @endif
                     </div>
-
-
                 </div>
 
                 <!-- Quick Links -->
-                <div class="lg:col-span-2">
-                    <h4 class="text-lg font-bold mb-4 flex items-center gap-2">
-                        <span class="w-1 h-6 bg-blue-400 rounded"></span>
-                        {{t('footer.quick_links')}}
-                    </h4>
-                    <ul class="space-y-2">
+                <div class="sf-col">
+                    <h4 class="sf-heading">{{ t('footer.quick_links') }}</h4>
+                    <ul class="sf-links">
                         @foreach (get_menu_items('footer_quick_links') as $item)
-                        <li><a href="{{ $item->full_url }}" class="footer-link text-blue-100 hover:text-white text-sm inline-block pb-1">{{t('footer.'.$item->name)}}</a></li>
+                            <li><a href="{{ $item->full_url }}"><i class="fas fa-chevron-right"></i> {{ t('footer.'.$item->name) }}</a></li>
                         @endforeach
                     </ul>
                 </div>
 
                 <!-- Our Services — driven by active modules -->
-                <div class="lg:col-span-2">
-                    <h4 class="text-lg font-bold mb-4 flex items-center gap-2">
-                        <span class="w-1 h-6 bg-blue-400 rounded"></span>
-                        {{t('footer.our_services')}}
-                    </h4>
-                    @php
-                        $footerModUrlMap = ['hotel'=>'/hotels','flight'=>'/flights','visa'=>'/visa','tours'=>'/tours','umrah'=>'/umrah'];
-                    @endphp
-                    <ul class="space-y-2">
+                <div class="sf-col">
+                    <h4 class="sf-heading">{{ t('footer.our_services') }}</h4>
+                    <ul class="sf-links">
                         @foreach (\App\Models\Module::active()->orderBy('sort_order')->get() as $fMod)
-                            @php $fUrl = url($footerModUrlMap[$fMod->slug] ?? '/'.$fMod->slug); @endphp
-                            @if($fMod->slug === 'visa')
-                                <li><a href="{{ route('visa.create') }}" class="footer-link text-blue-100 hover:text-white text-sm inline-block pb-1">{{ t('footer.'.$fMod->name) }}</a></li>
-                            @else
-                                <li><a href="{{ $fUrl }}" class="footer-link text-blue-100 hover:text-white text-sm inline-block pb-1">{{ t('footer.'.$fMod->name) }}</a></li>
-                            @endif
+                            @php $fUrl = $fMod->slug === 'visa' ? route('visa.create') : url($footerModUrlMap[$fMod->slug] ?? '/'.$fMod->slug); @endphp
+                            <li><a href="{{ $fUrl }}"><i class="fas fa-chevron-right"></i> {{ t('footer.'.$fMod->name) }}</a></li>
                         @endforeach
                     </ul>
                 </div>
 
-                <!-- Newsletter - Compact Design -->
-                <div class="lg:col-span-3">
-                    <h4 class="text-lg font-bold mb-4 flex items-center gap-2">
-                        <span class="w-1 h-6 bg-blue-400 rounded"></span>{{t('footer.newsletter')}}
-                    </h4>
-                    <p class="text-blue-100 text-xs mb-4">{{t('footer.newsletter_desc')}}</p>
-                    <form id="newsletterForm" class="space-y-2">
+                <!-- Newsletter -->
+                <div class="sf-col sf-newsletter">
+                    <h4 class="sf-heading">{{ t('footer.newsletter') }}</h4>
+                    <p class="sf-newsletter-desc">{{ t('footer.newsletter_desc') }}</p>
+                    <form id="newsletterForm" class="sf-subscribe">
                         @csrf
+                        <i class="fas fa-envelope sf-subscribe-icon" aria-hidden="true"></i>
                         <input
                             type="email"
                             id="newsletterEmail"
                             name="email"
-                            placeholder="{{t('footer.your_email')}}"
+                            placeholder="{{ t('footer.your_email') }}"
+                            aria-label="{{ t('footer.your_email') }}"
                             required
-                            class="w-full px-4 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white placeholder-blue-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white/15 transition-all"
                         >
-                        <button type="submit" id="newsletterBtn" class="w-full bg-white text-blue-600 font-bold py-2.5 rounded-lg hover:bg-blue-50 transition-all hover:shadow-xl flex items-center justify-center gap-2 text-sm">
-                            <i class="fas fa-paper-plane"></i>
-                            <span id="newsletterBtnText">{{t('footer.subscribe_now')}}</span>
+                        <button type="submit" id="newsletterBtn" title="{{ t('footer.subscribe_now') }}">
+                            <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                            <span id="newsletterBtnText" class="sr-only">{{ t('footer.subscribe_now') }}</span>
                         </button>
                     </form>
                 </div>
@@ -320,30 +193,19 @@
             </div>
 
             <!-- Footer Bottom -->
-            <div class="border-t border-white/20 pt-6">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div class="flex items-center gap-3 text-sm text-blue-100">
-                        <span>© <?= date('Y'); ?> <strong class="text-white"><?= getSetting('business_name', 'main') ?></strong></span>
-                        <span class="hidden md:inline">•</span>
-                        <span class="hidden md:inline">{{t('footer.made_by')}} <i class="fas fa-heart text-red-400"></i> <a href="https://travelbookingpanel.com/">TravelBookingPanel</a></span>
-                    </div>
-                    <div class="flex gap-6 text-sm">
-                         @foreach (get_menu_items('footer_support') as $item)
-                        <a href="{{ $item->full_url }}" class="text-blue-100 hover:text-white transition-colors">{{t('footer.'.$item->name)}}</a>
-                        @endforeach
-
-                    </div>
+            <div class="sf-bottom">
+                <div class="sf-copy">
+                    <span>© <?= date('Y'); ?> <strong>{{ $footerBusinessName }}</strong></span>
+                    <span class="sf-sep" aria-hidden="true"></span>
+                    <span>{{ t('footer.made_by') }} <i class="fas fa-heart"></i> <a href="https://travelbookingpanel.com/">TravelBookingPanel</a></span>
                 </div>
+                <nav class="sf-legal">
+                    @foreach (get_menu_items('footer_support') as $item)
+                        <a href="{{ $item->full_url }}">{{ t('footer.'.$item->name) }}</a>
+                    @endforeach
+                </nav>
             </div>
 
-        </div>
-
-        <!-- Decorative Elements -->
-        <div class="absolute top-20 right-10 opacity-10">
-            <i class="fas fa-plane text-white text-9xl transform rotate-45"></i>
-        </div>
-        <div class="absolute bottom-20 left-10 opacity-10">
-            <i class="fas fa-globe text-white text-8xl"></i>
         </div>
     </footer>
     @endunless
@@ -1966,8 +1828,8 @@
             });
         });
 
-        // Show loader on form submissions (except newsletter)
-        document.querySelectorAll('form:not(#newsletterForm)').forEach(function(form) {
+        // Show loader on form submissions (except newsletter and AI search, which handle their own feedback)
+        document.querySelectorAll('form:not(#newsletterForm):not(#aiSearchForm)').forEach(function(form) {
             form.addEventListener('submit', function() {
                 showPageLoader();
             });

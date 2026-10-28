@@ -26,6 +26,7 @@ use App\Http\Controllers\User\BookingController as UserBookingController;
 use App\Http\Controllers\User\SupportController as UserSupportController;
 use App\Http\Controllers\User\ProfileController as UserProfileController;
 use App\Http\Controllers\TicketLookupController;
+use App\Http\Controllers\AiSearchController;
 
 // Support ticket tracking — public, no login required. A visitor (customer,
 // agent, or anyone else) looks their own ticket up by ticket number + the
@@ -169,6 +170,7 @@ Route::get('/contact/thank-you', [ContactController::class, 'thankYou'])->name('
 
 // newsletter subscription
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+Route::post('/ai-search/flights', [AiSearchController::class, 'flights'])->middleware('throttle:20,1')->name('ai-search.flights');
 
 // all pages
 Route::get('/', [PagesController::class, 'home'])->name('home');

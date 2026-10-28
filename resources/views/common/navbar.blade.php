@@ -3,8 +3,9 @@
     .nav-util-pill-group {
         display: flex;
         align-items: stretch;
-        border: 1px solid #d7dbe3;
-        border-radius: 999px;
+        height: 42px;
+        border: 1px solid rgba(0, 0, 0, .1);
+        border-radius: 12px;
         background: #fff;
         overflow: hidden;
     }
@@ -12,11 +13,11 @@
         display: flex;
         align-items: center;
         gap: 7px;
-        padding: 0 8px 0 16px;
+        padding: 0 6px 0 14px;
         position: relative;
     }
-    .nav-util-pill-item:first-child { border-right: 1px solid #e5e7eb; }
-    .nav-util-icon { color: #0346FA; font-size: 13px; flex-shrink: 0; }
+    .nav-util-pill-item:first-child { border-right: 1px solid rgba(0, 0, 0, .1); }
+    .nav-util-icon { color: #2563EB; font-size: 13px; flex-shrink: 0; }
 
     /* Restyle the Select2 widget these icons sit next to, so it reads as
        part of the same pill instead of a bordered box of its own. */
@@ -24,20 +25,25 @@
     .nav-util-pill-item .select2-selection--single {
         border: none !important;
         background: transparent !important;
-        height: 38px !important;
+        height: 40px !important;
         display: flex !important;
         align-items: center;
     }
-    .nav-util-pill-item .select2-selection__rendered {
+    /* Selector chain matches common/header's Select2 rules so these win. */
+    .nav-util-pill-item .select2-container--default .select2-selection--single .select2-selection__rendered {
         padding: 0 20px 0 2px !important;
         font-weight: 600;
-        font-size: 13px;
-        color: #1f2430;
-        line-height: 38px !important;
+        font-size: 13px !important;
+        color: #000;
+        line-height: 40px !important;
     }
-    .nav-util-pill-item .select2-selection__arrow {
-        height: 38px !important;
+    .nav-util-pill-item .select2-container--default .select2-selection--single .select2-selection__arrow {
+        top: 0 !important;
+        height: 40px !important;
         right: 2px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .nav-util-pill-item .select2-selection__arrow b { display: none !important; }
     .nav-util-pill-item .select2-selection__arrow::after {
@@ -45,28 +51,31 @@
         font-family: 'Font Awesome 5 Free';
         font-weight: 900;
         font-size: 9px;
-        color: #8a8f98;
+        color: rgba(0, 0, 0, .45);
     }
 
     .btn-signin-pill {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 8px;
-        border: 1.5px solid #0346FA;
-        color: #0346FA;
+        height: 42px;
+        border: 1.5px solid #2563EB;
+        color: #2563EB;
         background: #fff;
-        font-weight: 700;
-        font-size: 13.5px;
-        padding: 9px 20px;
-        border-radius: 999px;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 0 18px;
+        border-radius: 12px;
         text-decoration: none;
-        transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+        white-space: nowrap;
+        transition: background .15s ease, box-shadow .15s ease;
     }
     .btn-signin-pill:hover {
-        background: #0346FA;
-        color: #fff;
+        background: rgba(37, 99, 235, .06);
+        color: #2563EB;
         text-decoration: none;
-        box-shadow: 0 4px 12px rgba(3, 70, 250, .25);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, .15);
     }
 </style>
 
@@ -111,99 +120,124 @@
             'tours'  => '/tours',
             'umrah'  => '/umrah',
         ];
+        // Resolve each module's link and active state once, for both menus.
+        $navModules = $navModules->map(function ($mod) use ($navModUrlMap) {
+            $mod->nav_url    = $mod->slug === 'visa' ? route('visa.create') : url($navModUrlMap[$mod->slug] ?? '/' . $mod->slug);
+            $mod->nav_active = $mod->slug === 'visa' ? request()->is('visa*') : Request::url() == $mod->nav_url;
+            return $mod;
+        });
+        $navModulesActive = $navModules->contains('nav_active', true);
+
         // Split static header items: Home comes before modules, rest (Contact) after
         $allHeaderItems  = get_menu_items('header');
         $navItemsBefore  = $allHeaderItems->filter(fn($i) => $i->sort_order <= 1);
         $navItemsAfter   = $allHeaderItems->filter(fn($i) => $i->sort_order > 1);
+
+        // Avatar + label for the logged-in account button (same rules as before).
+        if (auth()->check()) {
+            $navUser = auth()->user();
+            $navAvatar = $navUser->profile_image
+                ? ($navUser->isAdmin() ? url('public/' . $navUser->profile_image) : ($navUser->isAgent() ? $navUser->profile_image_url : url('public/assets/images/avatars/' . $navUser->profile_image)))
+                : null;
+            $navAvatarIsLogo = false;
+            if (! $navAvatar && $navUser->isAgent() && $navUser->company_logo) {
+                $navAvatar = url('public/assets/images/settings/branding/' . $navUser->company_logo);
+                $navAvatarIsLogo = true;
+            }
+            $navUserLabel = $navUser->isAdmin() ? $navUser->first_name : ($navUser->isAgent() ? 'Travel Agent' : $navUser->first_name);
+        }
     @endphp
-    <div class="max-w-7xl mx-auto px-4 py-1 md:py-2 flex items-center justify-between">
+
+    <div class="nav-shell max-w-7xl mx-auto flex items-center justify-between gap-4 xl:gap-6">
 
         <!-- Logo & Name -->
-        <!-- <div class="flex items-center gap-2">
-            <i class="fas fa-plane text-blue-600 text-2xl"></i>
-            <div class="text-xl md:text-2xl font-bold" style="color: #003580;">Travel</div>
-        </div> -->
-
-        <a class="navbar-brand flex items-center gap-2" href="{{ url('/') }}">
+        <a class="navbar-brand flex items-center gap-2 shrink-0" href="{{ url('/') }}">
             @if(auth()->check() && auth()->user()->isAgent() && auth()->user()->company_logo)
                 <img src="{{ url('public/assets/images/settings/branding/' . auth()->user()->company_logo) }}"
                     alt="{{ auth()->user()->company_name ?? 'Company Logo' }}"
-                    class="img-fluid"
-                    style="max-height: 45px; height: auto; width: auto;">
+                    class="nav-logo">
                 @if(auth()->user()->company_name)
-                    <span class="font-bold text-base md:text-lg" style="color:#003580;">{{ auth()->user()->company_name }}</span>
+                    <span class="nav-brand-name">{{ auth()->user()->company_name }}</span>
                 @endif
             @else
                 <img src="{{ getSettingImage('business_logo','branding') }}"
                     alt="TravelBookingPanel Logo"
-                    class="img-fluid"
-                    style="max-height: 45px; height: auto; width: auto;">
+                    class="nav-logo">
                 @if(showBusinessNameWithLogo())
-                    <span class="font-bold text-base md:text-lg" style="color:#003580;">{{ getSetting('business_name', 'main', 'TravelBookingPanel') }}</span>
+                    <span class="nav-brand-name">{{ getSetting('business_name', 'main', 'TravelBookingPanel') }}</span>
                 @endif
             @endif
         </a>
 
         <!-- Desktop Menu -->
-        <div class="hidden md:flex gap-4 items-center flex-1 justify-center">
+        <div class="hidden lg:flex items-center gap-1 flex-1 justify-center">
             {{-- Home (and any items before modules) --}}
             @foreach ($navItemsBefore as $item)
                 <a href="{{ $item->full_url }}" class="nav-item {{ Request::url() == $item->full_url ? 'active' : '' }}">
-                    <i class="{{ $item->icon }}"></i>
                     <span>{{ t('header.' . $item->name) }}</span>
                 </a>
             @endforeach
-            {{-- Active modules in sort_order --}}
-            @foreach ($navModules as $mod)
-                @php $modUrl = url($navModUrlMap[$mod->slug] ?? '/'.$mod->slug); @endphp
-                @if($mod->slug === 'visa')
-                    <a href="{{ route('visa.create') }}" class="nav-item {{ request()->is('visa*') ? 'active' : '' }}">
-                        <i class="{{ $navModIconMap[$mod->slug] ?? 'fas fa-circle' }}"></i>
-                        <span>{{ t('header.' . $mod->name) }}</span>
-                    </a>
-                @else
-                    <a href="{{ $modUrl }}" class="nav-item {{ Request::url() == $modUrl ? 'active' : '' }}">
-                        <i class="{{ $navModIconMap[$mod->slug] ?? 'fas fa-circle' }}"></i>
-                        <span>{{ t('header.' . $mod->name) }}</span>
-                    </a>
-                @endif
-            @endforeach
+
+            {{-- Active modules, grouped under one Services dropdown --}}
+            @if($navModules->isNotEmpty())
+                <div class="relative group nav-dd">
+                    <button type="button" class="nav-item {{ $navModulesActive ? 'active' : '' }}" aria-haspopup="true">
+                        <i class="fas fa-table-cells-large nav-ico"></i>
+                        <span>{{ t('footer.our_services') }}</span>
+                        <i class="fas fa-chevron-down nav-ico nav-chevron"></i>
+                    </button>
+                    <div class="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-72 z-50 hidden group-hover:block group-focus-within:block">
+                        <div class="nav-dd-panel">
+                            @foreach ($navModules as $mod)
+                                <a href="{{ $mod->nav_url }}" class="nav-dd-item {{ $mod->nav_active ? 'active' : '' }}">
+                                    <span class="nav-dd-icon"><i class="{{ $navModIconMap[$mod->slug] ?? 'fas fa-circle' }}"></i></span>
+                                    <span>{{ t('header.' . $mod->name) }}</span>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             {{-- Contact and any remaining items --}}
             @foreach ($navItemsAfter as $item)
                 <a href="{{ $item->full_url }}" class="nav-item {{ Request::url() == $item->full_url ? 'active' : '' }}">
-                    <i class="{{ $item->icon }}"></i>
                     <span>{{ t('header.' . $item->name) }}</span>
                 </a>
             @endforeach
         </div>
 
-        <!-- Desktop: Currency + Language + Auth Buttons -->
-        <div class="hidden md:flex gap-3 items-center">
+        <!-- Desktop: Language + Currency + Auth Buttons -->
+        <div class="hidden lg:flex gap-3 items-center shrink-0">
+
+            <!-- Country (placeholder — shows the current language's country flag
+                 for now; its own behaviour will be built later) -->
+            <button type="button" class="nav-country-btn" id="country-select-btn" aria-label="Country">
+                <span class="{{ getFlagClass(strtoupper(app()->getLocale())) }}"></span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
 
             <!-- Language + Currency pill group -->
             <div class="nav-util-pill-group">
                 <div class="nav-util-pill-item relative">
-                    <!-- <i class="fas fa-globe nav-util-icon"></i> -->
                     <select id="language-select" class="language-select">
                         @if(isset($activeLanguages))
                             @foreach($activeLanguages as $language)
                                 <option value="{{ $language->code }}"
-                                        data-flag="{{ getFlagClass(strtoupper($language->code)) }}"
                                         {{ app()->getLocale() == $language->code ? 'selected' : '' }}>
                                     {{ $language->name }}
                                 </option>
                             @endforeach
                         @else
-                            <option value="en" data-flag="{{ getFlagClass('GB') }}" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>English</option>
-                            <option value="nl" data-flag="{{ getFlagClass('NL') }}" {{ app()->getLocale() == 'nl' ? 'selected' : '' }}>Dutch</option>
+                            <option value="en" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>English</option>
+                            <option value="nl" {{ app()->getLocale() == 'nl' ? 'selected' : '' }}>Dutch</option>
                         @endif
                     </select>
                 </div>
                 <div class="nav-util-pill-item relative">
-                    <!-- <i class="fas fa-coins nav-util-icon"></i> -->
                     <select id="currency-select" class="currency-select">
                         @foreach($currencies as $currency)
-                            <option value="{{ $currency->currency_name }}" data-flag="{{ getFlagClass($currency->currency_name) }}"
+                            <option value="{{ $currency->currency_name }}"
                                 {{ $active_currency->currency_name == $currency->currency_name ? 'selected' : '' }}>
                                 {{ $currency->currency_name }}
                             </option>
@@ -212,63 +246,42 @@
                 </div>
             </div>
 
+            <span class="nav-sep" aria-hidden="true"></span>
+
             @if(auth()->check())
                 <!-- Logged-in: Profile Dropdown (hover) -->
                 <div class="relative group" id="profile-dropdown-wrapper-desktop">
-                    <button class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 bg-white group-hover:bg-gray-50 transition text-sm font-semibold" style="color:#003580;">
-                        @if(auth()->user()->profile_image)
-                            <img src="{{ auth()->user()->isAdmin() ? url('public/' . auth()->user()->profile_image) : (auth()->user()->isAgent() ? auth()->user()->profile_image_url : url('public/assets/images/avatars/' . auth()->user()->profile_image)) }}" class="w-7 h-7 rounded-full object-cover border border-gray-200">
-                        @elseif(auth()->user()->isAgent() && auth()->user()->company_logo)
-                            <img src="{{ url('public/assets/images/settings/branding/' . auth()->user()->company_logo) }}" class="w-7 h-7 rounded-full object-contain border border-gray-200 bg-white">
+                    <button type="button" class="nav-account-btn">
+                        @if($navAvatar)
+                            <img src="{{ $navAvatar }}" alt="" class="nav-avatar {{ $navAvatarIsLogo ? 'nav-avatar-logo' : '' }}">
                         @else
-                            <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:#0077BE;">
-                                {{ auth()->user()->initials }}
-                            </div>
+                            <span class="nav-avatar">{{ $navUser->initials }}</span>
                         @endif
-                        <span>{{ auth()->user()->isAdmin() ? auth()->user()->first_name : (auth()->user()->isAgent() ? 'Travel Agent' : auth()->user()->first_name) }}</span>
-                        <i class="fas fa-chevron-down text-xs" style="display:inline !important;"></i>
+                        <span>{{ $navUserLabel }}</span>
+                        <i class="fas fa-chevron-down text-xs"></i>
                     </button>
-                    <div class="absolute right-0 mt-0 pt-2 w-52 z-50 hidden group-hover:block">
-                    <div class="bg-white rounded-xl shadow-lg border border-gray-100 py-2">
-                        @if(auth()->user()->isAdmin())
-                            <a href="{{ route('admin.dashboard.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
-                                <i class="fas fa-gauge-high w-4 text-center"></i> Dashboard
-                            </a>
-                            <a href="{{ route('admin.profile.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
-                                <i class="fas fa-user w-4 text-center"></i> Profile
-                            </a>
-                            <a href="{{ route('admin.bookings.all', ['type' => 'hotel']) }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
-                                <i class="fas fa-clock-rotate-left w-4 text-center"></i> Recent Booking
-                            </a>
-                        @elseif(auth()->user()->isAgent())
-                            <a href="{{ route('agent.dashboard') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
-                                <i class="fas fa-gauge-high w-4 text-center"></i> Dashboard
-                            </a>
-                            <a href="{{ route('agent.profile.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
-                                <i class="fas fa-user w-4 text-center"></i> Profile
-                            </a>
-                            <a href="{{ route('agent.bookings.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
-                                <i class="fas fa-clock-rotate-left w-4 text-center"></i> Recent Booking
-                            </a>
-                        @else
-                            <a href="{{ route('user.dashboard') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
-                                <i class="fas fa-gauge-high w-4 text-center"></i> Dashboard
-                            </a>
-                            <a href="{{ route('user.profile.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
-                                <i class="fas fa-user w-4 text-center"></i> Profile
-                            </a>
-                            <a href="{{ route('user.bookings.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
-                                <i class="fas fa-clock-rotate-left w-4 text-center"></i> Recent Booking
-                            </a>
-                        @endif
-                        <hr class="my-2 border-gray-100">
-                        <form method="POST" action="{{ auth()->user()->isAdmin() ? route('admin.logout') : (auth()->user()->isAgent() ? route('agent.logout') : route('user.logout')) }}">
-                            @csrf
-                            <button type="submit" class="w-full flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-red-50 transition text-red-500 cursor-pointer">
-                                <i class="fas fa-right-from-bracket w-4 text-center"></i> Logout
-                            </button>
-                        </form>
-                    </div></div>
+                    <div class="absolute right-0 mt-0 pt-2 w-56 z-50 hidden group-hover:block group-focus-within:block">
+                        <div class="nav-dd-panel">
+                            @if($navUser->isAdmin())
+                                <a href="{{ route('admin.dashboard.index') }}" class="nav-menu-link"><i class="fas fa-gauge-high"></i> Dashboard</a>
+                                <a href="{{ route('admin.profile.index') }}" class="nav-menu-link"><i class="fas fa-user"></i> Profile</a>
+                                <a href="{{ route('admin.bookings.all', ['type' => 'hotel']) }}" class="nav-menu-link"><i class="fas fa-clock-rotate-left"></i> Recent Booking</a>
+                            @elseif($navUser->isAgent())
+                                <a href="{{ route('agent.dashboard') }}" class="nav-menu-link"><i class="fas fa-gauge-high"></i> Dashboard</a>
+                                <a href="{{ route('agent.profile.index') }}" class="nav-menu-link"><i class="fas fa-user"></i> Profile</a>
+                                <a href="{{ route('agent.bookings.index') }}" class="nav-menu-link"><i class="fas fa-clock-rotate-left"></i> Recent Booking</a>
+                            @else
+                                <a href="{{ route('user.dashboard') }}" class="nav-menu-link"><i class="fas fa-gauge-high"></i> Dashboard</a>
+                                <a href="{{ route('user.profile.index') }}" class="nav-menu-link"><i class="fas fa-user"></i> Profile</a>
+                                <a href="{{ route('user.bookings.index') }}" class="nav-menu-link"><i class="fas fa-clock-rotate-left"></i> Recent Booking</a>
+                            @endif
+                            <hr class="nav-menu-sep">
+                            <form method="POST" action="{{ $navUser->isAdmin() ? route('admin.logout') : ($navUser->isAgent() ? route('agent.logout') : route('user.logout')) }}">
+                                @csrf
+                                <button type="submit" class="nav-menu-link nav-menu-link-danger"><i class="fas fa-right-from-bracket"></i> Logout</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             @else
                 <!-- Login Button -->
@@ -280,31 +293,28 @@
                 @if($showUserSignup && $showAgentSignup)
                 <!-- Signup Dropdown (hover) — both B2B + B2C -->
                 <div class="relative group" id="signup-dropdown-wrapper-desktop">
-                    <button class="flex items-center gap-1.5 px-4 py-2 font-semibold rounded-lg border-2 transition duration-300 text-sm" style="border-color:#0077BE;color:#0077BE;background:white;">
-                        <i class="fas fa-user-plus" style="display:inline !important;"></i>
+                    <button type="button" class="btn-signup-solid">
+                        <i class="fas fa-user-plus"></i>
                         <span>Sign Up</span>
-                        <i class="fas fa-chevron-down text-xs" style="display:inline !important;"></i>
+                        <i class="fas fa-chevron-down text-xs"></i>
                     </button>
-                    <div class="absolute right-0 mt-0 pt-2 w-48 z-50 hidden group-hover:block">
-                    <div class="bg-white rounded-xl shadow-lg border border-gray-100 py-2">
-                        <a href="{{ route('user.register') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
-                            <i class="fas fa-user w-4 text-center" style="display:inline !important;"></i> Customer Signup
-                        </a>
-                        <a href="{{ agentSignupUrl() }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition" style="color:#003580;">
-                            <i class="fas fa-user-tie w-4 text-center" style="display:inline !important;"></i> Agent Signup
-                        </a>
-                    </div></div>
+                    <div class="absolute right-0 mt-0 pt-2 w-52 z-50 hidden group-hover:block group-focus-within:block">
+                        <div class="nav-dd-panel">
+                            <a href="{{ route('user.register') }}" class="nav-menu-link"><i class="fas fa-user"></i> Customer Signup</a>
+                            <a href="{{ agentSignupUrl() }}" class="nav-menu-link"><i class="fas fa-user-tie"></i> Agent Signup</a>
+                        </div>
+                    </div>
                 </div>
                 @elseif($showUserSignup)
                 <!-- B2C Only — direct Customer Signup button -->
-                <a href="{{ route('user.register') }}" class="flex items-center gap-1.5 px-4 py-2 font-semibold rounded-lg border-2 transition duration-300 text-sm" style="border-color:#0077BE;color:#0077BE;background:white;text-decoration:none;">
-                    <i class="fas fa-user" style="display:inline !important;"></i>
+                <a href="{{ route('user.register') }}" class="btn-signup-solid">
+                    <i class="fas fa-user"></i>
                     <span>Sign Up</span>
                 </a>
                 @elseif($showAgentSignup)
                 <!-- B2B Only — direct Agent Signup button -->
-                <a href="{{ agentSignupUrl() }}" class="flex items-center gap-1.5 px-4 py-2 font-semibold rounded-lg border-2 transition duration-300 text-sm" style="border-color:#003580;color:#003580;background:white;text-decoration:none;">
-                    <i class="fas fa-user-tie" style="display:inline !important;"></i>
+                <a href="{{ agentSignupUrl() }}" class="btn-signup-solid">
+                    <i class="fas fa-user-tie"></i>
                     <span>Agent Sign Up</span>
                 </a>
                 @endif
@@ -313,57 +323,61 @@
         </div>
 
 
-        <!-- Hamburger Menu (Mobile) -->
-        <button class="hamburger md:hidden flex flex-col gap-1.5 cursor-pointer" onclick="toggleMobileMenu()">
-            <span class="line w-6 h-[3px] bg-black rounded transition-all duration-300"></span>
-            <span class="line w-6 h-[3px] bg-black rounded transition-all duration-300"></span>
-            <span class="line w-6 h-[3px] bg-black rounded transition-all duration-300"></span>
-        </button>
+        <!-- Mobile / Tablet: country button + hamburger -->
+        <div class="flex items-center gap-3 lg:hidden">
+            <button type="button" class="nav-country-btn" id="country-select-btn-mobile" aria-label="Country">
+                <span class="{{ getFlagClass(strtoupper(app()->getLocale())) }}"></span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <button type="button" class="hamburger flex flex-col gap-1.5 cursor-pointer" onclick="toggleMobileMenu()" aria-label="Menu">
+                <span class="line w-6 h-[3px] bg-black rounded transition-all duration-300"></span>
+                <span class="line w-6 h-[3px] bg-black rounded transition-all duration-300"></span>
+                <span class="line w-6 h-[3px] bg-black rounded transition-all duration-300"></span>
+            </button>
+        </div>
     </div>
 
     <!-- Mobile Menu -->
-    <div class="mobile-menu md:hidden border-t" style="background-color: #F7F9FC; border-color: #E5E7EB;">
-        <div class="px-4 py-4 space-y-2">
+    <div class="mobile-menu lg:hidden">
+        <div class="nav-mobile-card max-w-7xl mx-auto">
 
         {{-- Home (before modules) --}}
         @foreach ($navItemsBefore as $item)
-            <a href="{{ $item->full_url }}" class="block font-medium py-3 px-4 rounded-lg hover:bg-blue-50 transition text-sm flex items-center gap-3 {{ Request::url() == $item->full_url ? 'bg-blue-50' : '' }}" style="color: {{ Request::url() == $item->full_url ? '#0077BE' : '#003580' }};">
-                <i class="{{ $item->icon }}"></i>
-                <span>{{ t('header.' . $item->name) }}</span>
-            </a>
-        @endforeach
-        {{-- Active modules --}}
-        @foreach ($navModules as $mod)
-            @php $modUrl = url($navModUrlMap[$mod->slug] ?? '/'.$mod->slug); @endphp
-            @if($mod->slug === 'visa')
-                <a href="{{ route('visa.create') }}" class="block font-medium py-3 px-4 rounded-lg hover:bg-blue-50 transition text-sm flex items-center gap-3" style="color:#003580;">
-                    <i class="{{ $navModIconMap[$mod->slug] ?? 'fas fa-circle' }}"></i>
-                    <span>{{ t('header.' . $mod->name) }}</span>
-                </a>
-            @else
-                <a href="{{ $modUrl }}" class="block font-medium py-3 px-4 rounded-lg hover:bg-blue-50 transition text-sm flex items-center gap-3 {{ Request::url() == $modUrl ? 'bg-blue-50' : '' }}" style="color: {{ Request::url() == $modUrl ? '#0077BE' : '#003580' }};">
-                    <i class="{{ $navModIconMap[$mod->slug] ?? 'fas fa-circle' }}"></i>
-                    <span>{{ t('header.' . $mod->name) }}</span>
-                </a>
-            @endif
-        @endforeach
-        {{-- Contact and remaining items --}}
-        @foreach ($navItemsAfter as $item)
-            <a href="{{ $item->full_url }}" class="block font-medium py-3 px-4 rounded-lg hover:bg-blue-50 transition text-sm flex items-center gap-3 {{ Request::url() == $item->full_url ? 'bg-blue-50' : '' }}" style="color: {{ Request::url() == $item->full_url ? '#0077BE' : '#003580' }};">
+            <a href="{{ $item->full_url }}" class="nav-m-link {{ Request::url() == $item->full_url ? 'active' : '' }}">
                 <i class="{{ $item->icon }}"></i>
                 <span>{{ t('header.' . $item->name) }}</span>
             </a>
         @endforeach
 
-            <hr class="border-gray-300 my-4">
+        {{-- Active modules --}}
+        @if($navModules->isNotEmpty())
+            <p class="nav-m-label">{{ t('footer.our_services') }}</p>
+            @foreach ($navModules as $mod)
+                <a href="{{ $mod->nav_url }}" class="nav-m-link {{ $mod->nav_active ? 'active' : '' }}">
+                    <i class="{{ $navModIconMap[$mod->slug] ?? 'fas fa-circle' }}"></i>
+                    <span>{{ t('header.' . $mod->name) }}</span>
+                </a>
+            @endforeach
+        @endif
+
+        {{-- Contact and remaining items --}}
+        @foreach ($navItemsAfter as $item)
+            <a href="{{ $item->full_url }}" class="nav-m-link {{ Request::url() == $item->full_url ? 'active' : '' }}">
+                <i class="{{ $item->icon }}"></i>
+                <span>{{ t('header.' . $item->name) }}</span>
+            </a>
+        @endforeach
+
+        <hr class="nav-menu-sep">
+
         <!-- Mobile: Currency + Language + Auth -->
-        <div class="px-4 py-4 space-y-2">
+        <div class="grid grid-cols-2 gap-2">
 
             <!-- Currency Dropdown (Mobile) -->
             <div class="relative w-full">
-                <select id="currency-select-mobile" class="currency-select w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white">
+                <select id="currency-select-mobile" class="currency-select w-full">
                     @foreach($currencies as $currency)
-                        <option value="{{ $currency->currency_name }}" data-flag="{{ getFlagClass($currency->currency_name) }}"
+                        <option value="{{ $currency->currency_name }}"
                             {{ $active_currency->currency_name == $currency->currency_name ? 'selected' : '' }}>
                             {{ $currency->currency_name }}
                         </option>
@@ -373,88 +387,63 @@
 
             <!-- Language Dropdown (Mobile) -->
             <div class="relative w-full">
-                <select id="language-select-mobile" class="language-select w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white">
+                <select id="language-select-mobile" class="language-select w-full">
                     @if(isset($activeLanguages))
                         @foreach($activeLanguages as $language)
                             <option value="{{ $language->code }}"
-                                    data-flag="{{ getFlagClass(strtoupper($language->code)) }}"
                                     {{ app()->getLocale() == $language->code ? 'selected' : '' }}>
                                 {{ $language->name }}
                             </option>
                         @endforeach
                     @else
-                        <option value="en" data-flag="{{ getFlagClass('GB') }}" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>English</option>
-                        <option value="nl" data-flag="{{ getFlagClass('NL') }}" {{ app()->getLocale() == 'nl' ? 'selected' : '' }}>Dutch</option>
+                        <option value="en" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>English</option>
+                        <option value="nl" {{ app()->getLocale() == 'nl' ? 'selected' : '' }}>Dutch</option>
                     @endif
                 </select>
             </div>
+        </div>
 
-            @if(auth()->check())
-                <!-- Logged-in: Profile info + links (Mobile) -->
-                <div class="mt-2 border border-gray-100 rounded-xl overflow-hidden">
-                    <div class="flex items-center gap-3 px-4 py-3 bg-blue-50">
-                        @if(auth()->user()->profile_image)
-                            <img src="{{ auth()->user()->isAdmin() ? url('public/' . auth()->user()->profile_image) : (auth()->user()->isAgent() ? auth()->user()->profile_image_url : url('public/assets/images/avatars/' . auth()->user()->profile_image)) }}" class="w-9 h-9 rounded-full object-cover border border-gray-200">
-                        @elseif(auth()->user()->isAgent() && auth()->user()->company_logo)
-                            <img src="{{ url('public/assets/images/settings/branding/' . auth()->user()->company_logo) }}" class="w-9 h-9 rounded-full object-contain border border-gray-200 bg-white">
-                        @else
-                            <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style="background:#0077BE;">
-                                {{ auth()->user()->initials }}
-                            </div>
-                        @endif
-                        <div>
-                            <p class="font-semibold text-sm" style="color:#003580;">{{ auth()->user()->isAdmin() ? auth()->user()->first_name : (auth()->user()->isAgent() ? 'Travel Agent' : auth()->user()->first_name) }}</p>
-                            <p class="text-xs text-gray-500">{{ auth()->user()->email }}</p>
-                        </div>
-                    </div>
-                    @if(auth()->user()->isAdmin())
-                        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition border-t border-gray-100" style="color:#003580;">
-                            <i class="fas fa-gauge-high w-4 text-center"></i> Dashboard
-                        </a>
-                        <a href="{{ route('admin.profile.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition border-t border-gray-100" style="color:#003580;">
-                            <i class="fas fa-user w-4 text-center"></i> Profile
-                        </a>
-                        <a href="{{ route('admin.bookings.all', ['type' => 'hotel']) }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition border-t border-gray-100" style="color:#003580;">
-                            <i class="fas fa-clock-rotate-left w-4 text-center"></i> Recent Booking
-                        </a>
-                    @elseif(auth()->user()->isAgent())
-                        <a href="{{ route('agent.dashboard') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition border-t border-gray-100" style="color:#003580;">
-                            <i class="fas fa-gauge-high w-4 text-center"></i> Dashboard
-                        </a>
-                        <a href="{{ route('agent.profile.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition border-t border-gray-100" style="color:#003580;">
-                            <i class="fas fa-user w-4 text-center"></i> Profile
-                        </a>
-                        <a href="{{ route('agent.bookings.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition border-t border-gray-100" style="color:#003580;">
-                            <i class="fas fa-clock-rotate-left w-4 text-center"></i> Recent Booking
-                        </a>
-                    @else
-                        <a href="{{ route('user.dashboard') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition border-t border-gray-100" style="color:#003580;">
-                            <i class="fas fa-gauge-high w-4 text-center"></i> Dashboard
-                        </a>
-                        <a href="{{ route('user.profile.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition border-t border-gray-100" style="color:#003580;">
-                            <i class="fas fa-user w-4 text-center"></i> Profile
-                        </a>
-                        <a href="{{ route('user.bookings.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-blue-50 transition border-t border-gray-100" style="color:#003580;">
-                            <i class="fas fa-clock-rotate-left w-4 text-center"></i> Recent Booking
-                        </a>
-                    @endif
-                    <form method="POST" action="{{ auth()->user()->isAdmin() ? route('admin.logout') : (auth()->user()->isAgent() ? route('agent.logout') : route('user.logout')) }}">
-                        @csrf
-                        <button type="submit" class="w-full flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-red-50 transition text-red-500 border-t border-gray-100 cursor-pointer">
-                            <i class="fas fa-right-from-bracket w-4 text-center"></i> Logout
-                        </button>
-                    </form>
+        @if(auth()->check())
+            <!-- Logged-in: Profile info + links (Mobile) -->
+            <div class="nav-m-user">
+                @if($navAvatar)
+                    <img src="{{ $navAvatar }}" alt="" class="nav-avatar nav-avatar-lg {{ $navAvatarIsLogo ? 'nav-avatar-logo' : '' }}">
+                @else
+                    <span class="nav-avatar nav-avatar-lg">{{ $navUser->initials }}</span>
+                @endif
+                <div>
+                    <p class="nav-m-user-name">{{ $navUserLabel }}</p>
+                    <p class="nav-m-user-email">{{ $navUser->email }}</p>
                 </div>
+            </div>
+            @if($navUser->isAdmin())
+                <a href="{{ route('admin.dashboard') }}" class="nav-m-link"><i class="fas fa-gauge-high"></i> Dashboard</a>
+                <a href="{{ route('admin.profile.index') }}" class="nav-m-link"><i class="fas fa-user"></i> Profile</a>
+                <a href="{{ route('admin.bookings.all', ['type' => 'hotel']) }}" class="nav-m-link"><i class="fas fa-clock-rotate-left"></i> Recent Booking</a>
+            @elseif($navUser->isAgent())
+                <a href="{{ route('agent.dashboard') }}" class="nav-m-link"><i class="fas fa-gauge-high"></i> Dashboard</a>
+                <a href="{{ route('agent.profile.index') }}" class="nav-m-link"><i class="fas fa-user"></i> Profile</a>
+                <a href="{{ route('agent.bookings.index') }}" class="nav-m-link"><i class="fas fa-clock-rotate-left"></i> Recent Booking</a>
             @else
+                <a href="{{ route('user.dashboard') }}" class="nav-m-link"><i class="fas fa-gauge-high"></i> Dashboard</a>
+                <a href="{{ route('user.profile.index') }}" class="nav-m-link"><i class="fas fa-user"></i> Profile</a>
+                <a href="{{ route('user.bookings.index') }}" class="nav-m-link"><i class="fas fa-clock-rotate-left"></i> Recent Booking</a>
+            @endif
+            <form method="POST" action="{{ $navUser->isAdmin() ? route('admin.logout') : ($navUser->isAgent() ? route('agent.logout') : route('user.logout')) }}">
+                @csrf
+                <button type="submit" class="nav-m-link nav-menu-link-danger w-full"><i class="fas fa-right-from-bracket"></i> Logout</button>
+            </form>
+        @else
+            <div class="flex flex-col gap-2 mt-3">
                 <!-- Login Button (Mobile) -->
-                <a href="{{ route('login') }}" class="btn-signin w-full px-4 py-2.5 font-semibold rounded-lg transition text-sm flex items-center justify-center gap-2 mt-2" style="text-decoration:none;">
+                <a href="{{ route('login') }}" class="btn-signin-pill w-full">
                     <i class="fas fa-right-to-bracket"></i>
                     <span>Login</span>
                 </a>
 
                 @if($showUserSignup)
                 <!-- Customer Signup (Mobile) -->
-                <a href="{{ route('user.register') }}" class="w-full px-4 py-2.5 font-semibold rounded-lg border-2 transition text-sm flex items-center justify-center gap-2" style="border-color:#0077BE;color:#0077BE;background:white;text-decoration:none;">
+                <a href="{{ route('user.register') }}" class="btn-signup-solid w-full">
                     <i class="fas fa-user"></i>
                     <span>Customer Signup</span>
                 </a>
@@ -462,14 +451,13 @@
 
                 @if($showAgentSignup)
                 <!-- Agent Signup (Mobile) -->
-                <a href="{{ agentSignupUrl() }}" class="w-full px-4 py-2.5 font-semibold rounded-lg border-2 transition text-sm flex items-center justify-center gap-2" style="border-color:#003580;color:#003580;background:white;text-decoration:none;">
+                <a href="{{ agentSignupUrl() }}" class="{{ $showUserSignup ? 'btn-signin-pill' : 'btn-signup-solid' }} w-full">
                     <i class="fas fa-user-tie"></i>
                     <span>Agent Signup</span>
                 </a>
                 @endif
-            @endif
-
-        </div>
+            </div>
+        @endif
 
         </div>
     </div>

@@ -24,42 +24,40 @@
 
 <style>
     /* Hero Background Image - Crystal Clear */
+    /* Pulled up under the floating header (--nav-offset, style.css) so the
+       scenery fills the area around the rounded nav bar. */
     .hero-section {
-        background: url('<?=getSettingImage('cover_image', 'homepage')?>') center/cover no-repeat;
-        min-height: 700px;
+        background: url('<?=getSettingImage('cover_image', 'homepage')?>') center 35%/cover no-repeat;
+        min-height: 720px;
         position: relative;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        padding-top: 60px;
-    }
-
-    /* Curved Bottom Shape */
-    .hero-section::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 150px;
-        /* background: #F5F7FA; */
-        background: #fff;
-        border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-        z-index: 1;
+        margin-top: calc(-1 * var(--nav-offset));
+        padding-top: calc(var(--nav-offset) + 64px);
+        padding-bottom: 88px;
     }
 
     .form-container {
-        background-color: white;
-        border-radius: 12px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-        width: 100%;
-        max-width: 1000px;
+        background-color: #fff;
+        border-radius: 24px;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.14);
+        width: calc(100% - 32px);
+        max-width: 1100px;
+        padding: 20px 24px 24px;
         z-index: 20;
         position: relative;
         margin: 0 auto;
     }
 
-    /* Fix for dropdowns on home page - ensure they appear above form container */
+    /* Fix for dropdowns on home page - ensure they appear above form container.
+       Every form partial's dropdown is listed: the last partial on the page
+       (Umrah) sets the shared .dropdown-overlay to z-index 999, which would
+       otherwise cover any dropdown below it. */
+    .form-container .airport-dropdown,
+    .form-container .passenger-dropdown,
+    .form-container .class-dropdown,
+    .form-container .country-dropdown,
     .form-container .destination-dropdown,
     .form-container .tour-type-dropdown,
     .form-container .traveler-dropdown {
@@ -70,55 +68,82 @@
         z-index: 140 !important;
     }
 
-    /* Tab Styles */
-    .tab-buttons {
-        display: inline-flex;
+    /* Tab Styles — a glass pill bar above the search panel (outside the
+       white card). Centering uses auto margins on the first/last tab (not
+       justify-content) so an overflowing row still scrolls to its first tab
+       on small screens. */
+    .tab-buttons-wrapper {
+        display: flex;
         justify-content: center;
-        gap: 8px;
-        padding: 10px 12px;
-        background: #f0f4f8;
-        border-radius: 50px;
-        flex-wrap: wrap;
-        margin: 16px auto 0;
-        width: auto;
+        width: calc(100% - 32px);
+        max-width: 1100px;
+        margin: 0 auto 10px;
+        position: relative;
+        z-index: 21;
     }
 
-    .form-container .tab-buttons-wrapper {
-        text-align: center;
+    .tab-buttons {
+        display: flex;
+        justify-content: flex-start;
+        gap: 4px;
+        max-width: 100%;
+        padding: 6px;
+        border-radius: 9999px;
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        background: rgba(37, 99, 235, 0.32);
+        backdrop-filter: blur(14px) saturate(140%);
+        -webkit-backdrop-filter: blur(14px) saturate(140%);
+        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.18);
+        overflow-x: auto;
+        scrollbar-width: none;
     }
+    .tab-buttons::-webkit-scrollbar { display: none; }
+    .tab-buttons > .tab-btn:first-child { margin-left: auto; }
+    .tab-buttons > .tab-btn:last-child { margin-right: auto; }
 
     .tab-btn {
-        padding: 10px 20px;
-        background: white;
-        border: 2px solid #e2e8f0;
+        flex: 0 0 auto;
+        height: 46px;
+        padding: 0 22px;
+        background: transparent;
+        border: 0;
         font-weight: 600;
-        font-size: 14px;
-        color: #64748b;
+        font-size: 15px;
+        letter-spacing: 0;
+        text-transform: none;
+        color: #fff;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+        text-decoration: none;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: background-color .2s ease, color .2s ease, box-shadow .2s ease;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 7px;
+        gap: 10px;
         white-space: nowrap;
-        border-radius: 50px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        border-radius: 9999px;
+        box-shadow: none;
+    }
+
+    .tab-btn i {
+        color: #fff;
+        font-size: 16px;
     }
 
     .tab-btn:hover {
-        color: #0346FA;
-        background: white;
-        border-color: #0346FA;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(3,70,250,0.15);
+        color: #fff;
+        background: rgba(255, 255, 255, 0.2);
     }
 
     .tab-btn.active {
-        color: white;
-        background: #0346FA;
-        border-color: transparent;
-        box-shadow: 0 4px 14px rgba(3,70,250,0.35);
-        transform: translateY(-1px);
+        color: #000;
+        text-shadow: none;
+        background: #fff;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
+    }
+
+    .tab-btn.active i {
+        color: #2563EB;
     }
 
     /* Primary-action color override, scoped to the homepage only — .cta-button,
@@ -168,87 +193,109 @@
     }
 
     /* Responsive */
-    @media (max-width: 768px) {
-        .tab-buttons {
-            gap: 6px;
-            padding: 12px 14px;
+    @media (max-width: 1023px) {
+        .hero-section {
+            min-height: 0;
+            padding-top: calc(var(--nav-offset) + 40px);
+            padding-bottom: 64px;
         }
 
-        .tab-btn {
-            padding: 8px 14px;
-            font-size: 13px;
-            gap: 5px;
-        }
-
-        .tab-btn i {
-            font-size: 13px;
+        .form-container {
+            padding: 22px 22px 24px;
+            border-radius: 24px;
         }
     }
 
     @media (max-width: 640px) {
+        .hero-section {
+            padding-top: calc(var(--nav-offset) + 28px);
+            padding-bottom: 48px;
+        }
+
+        .form-container {
+            width: calc(100% - 24px);
+            padding: 16px 14px 18px;
+            border-radius: 20px;
+        }
+
+        .tab-buttons-wrapper {
+            width: calc(100% - 24px);
+            margin-bottom: 8px;
+        }
+
         .tab-buttons {
-            gap: 5px;
-            padding: 10px 10px;
+            padding: 4px;
         }
 
         .tab-btn {
-            padding: 7px 12px;
-            font-size: 12px;
-            gap: 4px;
+            height: 40px;
+            padding: 0 14px;
+            font-size: 13px;
+            gap: 6px;
         }
 
         .tab-btn i {
-            font-size: 12px;
+            font-size: 14px;
         }
     }
 </style>
 
+@php
+    // Hero title from the existing translation, with its last two words in
+    // brand blue ("Find Your | Perfect Flight"). Short titles highlight the
+    // last word; languages written without spaces render in one color.
+    $heroTitleWords = preg_split('/\s+/u', trim(t('home.hero_title')));
+    $heroAccentCount = count($heroTitleWords) >= 3 ? 2 : (count($heroTitleWords) === 2 ? 1 : 0);
+    $heroTitleLead = implode(' ', array_slice($heroTitleWords, 0, count($heroTitleWords) - $heroAccentCount));
+    $heroTitleAccent = implode(' ', array_slice($heroTitleWords, count($heroTitleWords) - $heroAccentCount));
+@endphp
+
 <div id="homeRedesign">
 <section class="hero-section">
     <div class="hero-content">
-        <h1 style="color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">
-            {{ t('home.hero_title') }}
+        <h1 class="hero-title">
+            {{ $heroTitleLead }}@if($heroTitleAccent !== '') <span class="hero-title-accent">{{ $heroTitleAccent }}</span>@endif
         </h1>
-        <p style="color: white; text-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+        <p class="hero-subtitle">
             {{ t('home.hero_subtitle') }}
         </p>
     </div>
 
+    <!-- Tab Buttons -->
+    <div class="tab-buttons-wrapper">
+    <div class="tab-buttons">
+        @php $first = true; @endphp
+        @foreach($activeModules as $module)
+            @if($module->slug === 'visa')
+                <!-- Visa as a link, not a button -->
+                <a href="{{ route('visa.create') }}" class="tab-btn">
+                    <i class="fas fa-passport"></i>
+                    {{ t('header.' . $module->name) }}
+                </a>
+            @else
+                <button type="button" class="tab-btn {{ $first ? 'active' : '' }}" data-tab="{{ $module->slug }}">
+                    <i class="fas
+                        @if($module->slug === 'hotel') fa-hotel
+                        @elseif($module->slug === 'flight') fa-plane
+                        @elseif($module->slug === 'tours') fa-suitcase
+                        @else fa-mosque
+                        @endif
+                    "></i>
+                    {{ t('header.' . $module->name) }}
+                </button>
+
+                @php $first = false; @endphp
+            @endif
+        @endforeach
+        <a href="{{ route('ticket.track') }}" class="tab-btn">
+            <i class="fas fa-ticket"></i>
+            {{ t('footer.Track Booking') }}
+        </a>
+    </div>
+    </div>
+
     <!-- Search Form Container -->
     <div class="form-container">
-        <!-- Tab Buttons -->
-        <div class="tab-buttons-wrapper">
-        <div class="tab-buttons">
-            @php $first = true; @endphp
-            @foreach($activeModules as $module)
-                @if($module->slug === 'visa')
-                    <!-- Visa as a link, not a button -->
-                    <a href="{{ route('visa.create') }}" class="tab-btn"
-                    style="text-decoration: none;">
-                        <i class="fas fa-passport"></i>
-                        {{ t('header.' . $module->name) }}
-                    </a>
-                @else
-                    <button type="button" class="tab-btn {{ $first ? 'active' : '' }}" data-tab="{{ $module->slug }}">
-                        <i class="fas
-                            @if($module->slug === 'hotel') fa-hotel
-                            @elseif($module->slug === 'flight') fa-plane
-                            @elseif($module->slug === 'tours') fa-suitcase
-                            @else fa-mosque
-                            @endif
-                        "></i>
-                        {{ t('header.' . $module->name) }}
-                    </button>
-
-                    @php $first = false; @endphp
-                @endif
-            @endforeach
-            <a href="{{ route('ticket.track') }}" class="tab-btn" style="text-decoration: none;">
-                <i class="fas fa-ticket"></i>
-                {{ t('footer.Track Booking') }}
-            </a>
-        </div>
-        </div>
 
         <!-- Tab Contents - Include separate files -->
         @php $firstContent = true; @endphp
@@ -445,23 +492,49 @@
 
 @php
     $hotelModule = getActiveModule('hotel'); // active or null
-@endphp
-    <!-- FEATURED HOTELS SECTION -->
-    <div style="background-color: white; padding: 60px 20px; {{ $hotelModule ? '' : 'display:none;' }}">
-        <div style="max-width: 1200px; margin: 0 auto;">
+    $toursModule = getActiveModule('tours'); // active or null
+    $umrahModule = getActiveModule('umrah'); // active or null
 
-            <!-- Section Header -->
-            <div style="text-align: center; margin-bottom: 50px;">
-                <h2 style="font-size: 32px; font-weight: bold; color: #003580; margin-bottom: 10px;">{{ t('home.trending_hotels') }}</h2>
-                <p style="font-size: 16px; color: #6B7280;">{{ t('home.trending_hotels_sub') }}</p>
+    // Section titles: last word gets the brand accent colour
+    $thSplitTitle = function ($text) {
+        $words = preg_split('/\s+/u', trim($text));
+        $accent = count($words) > 1 ? array_pop($words) : '';
+        return [implode(' ', $words), $accent];
+    };
+@endphp
+
+    @if($hotelModule)
+    <!-- FEATURED HOTELS SECTION -->
+    @php [$thLead, $thAccent] = $thSplitTitle(t('home.trending_hotels')); @endphp
+    <section class="th-section" id="trendingHotels">
+        <div class="th-container">
+            <div class="th-header">
+                <div class="th-header-text">
+                    <span class="th-eyebrow">{{ t('home.trending_hotels') }}</span>
+                    <h2 class="th-title">{{ $thLead }} @if($thAccent)<span class="th-title-accent">{{ $thAccent }}</span>@endif</h2>
+                </div>
+                @if($featuredHotels->count() > 1)
+                <div class="th-nav">
+                    <button type="button" class="th-nav-btn th-nav-prev" data-th-dir="-1" aria-label="Previous"><i class="fas fa-arrow-left"></i></button>
+                    <button type="button" class="th-nav-btn th-nav-next" data-th-dir="1" aria-label="Next"><i class="fas fa-arrow-right"></i></button>
+                </div>
+                @endif
             </div>
 
-            <!-- Hotels Grid -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
-
+            <div class="th-track">
                 @php
                     $checkin  = date('Y-m-d', strtotime('+1 day'));
                     $checkout = date('Y-m-d', strtotime('+2 days'));
+                    // amenities store Bootstrap Icons classes, which are not loaded on public pages
+                    $thAmenityIcons = [
+                        'bi-wifi' => 'fa-wifi', 'bi-car-front' => 'fa-car', 'bi-snow' => 'fa-snowflake',
+                        'bi-tv' => 'fa-tv', 'bi-water' => 'fa-water-ladder', 'bi-bicycle' => 'fa-dumbbell',
+                        'bi-shop' => 'fa-utensils', 'bi-bell' => 'fa-bell-concierge', 'bi-droplet' => 'fa-shirt',
+                        'bi-arrow-up-square' => 'fa-elevator', 'bi-cup-straw' => 'fa-martini-glass',
+                        'bi-heart-pulse' => 'fa-spa', 'bi-people' => 'fa-users', 'bi-clock' => 'fa-clock',
+                        'bi-egg-fried' => 'fa-egg', 'bi-cup-hot' => 'fa-mug-hot', 'bi-shield-lock' => 'fa-lock',
+                        'bi-door-open' => 'fa-door-open', 'bi-bus-front' => 'fa-van-shuttle', 'bi-person-badge' => 'fa-id-badge',
+                    ];
                 @endphp
 
                 @forelse($featuredHotels as $fHotel)
@@ -469,81 +542,93 @@
                     $fImage = $fHotel->images->first()
                         ? asset('public/assets/images/' . $fHotel->images->first()->image_path)
                         : 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop';
+                    $fCity = $fHotel->location ? $fHotel->location->city : null;
                     $fLocation = $fHotel->location ? $fHotel->location->city . ', ' . $fHotel->location->country : $fHotel->address;
                     $fAmenities = $fHotel->amenities->take(3);
                     $fSlug = \Illuminate\Support\Str::slug(\Illuminate\Support\Str::limit($fHotel->name, 30), '-');
                     $fDetailUrl = url("hotel/details/{$fHotel->id}/{$fSlug}/{$checkin}/{$checkout}/2/0/1/manual");
                     $fMinPrice = $fHotel->roomTypes()->where('status', 1)->min('price_per_night') ?? 0;
+                    $fStars = max(0, min(5, (int) $fHotel->stars));
                 @endphp
-                <a href="{{ $fDetailUrl }}" style="text-decoration: none;">
-                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 12px 32px rgba(0, 119, 190, 0.15)'; this.style.transform='translateY(-8px)'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
-                    <div style="position: relative; overflow: hidden; height: 220px;">
-                        <img src="{{ $fImage }}" alt="{{ $fHotel->name }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
-                        <div style="position: absolute; top: 12px; left: 12px; background: #FF6B35; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold;">{{ t('home.badge_featured') }}</div>
-                    </div>
-                    <div style="padding: 20px;">
-                        <h3 style="font-size: 18px; font-weight: bold; color: #003580; margin-bottom: 6px;">{{ $fHotel->name }}</h3>
-                        <p style="font-size: 13px; color: #6B7280; margin-bottom: 12px;">{{ $fLocation }}</p>
+                <article class="th-card">
+                    <a href="{{ $fDetailUrl }}" class="th-card-media">
+                        <img src="{{ $fImage }}" alt="{{ $fHotel->name }}" loading="lazy">
+                        @if($fHotel->featured == 1)
+                            <span class="th-badge"><i class="fas fa-star"></i> {{ t('home.badge_featured') }}</span>
+                        @endif
+                        @if($fCity)
+                            <span class="th-chip"><i class="fas fa-location-dot"></i> {{ $fCity }}</span>
+                        @endif
+                    </a>
+                    <div class="th-card-body">
+                        <h3 class="th-name"><a href="{{ $fDetailUrl }}">{{ $fHotel->name }}</a></h3>
+                        @if($fLocation)
+                            <p class="th-location"><i class="fas fa-location-dot"></i> <span>{{ $fLocation }}</span></p>
+                        @endif
 
-                        <!-- Rating -->
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                            <div style="display: flex; gap: 2px;">
+                        @if($fStars > 0)
+                        <div class="th-rating">
+                            <span class="th-stars">
                                 @for($s = 1; $s <= 5; $s++)
-                                    <span style="color: {{ $s <= $fHotel->stars ? '#FF6B35' : '#D1D5DB' }};">★</span>
+                                    <i class="fas fa-star {{ $s <= $fStars ? 'is-on' : '' }}"></i>
                                 @endfor
-                            </div>
-                            <span style="font-size: 12px; color: #6B7280;">{{ $fHotel->stars }} {{ t('home.stars') }}</span>
+                            </span>
+                            <span class="th-rating-text">{{ $fStars }} {{ t('hotel.stars') }}</span>
                         </div>
+                        @endif
 
-                        <!-- Amenities -->
-                        <div style="display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;">
+                        @if($fAmenities->count())
+                        <div class="th-pills">
                             @foreach($fAmenities as $fAmenity)
-                                <span style="background-color: #F0F4F8; color: #0077BE; padding: 4px 8px; border-radius: 4px; font-size: 11px;">{{ $fAmenity->name }}</span>
+                                @php
+                                    $fBi = collect(explode(' ', (string) $fAmenity->icon))->first(fn($c) => isset($thAmenityIcons[$c]));
+                                    $fFa = $fBi ? $thAmenityIcons[$fBi] : 'fa-check';
+                                @endphp
+                                <span class="th-pill"><i class="fas {{ $fFa }}"></i> {{ $fAmenity->name }}</span>
                             @endforeach
                         </div>
+                        @endif
 
-                        <!-- Price -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #F0F4F8;">
-                            <div>
-                                <span style="font-size: 12px; color: #6B7280;">{{ t('home.starting_from') }}</span>
+                        <div class="th-footer">
+                            <div class="th-price-wrap">
                                 @if($fMinPrice > 0)
-                                    <p style="font-size: 20px; font-weight: bold; color: #0077BE; margin: 0;">{{ $active_currency->currency_name }} {{ number_format($fMinPrice, 0) }}</p>
+                                    <span class="th-price-label">{{ t('home.starting_from') }}</span>
+                                    <span class="th-price">{{ $active_currency->currency_name }} {{ number_format($fMinPrice, 0) }}</span>
                                 @else
-                                    <p style="font-size: 14px; color: #6B7280; margin: 0;">{{ t('home.contact_for_price') }}</p>
+                                    <span class="th-price-none">{{ t('hotel.contactForPrice') }}</span>
                                 @endif
                             </div>
-                            <button style="background-color: #0346FA; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#0233C9'" onmouseout="this.style.backgroundColor='#0346FA'">{{ t('home.view') }}</button>
+                            <a href="{{ $fDetailUrl }}" class="th-view-btn">{{ t('home.view') }} <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
-                </div>
-                </a>
+                </article>
                 @empty
-                    <p style="grid-column: 1/-1; text-align:center; color:#6B7280;">{{ t('home.no_featured_hotels') }}</p>
+                    <p class="th-empty">{{ t('home.no_featured_hotels') }}</p>
                 @endforelse
-
             </div>
-
-            <!-- View All Button -->
-            <!-- <div style="text-align: center; margin-top: 50px;">
-                <button style="background-color: #0077BE; color: white; border: none; padding: 14px 48px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0, 119, 190, 0.15);" onmouseover="this.style.backgroundColor='#0066A1'; this.style.boxShadow='0 4px 12px rgba(0, 119, 190, 0.3)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.backgroundColor='#0077BE'; this.style.boxShadow='0 2px 8px rgba(0, 119, 190, 0.15)'; this.style.transform='translateY(0)'">
-                    Explore More Hotels
-                </button>
-            </div> -->
         </div>
-    </div>
+    </section>
+    @endif
 
-@php
-    $toursModule = getActiveModule('tours'); // active or null
-@endphp
+    @if($toursModule)
     <!-- FEATURED TOURS SECTION -->
-    <section class="responsive-section" style="{{ $toursModule ? '' : 'display:none;' }}">
-        <div class="container" style="max-width: 1200px; margin: 0 auto;">
-            <div class="section-header">
-                <h2>{{ t('tour.find_popular_tours') }}</h2>
-                <p>{{ t('tour.find_popular_tours_subtitle') }}</p>
+    @php [$thLead, $thAccent] = $thSplitTitle(t('tour.find_popular_tours')); @endphp
+    <section class="th-section" id="popularTours">
+        <div class="th-container">
+            <div class="th-header">
+                <div class="th-header-text">
+                    <span class="th-eyebrow">{{ t('tour.find_popular_tours') }}</span>
+                    <h2 class="th-title">{{ $thLead }} @if($thAccent)<span class="th-title-accent">{{ $thAccent }}</span>@endif</h2>
+                </div>
+                @if($tours->count() > 1)
+                <div class="th-nav">
+                    <button type="button" class="th-nav-btn th-nav-prev" data-th-dir="-1" aria-label="Previous"><i class="fas fa-arrow-left"></i></button>
+                    <button type="button" class="th-nav-btn th-nav-next" data-th-dir="1" aria-label="Next"><i class="fas fa-arrow-right"></i></button>
+                </div>
+                @endif
             </div>
 
-            <div class="tour-deals-grid">
+            <div class="th-track">
                 @php
                     // Default date values - 2 days from today and 4 days from today
                     $startDate = date('d-m-Y', strtotime('+2 days'));
@@ -575,79 +660,68 @@
                         $highlights = $tour->highlights ? array_slice($tour->highlights, 0, 3) : [];
                     @endphp
 
-                    <a href="{{ $detailUrl }}" class="tour-deal-card">
-                        <div class="tour-card-image">
-                            <img src="{{ $imageUrl }}" alt="{{ $tour->name }}">
-
+                    <article class="th-card">
+                        <a href="{{ $detailUrl }}" class="th-card-media">
+                            <img src="{{ $imageUrl }}" alt="{{ $tour->name }}" loading="lazy">
                             @if($tour->featured == 1)
-                                <div class="popular-badge">{{ t('tour.popular') }}</div>
+                                <span class="th-badge"><i class="fas fa-star"></i> {{ t('tour.popular') }}</span>
                             @endif
-
                             @if($tour->days)
-                                <div class="duration-badge">
-                                    <i class="fas fa-clock"></i> {{ $tour->days }} {{ $tour->days > 1 ? t('tour.days') : t('tour.day') }}
-                                </div>
+                                <span class="th-chip"><i class="fas fa-clock"></i> {{ $tour->days }} {{ $tour->days > 1 ? t('tour.days') : t('tour.day') }}</span>
                             @endif
-                        </div>
-                        <div class="tour-card-body">
-                            <h3 class="tour-name">{{ $tour->name }}</h3>
-
+                        </a>
+                        <div class="th-card-body">
+                            <h3 class="th-name"><a href="{{ $detailUrl }}">{{ $tour->name }}</a></h3>
                             @if($tour->location_name)
-                                <div class="tour-location">
-                                    <i class="fas fa-map-marker-alt"></i> {{ $tour->location_name }}
-                                </div>
+                                <p class="th-location"><i class="fas fa-location-dot"></i> <span>{{ $tour->location_name }}</span></p>
                             @endif
 
-                            <div class="tour-features">
+                            <div class="th-pills">
                                 @if(count($highlights) > 0)
                                     @foreach($highlights as $highlight)
-                                        <span class="feature-item">
-                                            <i class="fas fa-check-circle"></i> {{ Str::limit($highlight, 15) }}
-                                        </span>
+                                        <span class="th-pill"><i class="fas fa-check-circle"></i> {{ Str::limit($highlight, 15) }}</span>
                                     @endforeach
                                 @else
-                                    <span class="feature-item"><i class="fas fa-hotel"></i> {{ t('tour.hotel') }}</span>
-                                    <span class="feature-item"><i class="fas fa-utensils"></i> {{ t('tour.meals') }}</span>
-                                    <span class="feature-item"><i class="fas fa-bus"></i> {{ t('tour.transport') }}</span>
+                                    <span class="th-pill"><i class="fas fa-hotel"></i> {{ t('tour.hotel') }}</span>
+                                    <span class="th-pill"><i class="fas fa-utensils"></i> {{ t('tour.meals') }}</span>
+                                    <span class="th-pill"><i class="fas fa-bus"></i> {{ t('tour.transport') }}</span>
                                 @endif
                             </div>
 
-                            <div class="tour-price-section">
-                                <div class="price-info">
-                                    <div class="price-label">{{ t('tour.starting_from') }}</div>
-                                    <div class="price-amount">
-                                        <span class="price-currency">{{$active_currency->currency_name}} </span> {{convertCurrency($tour->price, $tour->currency ?? 'USD', $active_currency->currency_name)}}
-                                    </div>
+                            <div class="th-footer">
+                                <div class="th-price-wrap">
+                                    <span class="th-price-label">{{ t('tour.starting_from') }}</span>
+                                    <span class="th-price">{{ $active_currency->currency_name }} {{ convertCurrency($tour->price, $tour->currency ?? 'USD', $active_currency->currency_name) }}</span>
                                 </div>
-                                <button class="view-deal-btn">{{ t('tour.view_details') }}</button>
+                                <a href="{{ $detailUrl }}" class="th-view-btn">{{ t('home.view') }} <i class="fas fa-arrow-right"></i></a>
                             </div>
                         </div>
-                    </a>
+                    </article>
                 @endforeach
-
-            </div>
-
-            <!-- View All Button -->
-            <div class="cta-section">
-                <a href="{{ route('tours.index') }}" class="cta-button">
-                    <i class="fas fa-globe"></i> {{ t('tour.view_all_tours') }}
-                </a>
             </div>
         </div>
     </section>
+    @endif
 
-@php
-    $umrahModule = getActiveModule('umrah'); // active or null
-@endphp
+    @if($umrahModule)
     <!-- FEATURED UMRAH PACKAGES SECTION -->
-    <section class="responsive-section-umrah" style="{{ $umrahModule ? '' : 'display:none;' }}">
-        <div class="container" style="max-width: 1200px; margin: 0 auto;">
-            <div class="section-header">
-                <h2>{{ t('home.umrah_featured_title') }}</h2>
-                <p>{{ t('home.umrah_featured_sub') }}</p>
+    @php [$thLead, $thAccent] = $thSplitTitle(t('home.umrah_featured_title')); @endphp
+    <section class="th-section" id="umrahPackages">
+        <div class="th-container">
+            <div class="th-header">
+                <div class="th-header-text">
+                    <span class="th-eyebrow">{{ t('home.umrah_featured_title') }}</span>
+                    <h2 class="th-title">{{ $thLead }} @if($thAccent)<span class="th-title-accent">{{ $thAccent }}</span>@endif</h2>
+                </div>
+                @if($umrahPackages->count() > 1)
+                <div class="th-nav">
+                    <button type="button" class="th-nav-btn th-nav-prev" data-th-dir="-1" aria-label="Previous"><i class="fas fa-arrow-left"></i></button>
+                    <button type="button" class="th-nav-btn th-nav-next" data-th-dir="1" aria-label="Next"><i class="fas fa-arrow-right"></i></button>
+                </div>
+                @endif
             </div>
 
-            <div class="umrah-deals-grid">
+            <div class="th-track">
                 @php
                     // Default date values - 2 weeks from today
                     $departureDate = date('d-m-Y', strtotime('+14 days'));
@@ -693,136 +767,219 @@
                         $totalNights = ($package->makkah_nights ?? 0) + ($package->madina_nights ?? 0);
                     @endphp
 
-                    <a href="{{ $detailUrl }}" class="umrah-deal-card">
-                        <div class="umrah-card-image">
-                            <img src="{{ $imageUrl }}" alt="{{ $package->name }}">
-
+                    <article class="th-card">
+                        <a href="{{ $detailUrl }}" class="th-card-media">
+                            <img src="{{ $imageUrl }}" alt="{{ $package->name }}" loading="lazy">
                             @if($package->featured == 1)
-                                <div class="popular-badge-umrah">{{ t('home.badge_featured') }}</div>
+                                <span class="th-badge"><i class="fas fa-star"></i> {{ t('home.badge_featured') }}</span>
                             @endif
-
                             @if($totalNights > 0)
-                                <div class="duration-badge-umrah">
-                                    <i class="fas fa-moon"></i> {{ $totalNights }} {{ t('home.nights') }}
-                                </div>
+                                <span class="th-chip"><i class="fas fa-moon"></i> {{ $totalNights }} {{ t('home.nights') }}</span>
                             @endif
-                        </div>
-                        <div class="umrah-card-body">
-                            <h3 class="umrah-name">{{ $package->name }}</h3>
-
+                        </a>
+                        <div class="th-card-body">
+                            <h3 class="th-name"><a href="{{ $detailUrl }}">{{ $package->name }}</a></h3>
                             @if($package->from_location && $package->to_location)
-                                <div class="umrah-location">
-                                    <i class="fas fa-plane-departure"></i> {{ $package->from_location }} <i class="fas fa-arrow-right mx-1"></i> {{ $package->to_location }}
-                                </div>
+                                <p class="th-location"><i class="fas fa-plane-departure"></i> <span>{{ $package->from_location }} <i class="fas fa-arrow-right th-route-arrow"></i> {{ $package->to_location }}</span></p>
                             @endif
 
-                            <div class="umrah-features">
+                            <div class="th-pills">
                                 @if(count($highlights) > 0)
                                     @foreach($highlights as $highlight)
-                                        <span class="feature-item-umrah">
-                                            <i class="fas fa-check-circle"></i> {{ Str::limit($highlight, 15) }}
-                                        </span>
+                                        <span class="th-pill"><i class="fas fa-check-circle"></i> {{ Str::limit($highlight, 15) }}</span>
                                     @endforeach
                                 @else
                                     @if($package->makkah_nights > 0)
-                                        <span class="feature-item-umrah"><i class="fas fa-kaaba"></i> {{ $package->makkah_nights }} {{ t('home.nights_makkah') }}</span>
+                                        <span class="th-pill"><i class="fas fa-kaaba"></i> {{ $package->makkah_nights }} {{ t('home.nights_makkah') }}</span>
                                     @endif
                                     @if($package->madina_nights > 0)
-                                        <span class="feature-item-umrah"><i class="fas fa-mosque"></i> {{ $package->madina_nights }} {{ t('home.nights_madinah') }}</span>
+                                        <span class="th-pill"><i class="fas fa-mosque"></i> {{ $package->madina_nights }} {{ t('home.nights_madinah') }}</span>
                                     @endif
-                                    <span class="feature-item-umrah"><i class="fas fa-hotel"></i> {{ t('home.hotel') }}</span>
+                                    <span class="th-pill"><i class="fas fa-hotel"></i> {{ t('home.hotel') }}</span>
                                 @endif
                             </div>
 
-                            <div class="umrah-price-section">
-                                <div class="price-info-umrah">
-                                    <div class="price-label-umrah">{{ t('home.starting_from') }}</div>
-                                    <div class="price-amount-umrah">
-                                        <span class="price-currency-umrah">{{$active_currency->currency_name}} </span> {{convertCurrency($package->price, $package->currency ?? 'USD', $active_currency->currency_name)}}
-                                    </div>
+                            <div class="th-footer">
+                                <div class="th-price-wrap">
+                                    <span class="th-price-label">{{ t('home.starting_from') }}</span>
+                                    <span class="th-price">{{ $active_currency->currency_name }} {{ convertCurrency($package->price, $package->currency ?? 'USD', $active_currency->currency_name) }}</span>
                                 </div>
-                                <button class="view-deal-btn-umrah">{{ t('home.view_details') }}</button>
+                                <a href="{{ $detailUrl }}" class="th-view-btn">{{ t('home.view') }} <i class="fas fa-arrow-right"></i></a>
                             </div>
                         </div>
-                    </a>
+                    </article>
                 @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
 
+    <!-- HOW IT WORKS SECTION -->
+    @php [$thLead, $thAccent] = $thSplitTitle(t('home.how_it_work')); @endphp
+    <section class="th-section" id="howItWorks">
+        <div class="th-container">
+            <div class="th-header">
+                <div class="th-header-text">
+                    <span class="th-eyebrow">{{ t('home.how_it_work') }}</span>
+                    <h2 class="th-title">{{ $thLead }} @if($thAccent)<span class="th-title-accent">{{ $thAccent }}</span>@endif</h2>
+                </div>
             </div>
 
-            <!-- View All Button -->
-            <div class="cta-section">
-                <a href="{{ route('umrah.index') }}" class="cta-button">
-                    <i class="fas fa-kaaba"></i> {{ t('home.explore_all_packages') }}
-                </a>
+            <div class="hw-grid">
+                @foreach([
+                    ['fa-magnifying-glass', 'home.step_1_title', 'home.step_1_desc'],
+                    ['fa-star', 'home.step_2_title', 'home.step_2_desc'],
+                    ['fa-credit-card', 'home.step_3_title', 'home.step_3_desc'],
+                    ['fa-circle-check', 'home.step_4_title', 'home.step_4_desc'],
+                ] as $hwIndex => [$hwIcon, $hwTitle, $hwDesc])
+                <div class="hw-card">
+                    <div class="hw-card-top">
+                        <span class="hw-icon"><i class="fas {{ $hwIcon }}"></i></span>
+                        <span class="hw-number">{{ str_pad($hwIndex + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                    </div>
+                    <h3 class="hw-title">{{ t($hwTitle) }}</h3>
+                    <p class="hw-desc">{{ t($hwDesc) }}</p>
+                </div>
+                @endforeach
             </div>
         </div>
     </section>
 
-
-    <section class="how-it-works">
-            <div class="section-header">
-                <h2>{{ t('home.how_it_work') }}</h2>
-                <p>{{ t('home.howitwork_sub_one') }} <span class="accent-text">{{ t('home.howitwork_sub_two') }}</span>. {{ t('home.howitwork_sub_three') }}</p>
-            </div>
-
-            <div class="steps-container">
-                <!-- Step 1 -->
-                <div class="step-card">
-                    <div class="step-number">1</div>
-                    <div class="step-icon">🔍</div>
-                    <h3 class="step-title">{{t('home.step_1_title')}}</h3>
-                    <p class="step-description">{{ t('home.step_1_desc') }}</p>
-                    <div class="connector"></div>
-                </div>
-
-                <!-- Step 2 -->
-                <div class="step-card">
-                    <div class="step-number">2</div>
-                    <div class="step-icon">⭐</div>
-                    <h3 class="step-title">{{t('home.step_2_title')}}</h3>
-                    <p class="step-description">{{ t('home.step_2_desc') }}</p>
-                    <div class="connector"></div>
-                </div>
-
-                <!-- Step 3 -->
-                <div class="step-card">
-                    <div class="step-number">3</div>
-                    <div class="step-icon">💳</div>
-                    <h3 class="step-title">{{t('home.step_3_title')}}</h3>
-                    <p class="step-description">{{ t('home.step_3_desc') }}</p>
-                    <div class="connector"></div>
-                </div>
-
-                <!-- Step 4 -->
-                <div class="step-card">
-                    <div class="step-number">4</div>
-                    <div class="step-icon">🎉</div>
-                    <h3 class="step-title">{{t('home.step_4_title')}}</h3>
-                    <p class="step-description">{{ t('home.step_4_desc') }}</p>
+    <!-- Search with AI dialog (opened from the flight form's #aiSearchBtn) -->
+    <div class="ai-modal" id="aiSearchModal" hidden>
+        <div class="ai-modal-backdrop" data-ai-close></div>
+        <div class="ai-modal-panel" role="dialog" aria-modal="true" aria-labelledby="aiSearchTitle">
+            <button type="button" class="ai-modal-close" data-ai-close aria-label="Close"><i class="fas fa-xmark"></i></button>
+            <div class="ai-modal-head">
+                <span class="ai-modal-icon"><i class="fas fa-wand-magic-sparkles"></i></span>
+                <div>
+                    <h3 id="aiSearchTitle">Search with AI</h3>
+                    <p>Describe your trip in your own words and we'll find the flights.</p>
                 </div>
             </div>
-
-            <div class="cta-section">
-                <button class="cta-button" id="start_booking_now">{{t('home.start_booking_now')}} →</button>
-            </div>
-    </section>
+            <form id="aiSearchForm" class="ai-modal-form">
+                @csrf
+                <textarea id="aiSearchQuery" name="query" rows="3" maxlength="500" required
+                    placeholder="e.g. Lahore to Dubai next Friday, back on 20 December, 2 adults in business"></textarea>
+                <div class="ai-modal-examples">
+                    <button type="button" class="ai-example">Karachi to Jeddah on 15 December, 2 adults</button>
+                    <button type="button" class="ai-example">Islamabad to London next Monday, one way</button>
+                    <button type="button" class="ai-example">Lahore to Dubai tomorrow for 5 days, business</button>
+                </div>
+                <div class="ai-modal-status" id="aiSearchStatus" role="status" aria-live="polite"></div>
+                <button type="submit" class="ai-modal-submit" id="aiSearchSubmit">
+                    <i class="fas fa-magnifying-glass"></i> <span>Search Flights</span>
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
 
 <script>
-    // Scroll to hero-section when start_booking_now button is clicked
-    document.addEventListener('DOMContentLoaded', function() {
-        const startBookingBtn = document.getElementById('start_booking_now');
-        if (startBookingBtn) {
-            startBookingBtn.addEventListener('click', function() {
-                const heroSection = document.querySelector('.hero-section');
-                if (heroSection) {
-                    heroSection.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
+    // Search with AI: free-text request -> /ai-search/flights -> flight results page
+    (function () {
+        var openBtn = document.getElementById('aiSearchBtn');
+        var modal = document.getElementById('aiSearchModal');
+        if (!openBtn || !modal) return;
+        var form = document.getElementById('aiSearchForm');
+        var input = document.getElementById('aiSearchQuery');
+        var status = document.getElementById('aiSearchStatus');
+        var submit = document.getElementById('aiSearchSubmit');
+
+        function setStatus(text, type) {
+            status.textContent = text || '';
+            status.className = 'ai-modal-status' + (type ? ' is-' + type : '');
         }
+        function open() {
+            modal.hidden = false;
+            document.body.classList.add('overflow-hidden');
+            setStatus('');
+            setTimeout(function () { input.focus(); }, 30);
+        }
+        function close() {
+            modal.hidden = true;
+            document.body.classList.remove('overflow-hidden');
+            openBtn.focus();
+        }
+
+        openBtn.addEventListener('click', open);
+        modal.querySelectorAll('[data-ai-close]').forEach(function (el) { el.addEventListener('click', close); });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !modal.hidden) close();
+        });
+        modal.querySelectorAll('.ai-example').forEach(function (chip) {
+            chip.addEventListener('click', function () { input.value = chip.textContent.trim(); input.focus(); });
+        });
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
+        });
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var query = input.value.trim();
+            if (query.length < 3) { setStatus('Please describe your trip.', 'error'); return; }
+
+            submit.disabled = true;
+            setStatus('Understanding your request…', 'loading');
+
+            fetch('{{ route('ai-search.flights') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': form.querySelector('input[name="_token"]').value
+                },
+                body: JSON.stringify({ query: query })
+            })
+            .then(function (r) {
+                if (r.status === 429) throw new Error('Too many searches. Please wait a minute and try again.');
+                return r.json();
+            })
+            .then(function (data) {
+                if (!data.success) {
+                    submit.disabled = false;
+                    setStatus(data.message || (data.errors && data.errors.query && data.errors.query[0]) || 'Sorry, we could not understand that request.', 'error');
+                    return;
+                }
+                var s = data.summary;
+                setStatus(s.from + ' → ' + s.to + ' · ' + s.departure + (s.return ? ' – ' + s.return : '') + ' · ' + s.travellers + ' traveller' + (s.travellers > 1 ? 's' : '') + ' · ' + s.cabin + '. Searching…', 'success');
+                if (typeof showPageLoader === 'function') showPageLoader('flight');
+                window.location.href = data.url;
+            })
+            .catch(function (err) {
+                submit.disabled = false;
+                setStatus(err.message && err.message.indexOf('Too many') === 0 ? err.message : 'Something went wrong. Please try again.', 'error');
+            });
+        });
+    })();
+
+    // Homepage card carousels: prev/next buttons scroll one card at a time
+    document.querySelectorAll('.th-section').forEach(function (section) {
+        var track = section.querySelector('.th-track');
+        var prev = section.querySelector('.th-nav-prev');
+        var next = section.querySelector('.th-nav-next');
+        if (!track || !prev || !next) return;
+        var rtl = getComputedStyle(track).direction === 'rtl';
+        function step() {
+            var card = track.querySelector('.th-card');
+            var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+            return card ? card.getBoundingClientRect().width + gap : track.clientWidth;
+        }
+        function update() {
+            var max = track.scrollWidth - track.clientWidth;
+            var pos = Math.abs(track.scrollLeft);
+            prev.disabled = pos <= 2;
+            next.disabled = pos >= max - 2;
+        }
+        [prev, next].forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var dir = parseInt(btn.getAttribute('data-th-dir'), 10) * (rtl ? -1 : 1);
+                track.scrollBy({ left: dir * step(), behavior: 'smooth' });
+            });
+        });
+        track.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
+        update();
     });
 </script>
 
