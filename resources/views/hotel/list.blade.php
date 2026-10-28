@@ -6,65 +6,72 @@
 
 <style>
     :root {
-        --hl-green: #0346FA;
-        --hl-green-dark: #022ec2;
-        --hl-green-light: #e8edff;
-        --hl-ink: #1f2430;
-        --hl-muted: #6b7280;
-        --hl-border: #e5e7eb;
-        --hl-bg: #f6f7f9;
+        --hl-green: #2563EB;
+        --hl-green-dark: #1D4ED8;
+        --hl-green-light: rgba(37, 99, 235, 0.08);
+        --hl-ink: #000000;
+        --hl-muted: rgba(0, 0, 0, 0.6);
+        --hl-border: rgba(0, 0, 0, 0.08);
+        --hl-bg: #FFFFFF;
+        --hl-gold: #F5B301;
     }
 
-    .hlist-page { background: var(--hl-bg); padding: 20px 0 48px; }
+    .hlist-page { background: var(--hl-bg); padding: 24px 0 64px; }
+    .hlist-page .hotel-container { max-width: 1328px; margin: 0 auto; padding: 0 24px; }
+    @media (max-width: 639px) { .hlist-page .hotel-container { padding: 0 16px; } }
 
     /* ---------- Modify Search collapse (kept, restyled) ---------- */
     .hotel-search-collapse-btn {
         width: 100%; display: flex; align-items: center; justify-content: space-between;
-        background: #fff; border: 1px solid var(--hl-border); border-radius: 12px;
-        padding: 14px 18px; font-weight: 600; font-size: 14px; color: var(--hl-ink);
-        cursor: pointer; box-shadow: 0 1px 2px rgba(16,24,40,.04); margin-bottom: 14px;
+        background: #fff; border: 1px solid var(--hl-border); border-radius: 16px;
+        padding: 14px 18px; font-weight: 500; font-size: 14px; color: var(--hl-ink);
+        cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.04); margin-bottom: 14px;
         transition: box-shadow .2s ease;
     }
     .hotel-search-collapse-btn:hover { box-shadow: 0 2px 8px rgba(16,24,40,.08); }
+    .hotel-search-collapse-btn.active { background: #fff; border-color: #2563EB; color: var(--hl-ink); }
+    .hotel-search-collapse-content { border: 0; background: transparent; }
     .hotel-search-collapse-btn i.fa-search { color: var(--hl-green); margin-right: 6px; }
     .hotel-search-collapse-content { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
-    .hotel-search-collapse-content.active { max-height: 900px; }
+    .hotel-search-collapse-content.active { max-height: 900px; overflow: visible; }
+    /* the modify-search form uses the homepage search panel (#siteRedesign .form-container) */
+    #siteRedesign .hotel-search-collapse .form-container { width: 100%; max-width: none; margin: 0 0 16px; box-shadow: none; border: 1px solid var(--hl-border); }
 
     /* ---------- Search info strip ---------- */
-    .hotel-search-info { background: #fff; border: 1px solid var(--hl-border); border-radius: 12px; padding: 14px 20px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(16,24,40,.04); }
+    .hotel-search-info { background: #fff; border: 1px solid var(--hl-border); border-radius: 16px; padding: 14px 20px; margin-bottom: 16px; box-shadow: 0 4px 16px rgba(0,0,0,.04); }
     .hotel-search-info-row { display: flex; flex-wrap: wrap; gap: 28px; }
     .hotel-info-item { display: flex; align-items: center; gap: 10px; }
     .hotel-info-icon { color: var(--hl-green); font-size: 16px; }
     .hotel-info-label { font-size: 11px; color: var(--hl-muted); text-transform: uppercase; letter-spacing: .03em; }
-    .hotel-info-value { font-size: 14px; font-weight: 600; color: var(--hl-ink); }
+    .hotel-info-value { font-size: 14px; font-weight: 500; color: var(--hl-ink); }
 
     /* ---------- Top bar ---------- */
     .hlist-topbar {
         display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-        background: #fff; border: 1px solid var(--hl-border); border-radius: 12px;
-        padding: 16px 20px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(16,24,40,.04);
+        background: #fff; border: 1px solid var(--hl-border); border-radius: 16px;
+        padding: 16px 20px; margin-bottom: 16px; box-shadow: 0 4px 16px rgba(0,0,0,.04);
     }
     .hlist-topbar-left { font-size: 15px; color: var(--hl-ink); }
     .hlist-topbar-left strong { font-weight: 700; }
     .hlist-sort {
         border: 1px solid var(--hl-border); border-radius: 8px; padding: 9px 14px; font-size: 13px;
-        font-weight: 600; color: var(--hl-ink); background: #fff; cursor: pointer; outline: none;
+        font-weight: 500; color: var(--hl-ink); background: #fff; cursor: pointer; outline: none; border-radius: 10px;
     }
 
     /* ---------- Layout ---------- */
     .hlist-main { display: flex; align-items: flex-start; gap: 20px; }
     .hlist-sidebar {
         width: 300px; flex-shrink: 0; background: #fff; border: 1px solid var(--hl-border);
-        border-radius: 12px; padding: 18px; box-shadow: 0 1px 2px rgba(16,24,40,.04); position: sticky; top: 14px;
+        border-radius: 16px; padding: 18px; box-shadow: 0 4px 16px rgba(0,0,0,.04); position: sticky; top: 14px;
     }
     .hlist-results { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
 
     /* ---------- Sidebar ---------- */
     .hlist-sidebar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-    .hlist-sidebar-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; color: var(--hl-ink); }
+    .hlist-sidebar-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; color: var(--hl-ink); }
     .hlist-sidebar-title i { color: var(--hl-muted); }
     .hlist-badge-count {
-        background: var(--hl-green); color: #fff; font-size: 12px; font-weight: 700;
+        background: var(--hl-green); color: #fff; font-size: 12px; font-weight: 600;
         min-width: 20px; height: 20px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; padding: 0 6px;
     }
     .hlist-clear-all { color: var(--hl-green); font-weight: 600; font-size: 13px; text-decoration: none; cursor: pointer; }
@@ -72,10 +79,10 @@
 
     .hlist-filter-group { border-top: 1px solid var(--hl-border); padding: 16px 0; }
     .hlist-filter-group:first-of-type { border-top: none; padding-top: 0; }
-    .hlist-filter-title { font-weight: 700; font-size: 14px; color: var(--hl-ink); margin-bottom: 12px; }
+    .hlist-filter-title { font-weight: 600; font-size: 14px; color: var(--hl-ink); margin-bottom: 12px; }
 
     .hlist-name-search {
-        width: 100%; padding: 9px 12px; border: 1px solid var(--hl-border); border-radius: 8px;
+        width: 100%; padding: 10px 12px; border: 1px solid rgba(0,0,0,.12); border-radius: 10px;
         font-size: 13px; outline: none; box-sizing: border-box; margin-bottom: 4px;
     }
     .hlist-name-search:focus { border-color: var(--hl-green); }
@@ -93,13 +100,13 @@
     .hlist-count-pill {
         background: #f0f1f3; color: #555; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; flex-shrink: 0;
     }
-    .hlist-stars-inline { color: #f5a623; letter-spacing: 1px; font-size: 13px; }
+    .hlist-stars-inline { color: var(--hl-gold); letter-spacing: 1px; font-size: 13px; }
 
     /* Dual range price slider */
     .hlist-price-inputs { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
     .hlist-price-box {
         flex: 1; border: 1px solid var(--hl-border); border-radius: 8px; padding: 8px 10px;
-        font-size: 13px; font-weight: 600; color: var(--hl-ink); text-align: center; background: #fafafa;
+        font-size: 13px; font-weight: 500; color: var(--hl-ink); text-align: center; background: #fff;
     }
     .hlist-price-sep { color: var(--hl-muted); font-size: 13px; }
     .hlist-range-slider { position: relative; height: 30px; margin: 0 2px 4px; }
@@ -128,10 +135,10 @@
 
     /* ---------- Hotel cards ---------- */
     .hlist-card {
-        display: flex; background: #fff; border: 1px solid var(--hl-border); border-radius: 14px;
-        overflow: hidden; box-shadow: 0 1px 2px rgba(16,24,40,.04); transition: box-shadow .2s ease, transform .2s ease;
+        display: flex; background: #fff; border: 1px solid var(--hl-border); border-radius: 16px;
+        overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,.05); transition: box-shadow .2s ease;
     }
-    .hlist-card:hover { box-shadow: 0 8px 24px rgba(16,24,40,.10); transform: translateY(-1px); }
+    .hlist-card:hover { box-shadow: 0 12px 28px rgba(37,99,235,.12); }
 
     /* Fixed height (not stretched to match each card's body) so every photo
        in the list renders at the exact same size regardless of how much text
@@ -149,23 +156,23 @@
        instead of overflowing into the star rating next to it. */
     .hlist-card-title-wrap { flex: 1; min-width: 0; }
     .hlist-card-title {
-        font-size: 19px; font-weight: 700; color: var(--hl-ink); margin: 0 0 6px;
+        font-size: 17px; font-weight: 600; color: var(--hl-ink); margin: 0 0 6px;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .hlist-card-address { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--hl-muted); }
-    .hlist-card-address i { color: var(--hl-green); font-size: 12px; }
-    .hlist-card-stars { flex-shrink: 0; color: #f5a623; font-size: 15px; letter-spacing: 1px; white-space: nowrap; }
+    .hlist-card-address { display: flex; align-items: center; gap: 7px; font-size: 13px; color: #000; }
+    .hlist-card-address i { color: #000; font-size: 12px; }
+    .hlist-card-stars { flex-shrink: 0; color: var(--hl-gold); font-size: 15px; letter-spacing: 1px; white-space: nowrap; }
 
     .hlist-badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
     .hlist-badge-pill {
-        display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600;
-        padding: 5px 11px; border-radius: 20px; background: var(--hl-green-light); color: var(--hl-green-dark);
+        display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500;
+        padding: 5px 11px; border-radius: 9999px; background: rgba(0,0,0,.05); color: #000;
     }
     .hlist-badge-pill i { font-size: 11px; }
 
     .hlist-card-divider { border-top: 1px solid var(--hl-border); margin-top: auto; padding-top: 12px; }
     .hlist-room-line { font-size: 13px; color: var(--hl-ink); }
-    .hlist-room-line b { font-weight: 700; }
+    .hlist-room-line b { font-weight: 600; }
     .hlist-room-line .sep { color: var(--hl-border); margin: 0 6px; }
 
     .hlist-price-panel {
@@ -173,18 +180,18 @@
         display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; text-align: right;
     }
     .hlist-price-meta { font-size: 12px; color: var(--hl-muted); margin-bottom: 4px; }
-    .hlist-price-total { font-size: 24px; font-weight: 800; color: var(--hl-ink); line-height: 1.2; }
+    .hlist-price-total { font-size: 22px; font-weight: 700; color: #000; line-height: 1.2; }
     .hlist-price-per-night { font-size: 12px; color: var(--hl-muted); margin-top: 2px; }
     .hlist-price-taxes { font-size: 11px; color: #9aa0a9; margin-top: 2px; margin-bottom: 14px; }
     .hlist-view-deal-btn {
         display: inline-flex; align-items: center; gap: 8px; background: var(--hl-green); color: #fff;
-        font-weight: 700; font-size: 14px; padding: 11px 20px; border-radius: 9px; border: none; cursor: pointer;
+        font-weight: 600; font-size: 14px; padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer;
         text-decoration: none; white-space: nowrap; transition: background .15s ease;
     }
     .hlist-view-deal-btn:hover { background: var(--hl-green-dark); color: #fff; }
 
     .hlist-no-results {
-        background: #fff; border: 1px solid var(--hl-border); border-radius: 12px; padding: 40px 20px;
+        background: #fff; border: 1px solid var(--hl-border); border-radius: 16px; padding: 40px 20px;
         text-align: center; color: var(--hl-muted); font-size: 14px;
     }
 
@@ -195,9 +202,12 @@
         .hlist-card-image { width: 100%; height: 200px; }
         .hlist-price-panel { width: 100%; border-left: none; border-top: 1px solid var(--hl-border); align-items: stretch; text-align: left; }
         .hlist-view-deal-btn { justify-content: center; }
+        .hlist-card-top { flex-direction: column; gap: 6px; }
+        .hlist-card-title { white-space: normal; }
     }
 </style>
 
+<div id="siteRedesign">
 <div class="hlist-page">
 <div class="hotel-container">
     <!-- Search Collapse -->
@@ -207,12 +217,11 @@
             <i class="fas fa-chevron-down" id="collapseIcon"></i>
         </button>
         <div class="hotel-search-collapse-content" id="searchCollapseContent">
-            <style>
-            .form-container {
-                max-width: 1200px !important;
-            }
-            </style>
-            @include('forms.hotel-form')
+            <div class="form-container">
+                <div class="tab-content active" id="form-hotel">
+                    @include('forms.hotel-form')
+                </div>
+            </div>
         </div>
     </div>
 
@@ -424,6 +433,7 @@
             @endif
         </div>
     </div>
+</div>
 </div>
 </div>
 

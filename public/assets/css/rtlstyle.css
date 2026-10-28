@@ -7669,10 +7669,10 @@ a i {
     border-color: #2563EB;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
 }
-#siteRedesign .form-container .sm\:flex-row > .bg-gray-50 > .flex { align-items: center; gap: 10px; }
+#siteRedesign .form-container .sm\:flex-row > .bg-gray-50 > .flex { align-items: flex-start; gap: 10px; }
 #siteRedesign .form-container .sm\:flex-row > .bg-gray-50 > .flex > i.fas {
     width: 18px;
-    margin-top: 0;
+    margin-top: 1px; /* level with the field label */
     color: #2563EB;
     font-size: 13px;
     text-align: center;
