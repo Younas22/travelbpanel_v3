@@ -3179,3 +3179,125 @@ body.design-nova.nova-sidebar-collapsed .sidebar-reopen-btn { display: flex; }
 .tbp-partner-edit-cred-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 20px; }
 @media (max-width: 640px) { .tbp-partner-edit-cred-grid { grid-template-columns: 1fr; } }
 .tbp-partner-edit-field .form-control.tbp-partner-edit-cred-input { height: 50px; font-size: 0.9375rem; padding-left: 16px; padding-right: 48px; }
+
+/* =====================================================================
+   Supplier Integrations (admin-nova travel-partners index)
+   Namespaced "tbp-supplier-integrations-*", page-specific.
+   ===================================================================== */
+.tbp-supplier-integrations-page { background: #fff; color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif; padding: 4px 0 24px; }
+.tbp-supplier-integrations-page *, .tbp-supplier-integrations-page *::before, .tbp-supplier-integrations-page *::after { box-sizing: border-box; }
+.tbp-supplier-integrations-page button { font: inherit; }
+
+.tbp-supplier-integrations-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
+.tbp-supplier-integrations-title { font-size: 1.5rem; font-weight: 800; margin: 0; color: #0f172a; }
+.tbp-supplier-integrations-subtitle { font-size: 0.9375rem; color: #475569; margin: 4px 0 0; }
+.tbp-supplier-integrations-search { position: relative; width: 290px; max-width: 100%; }
+.tbp-supplier-integrations-search i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #0f172a; }
+.tbp-supplier-integrations-search input { width: 100%; height: 48px; border: 1px solid #E5E7EB; border-radius: 999px; padding: 0 18px 0 46px; font-size: 0.875rem; background: #fff; color: #0f172a; outline: none; }
+.tbp-supplier-integrations-search input:focus { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+
+.tbp-supplier-integrations-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
+.tbp-supplier-integrations-stat-card { position: relative; display: flex; align-items: center; gap: 22px; background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; padding: 20px 22px; box-shadow: 0 1px 2px rgba(16,24,40,.04); }
+.tbp-supplier-integrations-stat-icon { width: 62px; height: 62px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+.tbp-supplier-integrations-stat-label { font-size: 0.9375rem; color: #0f172a; font-weight: 500; }
+.tbp-supplier-integrations-stat-value { font-size: 1.625rem; font-weight: 800; color: #0f172a; line-height: 1.2; margin-top: 4px; }
+.tbp-supplier-integrations-stat-badge { position: absolute; top: 22px; right: 22px; width: 32px; height: 32px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; }
+.tbp-supplier-integrations-tone-blue .tbp-supplier-integrations-stat-icon { background: #EAF1FF; color: #2563EB; }
+.tbp-supplier-integrations-tone-blue .tbp-supplier-integrations-stat-badge { background: #2563EB; }
+.tbp-supplier-integrations-tone-green .tbp-supplier-integrations-stat-icon { background: #E8F8EF; color: #16A34A; }
+.tbp-supplier-integrations-tone-green .tbp-supplier-integrations-stat-badge { background: #16A34A; }
+.tbp-supplier-integrations-tone-sky .tbp-supplier-integrations-stat-icon { background: #EAF1FF; color: #2563EB; }
+.tbp-supplier-integrations-tone-sky .tbp-supplier-integrations-stat-badge { background: #3B82F6; }
+.tbp-supplier-integrations-tone-red .tbp-supplier-integrations-stat-icon { background: #FDECEC; color: #EF4444; }
+.tbp-supplier-integrations-tone-red .tbp-supplier-integrations-stat-badge { background: #EF4444; }
+
+.tbp-supplier-integrations-filters { background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; padding: 18px; margin-bottom: 26px; }
+.tbp-supplier-integrations-categories { display: flex; flex-wrap: wrap; gap: 14px; padding-bottom: 18px; border-bottom: 1px solid #E5E7EB; }
+.tbp-supplier-integrations-category { display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 20px; border: 1px solid #E5E7EB; border-radius: 12px; background: #fff; color: #0f172a; font-size: 0.9375rem; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background .15s, border-color .15s; }
+.tbp-supplier-integrations-category:hover { border-color: #2563EB; }
+.tbp-supplier-integrations-category i { font-size: 1.125rem; }
+.tbp-supplier-integrations-category-count { min-width: 26px; height: 26px; padding: 0 8px; border-radius: 999px; background: #F1F5F9; font-size: 0.8125rem; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+.tbp-supplier-integrations-category.is-active { background: #2563EB; border-color: #2563EB; color: #fff; }
+.tbp-supplier-integrations-category.is-active .tbp-supplier-integrations-category-count { background: rgba(255,255,255,.25); color: #fff; }
+.tbp-supplier-integrations-category.is-inactive-module { opacity: .55; }
+.tbp-supplier-integrations-category.sortable-ghost { opacity: .4; }
+
+.tbp-supplier-integrations-status-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 16px; flex-wrap: wrap; }
+.tbp-supplier-integrations-status-filter { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.tbp-supplier-integrations-status-label { font-size: 0.9375rem; color: #0f172a; margin-right: 2px; }
+.tbp-supplier-integrations-chip { height: 42px; padding: 0 22px; border: 1px solid #E5E7EB; border-radius: 999px; background: #fff; color: #0f172a; font-size: 0.9375rem; cursor: pointer; }
+.tbp-supplier-integrations-chip:hover { border-color: #2563EB; }
+.tbp-supplier-integrations-chip.is-active { background: #2563EB; border-color: #2563EB; color: #fff; }
+.tbp-supplier-integrations-sort { display: flex; align-items: center; gap: 14px; font-size: 0.9375rem; }
+.tbp-supplier-integrations-sort-select { position: relative; }
+.tbp-supplier-integrations-sort-select i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 1rem; pointer-events: none; }
+.tbp-supplier-integrations-sort-select select { height: 48px; min-width: 220px; padding: 0 40px 0 46px; border: 1px solid #E5E7EB; border-radius: 12px; background-color: #fff; color: #0f172a; font-size: 0.875rem; cursor: pointer; }
+
+.tbp-supplier-integrations-module-bar { display: none; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #E5E7EB; border-radius: 14px; padding: 12px 16px; margin-bottom: 16px; }
+.tbp-supplier-integrations-module-bar.is-visible { display: flex; }
+.tbp-supplier-integrations-module-bar-name { font-weight: 700; font-size: 0.9375rem; }
+.tbp-supplier-integrations-module-bar-meta { font-size: 0.8125rem; color: #64748B; }
+
+.tbp-supplier-integrations-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 1599px) { .tbp-supplier-integrations-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (max-width: 1399px) { .tbp-supplier-integrations-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } .tbp-supplier-integrations-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1099px) { .tbp-supplier-integrations-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 799px)  { .tbp-supplier-integrations-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 539px)  { .tbp-supplier-integrations-grid, .tbp-supplier-integrations-stats { grid-template-columns: 1fr; } }
+.tbp-supplier-integrations-card { display: flex; flex-direction: column; background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; padding: 16px; box-shadow: 0 1px 2px rgba(16,24,40,.04); transition: border-color .2s, box-shadow .2s; min-width: 0; }
+.tbp-supplier-integrations-card:hover { border-color: #2563EB; box-shadow: 0 10px 24px -12px rgba(37,99,235,.25); }
+.tbp-supplier-integrations-card.is-hidden { display: none; }
+.tbp-supplier-integrations-card-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+.tbp-supplier-integrations-logo { width: 52px; height: 52px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #E5E7EB; background: #fff; font-weight: 800; font-size: 1.0625rem; }
+.tbp-supplier-integrations-logo img { width: 100%; height: 100%; object-fit: contain; }
+.tbp-supplier-integrations-logo.is-initials { border: none; }
+.tbp-supplier-integrations-name-wrap { min-width: 0; flex: 1; }
+.tbp-supplier-integrations-name { font-size: 0.9375rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tbp-supplier-integrations-type { font-size: 0.8125rem; color: #64748B; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tbp-supplier-integrations-switch { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; margin-top: 2px; }
+.tbp-supplier-integrations-switch input { opacity: 0; width: 0; height: 0; }
+.tbp-supplier-integrations-switch span { position: absolute; inset: 0; background: #E5E7EB; border-radius: 999px; cursor: pointer; transition: background .2s; }
+.tbp-supplier-integrations-switch span::before { content: ""; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+.tbp-supplier-integrations-switch input:checked + span { background: #2563EB; }
+.tbp-supplier-integrations-switch input:checked + span::before { transform: translateX(18px); }
+
+.tbp-supplier-integrations-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.tbp-supplier-integrations-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 500; white-space: nowrap; }
+.tbp-supplier-integrations-badge-flight, .tbp-supplier-integrations-badge-umrah { background: #EEF4FF; color: #2563EB; }
+.tbp-supplier-integrations-badge-stay { background: #E8F8EF; color: #16A34A; }
+.tbp-supplier-integrations-badge-tours { background: #FDEEF4; color: #DB2777; }
+.tbp-supplier-integrations-badge-visa { background: #FFF4E5; color: #D97706; }
+.tbp-supplier-integrations-badge-default { background: #F1F5F9; color: #334155; }
+.tbp-supplier-integrations-badge-neutral { background: #F1F5F9; color: #0f172a; }
+.tbp-supplier-integrations-badge-connected { background: #E8F8EF; color: #16A34A; }
+.tbp-supplier-integrations-badge-live { background: #EEF4FF; color: #2563EB; }
+.tbp-supplier-integrations-badge-sandbox { background: #FFF4E5; color: #D97706; }
+
+.tbp-supplier-integrations-commission { display: flex; align-items: center; justify-content: space-between; font-size: 0.875rem; padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid #E5E7EB; margin-top: auto; }
+.tbp-supplier-integrations-commission span:first-child { color: #475569; }
+.tbp-supplier-integrations-commission span:last-child { font-weight: 700; color: #0f172a; }
+.tbp-supplier-integrations-edit-button { display: flex; align-items: center; justify-content: center; gap: 8px; height: 42px; border: 1px solid #E5E7EB; border-radius: 10px; background: #fff; color: #0f172a; font-size: 0.9375rem; font-weight: 500; text-decoration: none; transition: border-color .15s, color .15s; }
+.tbp-supplier-integrations-edit-button:hover { border-color: #2563EB; color: #2563EB; }
+.tbp-supplier-integrations-empty { grid-column: 1 / -1; text-align: center; padding: 48px 16px; border: 1px dashed #E5E7EB; border-radius: 14px; color: #64748B; font-size: 0.875rem; }
+.tbp-supplier-integrations-card { padding: 14px; }
+.tbp-supplier-integrations-card-header { gap: 10px; margin-bottom: 14px; }
+.tbp-supplier-integrations-logo { width: 46px; height: 46px; font-size: 0.9375rem; }
+.tbp-supplier-integrations-name { font-size: 0.875rem; }
+.tbp-supplier-integrations-type { font-size: 0.75rem; }
+.tbp-supplier-integrations-switch { width: 36px; height: 20px; }
+.tbp-supplier-integrations-switch span::before { width: 14px; height: 14px; }
+.tbp-supplier-integrations-switch input:checked + span::before { transform: translateX(16px); }
+.tbp-supplier-integrations-badges { gap: 4px; margin-bottom: 14px; }
+.tbp-supplier-integrations-badge { padding: 3px 8px; font-size: 0.6875rem; gap: 4px; }
+.tbp-supplier-integrations-name { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.25; }
+.tbp-supplier-integrations-badge { padding: 3px 7px; font-size: 0.65rem; }
+.tbp-supplier-integrations-badge i { font-size: 0.6875rem; }
+.tbp-supplier-integrations-badges { gap: 3px; }
+.tbp-supplier-integrations-badge { padding: 3px 6px; letter-spacing: -0.01em; }
+.tbp-supplier-integrations-page { background: transparent; }
+.tbp-supplier-integrations-stat-card { padding: 20px 64px 20px 20px; gap: 18px; }
+.tbp-supplier-integrations-stat-card > div:nth-child(2) { min-width: 0; }
+.tbp-supplier-integrations-stat-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tbp-supplier-integrations-stat-icon { width: 56px; height: 56px; font-size: 1.375rem; }
+.tbp-supplier-integrations-stat-badge { top: 18px; right: 18px; width: 30px; height: 30px; }
+.tbp-supplier-integrations-stat-label { white-space: normal; overflow: visible; line-height: 1.3; }
