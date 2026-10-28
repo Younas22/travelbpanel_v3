@@ -34,6 +34,21 @@
         <span class="tbp-partner-edit-hint" id="wbRunStatus">Imports run in batches. You can leave this page — the cron job continues automatically.</span>
     </div>
 
+    <div class="tbp-webbeds-import-live" id="wbLive" hidden>
+        <div class="tbp-webbeds-import-live-head">
+            <span class="tbp-webbeds-import-pulse"></span>
+            <span>Importing <strong id="wbLiveCity">…</strong> <span class="tbp-partner-edit-hint" id="wbLiveCountry"></span></span>
+            <span class="tbp-webbeds-import-live-trigger" id="wbLiveTrigger"></span>
+        </div>
+        <div class="tbp-webbeds-import-live-meta">
+            <span>This batch: <strong id="wbLiveDone">0</strong> cities</span>
+            <span><strong id="wbLiveHotels">0</strong> hotels saved</span>
+            <span><strong id="wbLiveFailed">0</strong> failed</span>
+            <span><strong id="wbLiveElapsed">0</strong>s</span>
+        </div>
+        <div class="tbp-partner-edit-hint" id="wbLiveLast"></div>
+    </div>
+
     <div class="tbp-webbeds-import-cron">
         <div class="tbp-webbeds-import-cron-title"><i class="bi bi-clock-history"></i> Monthly auto-import (cron job)</div>
         <p class="tbp-partner-edit-hint">Add this link to your server's cron. Each call imports cities for ~50 seconds. When every city has been imported for the month it does nothing, and on the 1st of every month all cities are re-imported with the latest data.</p>
@@ -110,9 +125,39 @@
             el.textContent = typeof v === 'number' && el.dataset.wb !== 'progress' ? fmt(v) : (v ?? '—');
         });
         $('wbBar').style.width = Math.min(100, stats.progress) + '%';
+        renderLive(stats);
         const lr = stats.last_run;
         $('wbLastRun').textContent = lr ? `Last run (${lr.trigger}): ${lr.finished_at} — ${lr.message}` : 'Last run: never';
         return stats;
+    }
+
+    let pollTimer = null;
+    function startPolling() {
+        if (pollTimer) return;
+        pollTimer = setInterval(() => { loadStats(); loadCities(); }, 3000);
+    }
+    function stopPolling() { clearInterval(pollTimer); pollTimer = null; }
+
+    function renderLive(stats) {
+        const cur = stats.current;
+        const active = stats.running || state.running;
+        const otherRun = stats.running && !state.running;
+        $('wbStartBtn').disabled = otherRun;
+        $('wbStartBtn').title = otherRun ? 'An import is already running (cron job)' : '';
+        $('wbLive').hidden = !active;
+        $('wbBar').classList.toggle('is-running', active);
+        if (!active) { if (!state.running) stopPolling(); return; }
+        startPolling();
+        if (!cur) { $('wbLiveCity').textContent = 'next city…'; return; }
+        $('wbLiveCity').textContent = cur.city;
+        $('wbLiveCountry').textContent = cur.country ? '— ' + cur.country + ' (' + cur.code + ')' : '';
+        $('wbLiveTrigger').textContent = cur.trigger === 'cron' ? 'Cron job' : (cur.trigger === 'console' ? 'Console' : 'Started from this page');
+        $('wbLiveDone').textContent = fmt(cur.cities_done);
+        $('wbLiveHotels').textContent = fmt(cur.hotels_saved);
+        $('wbLiveFailed').textContent = fmt(cur.cities_failed);
+        $('wbLiveElapsed').textContent = cur.elapsed;
+        $('wbLiveLast').textContent = cur.last ? `Last finished: ${cur.last.city} — ${cur.last.success ? fmt(cur.last.hotels_saved) + ' hotels' : 'failed'}` : '';
+        if (state.running) $('wbRunStatus').textContent = 'Import is running — counts and the city list update live.';
     }
 
     const badge = {
@@ -167,6 +212,7 @@
         state.running = on;
         $('wbStartBtn').hidden = on;
         $('wbStopBtn').hidden = !on;
+        if (on) { $('wbLive').hidden = false; $('wbBar').classList.add('is-running'); startPolling(); }
     }
 
     $('wbStartBtn').addEventListener('click', async () => {
@@ -187,6 +233,7 @@
             if (d.running) await new Promise(res => setTimeout(res, 10000));
         }
         setRunning(false);
+        loadStats();
     });
     $('wbStopBtn').addEventListener('click', () => { state.running = false; $('wbRunStatus').textContent = 'Stopping after the current batch…'; });
 

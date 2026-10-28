@@ -25,6 +25,7 @@ class WebbedsCityImporter
 {
     private const ENDPOINT = 'https://xmldev.dotwconnect.com/gatewayV4.dotw';
     private const LOCK_KEY = 'webbeds-city-import';
+    private const PROGRESS_KEY = 'webbeds-city-import-progress';
     private const FAILED_RETRY_HOURS = 6;
     private const HOTEL_FIELDS = [
         'hotelName', 'address', 'rating', 'hotelImages', 'fullAddress', 'description1',
@@ -79,7 +80,27 @@ class WebbedsCityImporter
             'month_label'    => now()->format('F Y'),
             'last_run'       => json_decode((string) Setting::getValue('city_import_last_run', 'webbeds'), true),
             'running'        => !Cache::lock(self::LOCK_KEY, 1)->get(fn () => true),
+            'current'        => Cache::get(self::PROGRESS_KEY),
         ];
+    }
+
+    /** Live state of the running batch, read by the admin page while it polls stats. */
+    private function reportProgress(string $trigger, float $start, string $code, int $done, int $failed, int $hotels, ?array $last): void
+    {
+        $st = $this->pdo()->prepare('SELECT name, countryName FROM cities WHERE code = :c');
+        $st->execute([':c' => $code]);
+        $city = $st->fetch(PDO::FETCH_ASSOC) ?: [];
+        Cache::put(self::PROGRESS_KEY, [
+            'trigger' => $trigger,
+            'city' => $city['name'] ?? "City {$code}",
+            'country' => $city['countryName'] ?? '',
+            'code' => $code,
+            'cities_done' => $done,
+            'cities_failed' => $failed,
+            'hotels_saved' => $hotels,
+            'last' => $last ? ['city' => $last['city'], 'hotels_saved' => $last['hotels_saved'], 'success' => $last['success']] : null,
+            'elapsed' => (int) round(microtime(true) - $start),
+        ], 300);
     }
 
     public function cities(string $search = '', string $status = 'all', int $page = 1, int $perPage = 25): array
@@ -142,6 +163,7 @@ class WebbedsCityImporter
             while (microtime(true) - $start < $seconds) {
                 $code = $this->nextDueCity();
                 if ($code === null) break;
+                $this->reportProgress($trigger, $start, $code, $done, $failed, $hotels, $last);
                 $res = $this->importCityWith($creds, $code);
                 $res['success'] ? $done++ : $failed++;
                 $hotels += $res['hotels_saved'] ?? 0;
@@ -166,6 +188,7 @@ class WebbedsCityImporter
         } catch (Throwable $e) {
             $summary = ['success' => false, 'trigger' => $trigger, 'message' => $e->getMessage(), 'finished_at' => now()->toDateTimeString()];
         } finally {
+            Cache::forget(self::PROGRESS_KEY);
             $lock->release();
         }
 
