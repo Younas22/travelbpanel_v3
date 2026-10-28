@@ -1554,7 +1554,7 @@
                 e.stopPropagation();
                 closeAllToursDropdowns();
                 destinationDropdown.classList.add('active');
-                overlay.classList.add('active');
+                showOverlay('toursDropdownOverlay'); // dimmed backdrop on mobile only, like the hotel form
                 destinationSearch.focus();
             });
 
@@ -1582,7 +1582,7 @@
                 e.stopPropagation();
                 closeAllToursDropdowns();
                 tourTypeDropdown.classList.add('active');
-                overlay.classList.add('active');
+                showOverlay('toursDropdownOverlay'); // dimmed backdrop on mobile only, like the hotel form
 
                 // Load tour types if not already loaded
                 if (!tourTypeList.querySelector('.tour-type-item')) {
@@ -1609,7 +1609,7 @@
                 e.stopPropagation();
                 closeAllToursDropdowns();
                 toursTravelerDropdown.classList.add('active');
-                overlay.classList.add('active');
+                showOverlay('toursDropdownOverlay'); // dimmed backdrop on mobile only, like the hotel form
             });
 
             document.querySelectorAll('#toursTravelerDropdown .tours-traveler-btn').forEach(btn => {
