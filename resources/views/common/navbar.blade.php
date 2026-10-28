@@ -1,23 +1,37 @@
 <style>
     /* ---------- Language / Currency / Sign In pill controls ---------- */
+    /* Language and currency are two separate round pills, each led by a
+       round flag that sits inside the pill's curved end. */
     .nav-util-pill-group {
         display: flex;
-        align-items: stretch;
-        height: 42px;
-        border: 1px solid rgba(0, 0, 0, .1);
-        border-radius: 12px;
-        background: #fff;
-        overflow: hidden;
+        align-items: center;
+        gap: 8px;
     }
     .nav-util-pill-item {
         display: flex;
         align-items: center;
-        gap: 7px;
-        padding: 0 6px 0 14px;
+        height: 42px;
+        padding: 0 4px 0 5px;
+        border: 1px solid rgba(0, 0, 0, .1);
+        border-radius: 999px;
+        background: #fff;
         position: relative;
+        transition: border-color .15s ease, box-shadow .15s ease;
     }
-    .nav-util-pill-item:first-child { border-right: 1px solid rgba(0, 0, 0, .1); }
-    .nav-util-icon { color: #2563EB; font-size: 13px; flex-shrink: 0; }
+    [dir="rtl"] .nav-util-pill-item { padding: 0 5px 0 4px; }
+    .nav-util-pill-item:hover {
+        border-color: rgba(37, 99, 235, .4);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, .12);
+    }
+    /* common/header pins every .fi to 12x9px; make the selected flag a circle. */
+    .nav-util-pill-item .select2-selection__rendered .fi {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, .08);
+    }
 
     /* Restyle the Select2 widget these icons sit next to, so it reads as
        part of the same pill instead of a bordered box of its own. */
@@ -32,7 +46,7 @@
     /* Selector chain matches common/header's Select2 rules so these win. */
     .nav-util-pill-item .select2-container--default .select2-selection--single .select2-selection__rendered {
         padding: 0 20px 0 2px !important;
-        font-weight: 600;
+        font-weight: 400;
         font-size: 13px !important;
         color: #000;
         line-height: 40px !important;
@@ -128,10 +142,20 @@
         });
         $navModulesActive = $navModules->contains('nav_active', true);
 
-        // Split static header items: Home comes before modules, rest (Contact) after
-        $allHeaderItems  = get_menu_items('header');
+        // Split static header items: Home comes before modules, rest (Contact) after.
+        // Home is left out of the bar — the logo already links home.
+        $allHeaderItems  = get_menu_items('header')->reject(fn($i) => $i->name === 'Home');
         $navItemsBefore  = $allHeaderItems->filter(fn($i) => $i->sort_order <= 1);
         $navItemsAfter   = $allHeaderItems->filter(fn($i) => $i->sort_order > 1);
+
+        // Flag for a currency option: mapped currencies via getFlagClass, others
+        // via the ISO 4217 rule that the first two letters are the country (KWD → kw).
+        $navCurrencyFlag = function ($code) {
+            $flag = getFlagClass($code);
+            return ($flag === 'fi fi-' . strtolower($code) && strlen($code) === 3)
+                ? 'fi fi-' . strtolower(substr($code, 0, 2))
+                : $flag;
+        };
 
         // Avatar + label for the logged-in account button (same rules as before).
         if (auth()->check()) {
@@ -186,7 +210,7 @@
                         <span>{{ t('footer.our_services') }}</span>
                         <i class="fas fa-chevron-down nav-ico nav-chevron"></i>
                     </button>
-                    <div class="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-72 z-50 hidden group-hover:block group-focus-within:block">
+                    <div class="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-52 z-50 hidden group-hover:block group-focus-within:block">
                         <div class="nav-dd-panel">
                             @foreach ($navModules as $mod)
                                 <a href="{{ $mod->nav_url }}" class="nav-dd-item {{ $mod->nav_active ? 'active' : '' }}">
@@ -202,6 +226,7 @@
             {{-- Contact and any remaining items --}}
             @foreach ($navItemsAfter as $item)
                 <a href="{{ $item->full_url }}" class="nav-item {{ Request::url() == $item->full_url ? 'active' : '' }}">
+                    @if($item->icon)<i class="{{ $item->icon }} nav-ico"></i>@endif
                     <span>{{ t('header.' . $item->name) }}</span>
                 </a>
             @endforeach
@@ -210,34 +235,27 @@
         <!-- Desktop: Language + Currency + Auth Buttons -->
         <div class="hidden lg:flex gap-3 items-center shrink-0">
 
-            <!-- Country (placeholder — shows the current language's country flag
-                 for now; its own behaviour will be built later) -->
-            <button type="button" class="nav-country-btn" id="country-select-btn" aria-label="Country">
-                <span class="{{ getFlagClass(strtoupper(app()->getLocale())) }}"></span>
-                <i class="fas fa-chevron-down"></i>
-            </button>
-
-            <!-- Language + Currency pill group -->
+            <!-- Language + Currency: two round pills, each led by a round flag -->
             <div class="nav-util-pill-group">
                 <div class="nav-util-pill-item relative">
                     <select id="language-select" class="language-select">
                         @if(isset($activeLanguages))
                             @foreach($activeLanguages as $language)
-                                <option value="{{ $language->code }}"
+                                <option value="{{ $language->code }}" data-flag="{{ getFlagClass($language->code) }}"
                                         {{ app()->getLocale() == $language->code ? 'selected' : '' }}>
                                     {{ $language->name }}
                                 </option>
                             @endforeach
                         @else
-                            <option value="en" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>English</option>
-                            <option value="nl" {{ app()->getLocale() == 'nl' ? 'selected' : '' }}>Dutch</option>
+                            <option value="en" data-flag="{{ getFlagClass('en') }}" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>English</option>
+                            <option value="nl" data-flag="{{ getFlagClass('nl') }}" {{ app()->getLocale() == 'nl' ? 'selected' : '' }}>Dutch</option>
                         @endif
                     </select>
                 </div>
                 <div class="nav-util-pill-item relative">
                     <select id="currency-select" class="currency-select">
                         @foreach($currencies as $currency)
-                            <option value="{{ $currency->currency_name }}"
+                            <option value="{{ $currency->currency_name }}" data-flag="{{ $navCurrencyFlag($currency->currency_name) }}"
                                 {{ $active_currency->currency_name == $currency->currency_name ? 'selected' : '' }}>
                                 {{ $currency->currency_name }}
                             </option>
@@ -323,12 +341,8 @@
         </div>
 
 
-        <!-- Mobile / Tablet: country button + hamburger -->
+        <!-- Mobile / Tablet: hamburger -->
         <div class="flex items-center gap-3 lg:hidden">
-            <button type="button" class="nav-country-btn" id="country-select-btn-mobile" aria-label="Country">
-                <span class="{{ getFlagClass(strtoupper(app()->getLocale())) }}"></span>
-                <i class="fas fa-chevron-down"></i>
-            </button>
             <button type="button" class="hamburger flex flex-col gap-1.5 cursor-pointer" onclick="toggleMobileMenu()" aria-label="Menu">
                 <span class="line w-6 h-[3px] bg-black rounded transition-all duration-300"></span>
                 <span class="line w-6 h-[3px] bg-black rounded transition-all duration-300"></span>
@@ -377,7 +391,7 @@
             <div class="relative w-full">
                 <select id="currency-select-mobile" class="currency-select w-full">
                     @foreach($currencies as $currency)
-                        <option value="{{ $currency->currency_name }}"
+                        <option value="{{ $currency->currency_name }}" data-flag="{{ $navCurrencyFlag($currency->currency_name) }}"
                             {{ $active_currency->currency_name == $currency->currency_name ? 'selected' : '' }}>
                             {{ $currency->currency_name }}
                         </option>
@@ -390,14 +404,14 @@
                 <select id="language-select-mobile" class="language-select w-full">
                     @if(isset($activeLanguages))
                         @foreach($activeLanguages as $language)
-                            <option value="{{ $language->code }}"
+                            <option value="{{ $language->code }}" data-flag="{{ getFlagClass($language->code) }}"
                                     {{ app()->getLocale() == $language->code ? 'selected' : '' }}>
                                 {{ $language->name }}
                             </option>
                         @endforeach
                     @else
-                        <option value="en" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>English</option>
-                        <option value="nl" {{ app()->getLocale() == 'nl' ? 'selected' : '' }}>Dutch</option>
+                        <option value="en" data-flag="{{ getFlagClass('en') }}" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>English</option>
+                        <option value="nl" data-flag="{{ getFlagClass('nl') }}" {{ app()->getLocale() == 'nl' ? 'selected' : '' }}>Dutch</option>
                     @endif
                 </select>
             </div>

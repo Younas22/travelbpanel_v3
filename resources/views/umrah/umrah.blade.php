@@ -1,72 +1,64 @@
 @extends('common.layout')
 @section('content')
+    @php
+        // Hero title with its last two words in brand blue, the same treatment
+        // as the homepage hero.
+        $heroTitleWords = preg_split('/\s+/u', trim(t('umrah.heroTitle')));
+        $heroAccentCount = count($heroTitleWords) >= 3 ? 2 : (count($heroTitleWords) === 2 ? 1 : 0);
+        $heroTitleLead = implode(' ', array_slice($heroTitleWords, 0, count($heroTitleWords) - $heroAccentCount));
+        $heroTitleAccent = implode(' ', array_slice($heroTitleWords, count($heroTitleWords) - $heroAccentCount));
 
+        // Section titles: last word gets the brand accent colour
+        $thSplitTitle = function ($text) {
+            $words = preg_split('/\s+/u', trim($text));
+            $accent = count($words) > 1 ? array_pop($words) : '';
+            return [implode(' ', $words), $accent];
+        };
+    @endphp
+    <style>
+        /* Hero layout and the search panel live in style.css (#siteRedesign);
+           only this page's cover image is set here. */
+        #siteRedesign .hero-section {
+            background-image: url('<?=url('public/assets/images/flight/umrah-golden-haram.png')?>');
+        }
+    </style>
+
+<div id="siteRedesign">
     <!-- Hero Section -->
-    <section class="hero-section umrah-page">
+    <section class="hero-section">
         <div class="hero-content">
-            <h1>{{t('umrah.heroTitle')}}</h1>
-            <p>{{t('umrah.heroSubtitle')}}</p>
+            <h1 class="hero-title">
+                {{ $heroTitleLead }}@if($heroTitleAccent !== '') <span class="hero-title-accent">{{ $heroTitleAccent }}</span>@endif
+            </h1>
+            <p class="hero-subtitle">{{ t('umrah.heroSubtitle') }}</p>
         </div>
 
         <!-- Search Form -->
         <div class="form-container">
-            <div class="tab-content active bg-white rounded-lg shadow-lg mb-8 relative z-10" id="form-umrah">
+            <div class="tab-content active" id="form-umrah">
                 @include('forms.umrah-form')
             </div>
         </div>
     </section>
 
-    <!-- Why Choose Us Section -->
-    <section class="how-it-works">
-        <div class="section-header">
-            <h2>{{t('umrah.whyBookTitle')}}</h2>
-            <p>{{t('umrah.whyBookSubtitle')}}</p>
-        </div>
-
-        <div class="steps-container">
-            <div class="step-card">
-                <div class="step-number">
-                    <i class="fas fa-kaaba step-icon"></i>
-                </div>
-                <h3 class="step-title">{{t('umrah.sacredAccommodations')}}</h3>
-                <p class="step-description">{{t('umrah.sacredAccommodationsDesc')}}</p>
-            </div>
-
-            <div class="step-card">
-                <div class="step-number">
-                    <i class="fas fa-user-tie step-icon"></i>
-                </div>
-                <h3 class="step-title">{{t('umrah.expertGuides')}}</h3>
-                <p class="step-description">{{t('umrah.expertGuidesDesc')}}</p>
-            </div>
-
-            <div class="step-card">
-                <div class="step-number">
-                    <i class="fas fa-plane-departure step-icon"></i>
-                </div>
-                <h3 class="step-title">{{t('umrah.hassleFreeTravel')}}</h3>
-                <p class="step-description">{{t('umrah.hassleFreeTravelDesc')}}</p>
-            </div>
-
-            <div class="step-card">
-                <div class="step-number">
-                    <i class="fas fa-headset step-icon"></i>
-                </div>
-                <h3 class="step-title">{{t('umrah.support247')}}</h3>
-                <p class="step-description">{{t('umrah.support247Desc')}}</p>
-            </div>
-        </div>
-    </section>
-
     <!-- Popular Umrah Packages Section -->
-    <section class="responsive-section-umrah">
-        <div class="container">
-            <div class="section-header">
-                <h2>{{t('umrah.featuredPackagesTitle')}}</h2>
-                <p>{{t('umrah.featuredPackagesSubtitle')}}</p>
+    @php [$thLead, $thAccent] = $thSplitTitle(t('umrah.featuredPackagesTitle')); @endphp
+    <section class="th-section" id="featuredUmrahPackages">
+        <div class="th-container">
+            <div class="th-header">
+                <div class="th-header-text">
+                    <span class="th-eyebrow">{{ t('umrah.featuredPackagesTitle') }}</span>
+                    <h2 class="th-title">{{ $thLead }} @if($thAccent)<span class="th-title-accent">{{ $thAccent }}</span>@endif</h2>
+                </div>
+                @if($umrahPackages->count() > 1)
+                <div class="th-nav">
+                    <button type="button" class="th-nav-btn th-nav-prev" data-th-dir="-1" aria-label="Previous"><i class="fas fa-arrow-left"></i></button>
+                    <button type="button" class="th-nav-btn th-nav-next" data-th-dir="1" aria-label="Next"><i class="fas fa-arrow-right"></i></button>
+                </div>
+                @endif
             </div>
 
-            <div class="umrah-deals-grid">
+            <div class="th-track">
                 @php
                     // Default date values - 2 weeks from today
                     $departureDate = date('d-m-Y', strtotime('+14 days'));
@@ -99,165 +91,80 @@
 
                         // Build detail URL
                         $detailUrl = url("umrah/{$slug}/{$originCode}/{$destinationCode}/{$departureDate}/{$returnDate}/{$adult}/{$child}/{$infant}/{$makkahNights}/{$madinaNights}");
-
-                        // Get first image or use placeholder
-                        $imageUrl = $package->images && $package->images->first()
-                            ? asset('public/assets/images/' . $package->images->first()->image)
-                            : 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=400&h=300&fit=crop';
-
-                        // Get first 3 highlights
-                        $highlights = $package->highlights ? array_slice($package->highlights, 0, 3) : [];
-
-                        // Calculate total nights
-                        $totalNights = ($package->makkah_nights ?? 0) + ($package->madina_nights ?? 0);
                     @endphp
 
-                    <a href="{{ $detailUrl }}" class="umrah-deal-card">
-                        <div class="umrah-card-image">
-                            <img src="{{ $imageUrl }}" alt="{{ $package->name }}">
-
-                            @if($package->featured == 1)
-                                <div class="popular-badge-umrah">{{t('umrah.featured')}}</div>
-                            @endif
-
-                            @if($totalNights > 0)
-                                <div class="duration-badge-umrah">
-                                    <i class="fas fa-moon"></i> {{ $totalNights }} {{t('umrah.nights')}}
-                                </div>
-                            @endif
-                        </div>
-                        <div class="umrah-card-body">
-                            <h3 class="umrah-name">{{ $package->name }}</h3>
-
-                            @if($package->from_location && $package->to_location)
-                                <div class="umrah-location">
-                                    <i class="fas fa-plane-departure"></i> {{ $package->from_location }} <i class="fas fa-arrow-right mx-1"></i> {{ $package->to_location }}
-                                </div>
-                            @endif
-
-                            <div class="umrah-features">
-                                @if(count($highlights) > 0)
-                                    @foreach($highlights as $highlight)
-                                        <span class="feature-item-umrah">
-                                            <i class="fas fa-check-circle"></i> {{ Str::limit($highlight, 15) }}
-                                        </span>
-                                    @endforeach
-                                @else
-                                    @if($package->makkah_nights > 0)
-                                        <span class="feature-item-umrah"><i class="fas fa-kaaba"></i> {{ $package->makkah_nights }} {{t('umrah.nightsMakkah')}}</span>
-                                    @endif
-                                    @if($package->madina_nights > 0)
-                                        <span class="feature-item-umrah"><i class="fas fa-mosque"></i> {{ $package->madina_nights }} {{t('umrah.nightsMadinah')}}</span>
-                                    @endif
-                                    <span class="feature-item-umrah"><i class="fas fa-hotel"></i> {{t('umrah.hotel')}}</span>
-                                @endif
-                            </div>
-
-                            <div class="umrah-price-section">
-                                <div class="price-info-umrah">
-                                    <div class="price-label-umrah">{{t('umrah.startingFrom')}}</div>
-                                    <div class="price-amount-umrah">
-                                        <span class="price-currency-umrah">{{ $package->currency ?? 'USD' }}</span> {{ number_format($package->price, 0) }}
-                                    </div>
-                                </div>
-                                <button class="view-deal-btn-umrah">{{t('umrah.viewDetails')}}</button>
-                            </div>
-                        </div>
-                    </a>
+                    @include('common.umrah-card', [
+                        'packagePrice' => ($package->currency ?? 'USD') . ' ' . number_format($package->price, 0),
+                        'umrahLabels' => ['featured' => 'umrah.featured', 'nights' => 'umrah.nights', 'makkah' => 'umrah.nightsMakkah', 'madinah' => 'umrah.nightsMadinah', 'hotel' => 'umrah.hotel', 'from' => 'umrah.startingFrom'],
+                    ])
                 @endforeach
-
-            </div>
-
-            <!-- View All Button -->
-            <div class="cta-section">
-                <a href="#form-umrah" class="cta-button">
-                    <i class="fas fa-kaaba"></i> {{t('umrah.exploreAllPackages')}}
-                </a>
             </div>
         </div>
     </section>
 
     <!-- What's Included Section -->
-    <section class="bg-white py-16">
-        <div class="container mx-auto px-4">
-            <div class="max-w-6xl mx-auto">
-                <!-- Section Header -->
-                <div class="text-center mb-12">
-                    <h2 class="text-4xl font-bold text-gray-800 mb-3">{{t('umrah.whatsIncludedTitle')}}</h2>
-                    <p class="text-gray-600 text-lg">{{t('umrah.whatsIncludedSubtitle')}}</p>
+    @php [$thLead, $thAccent] = $thSplitTitle(t('umrah.whatsIncludedTitle')); @endphp
+    <section class="th-section" id="umrahIncluded">
+        <div class="th-container">
+            <div class="th-header">
+                <div class="th-header-text">
+                    <span class="th-eyebrow">{{ t('umrah.whatsIncludedTitle') }}</span>
+                    <h2 class="th-title">{{ $thLead }} @if($thAccent)<span class="th-title-accent">{{ $thAccent }}</span>@endif</h2>
                 </div>
+            </div>
 
-                <!-- Grid of Inclusions -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Inclusion 1 -->
-                    <div class="flex items-start gap-4 p-6 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors">
-                        <div class="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
-                            <i class="fas fa-plane text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-800 mb-1">{{t('umrah.roundTripFlights')}}</h3>
-                            <p class="text-sm text-gray-600">{{t('umrah.roundTripFlightsDesc')}}</p>
-                        </div>
-                    </div>
-
-                    <!-- Inclusion 2 -->
-                    <div class="flex items-start gap-4 p-6 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors">
-                        <div class="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
-                            <i class="fas fa-hotel text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-800 mb-1">{{t('umrah.hotelAccommodation')}}</h3>
-                            <p class="text-sm text-gray-600">{{t('umrah.hotelAccommodationDesc')}}</p>
-                        </div>
-                    </div>
-
-                    <!-- Inclusion 3 -->
-                    <div class="flex items-start gap-4 p-6 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors">
-                        <div class="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
-                            <i class="fas fa-passport text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-800 mb-1">{{t('umrah.visaProcessing')}}</h3>
-                            <p class="text-sm text-gray-600">{{t('umrah.visaProcessingDesc')}}</p>
-                        </div>
-                    </div>
-
-                    <!-- Inclusion 4 -->
-                    <div class="flex items-start gap-4 p-6 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors">
-                        <div class="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
-                            <i class="fas fa-bus text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-800 mb-1">{{t('umrah.transportation')}}</h3>
-                            <p class="text-sm text-gray-600">{{t('umrah.transportationDesc')}}</p>
-                        </div>
-                    </div>
-
-                    <!-- Inclusion 5 -->
-                    <div class="flex items-start gap-4 p-6 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors">
-                        <div class="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user-tie text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-800 mb-1">{{t('umrah.expertGuidesIncluded')}}</h3>
-                            <p class="text-sm text-gray-600">{{t('umrah.expertGuidesIncludedDesc')}}</p>
-                        </div>
-                    </div>
-
-                    <!-- Inclusion 6 -->
-                    <div class="flex items-start gap-4 p-6 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors">
-                        <div class="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
-                            <i class="fas fa-utensils text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-800 mb-1">{{t('umrah.meals')}}</h3>
-                            <p class="text-sm text-gray-600">{{t('umrah.mealsDesc')}}</p>
-                        </div>
+            <div class="hw-grid is-3">
+                @foreach([
+                    ['fa-plane', 'umrah.roundTripFlights', 'umrah.roundTripFlightsDesc'],
+                    ['fa-hotel', 'umrah.hotelAccommodation', 'umrah.hotelAccommodationDesc'],
+                    ['fa-passport', 'umrah.visaProcessing', 'umrah.visaProcessingDesc'],
+                    ['fa-bus', 'umrah.transportation', 'umrah.transportationDesc'],
+                    ['fa-user-tie', 'umrah.expertGuidesIncluded', 'umrah.expertGuidesIncludedDesc'],
+                    ['fa-utensils', 'umrah.meals', 'umrah.mealsDesc'],
+                ] as [$hwIcon, $hwTitle, $hwDesc])
+                <div class="hw-card is-inline">
+                    <span class="hw-icon"><i class="fas {{ $hwIcon }}"></i></span>
+                    <div>
+                        <h3 class="hw-title">{{ t($hwTitle) }}</h3>
+                        <p class="hw-desc">{{ t($hwDesc) }}</p>
                     </div>
                 </div>
+                @endforeach
             </div>
         </div>
     </section>
+
+    <!-- Why Choose Us Section -->
+    @php [$thLead, $thAccent] = $thSplitTitle(t('umrah.whyBookTitle')); @endphp
+    <section class="th-section" id="whyBookUmrah">
+        <div class="th-container">
+            <div class="th-header">
+                <div class="th-header-text">
+                    <span class="th-eyebrow">{{ t('umrah.whyBookTitle') }}</span>
+                    <h2 class="th-title">{{ $thLead }} @if($thAccent)<span class="th-title-accent">{{ $thAccent }}</span>@endif</h2>
+                </div>
+            </div>
+
+            <div class="hw-grid">
+                @foreach([
+                    ['fa-kaaba', 'umrah.sacredAccommodations', 'umrah.sacredAccommodationsDesc'],
+                    ['fa-user-tie', 'umrah.expertGuides', 'umrah.expertGuidesDesc'],
+                    ['fa-plane-departure', 'umrah.hassleFreeTravel', 'umrah.hassleFreeTravelDesc'],
+                    ['fa-headset', 'umrah.support247', 'umrah.support247Desc'],
+                ] as $hwIndex => [$hwIcon, $hwTitle, $hwDesc])
+                <div class="hw-card">
+                    <div class="hw-card-top">
+                        <span class="hw-icon"><i class="fas {{ $hwIcon }}"></i></span>
+                        <span class="hw-number">{{ str_pad($hwIndex + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                    </div>
+                    <h3 class="hw-title">{{ t($hwTitle) }}</h3>
+                    <p class="hw-desc">{{ t($hwDesc) }}</p>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+</div>
 
     <script>
         // Smooth scroll to form on page load if hash is present

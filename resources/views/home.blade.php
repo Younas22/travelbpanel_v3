@@ -23,49 +23,10 @@
 @endphp
 
 <style>
-    /* Hero Background Image - Crystal Clear */
-    /* Pulled up under the floating header (--nav-offset, style.css) so the
-       scenery fills the area around the rounded nav bar. */
-    .hero-section {
-        background: url('<?=getSettingImage('cover_image', 'homepage')?>') center 35%/cover no-repeat;
-        min-height: 720px;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        margin-top: calc(-1 * var(--nav-offset));
-        padding-top: calc(var(--nav-offset) + 64px);
-        padding-bottom: 88px;
-    }
-
-    .form-container {
-        background-color: #fff;
-        border-radius: 24px;
-        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.14);
-        width: calc(100% - 32px);
-        max-width: 1100px;
-        padding: 20px 24px 24px;
-        z-index: 20;
-        position: relative;
-        margin: 0 auto;
-    }
-
-    /* Fix for dropdowns on home page - ensure they appear above form container.
-       Every form partial's dropdown is listed: the last partial on the page
-       (Umrah) sets the shared .dropdown-overlay to z-index 999, which would
-       otherwise cover any dropdown below it. */
-    .form-container .airport-dropdown,
-    .form-container .passenger-dropdown,
-    .form-container .class-dropdown,
-    .form-container .country-dropdown,
-    .form-container .destination-dropdown,
-    .form-container .tour-type-dropdown,
-    .form-container .traveler-dropdown {
-        z-index: 150 !important;
-    }
-
-    .form-container .dropdown-overlay {
-        z-index: 140 !important;
+    /* Hero layout and the search panel live in style.css (#siteRedesign);
+       only this page's cover image is set here. */
+    #siteRedesign .hero-section {
+        background-image: url('<?=getSettingImage('cover_image', 'homepage')?>');
     }
 
     /* Tab Styles — a glass pill bar above the search panel (outside the
@@ -107,7 +68,7 @@
         padding: 0 22px;
         background: transparent;
         border: 0;
-        font-weight: 600;
+        font-weight: 400;
         font-size: 15px;
         letter-spacing: 0;
         text-transform: none;
@@ -127,7 +88,7 @@
 
     .tab-btn i {
         color: #fff;
-        font-size: 16px;
+        font-size: 14px;
     }
 
     .tab-btn:hover {
@@ -135,8 +96,10 @@
         background: rgba(255, 255, 255, 0.2);
     }
 
+    /* the selected module's name stands out from the others */
     .tab-btn.active {
         color: #000;
+        font-weight: 600;
         text-shadow: none;
         background: #fff;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
@@ -149,26 +112,26 @@
     /* Primary-action color override, scoped to the homepage only — .cta-button,
        .view-deal-btn, .view-deal-btn-umrah and .step-number are shared global
        classes also used on the Tours/Umrah listing pages. */
-    #homeRedesign .cta-button,
-    #homeRedesign .view-deal-btn,
-    #homeRedesign .view-deal-btn-umrah {
+    #siteRedesign .cta-button,
+    #siteRedesign .view-deal-btn,
+    #siteRedesign .view-deal-btn-umrah {
         background: #0346FA;
     }
 
-    #homeRedesign .view-deal-btn:hover,
-    #homeRedesign .view-deal-btn-umrah:hover {
+    #siteRedesign .view-deal-btn:hover,
+    #siteRedesign .view-deal-btn-umrah:hover {
         box-shadow: 0 4px 12px rgba(3,70,250,0.3);
     }
 
-    #homeRedesign .step-number {
+    #siteRedesign .step-number {
         background: #0346FA;
     }
 
-    #homeRedesign .step-card:hover .step-number {
+    #siteRedesign .step-card:hover .step-number {
         box-shadow: 0 8px 20px rgba(3,70,250,0.3);
     }
 
-    #homeRedesign .connector {
+    #siteRedesign .connector {
         background: linear-gradient(90deg, transparent, #0346FA 50%, transparent);
     }
 
@@ -193,31 +156,7 @@
     }
 
     /* Responsive */
-    @media (max-width: 1023px) {
-        .hero-section {
-            min-height: 0;
-            padding-top: calc(var(--nav-offset) + 40px);
-            padding-bottom: 64px;
-        }
-
-        .form-container {
-            padding: 22px 22px 24px;
-            border-radius: 24px;
-        }
-    }
-
     @media (max-width: 640px) {
-        .hero-section {
-            padding-top: calc(var(--nav-offset) + 28px);
-            padding-bottom: 48px;
-        }
-
-        .form-container {
-            width: calc(100% - 24px);
-            padding: 16px 14px 18px;
-            border-radius: 20px;
-        }
-
         .tab-buttons-wrapper {
             width: calc(100% - 24px);
             margin-bottom: 8px;
@@ -250,7 +189,7 @@
     $heroTitleAccent = implode(' ', array_slice($heroTitleWords, count($heroTitleWords) - $heroAccentCount));
 @endphp
 
-<div id="homeRedesign">
+<div id="siteRedesign" class="has-ai-search">
 <section class="hero-section">
     <div class="hero-content">
         <h1 class="hero-title">
@@ -525,83 +464,17 @@
                 @php
                     $checkin  = date('Y-m-d', strtotime('+1 day'));
                     $checkout = date('Y-m-d', strtotime('+2 days'));
-                    // amenities store Bootstrap Icons classes, which are not loaded on public pages
-                    $thAmenityIcons = [
-                        'bi-wifi' => 'fa-wifi', 'bi-car-front' => 'fa-car', 'bi-snow' => 'fa-snowflake',
-                        'bi-tv' => 'fa-tv', 'bi-water' => 'fa-water-ladder', 'bi-bicycle' => 'fa-dumbbell',
-                        'bi-shop' => 'fa-utensils', 'bi-bell' => 'fa-bell-concierge', 'bi-droplet' => 'fa-shirt',
-                        'bi-arrow-up-square' => 'fa-elevator', 'bi-cup-straw' => 'fa-martini-glass',
-                        'bi-heart-pulse' => 'fa-spa', 'bi-people' => 'fa-users', 'bi-clock' => 'fa-clock',
-                        'bi-egg-fried' => 'fa-egg', 'bi-cup-hot' => 'fa-mug-hot', 'bi-shield-lock' => 'fa-lock',
-                        'bi-door-open' => 'fa-door-open', 'bi-bus-front' => 'fa-van-shuttle', 'bi-person-badge' => 'fa-id-badge',
-                    ];
                 @endphp
 
                 @forelse($featuredHotels as $fHotel)
-                @php
-                    $fImage = $fHotel->images->first()
-                        ? asset('public/assets/images/' . $fHotel->images->first()->image_path)
-                        : 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop';
-                    $fCity = $fHotel->location ? $fHotel->location->city : null;
-                    $fLocation = $fHotel->location ? $fHotel->location->city . ', ' . $fHotel->location->country : $fHotel->address;
-                    $fAmenities = $fHotel->amenities->take(3);
-                    $fSlug = \Illuminate\Support\Str::slug(\Illuminate\Support\Str::limit($fHotel->name, 30), '-');
-                    $fDetailUrl = url("hotel/details/{$fHotel->id}/{$fSlug}/{$checkin}/{$checkout}/2/0/1/manual");
-                    $fMinPrice = $fHotel->roomTypes()->where('status', 1)->min('price_per_night') ?? 0;
-                    $fStars = max(0, min(5, (int) $fHotel->stars));
-                @endphp
-                <article class="th-card">
-                    <a href="{{ $fDetailUrl }}" class="th-card-media">
-                        <img src="{{ $fImage }}" alt="{{ $fHotel->name }}" loading="lazy">
-                        @if($fHotel->featured == 1)
-                            <span class="th-badge"><i class="fas fa-star"></i> {{ t('home.badge_featured') }}</span>
-                        @endif
-                        @if($fCity)
-                            <span class="th-chip"><i class="fas fa-location-dot"></i> {{ $fCity }}</span>
-                        @endif
-                    </a>
-                    <div class="th-card-body">
-                        <h3 class="th-name"><a href="{{ $fDetailUrl }}">{{ $fHotel->name }}</a></h3>
-                        @if($fLocation)
-                            <p class="th-location"><i class="fas fa-location-dot"></i> <span>{{ $fLocation }}</span></p>
-                        @endif
-
-                        @if($fStars > 0)
-                        <div class="th-rating">
-                            <span class="th-stars">
-                                @for($s = 1; $s <= 5; $s++)
-                                    <i class="fas fa-star {{ $s <= $fStars ? 'is-on' : '' }}"></i>
-                                @endfor
-                            </span>
-                            <span class="th-rating-text">{{ $fStars }} {{ t('hotel.stars') }}</span>
-                        </div>
-                        @endif
-
-                        @if($fAmenities->count())
-                        <div class="th-pills">
-                            @foreach($fAmenities as $fAmenity)
-                                @php
-                                    $fBi = collect(explode(' ', (string) $fAmenity->icon))->first(fn($c) => isset($thAmenityIcons[$c]));
-                                    $fFa = $fBi ? $thAmenityIcons[$fBi] : 'fa-check';
-                                @endphp
-                                <span class="th-pill"><i class="fas {{ $fFa }}"></i> {{ $fAmenity->name }}</span>
-                            @endforeach
-                        </div>
-                        @endif
-
-                        <div class="th-footer">
-                            <div class="th-price-wrap">
-                                @if($fMinPrice > 0)
-                                    <span class="th-price-label">{{ t('home.starting_from') }}</span>
-                                    <span class="th-price">{{ $active_currency->currency_name }} {{ number_format($fMinPrice, 0) }}</span>
-                                @else
-                                    <span class="th-price-none">{{ t('hotel.contactForPrice') }}</span>
-                                @endif
-                            </div>
-                            <a href="{{ $fDetailUrl }}" class="th-view-btn">{{ t('home.view') }} <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </article>
+                    @php
+                        $fSlug = \Illuminate\Support\Str::slug(\Illuminate\Support\Str::limit($fHotel->name, 30), '-');
+                        $fMinPrice = $fHotel->roomTypes()->where('status', 1)->min('price_per_night') ?? 0;
+                    @endphp
+                    @include('common.hotel-card', [
+                        'fDetailUrl' => url("hotel/details/{$fHotel->id}/{$fSlug}/{$checkin}/{$checkout}/2/0/1/manual"),
+                        'fPrice' => $fMinPrice > 0 ? $active_currency->currency_name . ' ' . number_format($fMinPrice, 0) : null,
+                    ])
                 @empty
                     <p class="th-empty">{{ t('home.no_featured_hotels') }}</p>
                 @endforelse
@@ -650,53 +523,11 @@
 
                         // Build detail URL: tours/{slug}/{location}/{type}/{startDate}/{endDate}/{adult}/{child}
                         $detailUrl = url("tours/{$slug}/{$locationSlug}/{$type}/{$startDate}/{$endDate}/{$adult}/{$child}");
-
-                        // Get first image or use placeholder
-                        $imageUrl = $tour->images && $tour->images->first()
-                            ? asset('public/assets/images/' . $tour->images->first()->image)
-                            : 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&h=300&fit=crop';
-
-                        // Get first 3 highlights
-                        $highlights = $tour->highlights ? array_slice($tour->highlights, 0, 3) : [];
                     @endphp
 
-                    <article class="th-card">
-                        <a href="{{ $detailUrl }}" class="th-card-media">
-                            <img src="{{ $imageUrl }}" alt="{{ $tour->name }}" loading="lazy">
-                            @if($tour->featured == 1)
-                                <span class="th-badge"><i class="fas fa-star"></i> {{ t('tour.popular') }}</span>
-                            @endif
-                            @if($tour->days)
-                                <span class="th-chip"><i class="fas fa-clock"></i> {{ $tour->days }} {{ $tour->days > 1 ? t('tour.days') : t('tour.day') }}</span>
-                            @endif
-                        </a>
-                        <div class="th-card-body">
-                            <h3 class="th-name"><a href="{{ $detailUrl }}">{{ $tour->name }}</a></h3>
-                            @if($tour->location_name)
-                                <p class="th-location"><i class="fas fa-location-dot"></i> <span>{{ $tour->location_name }}</span></p>
-                            @endif
-
-                            <div class="th-pills">
-                                @if(count($highlights) > 0)
-                                    @foreach($highlights as $highlight)
-                                        <span class="th-pill"><i class="fas fa-check-circle"></i> {{ Str::limit($highlight, 15) }}</span>
-                                    @endforeach
-                                @else
-                                    <span class="th-pill"><i class="fas fa-hotel"></i> {{ t('tour.hotel') }}</span>
-                                    <span class="th-pill"><i class="fas fa-utensils"></i> {{ t('tour.meals') }}</span>
-                                    <span class="th-pill"><i class="fas fa-bus"></i> {{ t('tour.transport') }}</span>
-                                @endif
-                            </div>
-
-                            <div class="th-footer">
-                                <div class="th-price-wrap">
-                                    <span class="th-price-label">{{ t('tour.starting_from') }}</span>
-                                    <span class="th-price">{{ $active_currency->currency_name }} {{ convertCurrency($tour->price, $tour->currency ?? 'USD', $active_currency->currency_name) }}</span>
-                                </div>
-                                <a href="{{ $detailUrl }}" class="th-view-btn">{{ t('home.view') }} <i class="fas fa-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </article>
+                    @include('common.tour-card', [
+                        'tourPrice' => $active_currency->currency_name . ' ' . convertCurrency($tour->price, $tour->currency ?? 'USD', $active_currency->currency_name),
+                    ])
                 @endforeach
             </div>
         </div>
@@ -754,60 +585,12 @@
 
                         // Build detail URL
                         $detailUrl = url("umrah/{$slug}/{$originCode}/{$destinationCode}/{$departureDate}/{$returnDate}/{$adult}/{$child}/{$infant}/{$makkahNights}/{$madinaNights}");
-
-                        // Get first image or use placeholder
-                        $imageUrl = $package->images && $package->images->first()
-                            ? asset('public/assets/images/' . $package->images->first()->image)
-                            : 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=400&h=300&fit=crop';
-
-                        // Get first 3 highlights
-                        $highlights = $package->highlights ? array_slice($package->highlights, 0, 3) : [];
-
-                        // Calculate total nights
-                        $totalNights = ($package->makkah_nights ?? 0) + ($package->madina_nights ?? 0);
                     @endphp
 
-                    <article class="th-card">
-                        <a href="{{ $detailUrl }}" class="th-card-media">
-                            <img src="{{ $imageUrl }}" alt="{{ $package->name }}" loading="lazy">
-                            @if($package->featured == 1)
-                                <span class="th-badge"><i class="fas fa-star"></i> {{ t('home.badge_featured') }}</span>
-                            @endif
-                            @if($totalNights > 0)
-                                <span class="th-chip"><i class="fas fa-moon"></i> {{ $totalNights }} {{ t('home.nights') }}</span>
-                            @endif
-                        </a>
-                        <div class="th-card-body">
-                            <h3 class="th-name"><a href="{{ $detailUrl }}">{{ $package->name }}</a></h3>
-                            @if($package->from_location && $package->to_location)
-                                <p class="th-location"><i class="fas fa-plane-departure"></i> <span>{{ $package->from_location }} <i class="fas fa-arrow-right th-route-arrow"></i> {{ $package->to_location }}</span></p>
-                            @endif
-
-                            <div class="th-pills">
-                                @if(count($highlights) > 0)
-                                    @foreach($highlights as $highlight)
-                                        <span class="th-pill"><i class="fas fa-check-circle"></i> {{ Str::limit($highlight, 15) }}</span>
-                                    @endforeach
-                                @else
-                                    @if($package->makkah_nights > 0)
-                                        <span class="th-pill"><i class="fas fa-kaaba"></i> {{ $package->makkah_nights }} {{ t('home.nights_makkah') }}</span>
-                                    @endif
-                                    @if($package->madina_nights > 0)
-                                        <span class="th-pill"><i class="fas fa-mosque"></i> {{ $package->madina_nights }} {{ t('home.nights_madinah') }}</span>
-                                    @endif
-                                    <span class="th-pill"><i class="fas fa-hotel"></i> {{ t('home.hotel') }}</span>
-                                @endif
-                            </div>
-
-                            <div class="th-footer">
-                                <div class="th-price-wrap">
-                                    <span class="th-price-label">{{ t('home.starting_from') }}</span>
-                                    <span class="th-price">{{ $active_currency->currency_name }} {{ convertCurrency($package->price, $package->currency ?? 'USD', $active_currency->currency_name) }}</span>
-                                </div>
-                                <a href="{{ $detailUrl }}" class="th-view-btn">{{ t('home.view') }} <i class="fas fa-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </article>
+                    @include('common.umrah-card', [
+                        'packagePrice' => $active_currency->currency_name . ' ' . convertCurrency($package->price, $package->currency ?? 'USD', $active_currency->currency_name),
+                        'umrahLabels' => ['featured' => 'home.badge_featured', 'nights' => 'home.nights', 'makkah' => 'home.nights_makkah', 'madinah' => 'home.nights_madinah', 'hotel' => 'home.hotel', 'from' => 'home.starting_from'],
+                    ])
                 @endforeach
             </div>
         </div>
@@ -953,34 +736,6 @@
         });
     })();
 
-    // Homepage card carousels: prev/next buttons scroll one card at a time
-    document.querySelectorAll('.th-section').forEach(function (section) {
-        var track = section.querySelector('.th-track');
-        var prev = section.querySelector('.th-nav-prev');
-        var next = section.querySelector('.th-nav-next');
-        if (!track || !prev || !next) return;
-        var rtl = getComputedStyle(track).direction === 'rtl';
-        function step() {
-            var card = track.querySelector('.th-card');
-            var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
-            return card ? card.getBoundingClientRect().width + gap : track.clientWidth;
-        }
-        function update() {
-            var max = track.scrollWidth - track.clientWidth;
-            var pos = Math.abs(track.scrollLeft);
-            prev.disabled = pos <= 2;
-            next.disabled = pos >= max - 2;
-        }
-        [prev, next].forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                var dir = parseInt(btn.getAttribute('data-th-dir'), 10) * (rtl ? -1 : 1);
-                track.scrollBy({ left: dir * step(), behavior: 'smooth' });
-            });
-        });
-        track.addEventListener('scroll', update, { passive: true });
-        window.addEventListener('resize', update);
-        update();
-    });
 </script>
 
 @endsection

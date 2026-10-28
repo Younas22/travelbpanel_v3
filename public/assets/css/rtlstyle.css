@@ -63,7 +63,7 @@ body {
 .nav-bar {
     background-color: transparent;
     padding: 12px 16px 0;
-    transition: padding .25s ease;
+    transition: padding .25s ease, margin .25s ease;
 }
 
 .nav-shell {
@@ -73,7 +73,7 @@ body {
     border: 1px solid rgba(0, 0, 0, .08);
     border-radius: 18px;
     box-shadow: 0 6px 24px rgba(0, 0, 0, .06);
-    transition: box-shadow .25s ease;
+    transition: box-shadow .25s ease, border-radius .25s ease;
 }
 
 @media (min-width: 1024px) {
@@ -81,8 +81,20 @@ body {
     .nav-shell { min-height: 72px; padding: 10px 14px 10px 24px; }
 }
 
+/* On scroll the bar docks flush to the top edge; the removed top padding
+   moves to margin-bottom so the page below doesn't jump. */
+.nav-bar.is-scrolled {
+    padding-top: 0;
+    margin-bottom: 12px;
+}
 .nav-bar.is-scrolled .nav-shell {
+    border-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
     box-shadow: 0 12px 32px rgba(0, 0, 0, .1);
+}
+@media (min-width: 1024px) {
+    .nav-bar.is-scrolled { margin-bottom: 16px; }
 }
 
 .nav-logo {
@@ -415,10 +427,6 @@ img.nav-avatar-logo {
 .nav-shell { padding: 8px 18px 8px 12px; }
 @media (min-width: 1024px) {
     .nav-shell { padding: 10px 24px 10px 14px; }
-}
-.nav-util-pill-group .nav-util-pill-item:first-child {
-    border-right: 0;
-    border-left: 1px solid rgba(0, 0, 0, .1);
 }
 .nav-menu-link,
 .nav-m-link { text-align: right; }
@@ -7485,19 +7493,94 @@ a i {
 
 
 /* ==========================================================================
-   Homepage hero + booking panel (resources/views/home.blade.php, #homeRedesign)
+   Redesigned pages: hero + booking panel (#siteRedesign wrapper on home.blade.php, hotel/hotel.blade.php)
    Scoped to the homepage: the forms/* partials it re-skins are shared with
    other pages, which keep their own look. Brand: #2563EB / #fff / #000.
    ========================================================================== */
 
 /* ---------- Heading + subtitle ---------- */
-#homeRedesign .hero-content {
+/* Hero + search panel shell shared by redesigned pages; each page sets its
+   own cover image (background-image) in its template. Pulled up under the
+   floating header (--nav-offset) so the scenery fills the area around it. */
+#siteRedesign .hero-section {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 720px;
+    margin-top: calc(-1 * var(--nav-offset));
+    padding-top: calc(var(--nav-offset) + 64px);
+    padding-bottom: 88px;
+    background-position: center 35%;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+#siteRedesign .hero-section::after {
+    content: none;
+}
+
+#siteRedesign .form-container {
+    position: relative;
+    z-index: 20;
+    width: calc(100% - 32px);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 24px 24px;
+    border-radius: 24px;
+    background-color: #fff;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.14);
+}
+
+/* Dropdowns above the search panel. Every form partial's dropdown is listed:
+   the Umrah partial sets the shared .dropdown-overlay to z-index 999, which
+   would otherwise cover any dropdown below it. */
+#siteRedesign .form-container .airport-dropdown,
+#siteRedesign .form-container .passenger-dropdown,
+#siteRedesign .form-container .class-dropdown,
+#siteRedesign .form-container .country-dropdown,
+#siteRedesign .form-container .destination-dropdown,
+#siteRedesign .form-container .tour-type-dropdown,
+#siteRedesign .form-container .traveler-dropdown {
+    z-index: 150 !important;
+}
+
+#siteRedesign .form-container .dropdown-overlay {
+    z-index: 140 !important;
+}
+
+@media (max-width: 1023px) {
+    #siteRedesign .hero-section {
+        min-height: 0;
+        padding-top: calc(var(--nav-offset) + 40px);
+        padding-bottom: 64px;
+    }
+
+    #siteRedesign .form-container {
+        padding: 22px 22px 24px;
+    }
+}
+
+@media (max-width: 640px) {
+    #siteRedesign .hero-section {
+        padding-top: calc(var(--nav-offset) + 28px);
+        padding-bottom: 48px;
+    }
+
+    #siteRedesign .form-container {
+        width: calc(100% - 24px);
+        padding: 16px 14px 18px;
+        border-radius: 20px;
+    }
+}
+
+#siteRedesign .hero-content {
     max-width: 920px;
     margin: 0 auto 36px;
     padding: 0 16px;
     text-align: center;
 }
-#homeRedesign .hero-title {
+#siteRedesign .hero-title {
     margin: 0 0 14px;
     color: #000;
     text-shadow: 0 1px 24px rgba(255, 255, 255, .55);
@@ -7506,8 +7589,8 @@ a i {
     line-height: 1.08;
     letter-spacing: -0.025em;
 }
-#homeRedesign .hero-title-accent { color: #2563EB; }
-#homeRedesign .hero-subtitle {
+#siteRedesign .hero-title-accent { color: #000000; }
+#siteRedesign .hero-subtitle {
     max-width: 780px;
     margin: 0 auto;
     color: rgba(0, 0, 0, .78);
@@ -7519,17 +7602,17 @@ a i {
 }
 
 /* ---------- Tabs: keyboard focus ---------- */
-#homeRedesign .tab-btn:focus-visible,
-#homeRedesign .form-container .trip-type-btn:focus-visible {
+#siteRedesign .tab-btn:focus-visible,
+#siteRedesign .form-container .trip-type-btn:focus-visible {
     outline: 2px solid #2563EB;
     outline-offset: 2px;
 }
 
 /* ---------- Form partial wrapper ---------- */
-#homeRedesign .form-container .tab-content > .p-3 { padding: 16px 0 0; }
+#siteRedesign .form-container .tab-content > .p-3 { padding: 16px 0 0; }
 
 /* ---------- Trip type (Round Trip / One Way) ---------- */
-#homeRedesign .form-container .trip-type-btn {
+#siteRedesign .form-container .trip-type-btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -7540,92 +7623,100 @@ a i {
     background: #fff;
     color: rgba(0, 0, 0, .72);
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 500;
     transition: border-color .2s ease, background-color .2s ease, color .2s ease;
 }
-#homeRedesign .form-container .trip-type-btn i { margin: 0; color: #2563EB; }
-#homeRedesign .form-container .trip-type-btn:hover { border-color: #2563EB; color: #2563EB; }
-#homeRedesign .form-container .trip-type-btn.active {
+#siteRedesign .form-container .trip-type-btn i { margin: 0; color: #2563EB; }
+#siteRedesign .form-container .trip-type-btn:hover { border-color: #2563EB; color: #2563EB; }
+#siteRedesign .form-container .trip-type-btn.active {
     background: #2563EB;
     border-color: #2563EB;
     color: #fff;
 }
-#homeRedesign .form-container .trip-type-btn.active i { color: #fff; }
+#siteRedesign .form-container .trip-type-btn.active i { color: #fff; }
 
 /* ---------- Field rows ----------
    Mobile: stacked (the partials' own flex-col). Tablet: 2 columns.
    Small desktop: 3 columns. Wide desktop: one row. The return-date field is
    shown/hidden by the trip-type JS, so no rule here sets a field's display. */
-#homeRedesign .form-container .sm\:flex-row { gap: 10px; }
+#siteRedesign .form-container .sm\:flex-row { gap: 10px; }
 @media (min-width: 640px) and (max-width: 1023px) {
-    #homeRedesign .form-container .sm\:flex-row {
+    #siteRedesign .form-container .sm\:flex-row {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 @media (min-width: 1024px) and (max-width: 1279px) {
-    #homeRedesign .form-container .sm\:flex-row {
+    #siteRedesign .form-container .sm\:flex-row {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 @media (min-width: 1280px) {
-    #homeRedesign .form-container .sm\:flex-row > * { min-width: 0; }
+    #siteRedesign .form-container .sm\:flex-row > * { min-width: 0; }
 }
 
 /* ---------- Field boxes ---------- */
-#homeRedesign .form-container .sm\:flex-row > .bg-gray-50 {
+#siteRedesign .form-container .sm\:flex-row > .bg-gray-50 {
     padding: 10px 12px;
     background: #fff;
     border: 1px solid rgba(0, 0, 0, .12);
     border-radius: 12px;
     transition: border-color .2s ease, box-shadow .2s ease;
 }
-#homeRedesign .form-container .sm\:flex-row > .bg-gray-50:hover { border-color: rgba(37, 99, 235, .45); }
-#homeRedesign .form-container .sm\:flex-row > .bg-gray-50:focus-within {
+#siteRedesign .form-container .sm\:flex-row > .bg-gray-50:hover { border-color: rgba(37, 99, 235, .45); }
+#siteRedesign .form-container .sm\:flex-row > .bg-gray-50:focus-within {
     border-color: #2563EB;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
 }
-#homeRedesign .form-container .sm\:flex-row > .bg-gray-50 > .flex { align-items: center; gap: 10px; }
-#homeRedesign .form-container .sm\:flex-row > .bg-gray-50 > .flex > i.fas {
+#siteRedesign .form-container .sm\:flex-row > .bg-gray-50 > .flex { align-items: center; gap: 10px; }
+#siteRedesign .form-container .sm\:flex-row > .bg-gray-50 > .flex > i.fas {
     width: 18px;
     margin-top: 0;
     color: #2563EB;
-    font-size: 15px;
+    font-size: 13px;
     text-align: center;
 }
-#homeRedesign .form-container .sm\:flex-row label.uppercase {
+#siteRedesign .form-container .sm\:flex-row label.uppercase {
     margin-bottom: 2px;
     color: rgba(0, 0, 0, .55);
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 500;
     letter-spacing: .06em;
 }
-#homeRedesign .form-container .sm\:flex-row > .bg-gray-50 > .flex .text-\[13px\]:not(.text-white) {
+#siteRedesign .form-container .sm\:flex-row > .bg-gray-50 > .flex .text-\[13px\]:not(.text-white) {
     color: #000;
     font-size: 13.5px;
-    font-weight: 600;
+    font-weight: 400;
 }
-#homeRedesign .form-container .sm\:flex-row > .bg-gray-50 > .flex .fa-chevron-down {
+/* field values: normal weight, whatever element the partial uses */
+#siteRedesign .form-container .sm\:flex-row > .bg-gray-50 .font-semibold,
+#siteRedesign .form-container .sm\:flex-row > .bg-gray-50 .font-bold,
+#siteRedesign .form-container .sm\:flex-row > .bg-gray-50 input,
+#siteRedesign .form-container .sm\:flex-row > .bg-gray-50 select,
+#siteRedesign .form-container .nights-value {
+    font-weight: 400;
+}
+#siteRedesign .form-container .sm\:flex-row > .bg-gray-50 > .flex .fa-chevron-down {
     color: rgba(0, 0, 0, .4);
     font-size: 10px;
 }
 
 /* Brand blue for the partials' own accent utilities */
-#homeRedesign .form-container .bg-\[\#0346FA\] { background-color: #2563EB; }
-#homeRedesign .form-container .border-\[\#0346FA\] { border-color: #2563EB; }
-#homeRedesign .form-container .text-\[\#0346FA\] { color: #2563EB; }
-#homeRedesign .form-container .bg-\[\#E6F3FB\] { background-color: rgba(37, 99, 235, .1); }
+#siteRedesign .form-container .bg-\[\#0346FA\] { background-color: #2563EB; }
+#siteRedesign .form-container .border-\[\#0346FA\] { border-color: #2563EB; }
+#siteRedesign .form-container .text-\[\#0346FA\] { color: #2563EB; }
+#siteRedesign .form-container .bg-\[\#E6F3FB\] { background-color: rgba(37, 99, 235, .1); }
 
 /* ---------- Search button ----------
    Desktop: a round button beside the last field row (it's the last child of
    every partial's field column). Smaller screens: full-width button. */
 @media (min-width: 1024px) {
-    #homeRedesign .form-container form > div {
+    #siteRedesign .form-container .tab-content form > div {
         position: relative;
         padding-right: 78px;
     }
-    #homeRedesign .form-container form > div > button[type="submit"] {
+    #siteRedesign .form-container .tab-content form > div > button[type="submit"] {
         position: absolute;
         right: 0;
         bottom: 0;
@@ -7639,17 +7730,17 @@ a i {
         box-shadow: 0 14px 30px rgba(37, 99, 235, .35);
         transition: box-shadow .2s ease, transform .2s ease;
     }
-    #homeRedesign .form-container form > div > button[type="submit"] i {
+    #siteRedesign .form-container .tab-content form > div > button[type="submit"] i {
         color: #fff;
         font-size: 20px;
     }
-    #homeRedesign .form-container form > div > button[type="submit"]:hover {
+    #siteRedesign .form-container .tab-content form > div > button[type="submit"]:hover {
         transform: translateY(-1px);
         box-shadow: 0 18px 36px rgba(37, 99, 235, .45);
     }
 }
 @media (max-width: 1023px) {
-    #homeRedesign .form-container form > div > button[type="submit"] {
+    #siteRedesign .form-container .tab-content form > div > button[type="submit"] {
         height: 48px;
         margin-top: 4px;
         border-radius: 12px;
@@ -7661,11 +7752,11 @@ a i {
 
 /* ---------- Homepage booking panel: right-to-left adjustments ---------- */
 @media (min-width: 1024px) {
-    #homeRedesign .form-container form > div {
+    #siteRedesign .form-container .tab-content form > div {
         padding-right: 0;
         padding-left: 78px;
     }
-    #homeRedesign .form-container form > div > button[type="submit"] {
+    #siteRedesign .form-container .tab-content form > div > button[type="submit"] {
         right: auto;
         left: 0;
     }
@@ -7676,22 +7767,22 @@ a i {
    Homepage card sections: Hotels / Tours / Umrah / How It Works
    (resources/views/home.blade.php, .th-section)
    ========================================================================== */
-#homeRedesign .th-section {
+#siteRedesign .th-section {
     background: #FFFFFF;
     padding: 20px 0;
 }
 
-#homeRedesign .th-section:last-child {
+#siteRedesign .th-section:last-child {
     padding-bottom: 56px;
 }
 
-#homeRedesign .th-container {
+#siteRedesign .th-container {
     max-width: 1328px;
     margin: 0 auto;
     padding: 0 24px;
 }
 
-#homeRedesign .th-header {
+#siteRedesign .th-header {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
@@ -7699,12 +7790,12 @@ a i {
     margin-bottom: 20px;
 }
 
-#homeRedesign .th-header-text {
+#siteRedesign .th-header-text {
     flex: 1 1 auto;
     min-width: 0;
 }
 
-#homeRedesign .th-eyebrow {
+#siteRedesign .th-eyebrow {
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -7716,15 +7807,15 @@ a i {
     text-transform: uppercase;
 }
 
-#homeRedesign .th-eyebrow::before,
-#homeRedesign .th-eyebrow::after {
+#siteRedesign .th-eyebrow::before,
+#siteRedesign .th-eyebrow::after {
     content: "";
     width: 24px;
     height: 1px;
     background: #2563EB;
 }
 
-#homeRedesign .th-title {
+#siteRedesign .th-title {
     margin: 0;
     color: #000000;
     font-size: clamp(24px, 2.6vw, 32px);
@@ -7733,17 +7824,17 @@ a i {
     letter-spacing: -0.01em;
 }
 
-#homeRedesign .th-title-accent {
-    color: #2563EB;
+#siteRedesign .th-title-accent {
+    color: #000000;
 }
 
-#homeRedesign .th-nav {
+#siteRedesign .th-nav {
     display: flex;
     flex-shrink: 0;
     gap: 8px;
 }
 
-#homeRedesign .th-nav-btn {
+#siteRedesign .th-nav-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -7758,36 +7849,36 @@ a i {
     transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
 }
 
-#homeRedesign .th-nav-btn.th-nav-next {
+#siteRedesign .th-nav-btn.th-nav-next {
     border-color: #2563EB;
     background: #2563EB;
     color: #FFFFFF;
 }
 
-#homeRedesign .th-nav-btn:hover:not(:disabled) {
+#siteRedesign .th-nav-btn:hover:not(:disabled) {
     border-color: #2563EB;
     color: #2563EB;
 }
 
-#homeRedesign .th-nav-btn.th-nav-next:hover:not(:disabled) {
+#siteRedesign .th-nav-btn.th-nav-next:hover:not(:disabled) {
     color: #FFFFFF;
 }
 
-#homeRedesign .th-nav-btn:disabled {
+#siteRedesign .th-nav-btn:disabled {
     opacity: 0.4;
     cursor: default;
 }
 
-#homeRedesign .th-nav-btn:focus-visible,
-#homeRedesign .th-view-btn:focus-visible,
-#homeRedesign .th-card-media:focus-visible,
-#homeRedesign .th-name a:focus-visible {
+#siteRedesign .th-nav-btn:focus-visible,
+#siteRedesign .th-view-btn:focus-visible,
+#siteRedesign .th-card-media:focus-visible,
+#siteRedesign .th-name a:focus-visible {
     outline: 2px solid #2563EB;
     outline-offset: 2px;
 }
 
 /* carousel track: 4 / 3 / 2 / 1 cards per view */
-#homeRedesign .th-track {
+#siteRedesign .th-track {
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: calc((100% - 3 * 16px) / 4);
@@ -7801,11 +7892,11 @@ a i {
     margin: -4px -4px 0;
 }
 
-#homeRedesign .th-track::-webkit-scrollbar {
+#siteRedesign .th-track::-webkit-scrollbar {
     display: none;
 }
 
-#homeRedesign .th-card {
+#siteRedesign .th-card {
     display: flex;
     flex-direction: column;
     min-width: 0;
@@ -7819,11 +7910,11 @@ a i {
     transition: box-shadow 0.25s ease;
 }
 
-#homeRedesign .th-card:hover {
+#siteRedesign .th-card:hover {
     box-shadow: 0 12px 28px rgba(37, 99, 235, 0.12);
 }
 
-#homeRedesign .th-card-media {
+#siteRedesign .th-card-media {
     position: relative;
     display: block;
     flex-shrink: 0;
@@ -7832,18 +7923,18 @@ a i {
     background: rgba(37, 99, 235, 0.06);
 }
 
-#homeRedesign .th-card-media img {
+#siteRedesign .th-card-media img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.4s ease;
 }
 
-#homeRedesign .th-card:hover .th-card-media img {
+#siteRedesign .th-card:hover .th-card-media img {
     transform: scale(1.04);
 }
 
-#homeRedesign .th-badge {
+#siteRedesign .th-badge {
     position: absolute;
     top: 10px;
     left: 10px;
@@ -7858,11 +7949,12 @@ a i {
     font-weight: 600;
 }
 
-#homeRedesign .th-badge i {
+#siteRedesign .th-badge i {
+    color: #F5B301;
     font-size: 9px;
 }
 
-#homeRedesign .th-chip {
+#siteRedesign .th-chip {
     position: absolute;
     right: 10px;
     bottom: 10px;
@@ -7881,11 +7973,11 @@ a i {
     text-overflow: ellipsis;
 }
 
-#homeRedesign .th-chip i {
+#siteRedesign .th-chip i {
     font-size: 10px;
 }
 
-#homeRedesign .th-card-body {
+#siteRedesign .th-card-body {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
@@ -7893,7 +7985,7 @@ a i {
     padding: 14px 16px 16px;
 }
 
-#homeRedesign .th-name {
+#siteRedesign .th-name {
     margin: 0 0 4px;
     font-size: 16px;
     font-weight: 700;
@@ -7904,69 +7996,69 @@ a i {
     overflow: hidden;
 }
 
-#homeRedesign .th-name a {
+#siteRedesign .th-name a {
     color: #000000;
     text-decoration: none;
     transition: color 0.2s ease;
 }
 
-#homeRedesign .th-name a:hover {
+#siteRedesign .th-name a:hover {
     color: #2563EB;
 }
 
-#homeRedesign .th-location {
+#siteRedesign .th-location {
     display: flex;
     align-items: center;
     gap: 6px;
     margin: 0 0 8px;
-    color: rgba(0, 0, 0, 0.6);
+    color: #000000;
     font-size: 13px;
     line-height: 1.4;
     min-width: 0;
 }
 
-#homeRedesign .th-location > span {
+#siteRedesign .th-location > span {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-#homeRedesign .th-location > i {
+#siteRedesign .th-location > i {
     flex-shrink: 0;
-    color: #2563EB;
+    color: #000000;
     font-size: 11px;
 }
 
-#homeRedesign .th-route-arrow {
+#siteRedesign .th-route-arrow {
     margin: 0 4px;
     font-size: 10px;
 }
 
-#homeRedesign .th-rating {
+#siteRedesign .th-rating {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-bottom: 10px;
 }
 
-#homeRedesign .th-stars {
+#siteRedesign .th-stars {
     display: inline-flex;
     gap: 2px;
     color: rgba(0, 0, 0, 0.15);
     font-size: 12px;
 }
 
-#homeRedesign .th-stars .is-on {
-    color: #2563EB;
+#siteRedesign .th-stars .is-on {
+    color: #F5B301;
 }
 
-#homeRedesign .th-rating-text {
-    color: rgba(0, 0, 0, 0.6);
+#siteRedesign .th-rating-text {
+    color: #000000;
     font-size: 12px;
     font-weight: 500;
 }
 
-#homeRedesign .th-pills {
+#siteRedesign .th-pills {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
@@ -7974,24 +8066,24 @@ a i {
     overflow: hidden;
 }
 
-#homeRedesign .th-pill {
+#siteRedesign .th-pill {
     display: inline-flex;
     align-items: center;
     gap: 5px;
     padding: 4px 9px;
     border-radius: 9999px;
-    background: rgba(37, 99, 235, 0.08);
-    color: #2563EB;
+    background: rgba(0, 0, 0, 0.05);
+    color: #000000;
     font-size: 11px;
     font-weight: 500;
     white-space: nowrap;
 }
 
-#homeRedesign .th-pill i {
+#siteRedesign .th-pill i {
     font-size: 10px;
 }
 
-#homeRedesign .th-footer {
+#siteRedesign .th-footer {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
@@ -8001,32 +8093,32 @@ a i {
     border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-#homeRedesign .th-price-wrap {
+#siteRedesign .th-price-wrap {
     display: flex;
     flex-direction: column;
     min-width: 0;
 }
 
-#homeRedesign .th-price-label {
+#siteRedesign .th-price-label {
     color: rgba(0, 0, 0, 0.55);
     font-size: 11px;
 }
 
-#homeRedesign .th-price {
-    color: #2563EB;
+#siteRedesign .th-price {
+    color: #000000;
     font-size: 20px;
     font-weight: 700;
     line-height: 1.2;
     white-space: nowrap;
 }
 
-#homeRedesign .th-price-none {
+#siteRedesign .th-price-none {
     color: rgba(0, 0, 0, 0.6);
     font-size: 13px;
     font-weight: 500;
 }
 
-#homeRedesign .th-view-btn {
+#siteRedesign .th-view-btn {
     display: inline-flex;
     flex-shrink: 0;
     align-items: center;
@@ -8042,16 +8134,16 @@ a i {
     transition: background-color 0.2s ease;
 }
 
-#homeRedesign .th-view-btn:hover {
+#siteRedesign .th-view-btn:hover {
     background: #1D4ED8;
     color: #FFFFFF;
 }
 
-#homeRedesign .th-view-btn i {
+#siteRedesign .th-view-btn i {
     font-size: 11px;
 }
 
-#homeRedesign .th-empty {
+#siteRedesign .th-empty {
     grid-column: 1 / -1;
     margin: 0;
     color: rgba(0, 0, 0, 0.6);
@@ -8059,27 +8151,27 @@ a i {
 }
 
 /* How It Works: static step cards */
-#homeRedesign .hw-grid {
+#siteRedesign .hw-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 16px;
 }
 
-#homeRedesign .hw-card {
+#siteRedesign .hw-card {
     padding: 18px;
     border-radius: 16px;
     border: 1px solid rgba(0, 0, 0, 0.08);
     background: #FFFFFF;
 }
 
-#homeRedesign .hw-card-top {
+#siteRedesign .hw-card-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 14px;
 }
 
-#homeRedesign .hw-icon {
+#siteRedesign .hw-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -8091,14 +8183,14 @@ a i {
     font-size: 16px;
 }
 
-#homeRedesign .hw-number {
+#siteRedesign .hw-number {
     color: rgba(37, 99, 235, 0.35);
     font-size: 22px;
     font-weight: 700;
     line-height: 1;
 }
 
-#homeRedesign .hw-title {
+#siteRedesign .hw-title {
     margin: 0 0 6px;
     color: #000000;
     font-size: 15px;
@@ -8106,7 +8198,7 @@ a i {
     line-height: 1.35;
 }
 
-#homeRedesign .hw-desc {
+#siteRedesign .hw-desc {
     margin: 0;
     color: rgba(0, 0, 0, 0.6);
     font-size: 13px;
@@ -8114,99 +8206,99 @@ a i {
 }
 
 @media (max-width: 1279px) {
-    #homeRedesign .th-track {
+    #siteRedesign .th-track {
         grid-auto-columns: calc((100% - 2 * 16px) / 3);
     }
 }
 
 @media (max-width: 1023px) {
-    #homeRedesign .th-section {
+    #siteRedesign .th-section {
         padding: 16px 0;
     }
 
-    #homeRedesign .th-track {
+    #siteRedesign .th-track {
         grid-auto-columns: calc((100% - 16px) / 2);
     }
 
-    #homeRedesign .hw-grid {
+    #siteRedesign .hw-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 639px) {
-    #homeRedesign .th-section {
+    #siteRedesign .th-section {
         padding: 14px 0;
     }
 
-    #homeRedesign .th-container {
+    #siteRedesign .th-container {
         padding: 0 16px;
     }
 
-    #homeRedesign .th-header {
+    #siteRedesign .th-header {
         margin-bottom: 16px;
     }
 
-    #homeRedesign .th-track {
+    #siteRedesign .th-track {
         grid-auto-columns: 100%;
     }
 
-    #homeRedesign .th-card {
+    #siteRedesign .th-card {
         height: 430px;
     }
 
-    #homeRedesign .th-eyebrow {
+    #siteRedesign .th-eyebrow {
         letter-spacing: 0.1em;
     }
 
-    #homeRedesign .th-eyebrow::after {
+    #siteRedesign .th-eyebrow::after {
         display: none;
     }
 
-    #homeRedesign .hw-grid {
+    #siteRedesign .hw-grid {
         gap: 10px;
     }
 
-    #homeRedesign .hw-card {
+    #siteRedesign .hw-card {
         padding: 14px;
     }
 
-    #homeRedesign .hw-card-top {
+    #siteRedesign .hw-card-top {
         margin-bottom: 10px;
     }
 
-    #homeRedesign .hw-icon {
+    #siteRedesign .hw-icon {
         width: 34px;
         height: 34px;
         font-size: 14px;
     }
 
-    #homeRedesign .hw-number {
+    #siteRedesign .hw-number {
         font-size: 18px;
     }
 
-    #homeRedesign .hw-title {
+    #siteRedesign .hw-title {
         font-size: 14px;
     }
 
-    #homeRedesign .hw-desc {
+    #siteRedesign .hw-desc {
         font-size: 12px;
     }
 }
 
 /* Homepage card sections: RTL mirroring */
-#homeRedesign .th-badge {
+#siteRedesign .th-badge {
     left: auto;
     right: 10px;
 }
 
-#homeRedesign .th-chip {
+#siteRedesign .th-chip {
     right: auto;
     left: 10px;
 }
 
-#homeRedesign .th-nav-btn i,
-#homeRedesign .th-view-btn i,
-#homeRedesign .th-route-arrow {
+#siteRedesign .th-nav-btn i,
+#siteRedesign .th-view-btn i,
+#siteRedesign .th-route-arrow {
     transform: scaleX(-1);
 }
 
@@ -8730,7 +8822,7 @@ a i {
     display: none;
 }
 
-#homeRedesign .ai-search-btn {
+#siteRedesign.has-ai-search .ai-search-btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -8748,27 +8840,27 @@ a i {
     transition: border-color 0.2s ease, color 0.2s ease;
 }
 
-#homeRedesign .ai-search-btn i {
+#siteRedesign.has-ai-search .ai-search-btn i {
     color: #2563EB;
     font-size: 14px;
 }
 
-#homeRedesign .ai-search-btn:hover {
+#siteRedesign.has-ai-search .ai-search-btn:hover {
     border-color: #2563EB;
     color: #2563EB;
 }
 
-#homeRedesign #flightSearchForm .trip-type-btn {
+#siteRedesign #flightSearchForm .trip-type-btn {
     flex-shrink: 0;
     white-space: nowrap;
 }
 
-#homeRedesign .ai-search-btn:focus-visible {
+#siteRedesign.has-ai-search .ai-search-btn:focus-visible {
     outline: 2px solid #2563EB;
     outline-offset: 2px;
 }
 
-#homeRedesign .ai-search-new {
+#siteRedesign.has-ai-search .ai-search-new {
     padding: 3px 8px;
     border-radius: 9999px;
     background: #2563EB;
@@ -8779,25 +8871,25 @@ a i {
 }
 
 @media (max-width: 639px) {
-    #homeRedesign .ai-search-btn {
+    #siteRedesign.has-ai-search .ai-search-btn {
         justify-content: center;
         width: 34px;
         padding: 0;
         flex-shrink: 0;
     }
 
-    #homeRedesign .ai-search-btn > span {
+    #siteRedesign.has-ai-search .ai-search-btn > span {
         display: none;
     }
 }
 
 @media (min-width: 640px) {
-    #homeRedesign .ai-search-btn {
+    #siteRedesign.has-ai-search .ai-search-btn {
         padding: 0 14px 0 6px;
     }
 }
 
-#homeRedesign .ai-search-btn {
+#siteRedesign.has-ai-search .ai-search-btn {
     margin-left: 0;
     margin-right: auto;
 }
@@ -9015,4 +9107,465 @@ a i {
 .ai-modal-head {
     padding-right: 0;
     padding-left: 36px;
+}
+
+/* Compact .th-card variant for route deals (flight/flights.blade.php) */
+#siteRedesign .th-card.is-compact {
+    height: auto;
+}
+
+#siteRedesign .th-route {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+#siteRedesign .th-route-city {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    color: #000000;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#siteRedesign .th-route-city:last-child {
+    text-align: right;
+}
+
+#siteRedesign .th-route-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 9999px;
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563EB;
+    font-size: 12px;
+}
+
+#siteRedesign .th-card.is-compact .th-footer {
+    margin-top: 12px;
+}
+
+#siteRedesign .th-route-city:last-child {
+    text-align: left;
+}
+
+#siteRedesign .th-route-icon i {
+    transform: scaleX(-1);
+}
+
+/* Hero variant for dark cover photos (flights, tours and umrah pages): light text */
+#siteRedesign .hero-section.is-dark .hero-title {
+    color: #FFFFFF;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
+}
+
+#siteRedesign .hero-section.is-dark .hero-title-accent {
+    color: #FFFFFF;
+    text-decoration: underline;
+    text-decoration-color: #2563EB;
+    text-decoration-thickness: 6px;
+    text-underline-offset: 10px;
+}
+
+#siteRedesign .hero-section.is-dark .hero-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Destination tiles in a denser track (tour/tour.blade.php) */
+#siteRedesign .th-track.is-dense {
+    grid-auto-columns: calc((100% - 5 * 16px) / 6);
+}
+
+#siteRedesign .th-card.th-dest {
+    height: auto;
+    text-decoration: none;
+}
+
+#siteRedesign .th-dest-media {
+    display: block;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: rgba(37, 99, 235, 0.06);
+}
+
+#siteRedesign .th-dest-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+#siteRedesign .th-dest:hover .th-dest-media img {
+    transform: scale(1.04);
+}
+
+#siteRedesign .th-dest-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px 14px 14px;
+}
+
+#siteRedesign .th-dest-name {
+    color: #000000;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.3;
+    transition: color 0.2s ease;
+}
+
+#siteRedesign .th-dest:hover .th-dest-name {
+    color: #2563EB;
+}
+
+#siteRedesign .th-dest-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 12px;
+}
+
+#siteRedesign .th-dest-count i {
+    color: #2563EB;
+    font-size: 11px;
+}
+
+#siteRedesign .th-dest:focus-visible {
+    outline: 2px solid #2563EB;
+    outline-offset: 2px;
+}
+
+@media (max-width: 1279px) {
+    #siteRedesign .th-track.is-dense {
+        grid-auto-columns: calc((100% - 3 * 16px) / 4);
+    }
+}
+
+@media (max-width: 1023px) {
+    #siteRedesign .th-track.is-dense {
+        grid-auto-columns: calc((100% - 2 * 16px) / 3);
+    }
+}
+
+@media (max-width: 639px) {
+    #siteRedesign .th-track.is-dense {
+        grid-auto-columns: calc((100% - 16px) / 2);
+    }
+}
+
+/* 3-column feature grid with icon beside the text (umrah/umrah.blade.php) */
+#siteRedesign .hw-grid.is-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+#siteRedesign .hw-card.is-inline {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+#siteRedesign .hw-card.is-inline .hw-icon {
+    flex-shrink: 0;
+}
+
+@media (max-width: 1023px) {
+    #siteRedesign .hw-grid.is-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 639px) {
+    #siteRedesign .hw-grid.is-3 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* Short hero with a panel overlapping its bottom edge (visa/visa.blade.php) */
+#siteRedesign .hero-section.is-compact {
+    min-height: 0;
+    padding-bottom: 150px;
+}
+
+#siteRedesign .form-container.is-overlap {
+    max-width: 1000px;
+    margin-top: -110px;
+    margin-bottom: 64px;
+    padding: 8px 32px 28px;
+}
+
+/* Visa application form inside the panel */
+#siteRedesign .visa-form .form-section {
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+#siteRedesign .visa-form .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 0;
+    border-bottom: 0;
+    color: #000000;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+#siteRedesign .visa-form .section-title::before {
+    content: none;
+}
+
+#siteRedesign .visa-form .section-title i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563EB;
+    font-size: 15px;
+}
+
+#siteRedesign .visa-form .form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+#siteRedesign .visa-form .form-grid:last-child {
+    margin-bottom: 0;
+}
+
+#siteRedesign .visa-form .form-grid.two-col {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+#siteRedesign .visa-form .form-grid.full {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+#siteRedesign .visa-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+#siteRedesign .visa-form .form-label {
+    color: rgba(0, 0, 0, 0.55);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+#siteRedesign .visa-form .form-label.required::after {
+    color: #2563EB;
+}
+
+#siteRedesign .visa-form .form-input,
+#siteRedesign .visa-form .form-select {
+    width: 100%;
+    height: 46px;
+    padding: 0 14px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 12px;
+    background-color: #FFFFFF;
+    color: #000000;
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#siteRedesign .visa-form .form-input::placeholder {
+    color: rgba(0, 0, 0, 0.35);
+}
+
+#siteRedesign .visa-form .form-input:hover,
+#siteRedesign .visa-form .form-select:hover {
+    border-color: rgba(37, 99, 235, 0.45);
+    background-color: #FFFFFF;
+}
+
+#siteRedesign .visa-form .form-input:focus,
+#siteRedesign .visa-form .form-select:focus {
+    outline: none;
+    border-color: #2563EB;
+    background-color: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+#siteRedesign .visa-form .radio-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 46px;
+}
+
+#siteRedesign .visa-form .radio-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 14px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 9999px;
+}
+
+#siteRedesign .visa-form .radio-item:has(input:checked) {
+    border-color: #2563EB;
+    background: rgba(37, 99, 235, 0.06);
+}
+
+#siteRedesign .visa-form .radio-item input[type="radio"],
+#siteRedesign .visa-form .agreement-box input[type="checkbox"] {
+    accent-color: #2563EB;
+}
+
+#siteRedesign .visa-form .radio-item label {
+    color: #000000;
+    font-size: 13px;
+}
+
+#siteRedesign .visa-form .file-upload-label {
+    min-height: 56px;
+    padding: 14px;
+    border: 1px dashed rgba(37, 99, 235, 0.45);
+    border-radius: 12px;
+    background-color: rgba(37, 99, 235, 0.04);
+    color: #2563EB;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    word-break: break-all;
+}
+
+#siteRedesign .visa-form .file-upload-label:hover,
+#siteRedesign .visa-form .file-upload-input:focus + .file-upload-label {
+    border-color: #2563EB;
+    background-color: rgba(37, 99, 235, 0.08);
+}
+
+#siteRedesign .visa-form .file-upload-label.is-selected {
+    border-style: solid;
+    border-color: #2563EB;
+    background-color: rgba(37, 99, 235, 0.08);
+}
+
+#siteRedesign .visa-form .file-size-hint {
+    margin-top: 4px;
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 11px;
+}
+
+#siteRedesign .visa-form .agreement-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    background: #FFFFFF;
+}
+
+#siteRedesign .visa-form .agreement-text {
+    color: rgba(0, 0, 0, 0.65);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+#siteRedesign .visa-form .agreement-text strong {
+    color: #000000;
+}
+
+#siteRedesign .visa-form .button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 24px 0 0;
+    border-top: 0;
+    background: transparent;
+}
+
+#siteRedesign .visa-form .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 48px;
+    padding: 0 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+#siteRedesign .visa-form .btn-reset {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: #FFFFFF;
+    color: #000000;
+}
+
+#siteRedesign .visa-form .btn-reset:hover {
+    border-color: #2563EB;
+    color: #2563EB;
+}
+
+#siteRedesign .visa-form .btn-submit {
+    border: 0;
+    background: #2563EB;
+    color: #FFFFFF;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.28);
+}
+
+#siteRedesign .visa-form .btn-submit:hover {
+    background: #1D4ED8;
+}
+
+@media (max-width: 1023px) {
+    #siteRedesign .visa-form .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #siteRedesign .form-container.is-overlap {
+        padding: 4px 24px 24px;
+    }
+}
+
+@media (max-width: 639px) {
+    #siteRedesign .hero-section.is-compact {
+        padding-bottom: 120px;
+    }
+
+    #siteRedesign .form-container.is-overlap {
+        margin-top: -90px;
+        margin-bottom: 40px;
+        padding: 4px 16px 20px;
+    }
+
+    #siteRedesign .visa-form .form-grid,
+    #siteRedesign .visa-form .form-grid.two-col {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    #siteRedesign .visa-form .button-group {
+        flex-direction: column-reverse;
+    }
+
+    #siteRedesign .visa-form .btn {
+        width: 100%;
+    }
 }

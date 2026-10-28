@@ -1,15 +1,35 @@
 @extends('common.layout')
 @section('content')
+    @php
+        // Hero title with its last two words in brand blue, the same treatment
+        // as the homepage hero.
+        $heroTitleWords = preg_split('/\s+/u', trim(t('visa.pageTitle')));
+        $heroAccentCount = count($heroTitleWords) >= 3 ? 2 : (count($heroTitleWords) === 2 ? 1 : 0);
+        $heroTitleLead = implode(' ', array_slice($heroTitleWords, 0, count($heroTitleWords) - $heroAccentCount));
+        $heroTitleAccent = implode(' ', array_slice($heroTitleWords, count($heroTitleWords) - $heroAccentCount));
+    @endphp
+    <style>
+        /* Hero layout and the form panel live in style.css (#siteRedesign);
+           only this page's cover image is set here. */
+        #siteRedesign .hero-section {
+            background-image: url('<?=url('public/assets/images/flight/visa-dubai-skyline.png')?>');
+        }
+    </style>
 
-    <div class="flight-container">
-        <!-- Form Header -->
-        <div class="page-header">
-            <h1>{{t('visa.pageTitle')}}</h1>
-            <p>{{t('visa.pageSubtitle')}} <strong>*</strong></p>
+<div id="siteRedesign">
+    <!-- Hero Section -->
+    <section class="hero-section is-compact">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                {{ $heroTitleLead }}@if($heroTitleAccent !== '') <span class="hero-title-accent">{{ $heroTitleAccent }}</span>@endif
+            </h1>
+            <p class="hero-subtitle">{{t('visa.pageSubtitle')}} <strong>*</strong></p>
         </div>
+    </section>
 
+    <div class="form-container is-overlap">
         <!-- Form Wrapper -->
-        <form action="{{ route('visa.store') }}" method="POST" enctype="multipart/form-data" class="form-wrapper- contact-info">
+        <form action="{{ route('visa.store') }}" method="POST" enctype="multipart/form-data" class="visa-form">
             @csrf
 
             <!-- Visa Type Section -->
@@ -18,7 +38,7 @@
                     <i class="fas fa-passport"></i> {{t('visa.visaInformation')}}
                 </div>
 
-                <div class="form-grid">
+                <div class="form-grid two-col">
                     <div class="form-group">
                         <label class="form-label required">{{t('visa.visaType')}}</label>
                         <select class="form-select" name="visa_type" required>
@@ -248,6 +268,7 @@
             </div>
         </form>
     </div>
+</div>
 
     <style>
         .error-message {
@@ -277,7 +298,7 @@
                 const label = this.nextElementSibling;
                 if (fileName) {
                     label.innerHTML = `<i class="fas fa-check-circle"></i> ${fileName}`;
-                    label.style.color = '#28a745';
+                    label.classList.add('is-selected');
                 }
             });
         });

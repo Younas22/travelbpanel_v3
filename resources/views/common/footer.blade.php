@@ -1836,6 +1836,36 @@
         });
     });
 
+    // ========== CARD CAROUSELS (.th-section on redesigned pages) ==========
+    // Prev/next buttons scroll one card at a time
+    document.querySelectorAll('.th-section').forEach(function (section) {
+        var track = section.querySelector('.th-track');
+        var prev = section.querySelector('.th-nav-prev');
+        var next = section.querySelector('.th-nav-next');
+        if (!track || !prev || !next) return;
+        var rtl = getComputedStyle(track).direction === 'rtl';
+        function step() {
+            var card = track.querySelector('.th-card');
+            var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+            return card ? card.getBoundingClientRect().width + gap : track.clientWidth;
+        }
+        function update() {
+            var max = track.scrollWidth - track.clientWidth;
+            var pos = Math.abs(track.scrollLeft);
+            prev.disabled = pos <= 2;
+            next.disabled = pos >= max - 2;
+        }
+        [prev, next].forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var dir = parseInt(btn.getAttribute('data-th-dir'), 10) * (rtl ? -1 : 1);
+                track.scrollBy({ left: dir * step(), behavior: 'smooth' });
+            });
+        });
+        track.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
+        update();
+    });
+
     // ========== NEWSLETTER SUBSCRIPTION ==========
     document.addEventListener('DOMContentLoaded', function() {
         const newsletterForm = document.getElementById('newsletterForm');

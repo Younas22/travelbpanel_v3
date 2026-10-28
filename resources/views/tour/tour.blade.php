@@ -1,326 +1,163 @@
 @extends('common.layout')
 @section('content')
+    @php
+        $active_currency = activeCurrency();
 
+        // Hero title with its last two words in brand blue, the same treatment
+        // as the homepage hero.
+        $heroTitleWords = preg_split('/\s+/u', trim(t('tour.page_title')));
+        $heroAccentCount = count($heroTitleWords) >= 3 ? 2 : (count($heroTitleWords) === 2 ? 1 : 0);
+        $heroTitleLead = implode(' ', array_slice($heroTitleWords, 0, count($heroTitleWords) - $heroAccentCount));
+        $heroTitleAccent = implode(' ', array_slice($heroTitleWords, count($heroTitleWords) - $heroAccentCount));
+
+        // Section titles: last word gets the brand accent colour
+        $thSplitTitle = function ($text) {
+            $words = preg_split('/\s+/u', trim($text));
+            $accent = count($words) > 1 ? array_pop($words) : '';
+            return [implode(' ', $words), $accent];
+        };
+
+        // Default search values - 2 days from today and 4 days from today, 2 adults
+        $startDate = date('d-m-Y', strtotime('+2 days'));
+        $endDate = date('d-m-Y', strtotime('+4 days'));
+        $adult = 2;
+        $child = 0;
+
+        // Trending destinations (same places and tour counts as before); each
+        // opens the tour listing for that city.
+        $destinations = [
+            ['Paris', '120+', 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=300&h=300&fit=crop'],
+            ['Rome', '95+', 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=300&h=300&fit=crop'],
+            ['Dubai', '150+', 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=300&h=300&fit=crop'],
+            ['Bali', '80+', 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=300&h=300&fit=crop'],
+            ['Maldives', '65+', 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=300&h=300&fit=crop'],
+            ['Switzerland', '100+', 'https://images.unsplash.com/photo-1527668752968-14dc70a27c95?w=300&h=300&fit=crop'],
+            ['Santorini', '75+', 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=300&h=300&fit=crop'],
+            ['Thailand', '110+', 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=300&h=300&fit=crop'],
+        ];
+    @endphp
+    <style>
+        /* Hero layout and the search panel live in style.css (#siteRedesign);
+           only this page's cover image is set here. */
+        #siteRedesign .hero-section {
+            background-image: url('<?=url('public/assets/images/flight/tour-cappadocia-balloons.png')?>');
+        }
+    </style>
+
+<div id="siteRedesign">
     <!-- Hero Section -->
-    <section class="hero-section tour-page">
+    <section class="hero-section">
         <div class="hero-content">
-            <h1>{{ t('tour.page_title') }}</h1>
-            <p>{{ t('tour.page_subtitle') }}</p>
+            <h1 class="hero-title">
+                {{ $heroTitleLead }}@if($heroTitleAccent !== '') <span class="hero-title-accent">{{ $heroTitleAccent }}</span>@endif
+            </h1>
+            <p class="hero-subtitle">{{ t('tour.page_subtitle') }}</p>
         </div>
 
         <!-- Search Form -->
         <div class="form-container">
-            <div class="tab-content active bg-white rounded-lg shadow-lg mb-8 relative z-10" id="form-tour">
+            <div class="tab-content active" id="form-tour">
                 @include('forms.tours-form')
             </div>
         </div>
     </section>
 
-        <!-- Why Choose Us Section -->
-    <section class="how-it-works">
-        <div class="section-header">
-            <h2>{{ t('tour.why_book_title') }}</h2>
-            <p>{{ t('tour.why_book_subtitle') }}</p>
-        </div>
-
-        <div class="steps-container">
-            <div class="step-card">
-                <div class="step-number">
-                    <i class="fas fa-map-marked-alt step-icon"></i>
-                </div>
-                <h3 class="step-title">{{ t('tour.curated_tours') }}</h3>
-                <p class="step-description">{{ t('tour.curated_tours_desc') }}</p>
-            </div>
-
-            <div class="step-card">
-                <div class="step-number">
-                    <i class="fas fa-users step-icon"></i>
-                </div>
-                <h3 class="step-title">{{ t('tour.expert_guides') }}</h3>
-                <p class="step-description">{{ t('tour.expert_guides_desc') }}</p>
-            </div>
-
-            <div class="step-card">
-                <div class="step-number">
-                    <i class="fas fa-shield-alt step-icon"></i>
-                </div>
-                <h3 class="step-title">{{ t('tour.safe_travel') }}</h3>
-                <p class="step-description">{{ t('tour.safe_travel_desc') }}</p>
-            </div>
-
-            <div class="step-card">
-                <div class="step-number">
-                    <i class="fas fa-headset step-icon"></i>
-                </div>
-                <h3 class="step-title">{{ t('tour.support_24_7') }}</h3>
-                <p class="step-description">{{ t('tour.support_24_7_desc') }}</p>
-            </div>
-        </div>
-    </section>
-
     <!-- Trending Destinations Section -->
-    <section class="bg-white py-16">
-        <div class="container mx-auto px-4">
-            <!-- Section Header -->
-            <div class="text-center mb-12">
-                <h2 class="text-4xl font-bold text-gray-800 mb-3">{{ t('tour.trending_destinations') }}</h2>
-                <p class="text-gray-600 text-lg">{{ t('tour.trending_destinations_subtitle') }}</p>
-            </div>
-
-            <!-- Carousel Wrapper -->
-            <div class="relative max-w-7xl mx-auto">
-                <!-- Previous Button -->
-                <button onclick="scrollCarousel('prev')"
-                        class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-lg border-2 border-gray-200 flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-300 hover:shadow-xl">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-
-                <!-- Carousel Container -->
-                <div class="overflow-hidden px-14">
-                    <div id="destinationsCarousel"
-                         class="destinations-carousel flex gap-8 overflow-x-auto scroll-smooth py-6">
-
-                        <!-- Destination 1: Paris -->
-                        <a href="#" class="flex-shrink-0 w-40 text-center group">
-                            <div class="relative mb-4">
-                                <div class="w-40 h-40 rounded-full overflow-hidden shadow-lg border-4 border-white group-hover:border-blue-500 transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-2">
-                                    <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=300&h=300&fit=crop"
-                                         alt="Paris"
-                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                                </div>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-800 mb-1 group-hover:text-blue-600 transition-colors">Paris</h3>
-                            <p class="text-sm text-gray-600 flex items-center justify-center gap-1">
-                                <i class="fas fa-map-marked-alt text-blue-600 text-xs"></i>
-                                120+ Tours
-                            </p>
-                        </a>
-
-                        <!-- Destination 2: Rome -->
-                        <a href="#" class="flex-shrink-0 w-40 text-center group">
-                            <div class="relative mb-4">
-                                <div class="w-40 h-40 rounded-full overflow-hidden shadow-lg border-4 border-white group-hover:border-blue-500 transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-2">
-                                    <img src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=300&h=300&fit=crop"
-                                         alt="Rome"
-                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                                </div>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-800 mb-1 group-hover:text-blue-600 transition-colors">Rome</h3>
-                            <p class="text-sm text-gray-600 flex items-center justify-center gap-1">
-                                <i class="fas fa-map-marked-alt text-blue-600 text-xs"></i>
-                                95+ Tours
-                            </p>
-                        </a>
-
-                        <!-- Destination 3: Dubai -->
-                        <a href="#" class="flex-shrink-0 w-40 text-center group">
-                            <div class="relative mb-4">
-                                <div class="w-40 h-40 rounded-full overflow-hidden shadow-lg border-4 border-white group-hover:border-blue-500 transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-2">
-                                    <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=300&h=300&fit=crop"
-                                         alt="Dubai"
-                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                                </div>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-800 mb-1 group-hover:text-blue-600 transition-colors">Dubai</h3>
-                            <p class="text-sm text-gray-600 flex items-center justify-center gap-1">
-                                <i class="fas fa-map-marked-alt text-blue-600 text-xs"></i>
-                                150+ Tours
-                            </p>
-                        </a>
-
-                        <!-- Destination 4: Bali -->
-                        <a href="#" class="flex-shrink-0 w-40 text-center group">
-                            <div class="relative mb-4">
-                                <div class="w-40 h-40 rounded-full overflow-hidden shadow-lg border-4 border-white group-hover:border-blue-500 transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-2">
-                                    <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=300&h=300&fit=crop"
-                                         alt="Bali"
-                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                                </div>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-800 mb-1 group-hover:text-blue-600 transition-colors">Bali</h3>
-                            <p class="text-sm text-gray-600 flex items-center justify-center gap-1">
-                                <i class="fas fa-map-marked-alt text-blue-600 text-xs"></i>
-                                80+ Tours
-                            </p>
-                        </a>
-
-                        <!-- Destination 5: Maldives -->
-                        <a href="#" class="flex-shrink-0 w-40 text-center group">
-                            <div class="relative mb-4">
-                                <div class="w-40 h-40 rounded-full overflow-hidden shadow-lg border-4 border-white group-hover:border-blue-500 transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-2">
-                                    <img src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=300&h=300&fit=crop"
-                                         alt="Maldives"
-                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                                </div>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-800 mb-1 group-hover:text-blue-600 transition-colors">Maldives</h3>
-                            <p class="text-sm text-gray-600 flex items-center justify-center gap-1">
-                                <i class="fas fa-map-marked-alt text-blue-600 text-xs"></i>
-                                65+ Tours
-                            </p>
-                        </a>
-
-                        <!-- Destination 6: Switzerland -->
-                        <a href="#" class="flex-shrink-0 w-40 text-center group">
-                            <div class="relative mb-4">
-                                <div class="w-40 h-40 rounded-full overflow-hidden shadow-lg border-4 border-white group-hover:border-blue-500 transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-2">
-                                    <img src="https://images.unsplash.com/photo-1527668752968-14dc70a27c95?w=300&h=300&fit=crop"
-                                         alt="Switzerland"
-                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                                </div>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-800 mb-1 group-hover:text-blue-600 transition-colors">Switzerland</h3>
-                            <p class="text-sm text-gray-600 flex items-center justify-center gap-1">
-                                <i class="fas fa-map-marked-alt text-blue-600 text-xs"></i>
-                                100+ Tours
-                            </p>
-                        </a>
-
-                        <!-- Destination 7: Santorini -->
-                        <a href="#" class="flex-shrink-0 w-40 text-center group">
-                            <div class="relative mb-4">
-                                <div class="w-40 h-40 rounded-full overflow-hidden shadow-lg border-4 border-white group-hover:border-blue-500 transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-2">
-                                    <img src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=300&h=300&fit=crop"
-                                         alt="Santorini"
-                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                                </div>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-800 mb-1 group-hover:text-blue-600 transition-colors">Santorini</h3>
-                            <p class="text-sm text-gray-600 flex items-center justify-center gap-1">
-                                <i class="fas fa-map-marked-alt text-blue-600 text-xs"></i>
-                                75+ Tours
-                            </p>
-                        </a>
-
-                        <!-- Destination 8: Thailand -->
-                        <a href="#" class="flex-shrink-0 w-40 text-center group">
-                            <div class="relative mb-4">
-                                <div class="w-40 h-40 rounded-full overflow-hidden shadow-lg border-4 border-white group-hover:border-blue-500 transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-2">
-                                    <img src="https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=300&h=300&fit=crop"
-                                         alt="Thailand"
-                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                                </div>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-800 mb-1 group-hover:text-blue-600 transition-colors">Thailand</h3>
-                            <p class="text-sm text-gray-600 flex items-center justify-center gap-1">
-                                <i class="fas fa-map-marked-alt text-blue-600 text-xs"></i>
-                                110+ Tours
-                            </p>
-                        </a>
-
-                    </div>
+    @php [$thLead, $thAccent] = $thSplitTitle(t('tour.trending_destinations')); @endphp
+    <section class="th-section" id="trendingDestinations">
+        <div class="th-container">
+            <div class="th-header">
+                <div class="th-header-text">
+                    <span class="th-eyebrow">{{ t('tour.trending_destinations') }}</span>
+                    <h2 class="th-title">{{ $thLead }} @if($thAccent)<span class="th-title-accent">{{ $thAccent }}</span>@endif</h2>
                 </div>
-
-                <!-- Next Button -->
-                <button onclick="scrollCarousel('next')"
-                        class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-lg border-2 border-gray-200 flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-300 hover:shadow-xl">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
+                <div class="th-nav">
+                    <button type="button" class="th-nav-btn th-nav-prev" data-th-dir="-1" aria-label="Previous"><i class="fas fa-arrow-left"></i></button>
+                    <button type="button" class="th-nav-btn th-nav-next" data-th-dir="1" aria-label="Next"><i class="fas fa-arrow-right"></i></button>
+                </div>
             </div>
 
+            <div class="th-track is-dense">
+                @foreach($destinations as [$destName, $destCount, $destImage])
+                    <a href="{{ url('tours/' . \Illuminate\Support\Str::slug($destName) . "/all/{$startDate}/{$endDate}/{$adult}/{$child}") }}" class="th-card th-dest">
+                        <span class="th-dest-media">
+                            <img src="{{ $destImage }}" alt="{{ $destName }}" loading="lazy">
+                        </span>
+                        <span class="th-dest-body">
+                            <span class="th-dest-name">{{ $destName }}</span>
+                            <span class="th-dest-count"><i class="fas fa-map-location-dot"></i> {{ $destCount }} Tours</span>
+                        </span>
+                    </a>
+                @endforeach
+            </div>
         </div>
     </section>
 
     <!-- Find Popular Tours Section -->
-    <section class="responsive-section">
-        <div class="container">
-            <div class="section-header">
-                <h2>{{ t('tour.find_popular_tours') }}</h2>
-                <p>{{ t('tour.find_popular_tours_subtitle') }}</p>
+    @php [$thLead, $thAccent] = $thSplitTitle(t('tour.find_popular_tours')); @endphp
+    <section class="th-section" id="popularTours">
+        <div class="th-container">
+            <div class="th-header">
+                <div class="th-header-text">
+                    <span class="th-eyebrow">{{ t('tour.find_popular_tours') }}</span>
+                    <h2 class="th-title">{{ $thLead }} @if($thAccent)<span class="th-title-accent">{{ $thAccent }}</span>@endif</h2>
+                </div>
+                @if($tours->count() > 1)
+                <div class="th-nav">
+                    <button type="button" class="th-nav-btn th-nav-prev" data-th-dir="-1" aria-label="Previous"><i class="fas fa-arrow-left"></i></button>
+                    <button type="button" class="th-nav-btn th-nav-next" data-th-dir="1" aria-label="Next"><i class="fas fa-arrow-right"></i></button>
+                </div>
+                @endif
             </div>
 
-            <div class="tour-deals-grid">
-                @php
-                    // Default date values - 2 days from today and 4 days from today
-                    $startDate = date('d-m-Y', strtotime('+2 days'));
-                    $endDate = date('d-m-Y', strtotime('+4 days'));
-                    $adult = 2;
-                    $child = 0;
-                @endphp
-
-                @foreach($tours as $index => $tour)
+            <div class="th-track">
+                @foreach($tours as $tour)
                     @php
-                        // Tour slug from name
-                        $slug = Str::slug($tour->name);
-
-                        // Location slug (use location name or default 'dubai')
-                        $locationSlug = $tour->location_name ? strtolower(str_replace(' ', '-', $tour->location_name)) : 'dubai';
-
-                        // Package type (use type ID or 'all')
-                        $type = $tour->packege_type ?? 'all';
-
                         // Build detail URL: tours/{slug}/{location}/{type}/{startDate}/{endDate}/{adult}/{child}
+                        $slug = Str::slug($tour->name);
+                        $locationSlug = $tour->location_name ? strtolower(str_replace(' ', '-', $tour->location_name)) : 'dubai';
+                        $type = $tour->packege_type ?? 'all';
                         $detailUrl = url("tours/{$slug}/{$locationSlug}/{$type}/{$startDate}/{$endDate}/{$adult}/{$child}");
-
-                        // Get first image or use placeholder
-                        $imageUrl = $tour->images && $tour->images->first()
-                            ? asset('public/assets/images/' . $tour->images->first()->image)
-                            : 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&h=300&fit=crop';
-
-                        // Get first 3 highlights
-                        $highlights = $tour->highlights ? array_slice($tour->highlights, 0, 3) : [];
                     @endphp
-
-                    <a href="{{ $detailUrl }}" class="tour-deal-card">
-                        <div class="tour-card-image">
-                            <img src="{{ $imageUrl }}" alt="{{ $tour->name }}">
-
-                            @if($tour->featured == 1)
-                                <div class="popular-badge">{{ t('tour.popular') }}</div>
-                            @endif
-
-                            @if($tour->days)
-                                <div class="duration-badge">
-                                    <i class="fas fa-clock"></i> {{ $tour->days }} {{ $tour->days > 1 ? t('tour.days') : t('tour.day') }}
-                                </div>
-                            @endif
-                        </div>
-                        <div class="tour-card-body">
-                            <h3 class="tour-name">{{ $tour->name }}</h3>
-
-                            @if($tour->location_name)
-                                <div class="tour-location">
-                                    <i class="fas fa-map-marker-alt"></i> {{ $tour->location_name }}
-                                </div>
-                            @endif
-
-                            <div class="tour-features">
-                                @if(count($highlights) > 0)
-                                    @foreach($highlights as $highlight)
-                                        <span class="feature-item">
-                                            <i class="fas fa-check-circle"></i> {{ Str::limit($highlight, 15) }}
-                                        </span>
-                                    @endforeach
-                                @else
-                                    <span class="feature-item"><i class="fas fa-hotel"></i> {{ t('tour.hotel') }}</span>
-                                    <span class="feature-item"><i class="fas fa-utensils"></i> {{ t('tour.meals') }}</span>
-                                    <span class="feature-item"><i class="fas fa-bus"></i> {{ t('tour.transport') }}</span>
-                                @endif
-                            </div>
-
-                            <div class="tour-price-section">
-                                <div class="price-info">
-                                    <div class="price-label">{{ t('tour.starting_from') }}</div>
-                                    <div class="price-amount">
-                                        <span class="price-currency">{{ $tour->currency ?? 'USD' }}</span> {{ number_format($tour->price, 0) }}
-                                    </div>
-                                </div>
-                                <button class="view-deal-btn">{{ t('tour.view_details') }}</button>
-                            </div>
-                        </div>
-                    </a>
+                    @include('common.tour-card', [
+                        'tourPrice' => ($tour->currency ?? 'USD') . ' ' . number_format($tour->price, 0),
+                    ])
                 @endforeach
-
-            </div>
-
-            <!-- View All Button -->
-            <div class="cta-section">
-                <a href="#form-tour" class="cta-button">
-                    <i class="fas fa-globe"></i> {{ t('tour.view_all_tours') }}
-                </a>
             </div>
         </div>
     </section>
+
+    <!-- Why Choose Us Section -->
+    @php [$thLead, $thAccent] = $thSplitTitle(t('tour.why_book_title')); @endphp
+    <section class="th-section" id="whyBookTours">
+        <div class="th-container">
+            <div class="th-header">
+                <div class="th-header-text">
+                    <span class="th-eyebrow">{{ t('tour.why_book_title') }}</span>
+                    <h2 class="th-title">{{ $thLead }} @if($thAccent)<span class="th-title-accent">{{ $thAccent }}</span>@endif</h2>
+                </div>
+            </div>
+
+            <div class="hw-grid">
+                @foreach([
+                    ['fa-map-location-dot', 'tour.curated_tours', 'tour.curated_tours_desc'],
+                    ['fa-users', 'tour.expert_guides', 'tour.expert_guides_desc'],
+                    ['fa-shield-halved', 'tour.safe_travel', 'tour.safe_travel_desc'],
+                    ['fa-headset', 'tour.support_24_7', 'tour.support_24_7_desc'],
+                ] as $hwIndex => [$hwIcon, $hwTitle, $hwDesc])
+                <div class="hw-card">
+                    <div class="hw-card-top">
+                        <span class="hw-icon"><i class="fas {{ $hwIcon }}"></i></span>
+                        <span class="hw-number">{{ str_pad($hwIndex + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                    </div>
+                    <h3 class="hw-title">{{ t($hwTitle) }}</h3>
+                    <p class="hw-desc">{{ t($hwDesc) }}</p>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+</div>
 
     <!-- Promotional Section - Grab up to 35% off -->
     <section class="promo-gradient-bg relative overflow-hidden py-16 md:py-24" style="display: none;">
@@ -486,54 +323,6 @@
                     }
                 }, 300);
             }
-        });
-
-        // Carousel scroll functionality
-        function scrollCarousel(direction) {
-            const carousel = document.getElementById('destinationsCarousel');
-            const scrollAmount = 220; // width of item + gap
-
-            if (direction === 'next') {
-                carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-            } else {
-                carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-            }
-        }
-
-        // Optional: Auto-scroll functionality
-        let autoScrollInterval;
-
-        function startAutoScroll() {
-            autoScrollInterval = setInterval(() => {
-                const carousel = document.getElementById('destinationsCarousel');
-                const maxScroll = carousel.scrollWidth - carousel.clientWidth;
-
-                if (carousel.scrollLeft >= maxScroll - 10) {
-                    // Reset to start
-                    carousel.scrollTo({ left: 0, behavior: 'smooth' });
-                } else {
-                    scrollCarousel('next');
-                }
-            }, 3000); // Auto-scroll every 3 seconds
-        }
-
-        function stopAutoScroll() {
-            clearInterval(autoScrollInterval);
-        }
-
-        // Start auto-scroll on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const carousel = document.getElementById('destinationsCarousel');
-
-            // Stop auto-scroll when user interacts with carousel
-            carousel.addEventListener('mouseenter', stopAutoScroll);
-            carousel.addEventListener('touchstart', stopAutoScroll);
-
-            // Resume auto-scroll when user stops interacting
-            carousel.addEventListener('mouseleave', startAutoScroll);
-
-            // Start auto-scroll
-            startAutoScroll();
         });
     </script>
 
