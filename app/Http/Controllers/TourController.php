@@ -104,18 +104,20 @@ class TourController extends Controller
 
         // Sorting
         $sortBy = $request->input('sort_by', 'popular');
+        // An explicit sort replaces the default featured-first order; price and
+        // rating are stored as strings, so compare them numerically.
         switch ($sortBy) {
             case 'price_low':
-                $query->orderBy('price', 'asc');
+                $query->reorder()->orderByRaw('CAST(price AS DECIMAL(14,2)) asc');
                 break;
             case 'price_high':
-                $query->orderBy('price', 'desc');
+                $query->reorder()->orderByRaw('CAST(price AS DECIMAL(14,2)) desc');
                 break;
             case 'duration':
-                $query->orderBy('days', 'asc');
+                $query->reorder()->orderBy('days', 'asc');
                 break;
             case 'rating':
-                $query->orderBy('rating', 'desc');
+                $query->reorder()->orderByRaw('CAST(rating AS DECIMAL(4,2)) desc');
                 break;
             default:
                 // popular - already ordered by featured
@@ -131,8 +133,19 @@ class TourController extends Controller
         $allInclusions = TourInclusion::pluck('name', 'id')->toArray();
         $allExclusions = TourExclusion::pluck('name', 'id')->toArray();
 
+        // Location records for this page (the `loaction` column stores a locations.id)
+        $tourLocations = DB::table('locations')
+            ->whereIn('id', $tours->getCollection()->pluck('loaction')->filter()->unique()->values())
+            ->get()->keyBy('id');
+
         // Transform tours to include inclusion/exclusion names
-        $tours->getCollection()->transform(function ($tour) use ($allInclusions, $allExclusions) {
+        $tours->getCollection()->transform(function ($tour) use ($allInclusions, $allExclusions, $tourLocations) {
+            $tourLocation = $tourLocations[$tour->loaction] ?? null;
+            if ($tourLocation) {
+                $tour->location_name = $tourLocation->city;
+                $tour->location_country = $tourLocation->country;
+            }
+
             // Map inclusion IDs to names
             if ($tour->inclusions) {
                 $tour->highlights = collect($tour->inclusions)->map(function ($id) use ($allInclusions) {
@@ -235,6 +248,13 @@ class TourController extends Controller
 
         // Get location name
         $locationData = DB::table('locations')->where('city', 'like', '%' . $location . '%')->first();
+
+        // The tour's own location (the `loaction` column stores a locations.id)
+        $tourLocation = $tour->loaction ? DB::table('locations')->where('id', $tour->loaction)->first() : null;
+        $tour->location_name = $tourLocation ? $tourLocation->city : '';
+        $tour->location_country = $tourLocation ? $tourLocation->country : '';
+        $tour->location_lat = $tourLocation ? $tourLocation->latitude : '';
+        $tour->location_lng = $tourLocation ? $tourLocation->longitude : '';
 
         // Prepare search parameters
         $searchParams = [

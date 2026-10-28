@@ -2,270 +2,291 @@
 @section('content')
     @php
         $active_currency = activeCurrency();
+
+        $tdImages = $tour->images->map(fn($img) => asset('public/assets/images/' . $img->image))->values()->all();
+        $tdLocation = trim((string) ($tour->location_name ?? ''));
+        if (!empty($tour->location_country) && stripos($tdLocation, $tour->location_country) === false) {
+            $tdLocation = trim($tdLocation . ', ' . $tour->location_country, ', ');
+        }
+        $tdHasCoords = !empty($tour->location_lat) && !empty($tour->location_lng);
+        $tdStars = max(0, min(5, (int) $tour->stars));
+        $tdRating = is_numeric($tour->rating) && (float) $tour->rating > 0 ? (float) $tour->rating : null;
+        $tdDescription = trim((string) ($tour->desc ?? $tour->description ?? ''));
+        $tdType = $tour->packageType->packege_type ?? $tour->packege_type ?? '';
+
+        $adults = (int) ($searchParams['adult'] ?? 2);
+        $children = (int) ($searchParams['child'] ?? 0);
+
+        // Same pricing as the tour booking page (tour/booking.blade.php)
+        $tdAdultPrice = convertCurrency($tour->price, $tour->currency ?? 'USD', $active_currency->currency_name);
+        $tdChildPrice = $tour->child_price ?? ($tdAdultPrice * 0.7);
+        $tdTotal = ($tdAdultPrice * $adults) + ($tdChildPrice * $children);
+
+        $tdBookingUrl = route('tour.booking', [
+            'slug' => \Str::slug($tour->name),
+            'location' => $searchParams['location'],
+            'type' => $searchParams['type'],
+            'startDate' => $searchParams['original_start_date'],
+            'endDate' => $searchParams['original_end_date'],
+            'adult' => $searchParams['adult'],
+            'child' => $searchParams['child'],
+        ]);
     @endphp
-<div class="tour-details-container">
+
+<div class="td-page">
+    <!-- Breadcrumbs -->
+    <nav class="td-breadcrumb" aria-label="Breadcrumb">
+        <a href="{{ url('/') }}">{{ t('header.Home') }}</a>
+        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        <a href="{{ route('tours.index') }}">{{ t('footer.Tours') }}</a>
+        @if(!empty($tour->location_name))
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            <span>{{ $tour->location_name }}</span>
+        @endif
+        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        <span aria-current="page">{{ $tour->name }}</span>
+    </nav>
+
     <!-- Header -->
-    <div class="tour-details-header">
-        <h1 class="tour-details-title">{{ $tour->name }}</h1>
-        <div class="tour-details-meta">
-            <div class="tour-meta-item">
-                <i class="fas fa-map-marker-alt tour-meta-icon"></i>
-                <span>{{ $tour->location_name ?? $tour->loaction }}</span>
-            </div>
-            <div class="tour-meta-item">
-                <i class="fas fa-clock tour-meta-icon"></i>
-                <span>{{ $tour->duration }}</span>
-            </div>
-            @if($tour->packageType)
-                <div class="tour-meta-item">
-                    <i class="fas fa-tag tour-meta-icon"></i>
-                    <span>{{ $tour->packageType->packege_type }}</span>
-                </div>
+    <div class="td-header">
+        <h1 class="td-title" dir="auto">{{ $tour->name }}</h1>
+        <div class="td-meta">
+            @if($tdLocation)
+                <span class="td-meta-item"><i class="fas fa-location-dot"></i> {{ $tdLocation }}</span>
             @endif
-            @if($tour->rating)
-                <div class="tour-rating-badge">
-                    <span class="tour-rating-stars">
-                        @for($i = 1; $i <= 5; $i++)
-                            @if($i <= $tour->stars)★@else☆@endif
-                        @endfor
-                    </span>
-                    <span class="tour-rating-score">{{ $tour->rating }}</span>
-                </div>
+            @if($tour->duration)
+                <span class="td-meta-item"><i class="fas fa-clock"></i> {{ $tour->duration }}</span>
+            @endif
+            @if($tdStars > 0)
+                <span class="td-stars" aria-label="{{ $tdStars }} stars">
+                    @for($i = 1; $i <= 5; $i++)<i class="fas fa-star {{ $i <= $tdStars ? 'is-on' : '' }}"></i>@endfor
+                </span>
+            @endif
+            @if($tdRating !== null)
+                <span class="td-score">{{ rtrim(rtrim(number_format($tdRating, 1), '0'), '.') }}</span>
             @endif
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="tour-details-main">
-        <div>
-            <!-- Image Gallery -->
-            <div class="tour-gallery">
-                <div class="tour-gallery-main">
-
-                    @if($tour->images->count() > 0)
-                        <img src="{{ asset('public/assets/images/' . $tour->images->first()->image) }}" alt="{{ $tour->name }}" id="mainImage">
-                    @else
-                        <img src="{{ asset('assets/images/placeholder/default.jpg') }}" alt="{{ $tour->name }}" id="mainImage">
-                    @endif
-                    @if($tour->images->count() > 1)
-                        <button class="gallery-nav-btn prev" onclick="prevImage()"><i class="fas fa-chevron-left"></i></button>
-                        <button class="gallery-nav-btn next" onclick="nextImage()"><i class="fas fa-chevron-right"></i></button>
-                    @endif
-                </div>
-                @if($tour->images->count() > 1)
-                    <div class="tour-gallery-thumbnails">
-                        @foreach($tour->images as $index => $image)
-                            <div class="gallery-thumbnail {{ $index === 0 ? 'active' : '' }}" onclick="changeImage({{ $index }})">
-                                <img src="{{ asset('public/assets/images/' . $image->image) }}" alt="{{ $tour->name }} {{ $index + 1 }}">
-                            </div>
-                        @endforeach
+    <div class="td-main">
+        <div class="td-main-col">
+            <!-- Gallery -->
+            <div class="td-gallery">
+                <div class="td-gallery-grid {{ count($tdImages) > 1 ? '' : 'is-single' }}">
+                    <div class="td-gallery-main">
+                        <img src="{{ $tdImages[0] ?? asset('public/assets/images/placeholder/default.jpg') }}" alt="{{ $tour->name }}" id="mainImage">
+                        @if(count($tdImages) > 1)
+                            <button type="button" class="td-nav-btn prev" onclick="prevImage()" aria-label="Previous photo"><i class="fas fa-chevron-left"></i></button>
+                            <button type="button" class="td-nav-btn next" onclick="nextImage()" aria-label="Next photo"><i class="fas fa-chevron-right"></i></button>
+                            <span class="td-photo-count"><i class="fas fa-images"></i> <span id="photoIndex">1</span> / {{ count($tdImages) }}</span>
+                        @endif
                     </div>
-                @endif
-            </div>
-
-            <!-- Overview -->
-            <div class="tour-section">
-                <h2 class="section-title">
-                    <i class="fas fa-info-circle"></i>
-                    {{ t('tourlist.overview') ?? 'Overview' }}
-                </h2>
-                <div class="section-content">
-                    {!! $tour->description !!}
-                </div>
-                <div class="tour-highlights-grid">
-                    <div class="highlight-card">
-                        <i class="fas fa-clock highlight-icon"></i>
-                        <div class="highlight-content">
-                            <h4>{{ t('tourlist.duration') ?? 'Duration' }}</h4>
-                            <p>{{ $tour->duration }}</p>
-                        </div>
-                    </div>
-                    @if($tour->days)
-                        <div class="highlight-card">
-                            <i class="fas fa-calendar-alt highlight-icon"></i>
-                            <div class="highlight-content">
-                                <h4>{{ t('tourlist.days') ?? 'Days' }}</h4>
-                                <p>{{ $tour->days }} {{ t('tourlist.days') ?? 'Days' }}</p>
-                            </div>
-                        </div>
-                    @endif
-                    @if($tour->packageType)
-                        <div class="highlight-card">
-                            <i class="fas fa-tag highlight-icon"></i>
-                            <div class="highlight-content">
-                                <h4>{{ t('tourlist.tour_type') ?? 'Tour Type' }}</h4>
-                                <p>{{ $tour->packageType->packege_type }}</p>
-                            </div>
-                        </div>
-                    @endif
-                    <div class="highlight-card">
-                        <i class="fas fa-users highlight-icon"></i>
-                        <div class="highlight-content">
-                            <h4>{{ t('tourlist.travelers') ?? 'Travelers' }}</h4>
-                            <p>
-                                {{ $searchParams['adult'] ?? 2 }} {{ t('tourlist.adults') ?? 'Adults' }}
-                                @if(isset($searchParams['child']) && $searchParams['child'] > 0), {{ $searchParams['child'] }} {{ t('tourlist.children') ?? 'Children' }}@endif
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- What's Included -->
-            @if(count($tour->inclusion_names) > 0)
-                <div class="tour-section">
-                    <h2 class="section-title">
-                        <i class="fas fa-check-circle"></i>
-                        {{ t('tourlist.whats_included') ?? "What's Included" }}
-                    </h2>
-                    <div class="included-list">
-                        @foreach($tour->inclusion_names as $inclusion)
-                            <div class="included-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>{{ $inclusion }}</span>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    @if(count($tour->exclusion_names) > 0)
-                        <h3 style="margin-top: 28px; margin-bottom: 16px; font-size: 18px; color: #111827;">{{ t('tourlist.not_included') ?? 'Not Included' }}</h3>
-                        <div class="excluded-list">
-                            @foreach($tour->exclusion_names as $exclusion)
-                                <div class="excluded-item">
-                                    <i class="fas fa-times-circle"></i>
-                                    <span>{{ $exclusion }}</span>
-                                </div>
+                    @if(count($tdImages) > 1)
+                        <div class="td-gallery-side">
+                            @foreach(array_slice($tdImages, 1, 4) as $i => $image)
+                                @php $idx = $i + 1; $isLast = $i === min(3, count($tdImages) - 2); $more = count($tdImages) - 5; @endphp
+                                <button type="button" class="gallery-thumbnail td-thumb" data-index="{{ $idx }}"
+                                    onclick="{{ $isLast && $more > 0 ? 'toggleAllImages()' : 'changeImage(' . $idx . ')' }}"
+                                    aria-label="Photo {{ $idx + 1 }}">
+                                    <img src="{{ $image }}" alt="{{ $tour->name }} {{ $idx + 1 }}">
+                                    @if($isLast && $more > 0)
+                                        <span class="td-more">+{{ $more }}</span>
+                                    @endif
+                                </button>
                             @endforeach
                         </div>
                     @endif
                 </div>
-            @endif
 
-            <!-- Travel Information -->
-            <div class="tour-section">
-                <h2 class="section-title">
-                    <i class="fas fa-map-pin"></i>
-                    {{ t('tourlist.travel_info') ?? 'Travel Information' }}
-                </h2>
-                <div class="meeting-point">
-                    <h4><i class="fas fa-map-marker-alt"></i> {{ t('tourlist.destination') ?? 'Destination' }}</h4>
-                    <p><strong>{{ $tour->location_name ?? $tour->loaction }}</strong></p>
-                </div>
-                @if(isset($searchParams['start_date']))
-                    <div class="meeting-point">
-                        <h4><i class="fas fa-calendar-alt"></i> {{ t('tourlist.dates') ?? 'Travel Dates' }}</h4>
-                        <p>{{ t('tourlist.departure') ?? 'Departure' }}: {{ $searchParams['original_start_date'] }}<br>
-                        {{ t('tourlist.return') ?? 'Return' }}: {{ $searchParams['original_end_date'] }}</p>
+                @if(count($tdImages) > 5)
+                    <div class="td-all-photos" id="remainingImages" hidden>
+                        @foreach($tdImages as $index => $image)
+                            <button type="button" class="gallery-thumbnail td-thumb" data-index="{{ $index }}" onclick="changeImage({{ $index }}, true)" aria-label="Photo {{ $index + 1 }}">
+                                <img src="{{ $image }}" alt="{{ $tour->name }} {{ $index + 1 }}" loading="lazy">
+                            </button>
+                        @endforeach
                     </div>
                 @endif
-                <div class="meeting-point">
-                    <h4><i class="fas fa-users"></i> {{ t('tourlist.travelers') ?? 'Travelers' }}</h4>
-                    <p>{{ $searchParams['adult'] ?? 2 }} {{ t('tourlist.adults') ?? 'Adults' }}
-                    @if(isset($searchParams['child']) && $searchParams['child'] > 0), {{ $searchParams['child'] }} {{ t('tourlist.children') ?? 'Children' }}@endif
-                    </p>
-                </div>
             </div>
+
+            <!-- Facts bar -->
+            <div class="td-facts">
+                @if($tour->days)
+                    <div class="td-fact"><span class="td-fact-icon"><i class="fas fa-sun"></i></span>
+                        <span><small>{{ t('tourlist.duration') }}</small>{{ $tour->days }} {{ t('tourlist.days') }}@if($tour->nights) / {{ $tour->nights }} {{ t('tourlist.nights') }}@endif</span></div>
+                @elseif($tour->duration)
+                    <div class="td-fact"><span class="td-fact-icon"><i class="fas fa-clock"></i></span>
+                        <span><small>{{ t('tourlist.duration') }}</small>{{ $tour->duration }}</span></div>
+                @endif
+                @if($tdType)
+                    <div class="td-fact"><span class="td-fact-icon"><i class="fas fa-tag"></i></span>
+                        <span><small>{{ t('tourlist.tour_type') }}</small>{{ $tdType }}</span></div>
+                @endif
+                @if($tour->location_name)
+                    <div class="td-fact"><span class="td-fact-icon"><i class="fas fa-location-dot"></i></span>
+                        <span><small>{{ t('tourlist.destination') }}</small>{{ $tour->location_name }}</span></div>
+                @endif
+                <div class="td-fact"><span class="td-fact-icon"><i class="fas fa-users"></i></span>
+                    <span><small>{{ t('tourlist.travelers') }}</small>{{ $adults }} {{ t('tourlist.adults') }}@if($children > 0), {{ $children }} {{ t('tourlist.children') }}@endif</span></div>
+            </div>
+
+            <!-- Overview -->
+            @if($tdDescription !== '')
+                <div class="td-card">
+                    <h2 class="td-section-title">{{ t('tourlist.overview') }}</h2>
+                    <div class="td-clamp" data-td-clamp>
+                        <p class="td-text">{!! nl2br(e($tdDescription)) !!}</p>
+                    </div>
+                    <button type="button" class="td-more-btn" data-td-toggle hidden>{{ t('tour.read_more') }} <i class="fas fa-chevron-down"></i></button>
+                </div>
+            @endif
+
+            <!-- What's included / not included -->
+            @if(count($tour->inclusion_names) || count($tour->exclusion_names))
+                <div class="td-card">
+                    <div class="td-incl-grid">
+                        @if(count($tour->inclusion_names))
+                            <div>
+                                <h2 class="td-section-title">{{ t('tourlist.whats_included') }}</h2>
+                                <ul class="td-list is-included">
+                                    @foreach($tour->inclusion_names as $inclusion)
+                                        <li><i class="fas fa-circle-check"></i> {{ $inclusion }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                        @if(count($tour->exclusion_names))
+                            <div>
+                                <h2 class="td-section-title">{{ t('tourlist.not_included') }}</h2>
+                                <ul class="td-list is-excluded">
+                                    @foreach($tour->exclusion_names as $exclusion)
+                                        <li><i class="fas fa-circle-xmark"></i> {{ $exclusion }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
 
             <!-- Cancellation Policy -->
             @if($tour->policy)
-                <div class="tour-section">
-                    <h2 class="section-title">
+                <div class="td-card">
+                    <h2 class="td-section-title">{{ t('tourlist.cancellation_policy') }}</h2>
+                    <div class="td-policy">
                         <i class="fas fa-file-contract"></i>
-                        {{ t('tourlist.cancellation_policy') ?? 'Cancellation Policy' }}
-                    </h2>
-                    <div class="section-content">
-                        {!! $tour->policy !!}
+                        <div class="td-text">{!! nl2br(e($tour->policy)) !!}</div>
                     </div>
                 </div>
             @endif
         </div>
 
-        <!-- Booking Sidebar -->
-        <div class="tour-booking-sidebar">
-            <div class="booking-price-section">
-                <div class="booking-price-label">{{ t('tourlist.starting_from') ?? 'From' }}</div>
-                <div class="booking-price">
-                    <span class="booking-price-currency">{{$active_currency->currency_name}}</span>{{ number_format(convertCurrency($tour->price,  $tour->currency ?? 'USD', $active_currency->currency_name)) }}
-                </div>
-                <div class="booking-price-person">{{ t('tourlist.per_person') ?? 'per person' }}</div>
-            </div>
+        <!-- Sidebar -->
+        <aside class="td-sidebar">
+            <!-- Booking summary -->
+            <div class="td-card td-summary">
+                <h2 class="td-side-title">{{ t('tourbooking.booking_summary') }}</h2>
 
-            <div class="booking-details">
-                <div class="booking-detail-item">
-                    <span class="detail-label">{{ t('tourlist.duration') ?? 'Duration' }}</span>
-                    <span class="detail-value">{{ $tour->duration }}</span>
+                <div class="td-price-box">
+                    <span class="td-price-label">{{ t('tourlist.starting_from') }}</span>
+                    <span class="td-price">{{ $active_currency->currency_name }} {{ number_format($tdAdultPrice) }}</span>
+                    <span class="td-price-unit">{{ t('tourlist.per_person') }}</span>
                 </div>
-                @if($tour->days)
-                    <div class="booking-detail-item">
-                        <span class="detail-label">{{ t('tourlist.days') ?? 'Days' }}</span>
-                        <span class="detail-value">{{ $tour->days }} {{ t('tourlist.days') ?? 'Days' }}</span>
-                    </div>
+
+                <div class="td-row"><span><i class="fas fa-calendar"></i> {{ t('tourbooking.departure_date') }}</span><b>{{ \Carbon\Carbon::parse($searchParams['start_date'])->format('d M Y') }}</b></div>
+                <div class="td-row"><span><i class="fas fa-calendar"></i> {{ t('tourbooking.return_date') }}</span><b>{{ \Carbon\Carbon::parse($searchParams['end_date'])->format('d M Y') }}</b></div>
+                @if($tour->duration)
+                    <div class="td-row"><span><i class="fas fa-clock"></i> {{ t('tourbooking.duration') }}</span><b>{{ $tour->duration }}</b></div>
                 @endif
-                <div class="booking-detail-item">
-                    <span class="detail-label">{{ t('tourlist.destination') ?? 'Destination' }}</span>
-                    <span class="detail-value">{{ $tour->location_name ?? $tour->loaction }}</span>
-                </div>
-                @if($tour->packageType)
-                    <div class="booking-detail-item">
-                        <span class="detail-label">{{ t('tourlist.tour_type') ?? 'Tour Type' }}</span>
-                        <span class="detail-value">{{ $tour->packageType->packege_type }}</span>
-                    </div>
+                @if($tdType)
+                    <div class="td-row"><span><i class="fas fa-tag"></i> {{ t('tourbooking.tour_type') }}</span><b>{{ $tdType }}</b></div>
                 @endif
-                <div class="booking-detail-item">
-                    <span class="detail-label">{{ t('tourlist.travelers') ?? 'Travelers' }}</span>
-                    <span class="detail-value">{{ ($searchParams['adult'] ?? 2) + ($searchParams['child'] ?? 0) }}</span>
+                <div class="td-row"><span><i class="fas fa-users"></i> {{ t('tourbooking.travellers') }}</span><b>{{ $adults }} {{ t('tourlist.adults') }}@if($children > 0), {{ $children }} {{ t('tourlist.children') }}@endif</b></div>
+
+                <div class="td-total">
+                    <span>{{ t('tourbooking.total_amount') }}</span>
+                    <b>{{ $active_currency->currency_name }} {{ number_format($tdTotal) }}</b>
                 </div>
+
+                <a href="{{ $tdBookingUrl }}" class="td-book-btn">
+                    <i class="fas fa-calendar-check"></i> {{ t('tourlist.book_now') }}
+                </a>
+                <p class="td-secure"><i class="fas fa-shield-halved"></i> {{ t('tourlist.secure_booking') }}</p>
             </div>
 
-            <a href="{{ route('tour.booking', [
-                'slug' => \Str::slug($tour->name),
-                'location' => $searchParams['location'],
-                'type' => $searchParams['type'],
-                'startDate' => $searchParams['original_start_date'],
-                'endDate' => $searchParams['original_end_date'],
-                'adult' => $searchParams['adult'],
-                'child' => $searchParams['child']
-            ]) }}" class="booking-btn">
-                <i class="fas fa-calendar-check"></i>
-                {{ t('tourlist.book_now') ?? 'Book This Tour' }}
-            </a>
-
-            <div class="safety-badge">
-                <i class="fas fa-shield-alt"></i>
-                <p>{{ t('tourlist.secure_booking') ?? 'Secure Booking - Your information is protected' }}</p>
+            <!-- Why book -->
+            <div class="td-card">
+                <h2 class="td-side-title">{{ t('tour.why_book_title') }}</h2>
+                <ul class="td-why">
+                    <li><i class="fas fa-circle-check"></i> {{ t('tour.curated_tours') }}</li>
+                    <li><i class="fas fa-circle-check"></i> {{ t('tour.expert_guides') }}</li>
+                    <li><i class="fas fa-circle-check"></i> {{ t('tour.safe_travel') }}</li>
+                    <li><i class="fas fa-circle-check"></i> {{ t('tour.support_24_7') }}</li>
+                </ul>
             </div>
-        </div>
+
+            <!-- Location & map (from the tour's own location record) -->
+            @if($tdLocation)
+                @php $tdMapQuery = $tdHasCoords ? $tour->location_lat . ',' . $tour->location_lng : urlencode($tdLocation); @endphp
+                <div class="td-card">
+                    <h2 class="td-side-title">{{ t('tourlist.destination') }}</h2>
+                    <div class="td-address"><i class="fas fa-location-dot"></i> {{ $tdLocation }}</div>
+                    <div class="td-map">
+                        <iframe src="https://maps.google.com/maps?q={{ $tdMapQuery }}&z=11&output=embed" title="{{ $tdLocation }} map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                    <a class="td-map-link" href="https://www.google.com/maps/search/?api=1&query={{ $tdMapQuery }}" target="_blank" rel="noopener">
+                        <i class="fas fa-up-right-from-square"></i> Open in Google Maps
+                    </a>
+                </div>
+            @endif
+        </aside>
     </div>
 </div>
 
 <script>
-    @if($tour->images->count() > 0)
-        const tourImages = [
-            @foreach($tour->images as $image)
-                '{{ asset('public/assets/images/' . $image->image) }}',
-            @endforeach
-        ];
-        let currentImageIndex = 0;
+    const tourImages = @json($tdImages);
+    let currentImageIndex = 0;
 
-        function changeImage(index) {
-            currentImageIndex = index;
-            document.getElementById('mainImage').src = tourImages[index];
+    function changeImage(index, scrollUp) {
+        if (!tourImages.length) return;
+        currentImageIndex = index;
+        document.getElementById('mainImage').src = tourImages[index];
+        const counter = document.getElementById('photoIndex');
+        if (counter) counter.textContent = index + 1;
+        document.querySelectorAll('.gallery-thumbnail').forEach(thumb => {
+            thumb.classList.toggle('active', parseInt(thumb.dataset.index, 10) === index);
+        });
+        if (scrollUp) document.querySelector('.td-gallery').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
 
-            document.querySelectorAll('.gallery-thumbnail').forEach((thumb, i) => {
-                thumb.classList.toggle('active', i === index);
-            });
-        }
+    function prevImage() {
+        currentImageIndex = (currentImageIndex - 1 + tourImages.length) % tourImages.length;
+        changeImage(currentImageIndex);
+    }
 
-        function prevImage() {
-            currentImageIndex = (currentImageIndex - 1 + tourImages.length) % tourImages.length;
-            changeImage(currentImageIndex);
-        }
+    function nextImage() {
+        currentImageIndex = (currentImageIndex + 1) % tourImages.length;
+        changeImage(currentImageIndex);
+    }
 
-        function nextImage() {
-            currentImageIndex = (currentImageIndex + 1) % tourImages.length;
-            changeImage(currentImageIndex);
-        }
-    @endif
+    function toggleAllImages() {
+        const all = document.getElementById('remainingImages');
+        if (!all) return;
+        all.hidden = !all.hidden;
+        if (!all.hidden) all.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Read more / show less for a long overview
+    document.querySelectorAll('[data-td-clamp]').forEach(function (box) {
+        const btn = box.parentElement.querySelector('[data-td-toggle]');
+        if (!btn || box.scrollHeight <= box.clientHeight + 2) return;
+        btn.hidden = false;
+        const more = btn.innerHTML;
+        btn.addEventListener('click', function () {
+            const open = box.classList.toggle('is-open');
+            btn.innerHTML = open ? '<i class="fas fa-chevron-up"></i>' : more;
+        });
+    });
 </script>
 
 @endsection

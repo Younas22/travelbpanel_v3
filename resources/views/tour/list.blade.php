@@ -2,378 +2,398 @@
 @section('content')
     @php
         $active_currency = activeCurrency();
+        $sortBy = $sortBy ?? 'popular';
+        $tourItems = $tours->getCollection();
+
+        // Converted price per person — the same conversion every tour page uses
+        $tlPrice = fn($tour) => convertCurrency($tour->price, $tour->currency ?? 'USD', $active_currency->currency_name);
+        $prices = $tourItems->map($tlPrice);
+        $minPrice = $prices->count() ? (int) floor($prices->min()) : 0;
+        $maxPrice = $prices->count() ? (int) ceil($prices->max()) : 10000;
+        if ($maxPrice <= $minPrice) $maxPrice = $minPrice + 100;
+
+        $starCounts = [];
+        for ($s = 5; $s >= 1; $s--) {
+            $starCounts[$s] = $tourItems->filter(fn($t) => (int) $t->stars === $s)->count();
+        }
+        $durationBuckets = [
+            '1-3'  => [t('tourlist.1_3_days'), fn($d) => $d >= 1 && $d <= 3],
+            '4-7'  => [t('tourlist.4_7_days'), fn($d) => $d >= 4 && $d <= 7],
+            '8-14' => [t('tourlist.8_14_days'), fn($d) => $d >= 8 && $d <= 14],
+            '15+'  => [t('tourlist.15_plus_days'), fn($d) => $d >= 15],
+        ];
+        $durationCounts = collect($durationBuckets)->map(fn($b) => $tourItems->filter(fn($t) => $t->days && $b[1]((int) $t->days))->count());
+        $typeCounts = $tourItems->groupBy(fn($t) => $t->packageType->packege_type ?? $t->packege_type ?? '')->filter(fn($g, $k) => $k !== '')->map->count()->sortDesc();
+        $inclusionCounts = $tourItems->flatMap(fn($t) => array_unique($t->highlights ?? []))->countBy()->sortDesc();
+
+        $searchCity = $searchParams['location_name'] ?? ucfirst($searchParams['location'] ?? '');
+        $mapQuery = urlencode('tours in ' . trim($searchCity . ' ' . ($searchParams['location_country'] ?? '')));
+        $tours->appends(request()->query());
     @endphp
-    <!-- Search Collapse -->
-    <div class="tour-list-container">
-        <div class="hotel-search-collapse">
-            <button class="hotel-search-collapse-btn" id="searchCollapseBtn">
-                <span><i class="fas fa-search"></i> {{t('tourlist.modify_search')}}</span>
-                <i class="fas fa-chevron-down" id="collapseIcon"></i>
-            </button>
-            <div class="hotel-search-collapse-content" id="searchCollapseContent">
-                <style>
-                .form-container {
-                    max-width: 1200px !important;
-                }
-                </style>
+
+<div class="tl-page">
+    <!-- Search bar (the shared tour search form) -->
+    <div id="siteRedesign">
+        <div class="form-container tl-search">
+            <div class="tab-content active" id="form-tour">
                 @include('forms.tours-form')
             </div>
         </div>
     </div>
 
-    <!-- Page Header -->
-    <div class="bg-white border-b border-gray-200">
-        <div class="tour-page-header-inner">
-            <div class="flex flex-wrap items-center gap-4 text-sm">
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-map-marker-alt text-[#0077BE]"></i>
-                    <div>
-                        <p class="text-xs font-bold text-gray-600">{{ t('tourlist.destination') }}</p>
-                        <p class="font-bold text-gray-900">{{ ucfirst($searchParams['location'] ?? 'All Destinations') }}</p>
-                    </div>
-                </div>
-                @if(isset($searchParams) && isset($searchParams['start_date']))
-                <i class="fas fa-arrow-right text-gray-400"></i>
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-calendar text-[#0077BE]"></i>
-                    <div>
-                        <p class="text-xs font-bold text-gray-600">{{ t('tourlist.dates') }}</p>
-                        <p class="font-bold text-gray-900">{{ $searchParams['original_start_date'] }} - {{ $searchParams['original_end_date'] }}</p>
-                    </div>
-                </div>
-                @endif
-                @if(isset($searchParams) && isset($searchParams['adult']))
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-users text-[#0077BE]"></i>
-                    <div>
-                        <p class="text-xs font-bold text-gray-600">{{ t('tourlist.travelers') }}</p>
-                        <p class="font-bold text-gray-900">{{ $searchParams['adult'] }} {{ t('tourlist.adults') }}, {{ $searchParams['child'] }} {{ t('tourlist.children') }}</p>
-                    </div>
-                </div>
-                @endif
+    <!-- Results header -->
+    <div class="tl-head">
+        <div>
+            <h1 class="tl-title">@if($searchCity){{ $searchCity }}: @endif<span id="tlTotal">{{ $tours->total() }}</span> {{ t('tourlist.tours') }}</h1>
+            <p class="tl-subtitle">
+                {{ \Carbon\Carbon::parse($searchParams['start_date'])->format('M d, Y') }} – {{ \Carbon\Carbon::parse($searchParams['end_date'])->format('M d, Y') }}
+                · {{ $searchParams['adult'] }} {{ t('tourlist.adults') }}@if($searchParams['child'] > 0), {{ $searchParams['child'] }} {{ t('tourlist.children') }}@endif
+                @if(($searchParams['type'] ?? 'all') !== 'all') · {{ $searchParams['type_name'] }} @endif
+            </p>
+        </div>
+        <div class="tl-head-actions">
+            <button type="button" class="tl-filter-toggle" id="mobileFilterToggle" aria-expanded="false" aria-controls="filterSidebar">
+                <i class="fas fa-sliders"></i> {{ t('tourlist.show_filters') }}
+            </button>
+            <div class="tl-sort-wrap">
+                <label class="tl-sort-label" for="sortSelect"><i class="fas fa-arrow-down-wide-short"></i> {{ t('tourlist.sort_by') }}</label>
+                <select class="tl-sort" id="sortSelect" onchange="window.location.href = addSortToUrl(this.value)">
+                    <option value="popular" {{ $sortBy == 'popular' ? 'selected' : '' }}>{{ t('tourlist.most_popular') }}</option>
+                    <option value="price_low" {{ $sortBy == 'price_low' ? 'selected' : '' }}>{{ t('tourlist.price_low_high') }}</option>
+                    <option value="price_high" {{ $sortBy == 'price_high' ? 'selected' : '' }}>{{ t('tourlist.price_high_low') }}</option>
+                    <option value="duration" {{ $sortBy == 'duration' ? 'selected' : '' }}>{{ t('tourlist.duration') }}</option>
+                    <option value="rating" {{ $sortBy == 'rating' ? 'selected' : '' }}>{{ t('tourlist.highest_rated') }}</option>
+                </select>
             </div>
         </div>
     </div>
 
-    <!-- Main Container -->
-    <div class="tour-list-container">
-        <section class="tour-main-container">
-        <div class="tour-content-wrapper">
-            <!-- Filter Sidebar -->
-            <aside class="tour-filter-sidebar" id="filterSidebar">
-
-                    <!-- Price Range Filter -->
-                    <div class="tour-filter-section">
-                        <h3 class="tour-filter-title">{{ t('tourlist.price_range') }}</h3>
-                        <div class="price-range-wrapper" style="padding: 5px 0;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; color: #555;">
-                                <span id="priceMinLabel">{{ $tours->min('price') ? number_format($tours->min('price')) : 0 }}</span>
-                                <span id="priceMaxLabel">{{ $tours->max('price') ? number_format($tours->max('price')) : 0 }}</span>
-                            </div>
-                            <div style="position: relative; height: 30px;">
-                                <div id="priceRangeTrack" style="position: absolute; top: 30%; transform: translateY(-50%); height: 5px; width: 100%; border-radius: 3px; background: #ddd; z-index: 0;">
-                                    <div id="priceRangeFill" style="position: absolute; height: 100%; background: #0077BE; border-radius: 3px;"></div>
-                                </div>
-                                <input type="range" id="priceMinRange" min="{{ $tours->min('price') ?? 0 }}" max="{{ $tours->max('price') ?? 10000 }}" value="{{ $tours->min('price') ?? 0 }}" style="position: absolute; width: 100%; pointer-events: none; -webkit-appearance: none; appearance: none; background: transparent; z-index: 2;">
-                                <input type="range" id="priceMaxRange" min="{{ $tours->min('price') ?? 0 }}" max="{{ $tours->max('price') ?? 10000 }}" value="{{ $tours->max('price') ?? 10000 }}" style="position: absolute; width: 100%; pointer-events: none; -webkit-appearance: none; appearance: none; background: transparent; z-index: 2;">
-                            </div>
-                        </div>
-                        <style>
-                            #priceMinRange::-webkit-slider-runnable-track, #priceMaxRange::-webkit-slider-runnable-track {
-                                -webkit-appearance: none; appearance: none; height: 0; background: transparent;
-                            }
-                            #priceMinRange::-webkit-slider-thumb, #priceMaxRange::-webkit-slider-thumb {
-                                pointer-events: all; -webkit-appearance: none; appearance: none;
-                                width: 18px; height: 18px; border-radius: 50%; background: #0077BE;
-                                cursor: pointer; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-                                margin-top: -2px;
-                            }
-                            #priceMinRange::-moz-range-track, #priceMaxRange::-moz-range-track {
-                                height: 0; background: transparent; border: none;
-                            }
-                            #priceMinRange::-moz-range-thumb, #priceMaxRange::-moz-range-thumb {
-                                pointer-events: all; width: 18px; height: 18px; border-radius: 50%;
-                                background: #0077BE; cursor: pointer; border: 2px solid #fff;
-                                box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-                            }
-                        </style>
-                    </div>
-
-                    <!-- Duration Filter -->
-                    <div class="tour-filter-section">
-                        <h3 class="tour-filter-title">{{ t('tourlist.duration') }}</h3>
-                        <select id="durationFilter" class="tour-filter-input">
-                            <option value="">{{ t('tourlist.any_duration') }}</option>
-                            @php
-                                $allDays = $tours->pluck('days')->filter()->values();
-                                $has1to3 = $allDays->filter(fn($d) => $d >= 1 && $d <= 3)->count() > 0;
-                                $has4to7 = $allDays->filter(fn($d) => $d >= 4 && $d <= 7)->count() > 0;
-                                $has8to14 = $allDays->filter(fn($d) => $d >= 8 && $d <= 14)->count() > 0;
-                                $has15plus = $allDays->filter(fn($d) => $d >= 15)->count() > 0;
-                            @endphp
-                            @if($has1to3)<option value="1-3">{{ t('tourlist.1_3_days') }}</option>@endif
-                            @if($has4to7)<option value="4-7">{{ t('tourlist.4_7_days') }}</option>@endif
-                            @if($has8to14)<option value="8-14">{{ t('tourlist.8_14_days') }}</option>@endif
-                            @if($has15plus)<option value="15+">{{ t('tourlist.15_plus_days') }}</option>@endif
-                        </select>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <button type="button" class="tour-clear-filters-btn" id="clearFiltersBtn" style="display: block; width: 100%; text-align: center; cursor: pointer; border: none; background: none;">
-                        {{ t('tourlist.clear_all') }}
-                    </button>
-            </aside>
-
-            <!-- Results Section -->
-            <main class="tour-results-section">
-                <!-- Mobile Filter Toggle -->
-                <button class="tour-mobile-filter-toggle" id="mobileFilterToggle">
-                    <i class="fas fa-filter"></i> {{ t('tourlist.show_filters') }}
-                </button>
-
-                <!-- Results Header -->
-                <div class="tour-results-header">
-                    <div class="tour-results-count">
-                        {{ t('tourlist.showing') }} <strong>{{ $tours->total() ?? 0 }} {{ t('tourlist.tours') }}</strong>
-                    </div>
-                    <div class="tour-sort-section">
-                        <label class="tour-sort-label">{{ t('tourlist.sort_by') }}:</label>
-                        <select class="tour-sort-select" id="sortSelect" onchange="window.location.href = addSortToUrl(this.value)">
-                            <option value="popular" {{ ($sortBy ?? 'popular') == 'popular' ? 'selected' : '' }}>{{ t('tourlist.most_popular') }}</option>
-                            <option value="price_low" {{ ($sortBy ?? '') == 'price_low' ? 'selected' : '' }}>{{ t('tourlist.price_low_high') }}</option>
-                            <option value="price_high" {{ ($sortBy ?? '') == 'price_high' ? 'selected' : '' }}>{{ t('tourlist.price_high_low') }}</option>
-                            <option value="duration" {{ ($sortBy ?? '') == 'duration' ? 'selected' : '' }}>{{ t('tourlist.duration') }}</option>
-                            <option value="rating" {{ ($sortBy ?? '') == 'rating' ? 'selected' : '' }}>{{ t('tourlist.highest_rated') }}</option>
-                        </select>
-                    </div>
+    <div class="tl-main">
+        <!-- Filters -->
+        <aside class="tl-sidebar" id="filterSidebar">
+            @if($searchCity)
+                <div class="tl-map">
+                    <iframe src="https://maps.google.com/maps?q={{ urlencode(trim($searchCity . ' ' . ($searchParams['location_country'] ?? ''))) }}&z=10&output=embed" title="{{ $searchCity }} map" loading="lazy" tabindex="-1" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <a class="tl-map-btn" href="https://www.google.com/maps/search/?api=1&query={{ $mapQuery }}" target="_blank" rel="noopener"><i class="fas fa-map-location-dot"></i> View on Map</a>
                 </div>
+            @endif
 
-                <!-- Tour List Grid -->
-                <div class="tour-list-grid">
-                    @forelse($tours ?? [] as $tour)
-                        <div class="tour-list-card {{ $tour->featured == 1 ? 'featured-card' : '' }}" data-price="{{ $tour->price }}" data-days="{{ $tour->days }}">
-                            <div class="tour-list-image">
-                                @if($tour->images->count() > 0)
-                                    <img src="{{ asset('public/assets/images/' . $tour->images->first()->image) }}" alt="{{ $tour->name }}">
-                                @else
-                                    <img src="{{ asset('assets/images/placeholder/default.jpg') }}" alt="{{ $tour->name }}">
-                                @endif
-                                @if($tour->featured == 1)
-                                    <div class="tour-badge featured-badge">{{ t('tourlist.featured') }}</div>
-                                @endif
-                                <div class="tour-duration-badge">
-                                    <i class="fas fa-clock"></i> {{ $tour->duration }}
-                                </div>
-                            </div>
-                            <div class="tour-list-content">
-                                <div class="tour-header">
-                                    <h3 class="tour-title">{{ $tour->name }}</h3>
-                                    <div class="tour-location">
-                                        <i class="fas fa-map-marker-alt"></i> {{ $tour->location }}
-                                    </div>
-                                </div>
+            <div class="tl-sidebar-title"><i class="fas fa-sliders"></i> {{ t('tourlist.apply_filters') }} <span class="tl-badge-count" id="tlActiveCount">0</span></div>
 
-                                <!-- Rating -->
-                                @if($tour->rating)
-                                    <div class="tour-rating">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            @if($i <= $tour->stars)
-                                                <i class="fas fa-star"></i>
-                                            @else
-                                                <i class="far fa-star"></i>
-                                            @endif
-                                        @endfor
-                                        <span>({{ $tour->rating }})</span>
-                                    </div>
-                                @endif
-
-                                <!-- Description -->
-                                @if($tour->description)
-                                    <p class="tour-description">
-                                        {{ Str::limit($tour->description, 120) }}
-                                    </p>
-                                @endif
-
-                                <!-- Highlights -->
-                                @if(isset($tour->highlights) && count($tour->highlights) > 0)
-                                    <div class="tour-highlights">
-                                        @foreach(array_slice($tour->highlights, 0, 4) as $highlight)
-                                            <span class="tour-highlight-item">
-                                                <i class="fas fa-check"></i> {{ $highlight }}
-                                            </span>
-                                        @endforeach
-                                        @if(count($tour->highlights) > 4)
-                                            <span class="tour-highlight-item">
-                                                +{{ count($tour->highlights) - 4 }} {{ t('tourlist.more') }}
-                                            </span>
-                                        @endif
-                                    </div>
-                                @endif
-
-                                <div class="tour-footer">
-                                    <div class="tour-price-section">
-                                        <span class="tour-price-label">{{ t('tourlist.starting_from') }}</span>
-                                        <div class="tour-price">
-                                            <span class="tour-price-currency">{{$active_currency->currency_name}}</span> {{ number_format(convertCurrency($tour->price,  $tour->currency ?? 'USD', $active_currency->currency_name)) }}
-                                        </div>
-                                        <span class="tour-per-person">{{ t('tourlist.per_person') }}</span>
-                                    </div>
-                                    <a href="{{ route('tours.details', [
-                                        'slug' => \Str::slug($tour->name),
-                                        'location' => $searchParams['location'] ?? 'all',
-                                        'type' => $searchParams['type'] ?? 'all',
-                                        'startDate' => $searchParams['original_start_date'] ?? date('d-m-Y'),
-                                        'endDate' => $searchParams['original_end_date'] ?? date('d-m-Y', strtotime('+7 days')),
-                                        'adult' => $searchParams['adult'] ?? 2,
-                                        'child' => $searchParams['child'] ?? 0
-                                    ]) }}" class="tour-view-details-btn">
-                                        {{ t('tourlist.view_details') }}
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="tour-no-results">
-                            <i class="fas fa-search"></i>
-                            <h3>{{ t('tourlist.no_tours_found') }}</h3>
-                            <p>{{ t('tourlist.try_different_search') }}</p>
-                        </div>
-                    @endforelse
+            <!-- Price -->
+            <div class="tl-group">
+                <div class="tl-group-title">{{ t('tourlist.price_range') }} ({{ $active_currency->currency_name }})</div>
+                <div class="tl-price-inputs">
+                    <input type="number" class="tl-price-box" id="priceMinLabel" value="{{ $minPrice }}" min="{{ $minPrice }}" max="{{ $maxPrice }}" aria-label="Minimum price">
+                    <span>—</span>
+                    <input type="number" class="tl-price-box" id="priceMaxLabel" value="{{ $maxPrice }}" min="{{ $minPrice }}" max="{{ $maxPrice }}" aria-label="Maximum price">
                 </div>
+                <div class="tl-range">
+                    <div class="tl-range-track"></div>
+                    <div class="tl-range-fill" id="priceRangeFill"></div>
+                    <input type="range" id="priceMinRange" class="tl-range-input" min="{{ $minPrice }}" max="{{ $maxPrice }}" value="{{ $minPrice }}" aria-label="Minimum price">
+                    <input type="range" id="priceMaxRange" class="tl-range-input" min="{{ $minPrice }}" max="{{ $maxPrice }}" value="{{ $maxPrice }}" aria-label="Maximum price">
+                </div>
+            </div>
 
-                <!-- Pagination -->
-                @if(isset($tours) && $tours->hasPages())
-                    <div class="tour-pagination-wrapper">
-                        {{ $tours->links() }}
-                    </div>
+            <!-- Duration -->
+            @if($durationCounts->filter()->count())
+            <div class="tl-group">
+                <div class="tl-group-title">{{ t('tourlist.duration') }}</div>
+                @foreach($durationBuckets as $key => [$label, $fn])
+                    @if($durationCounts[$key] > 0)
+                        <label class="tl-check"><span><input type="checkbox" class="tl-duration" value="{{ $key }}"> {{ $label }}</span><span class="tl-count">{{ $durationCounts[$key] }}</span></label>
+                    @endif
+                @endforeach
+            </div>
+            @endif
+
+            <!-- Star rating -->
+            @if(array_sum($starCounts) > 0)
+            <div class="tl-group">
+                <div class="tl-group-title">{{ t('tourbooking.star_tour') }}</div>
+                @for($star = 5; $star >= 1; $star--)
+                    @if($starCounts[$star] > 0)
+                        <label class="tl-check"><span><input type="checkbox" class="tl-star" value="{{ $star }}"> <span class="tl-stars-inline">{!! str_repeat('★', $star) !!}</span></span><span class="tl-count">{{ $starCounts[$star] }}</span></label>
+                    @endif
+                @endfor
+            </div>
+            @endif
+
+            <!-- Tour name -->
+            <div class="tl-group">
+                <div class="tl-input-icon">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="text" id="tlNameSearch" class="tl-name-search" placeholder="{{ t('tourlist.search_destination') }}">
+                </div>
+            </div>
+
+            <!-- Tour type -->
+            @if($typeCounts->count() > 1)
+            <div class="tl-group">
+                <div class="tl-group-title">{{ t('tourlist.tour_type') }}</div>
+                @foreach($typeCounts as $type => $count)
+                    <label class="tl-check"><span><input type="checkbox" class="tl-type" value="{{ strtolower($type) }}"> {{ $type }}</span><span class="tl-count">{{ $count }}</span></label>
+                @endforeach
+            </div>
+            @endif
+
+            <!-- Inclusions -->
+            @if($inclusionCounts->count())
+            <div class="tl-group" id="tlInclGroup">
+                <div class="tl-group-title">{{ t('tourlist.whats_included') }}</div>
+                @foreach($inclusionCounts as $name => $count)
+                    <label class="tl-check {{ $loop->index >= 5 ? 'is-extra' : '' }}"><span><input type="checkbox" class="tl-incl" value="{{ \Str::slug($name) }}"> {{ $name }}</span><span class="tl-count">{{ $count }}</span></label>
+                @endforeach
+                @if($inclusionCounts->count() > 5)
+                    <button type="button" class="tl-show-more" id="tlInclMore">{{ t('tourlist.more') }} <i class="fas fa-chevron-down"></i></button>
                 @endif
-            </main>
+            </div>
+            @endif
+
+            <button type="button" class="tl-clear" id="clearFiltersBtn">{{ t('tourlist.clear_all') }}</button>
+        </aside>
+
+        <!-- Results -->
+        <div class="tl-results-col">
+            <div class="tl-results" id="tlResults">
+                @forelse($tourItems as $tour)
+                    @php
+                        $price = $tlPrice($tour);
+                        $stars = max(0, min(5, (int) $tour->stars));
+                        $tourType = $tour->packageType->packege_type ?? $tour->packege_type ?? '';
+                        $location = trim(($tour->location_name ?? '') . (!empty($tour->location_country) && stripos((string) $tour->location_name, $tour->location_country) === false ? ', ' . $tour->location_country : ''), ', ');
+                        $desc = trim((string) ($tour->desc ?? $tour->description ?? ''));
+                        $highlights = $tour->highlights ?? [];
+                        $detailUrl = route('tours.details', [
+                            'slug' => \Str::slug($tour->name),
+                            'location' => $searchParams['location'] ?? 'all',
+                            'type' => $searchParams['type'] ?? 'all',
+                            'startDate' => $searchParams['original_start_date'] ?? date('d-m-Y'),
+                            'endDate' => $searchParams['original_end_date'] ?? date('d-m-Y', strtotime('+7 days')),
+                            'adult' => $searchParams['adult'] ?? 2,
+                            'child' => $searchParams['child'] ?? 0,
+                        ]);
+                    @endphp
+                    <article class="tl-card tour-list-card"
+                        data-price="{{ round($price, 2) }}"
+                        data-days="{{ (int) $tour->days }}"
+                        data-stars="{{ $stars }}"
+                        data-name="{{ strtolower($tour->name . " " . $location) }}"
+                        data-type="{{ strtolower($tourType) }}"
+                        data-incl="{{ collect($highlights)->map(fn($h) => \Str::slug($h))->implode(' ') }}">
+                        <a href="{{ $detailUrl }}" class="tl-card-image">
+                            <img src="{{ $tour->images->count() ? asset('public/assets/images/' . $tour->images->first()->image) : asset('public/assets/images/placeholder/default.jpg') }}" alt="{{ $tour->name }}" loading="lazy">
+                            @if($tour->featured == 1)
+                                <span class="tl-featured"><i class="fas fa-star"></i> {{ t('tourlist.featured') }}</span>
+                            @endif
+                            @if($tour->images->count() > 1)
+                                <span class="tl-photos"><i class="fas fa-images"></i> {{ $tour->images->count() }}</span>
+                            @endif
+                        </a>
+                        <div class="tl-card-body">
+                            <h3 class="tl-card-title" dir="auto"><a href="{{ $detailUrl }}">{{ $tour->name }}</a></h3>
+                            <div class="tl-card-meta">
+                                @if($stars > 0)
+                                    <span class="tl-stars">@for($i = 1; $i <= 5; $i++)<i class="fas fa-star {{ $i <= $stars ? 'is-on' : '' }}"></i>@endfor</span>
+                                @endif
+                                @if(is_numeric($tour->rating) && $tour->rating > 0)
+                                    <span class="tl-score">{{ rtrim(rtrim(number_format((float) $tour->rating, 1), '0'), '.') }}</span>
+                                @endif
+                            </div>
+                            <div class="tl-facts">
+                                @if($location)<span><i class="fas fa-location-dot"></i> {{ $location }}</span>@endif
+                                @if($tour->days)
+                                    <span><i class="fas fa-clock"></i> {{ $tour->days }} {{ t('tourlist.days') }}@if($tour->nights) / {{ $tour->nights }} {{ t('tourlist.nights') }}@endif</span>
+                                @elseif($tour->duration)
+                                    <span><i class="fas fa-clock"></i> {{ $tour->duration }}</span>
+                                @endif
+                                @if($tourType)<span><i class="fas fa-tag"></i> {{ $tourType }}</span>@endif
+                            </div>
+                            @if($desc !== '')
+                                <p class="tl-desc">{{ \Str::limit($desc, 130) }}</p>
+                            @endif
+                            @if(count($highlights))
+                                <div class="tl-pills">
+                                    @foreach(array_slice($highlights, 0, 3) as $highlight)
+                                        <span class="tl-pill"><i class="fas fa-check"></i> {{ $highlight }}</span>
+                                    @endforeach
+                                    @if(count($highlights) > 3)
+                                        <span class="tl-pill is-more">+{{ count($highlights) - 3 }} {{ t('tourlist.more') }}</span>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                        <div class="tl-price-panel">
+                            <div>
+                                <div class="tl-price-label">{{ t('tourlist.starting_from') }}</div>
+                                <div class="tl-price">{{ $active_currency->currency_name }} {{ number_format($price) }}</div>
+                                <div class="tl-price-unit">{{ t('tourlist.per_person') }}</div>
+                            </div>
+                            <a href="{{ $detailUrl }}" class="tl-view-btn">{{ t('tourlist.view_details') }} <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </article>
+                @empty
+                    <div class="tl-empty">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <h3>{{ t('tourlist.no_tours_found') }}</h3>
+                        <p>{{ t('tourlist.try_different_search') }}</p>
+                    </div>
+                @endforelse
+                <div class="tl-empty" id="tlNoMatch" hidden>
+                    <i class="fas fa-magnifying-glass"></i>
+                    <h3>{{ t('tourlist.no_tours_found') }}</h3>
+                    <p>{{ t('tourlist.try_different_search') }}</p>
+                </div>
+            </div>
+
+            @if($tours->total() > 0)
+                <nav class="tl-pagination" aria-label="Pagination">
+                    <div class="tl-pages">
+                        @if($tours->onFirstPage())
+                            <span class="tl-page-btn is-disabled" aria-hidden="true"><i class="fas fa-chevron-left"></i></span>
+                        @else
+                            <a class="tl-page-btn" href="{{ $tours->previousPageUrl() }}" aria-label="Previous page"><i class="fas fa-chevron-left"></i></a>
+                        @endif
+                        @php
+                            $last = $tours->lastPage();
+                            $cur = $tours->currentPage();
+                            $show = collect([1, $last, $cur - 1, $cur, $cur + 1])->filter(fn($n) => $n >= 1 && $n <= $last)->unique()->sort()->values();
+                            $prev = 0;
+                        @endphp
+                        @foreach($show as $n)
+                            @if($n - $prev > 1)<span class="tl-page-gap">…</span>@endif
+                            @if($n == $cur)
+                                <span class="tl-page-btn is-active" aria-current="page">{{ $n }}</span>
+                            @else
+                                <a class="tl-page-btn" href="{{ $tours->url($n) }}">{{ $n }}</a>
+                            @endif
+                            @php $prev = $n; @endphp
+                        @endforeach
+                        @if($tours->hasMorePages())
+                            <a class="tl-page-btn" href="{{ $tours->nextPageUrl() }}" aria-label="Next page"><i class="fas fa-chevron-right"></i></a>
+                        @else
+                            <span class="tl-page-btn is-disabled" aria-hidden="true"><i class="fas fa-chevron-right"></i></span>
+                        @endif
+                    </div>
+                    <div class="tl-page-summary">{{ t('tourlist.showing') }} {{ $tours->firstItem() }}–{{ $tours->lastItem() }} / {{ $tours->total() }} {{ t('tourlist.tours') }}</div>
+                </nav>
+            @endif
         </div>
-        </section>
     </div>
+</div>
 
-    <script>
-        const searchCollapseBtn = document.getElementById('searchCollapseBtn');
-        const searchCollapseContent = document.getElementById('searchCollapseContent');
-        const collapseIcon = document.getElementById('collapseIcon');
-
-        searchCollapseBtn.addEventListener('click', function() {
-            searchCollapseBtn.classList.toggle('active');
-            searchCollapseContent.classList.toggle('active');
-            collapseIcon.style.transform = searchCollapseContent.classList.contains('active')
-                ? 'rotate(180deg)'
-                : 'rotate(0deg)';
-        });
-
+<script>
+    (function () {
         // Mobile filter toggle
         const mobileFilterToggle = document.getElementById('mobileFilterToggle');
         const filterSidebar = document.getElementById('filterSidebar');
-
         if (mobileFilterToggle) {
-            mobileFilterToggle.addEventListener('click', function() {
-                filterSidebar.classList.toggle('active');
+            mobileFilterToggle.addEventListener('click', function () {
+                const open = filterSidebar.classList.toggle('active');
+                mobileFilterToggle.setAttribute('aria-expanded', String(open));
             });
         }
 
-        // Sort functionality
-        function addSortToUrl(sortValue) {
-            const url = new URL(window.location.href);
-            url.searchParams.set('sort_by', sortValue);
-            return url.toString();
+        const inclMore = document.getElementById('tlInclMore');
+        if (inclMore) {
+            inclMore.addEventListener('click', function () {
+                const open = document.getElementById('tlInclGroup').classList.toggle('is-expanded');
+                inclMore.querySelector('i').className = open ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+            });
         }
 
-        // Frontend filtering
         const priceMinRange = document.getElementById('priceMinRange');
         const priceMaxRange = document.getElementById('priceMaxRange');
         const priceMinLabel = document.getElementById('priceMinLabel');
         const priceMaxLabel = document.getElementById('priceMaxLabel');
         const priceRangeFill = document.getElementById('priceRangeFill');
-        const durationFilter = document.getElementById('durationFilter');
-        const clearFiltersBtn = document.getElementById('clearFiltersBtn');
-
-        function formatNumber(n) {
-            return Number(n).toLocaleString();
-        }
+        const nameSearch = document.getElementById('tlNameSearch');
+        const groups = ['.tl-duration', '.tl-star', '.tl-type', '.tl-incl'].map(s => Array.from(document.querySelectorAll(s)));
+        const cards = Array.from(document.querySelectorAll('.tl-card'));
+        const totalEl = document.getElementById('tlTotal');
+        const activeEl = document.getElementById('tlActiveCount');
+        const noMatch = document.getElementById('tlNoMatch');
+        const serverTotal = {{ (int) $tours->total() }};
 
         function updateRangeFill() {
-            const min = parseInt(priceMinRange.min);
-            const max = parseInt(priceMinRange.max);
-            const range = max - min || 1;
-            const leftPercent = ((parseInt(priceMinRange.value) - min) / range) * 100;
-            const rightPercent = ((parseInt(priceMaxRange.value) - min) / range) * 100;
-            priceRangeFill.style.left = leftPercent + '%';
-            priceRangeFill.style.width = (rightPercent - leftPercent) + '%';
+            const min = +priceMinRange.min, max = +priceMinRange.max, range = (max - min) || 1;
+            const l = ((+priceMinRange.value - min) / range) * 100;
+            const r = ((+priceMaxRange.value - min) / range) * 100;
+            priceRangeFill.style.left = l + '%';
+            priceRangeFill.style.width = (r - l) + '%';
+            priceMinLabel.value = priceMinRange.value;
+            priceMaxLabel.value = priceMaxRange.value;
         }
+
+        const values = list => list.filter(c => c.checked).map(c => c.value);
 
         function applyFrontendFilters() {
-            const minPrice = parseInt(priceMinRange.value);
-            const maxPrice = parseInt(priceMaxRange.value);
-            const durationVal = durationFilter.value;
-            const cards = document.querySelectorAll('.tour-list-card');
-            let visibleCount = 0;
+            const minP = +priceMinRange.value, maxP = +priceMaxRange.value;
+            const q = nameSearch.value.trim().toLowerCase();
+            const [dur, stars, types, incl] = groups.map(values);
+            let active = (q ? 1 : 0) + ((priceMinRange.value != priceMinRange.min || priceMaxRange.value != priceMaxRange.max) ? 1 : 0);
+            active += dur.length + stars.length + types.length + incl.length;
+            activeEl.textContent = active;
 
-            cards.forEach(function(card) {
-                const price = parseFloat(card.getAttribute('data-price'));
-                const days = parseInt(card.getAttribute('data-days'));
-                let show = true;
-
-                if (price < minPrice || price > maxPrice) show = false;
-
-                if (durationVal) {
-                    if (durationVal === '1-3' && (days < 1 || days > 3)) show = false;
-                    else if (durationVal === '4-7' && (days < 4 || days > 7)) show = false;
-                    else if (durationVal === '8-14' && (days < 8 || days > 14)) show = false;
-                    else if (durationVal === '15+' && days < 15) show = false;
-                }
-
-                card.style.display = show ? '' : 'none';
-                if (show) visibleCount++;
+            let visible = 0;
+            cards.forEach(function (card) {
+                const days = +card.dataset.days;
+                const ok =
+                    +card.dataset.price >= minP && +card.dataset.price <= maxP &&
+                    (q === '' || card.dataset.name.includes(q)) &&
+                    (dur.length === 0 || dur.some(d => d === '15+' ? days >= 15 : (days >= +d.split('-')[0] && days <= +d.split('-')[1]))) &&
+                    (stars.length === 0 || stars.includes(card.dataset.stars)) &&
+                    (types.length === 0 || types.includes(card.dataset.type)) &&
+                    incl.every(i => (' ' + card.dataset.incl + ' ').includes(' ' + i + ' '));
+                card.hidden = !ok;
+                if (ok) visible++;
             });
-
-            const countEl = document.querySelector('.tour-results-count strong');
-            if (countEl) {
-                countEl.textContent = visibleCount + ' {{ t("tourlist.tours") }}';
-            }
+            totalEl.textContent = active ? visible : serverTotal;
+            if (noMatch) noMatch.hidden = !(cards.length && visible === 0);
         }
 
-        priceMinRange.addEventListener('input', function() {
-            if (parseInt(priceMinRange.value) > parseInt(priceMaxRange.value)) {
-                priceMinRange.value = priceMaxRange.value;
-            }
-            priceMinLabel.textContent = formatNumber(priceMinRange.value);
-            updateRangeFill();
-            applyFrontendFilters();
+        function clampBox(box, range) {
+            box.addEventListener('change', function () {
+                range.value = Math.min(Math.max(+box.value || 0, +range.min), +range.max);
+                if (+priceMinRange.value > +priceMaxRange.value) {
+                    if (range === priceMinRange) priceMaxRange.value = range.value; else priceMinRange.value = range.value;
+                }
+                updateRangeFill(); applyFrontendFilters();
+            });
+        }
+
+        priceMinRange.addEventListener('input', function () {
+            if (+priceMinRange.value > +priceMaxRange.value) priceMinRange.value = priceMaxRange.value;
+            updateRangeFill(); applyFrontendFilters();
         });
-
-        priceMaxRange.addEventListener('input', function() {
-            if (parseInt(priceMaxRange.value) < parseInt(priceMinRange.value)) {
-                priceMaxRange.value = priceMinRange.value;
-            }
-            priceMaxLabel.textContent = formatNumber(priceMaxRange.value);
-            updateRangeFill();
-            applyFrontendFilters();
+        priceMaxRange.addEventListener('input', function () {
+            if (+priceMaxRange.value < +priceMinRange.value) priceMaxRange.value = priceMinRange.value;
+            updateRangeFill(); applyFrontendFilters();
         });
+        clampBox(priceMinLabel, priceMinRange);
+        clampBox(priceMaxLabel, priceMaxRange);
+        nameSearch.addEventListener('input', applyFrontendFilters);
+        groups.forEach(list => list.forEach(c => c.addEventListener('change', applyFrontendFilters)));
 
-        durationFilter.addEventListener('change', applyFrontendFilters);
-
-        clearFiltersBtn.addEventListener('click', function() {
+        document.getElementById('clearFiltersBtn').addEventListener('click', function () {
             priceMinRange.value = priceMinRange.min;
             priceMaxRange.value = priceMaxRange.max;
-            priceMinLabel.textContent = formatNumber(priceMinRange.min);
-            priceMaxLabel.textContent = formatNumber(priceMaxRange.max);
-            durationFilter.value = '';
-            updateRangeFill();
-            document.querySelectorAll('.tour-list-card').forEach(function(card) {
-                card.style.display = '';
-            });
-            const countEl = document.querySelector('.tour-results-count strong');
-            if (countEl) {
-                countEl.textContent = '{{ $tours->total() ?? 0 }} {{ t("tourlist.tours") }}';
-            }
+            nameSearch.value = '';
+            groups.forEach(list => list.forEach(c => { c.checked = false; }));
+            updateRangeFill(); applyFrontendFilters();
         });
 
-        // Initialize fill on load
         updateRangeFill();
-    </script>
+    })();
+
+    // Sort (server side, keeps the other query parameters)
+    function addSortToUrl(sortValue) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('sort_by', sortValue);
+        url.searchParams.delete('page');
+        return url.toString();
+    }
+</script>
 
 @endsection
