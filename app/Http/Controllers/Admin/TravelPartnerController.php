@@ -290,7 +290,8 @@ class TravelPartnerController extends Controller
             'b2b_markup' => ['nullable', 'numeric', 'min:0', $this->percentageCapRule($request, 'b2b_markup_type')],
             'b2b_markup_type' => 'nullable|in:percentage,fixed',
             'partner_tier' => 'nullable|in:standard,premium,enterprise',
-            'status' => 'required|in:active,inactive',
+            // 'pending' lets the edit page's "Save as Draft" persist a draft.
+            'status' => 'required|in:active,inactive,pending',
             'contract_end_date' => 'nullable|date',
             'contact_email' => 'nullable|email|max:255',
             'contact_phone' => 'nullable|string|max:20',
@@ -332,7 +333,9 @@ class TravelPartnerController extends Controller
         // submitting without retyping can't wipe the stored credential.
         for ($i = 1; $i <= 6; $i++) {
             $key = "api_credential_{$i}";
-            if (array_key_exists($key, $validated) && ($validated[$key] === '' || $validated[$key] === null)) {
+            // Also skip a value identical to the stored ciphertext (the edit form
+            // shows the encrypted value), so it is never re-encrypted as a "new" secret.
+            if (array_key_exists($key, $validated) && ($validated[$key] === '' || $validated[$key] === null || $validated[$key] === $partner->getRawOriginal($key))) {
                 unset($validated[$key]);
             }
         }

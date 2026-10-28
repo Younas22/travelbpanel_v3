@@ -125,6 +125,11 @@ Route::prefix('travel-partners')->name('admin.travel-partners.')->group(function
     Route::post('/{partner}/import-content', [TravelPartnerController::class, 'importContent'])->name('import-content');
     Route::get('/{partner}/imports/{import}', [TravelPartnerController::class, 'showImport'])->name('imports.show');
     Route::delete('/{partner}/imports/{import}', [TravelPartnerController::class, 'destroyImport'])->name('imports.destroy');
+    Route::get('/{partner}/webbeds-cities/stats', [\App\Http\Controllers\Admin\WebbedsCityImportController::class, 'stats'])->name('webbeds-cities.stats');
+    Route::get('/{partner}/webbeds-cities', [\App\Http\Controllers\Admin\WebbedsCityImportController::class, 'cities'])->name('webbeds-cities.index');
+    Route::post('/{partner}/webbeds-cities/run-batch', [\App\Http\Controllers\Admin\WebbedsCityImportController::class, 'runBatch'])->name('webbeds-cities.run-batch');
+    Route::post('/{partner}/webbeds-cities/regenerate-token', [\App\Http\Controllers\Admin\WebbedsCityImportController::class, 'regenerateToken'])->name('webbeds-cities.regenerate-token');
+    Route::post('/{partner}/webbeds-cities/{code}/import', [\App\Http\Controllers\Admin\WebbedsCityImportController::class, 'importCity'])->name('webbeds-cities.import');
 });
 
 // Modules Management

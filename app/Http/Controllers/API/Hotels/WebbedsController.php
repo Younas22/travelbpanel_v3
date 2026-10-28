@@ -2205,11 +2205,8 @@ XML;
             $endpoint = !empty($v['endpoint']) ? $v['endpoint'] : self::API_ENDPOINT;
             $devMode  = !empty($v['developer_mode']);
 
-            // Simple XML — DOTW checks credentials on every request
-            // If username/password/id wrong → returns error XML
-            $fromDate = date('Y-m-d', strtotime('+30 days'));
-            $toDate   = date('Y-m-d', strtotime('+31 days'));
-
+            // Static lookup with no hotel/date dependency: it succeeds whenever the
+            // login is accepted, so availability can't be mistaken for bad credentials.
             $xml = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <customer>
@@ -2217,24 +2214,7 @@ XML;
     <password>{$password}</password>
     <id>{$id}</id>
     <source>1</source>
-    <product>hotel</product>
-    <request command="getrooms">
-        <bookingDetails>
-            <fromDate>{$fromDate}</fromDate>
-            <toDate>{$toDate}</toDate>
-            <currency>520</currency>
-            <rooms no="1">
-                <room runno="0">
-                    <adultsCode>2</adultsCode>
-                    <children no="0"/>
-                    <rateBasis>-1</rateBasis>
-                    <passengerNationality>167</passengerNationality>
-                    <passengerCountryOfResidence>167</passengerCountryOfResidence>
-                </room>
-            </rooms>
-            <productId>126824</productId>
-        </bookingDetails>
-    </request>
+    <request command="getsalutationsids"></request>
 </customer>
 XML;
 
@@ -2356,27 +2336,10 @@ XML;
                 ]);
             }
 
-            // ── Simple check: getrooms returns rooms on valid creds, empty on invalid ──
-            // Count rooms in response
-            $roomNode  = $parsed['hotel']['rooms']['room'] ?? $parsed['rooms']['room'] ?? null;
-            $roomCount = 0;
-            if ($roomNode) {
-                $roomCount = isset($roomNode[0]) ? count($roomNode) : 1;
-            }
-
-            // Also check hotel node exists
-            $hasHotel = isset($parsed['hotel']) || isset($parsed['hotels']['hotel']);
-
-            // Extract any error message from response
-            preg_match('/<details>(.*?)<\/details>/is',          $body, $dm);
-            preg_match('/<errorMessage>(.*?)<\/errorMessage>/is', $body, $em);
-            $rawErr = trim(html_entity_decode($dm[1] ?? $em[1] ?? ''));
-
-            // Wrong credentials OR zero rooms = invalid credentials
-            if (!$hasHotel && $roomCount === 0) {
-                $errMsg = !empty($rawErr)
-                    ? $rawErr
-                    : 'Wrong customer username or password or no access rights';
+            // DOTW marks an accepted request with <successful>TRUE</successful>.
+            preg_match('/<successful>(.*?)<\/successful>/is', $body, $sm);
+            if (strtoupper(trim($sm[1] ?? '')) !== 'TRUE') {
+                $errMsg = 'Wrong customer username or password or no access rights';
 
                 return response()->json([
                     'success'       => false,
@@ -2411,7 +2374,6 @@ XML;
                     'username'    => $username,
                     'customer_id' => $id,
                     'api_version' => (string) ($xmlObj['version'] ?? '4.0'),
-                    'rooms_found' => $roomCount,
                 ],
                 'debug' => $devMode ? [
                     'xml'      => $xml,
