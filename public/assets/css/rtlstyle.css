@@ -8484,23 +8484,29 @@ a i {
     display: none;
 }
 
+/* social links sit under the newsletter form */
+.sf-newsletter .sf-social {
+    margin-top: 22px;
+}
+
 .sf-social a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(37, 99, 235, 0.25);
     border-radius: 9999px;
-    background: transparent;
-    color: #FFFFFF;
-    font-size: 13px;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    background: #FFFFFF;
+    color: #2563EB;
+    font-size: 15px;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .sf-social a:hover {
-    background: #FFFFFF;
-    color: #2563EB;
+    border-color: #2563EB;
+    background: #2563EB;
+    color: #FFFFFF;
 }
 
 /* Link columns */
@@ -9754,5 +9760,188 @@ a i {
     #siteRedesign .app-showcase-features {
         grid-template-columns: minmax(0, 1fr);
         gap: 10px;
+    }
+}
+
+/* Footer: plain contact lines (email, WhatsApp, business address) */
+.sf-contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sf-contact-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: rgba(0, 0, 0, 0.75);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.sf-contact-list i {
+    flex-shrink: 0;
+    width: 16px;
+    margin-top: 3px;
+    color: #2563EB;
+    font-size: 14px;
+    text-align: center;
+}
+
+.sf-contact-list a {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    color: rgba(0, 0, 0, 0.75);
+    transition: color 0.2s ease;
+}
+
+.sf-contact-list a:hover {
+    color: #2563EB;
+}
+
+/* Footer: trust badges + accepted payment methods */
+.sf-trust {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 24px;
+    margin-top: 36px;
+    padding: 16px 24px;
+    border: 1px solid rgba(37, 99, 235, 0.14);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.94);
+}
+
+.sf-trust-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sf-trust-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 24px;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    color: #000000;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.sf-trust-list li:first-child {
+    padding-left: 0;
+    border-left: 0;
+}
+
+.sf-trust-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 9999px;
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563EB;
+    font-size: 14px;
+}
+
+.sf-pay {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.sf-pay-label {
+    margin-right: 4px;
+    color: rgba(0, 0, 0, 0.55);
+    font-size: 13px;
+}
+
+.sf-pay-card {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 34px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #000000;
+    font-size: 24px;
+}
+
+/* payment brands in their own logo colours */
+.sf-pay-card .fa-cc-visa { color: #1A1F71; }
+.sf-pay-card .fa-cc-mastercard { color: #EB001B; }
+.sf-pay-card .fa-cc-paypal { color: #003087; }
+.sf-pay-card .fa-cc-stripe { color: #635BFF; }
+
+@media (max-width: 1279px) {
+    .sf-trust {
+        justify-content: center;
+    }
+
+    .sf-trust-list {
+        justify-content: center;
+        row-gap: 12px;
+    }
+}
+
+@media (max-width: 639px) {
+    .sf-trust {
+        padding: 16px;
+    }
+
+    .sf-trust-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        width: 100%;
+    }
+
+    .sf-trust-list li,
+    .sf-trust-list li:first-child {
+        padding: 0;
+        border-left: 0;
+        font-size: 13px;
+    }
+
+    .sf-pay {
+        justify-content: center;
+        width: 100%;
+    }
+}
+
+/* Footer trust strip: right-to-left separators */
+.sf-trust-list li {
+    border-left: 0;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.sf-trust-list li:first-child {
+    padding-left: 24px;
+    padding-right: 0;
+    border-right: 0;
+}
+
+.sf-pay-label {
+    margin-right: 0;
+    margin-left: 4px;
+}
+
+@media (max-width: 639px) {
+    .sf-trust-list li,
+    .sf-trust-list li:first-child {
+        padding: 0;
+        border-right: 0;
     }
 }

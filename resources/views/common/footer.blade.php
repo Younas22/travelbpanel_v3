@@ -109,24 +109,23 @@
 
                         <p class="sf-desc"><?= getSetting('meta_description', 'seo') ?></p>
 
-                        <div class="sf-contacts">
-                            <a href="mailto:{{ $contactEmail }}" class="sf-contact">
-                                <span class="sf-contact-icon"><i class="fas fa-envelope"></i></span>
-                                <span class="sf-contact-text">
-                                    <span class="sf-contact-label">{{ t('footer.email_us') }}</span>
-                                    <span class="sf-contact-value">{{ $contactEmail }}</span>
-                                </span>
-                                <span class="sf-contact-go" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
-                            </a>
-                            <a href="{{ $whatsappLink }}" target="_blank" rel="noopener" class="sf-contact">
-                                <span class="sf-contact-icon"><i class="fab fa-whatsapp"></i></span>
-                                <span class="sf-contact-text">
-                                    <span class="sf-contact-label">{{ t('footer.whatsapp') }}</span>
-                                    <span class="sf-contact-value" dir="ltr">{{ $phone }}</span>
-                                </span>
-                                <span class="sf-contact-go" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
-                            </a>
-                        </div>
+                        @php $businessAddress = trim((string) getSetting('business_address', 'contact')); @endphp
+                        <ul class="sf-contact-list">
+                            <li>
+                                <i class="fas fa-envelope" aria-hidden="true"></i>
+                                <a href="mailto:{{ $contactEmail }}" dir="ltr">{{ $contactEmail }}</a>
+                            </li>
+                            <li>
+                                <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                                <a href="{{ $whatsappLink }}" target="_blank" rel="noopener" dir="ltr">{{ $phone }}</a>
+                            </li>
+                            @if($businessAddress !== '')
+                            <li>
+                                <i class="fas fa-location-dot" aria-hidden="true"></i>
+                                <span dir="auto">{!! nl2br(e($businessAddress)) !!}</span>
+                            </li>
+                            @endif
+                        </ul>
                     </div>
 
                     <!-- Quick Links -->
@@ -170,8 +169,45 @@
                                 <span id="newsletterBtnText" class="sr-only">{{ t('footer.subscribe_now') }}</span>
                             </button>
                         </form>
+                        <div class="sf-social" aria-label="Social media">
+                            @if(!empty($socialLinks['facebook_url']))
+                                <a href="{{ $socialLinks['facebook_url'] }}" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            @endif
+                            @if(!empty($socialLinks['twitter_url']))
+                                <a href="{{ $socialLinks['twitter_url'] }}" target="_blank" rel="noopener" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                            @endif
+                            @if(!empty($socialLinks['instagram_url']))
+                                <a href="{{ $socialLinks['instagram_url'] }}" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                            @endif
+                            @if(!empty($socialLinks['linkedin_url']))
+                                <a href="{{ $socialLinks['linkedin_url'] }}" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                            @endif
+                            @if(!empty($socialLinks['youtube_url']))
+                                <a href="{{ $socialLinks['youtube_url'] }}" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                            @endif
+                            @if(!empty($socialLinks['whatsapp_number']))
+                                <a href="https://wa.me/{{ preg_replace('/\D/', '', $socialLinks['whatsapp_number']) }}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                            @endif
+                        </div>
                     </div>
 
+                </div>
+
+                <!-- Trust badges + accepted payment methods -->
+                <div class="sf-trust">
+                    <ul class="sf-trust-list">
+                        <li><span class="sf-trust-icon"><i class="fas fa-shield-halved"></i></span> SSL Secure</li>
+                        <li><span class="sf-trust-icon"><i class="fas fa-certificate"></i></span> IATA</li>
+                        <li><span class="sf-trust-icon"><i class="fas fa-credit-card"></i></span> Secure Payments</li>
+                        <li><span class="sf-trust-icon"><i class="fas fa-tag"></i></span> Best Price Guaranteed</li>
+                    </ul>
+                    <div class="sf-pay">
+                        <span class="sf-pay-label">We accept</span>
+                        <span class="sf-pay-card" title="Visa"><i class="fab fa-cc-visa" aria-hidden="true"></i><span class="sr-only">Visa</span></span>
+                        <span class="sf-pay-card" title="Mastercard"><i class="fab fa-cc-mastercard" aria-hidden="true"></i><span class="sr-only">Mastercard</span></span>
+                        <span class="sf-pay-card" title="PayPal"><i class="fab fa-cc-paypal" aria-hidden="true"></i><span class="sr-only">PayPal</span></span>
+                        <span class="sf-pay-card" title="Stripe"><i class="fab fa-cc-stripe" aria-hidden="true"></i><span class="sr-only">Stripe</span></span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -190,26 +226,6 @@
                             <a href="{{ $item->full_url }}">{{ t('footer.'.$item->name) }}</a>
                         @endforeach
                     </nav>
-                    <div class="sf-social">
-                        @if(!empty($socialLinks['facebook_url']))
-                            <a href="{{ $socialLinks['facebook_url'] }}" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        @endif
-                        @if(!empty($socialLinks['twitter_url']))
-                            <a href="{{ $socialLinks['twitter_url'] }}" target="_blank" rel="noopener" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                        @endif
-                        @if(!empty($socialLinks['instagram_url']))
-                            <a href="{{ $socialLinks['instagram_url'] }}" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        @endif
-                        @if(!empty($socialLinks['linkedin_url']))
-                            <a href="{{ $socialLinks['linkedin_url'] }}" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                        @endif
-                        @if(!empty($socialLinks['youtube_url']))
-                            <a href="{{ $socialLinks['youtube_url'] }}" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                        @endif
-                        @if(!empty($socialLinks['whatsapp_number']))
-                            <a href="https://wa.me/{{ preg_replace('/\D/', '', $socialLinks['whatsapp_number']) }}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                        @endif
-                    </div>
                 </div>
             </div>
         </div>
