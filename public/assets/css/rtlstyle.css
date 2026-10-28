@@ -9636,3 +9636,11 @@ a i {
         width: 100%;
     }
 }
+
+/* Footer artwork in RTL: the brand column sits on the right, so shift the
+   artwork left to keep the plane's dotted path clear of its text */
+@media (min-width: 1024px) and (max-width: 1919px) {
+    .sf-main {
+        background-position: 15% top;
+    }
+}
