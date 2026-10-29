@@ -59,6 +59,8 @@
     .f-hint a, .fp-hint a { color: #2563EB; }
 </style>
 
+<div class="auth-split">
+@include('common.auth-brand', ['headline' => 'Locked out? We\'ve got you'])
 <div class="fp-wrap">
     <div class="fp-card">
         <div class="fp-head">
@@ -80,6 +82,7 @@
             <div class="fp-hint"><a href="{{ route('login') }}">Back to login</a></div>
         </div>
     </div>
+</div>
 </div>
 
 @include('common.footer', ['hideFooter' => true])

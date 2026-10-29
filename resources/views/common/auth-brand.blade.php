@@ -17,21 +17,26 @@
     }
     /* The form side scrolls on its own only if a very short window can't fit it. */
     .auth-split > .login-wrap,
-    .auth-split > .reg-wrap {
+    .auth-split > .reg-wrap,
+    .auth-split > .fp-wrap {
         min-height: 0 !important;
         height: 100%;
         overflow-y: auto;
         padding: 32px 24px !important;
         background: #fff !important;
     }
-    .auth-split .form-card {
+    .auth-split .form-card,
+    .auth-split .fp-card {
         border: 0 !important;
         box-shadow: none !important;
         max-width: 420px;
     }
-    .auth-split .form-head { padding: 0 0 6px !important; text-align: left; }
-    .auth-split .form-head .logo-ico { margin: 0 0 14px; }
-    .auth-split .form-body { padding: 18px 0 0 !important; }
+    .auth-split .form-head,
+    .auth-split .fp-head { padding: 0 0 6px !important; text-align: left; }
+    .auth-split .form-head .logo-ico,
+    .auth-split .fp-head .ico { margin: 0 0 14px; }
+    .auth-split .form-body,
+    .auth-split .fp-body { padding: 18px 0 0 !important; }
 
     .auth-brand {
         position: relative;
@@ -51,20 +56,8 @@
     }
     .auth-brand > * { position: relative; }
 
-    .auth-brand-logo {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        align-self: flex-start;
-        padding: 8px 14px;
-        border-radius: 999px;
-        background: #fff;
-        color: #000;
-        font-weight: 700;
-        font-size: 15px;
-        text-decoration: none;
-    }
-    .auth-brand-logo img { max-height: 30px; width: auto; }
+    .auth-brand-logo { display: inline-flex; align-self: flex-start; }
+    .auth-brand-logo img { max-height: 48px; max-width: 220px; width: auto; }
 
     .auth-brand-eyebrow {
         display: inline-block;
@@ -116,14 +109,15 @@
     @media (max-width: 960px) {
         .auth-split { grid-template-columns: 1fr; height: auto; min-height: 100dvh; overflow: visible; }
         .auth-split > .login-wrap,
-        .auth-split > .reg-wrap { height: auto; min-height: 100dvh !important; }
+        .auth-split > .reg-wrap,
+        .auth-split > .fp-wrap { height: auto; min-height: 100dvh !important; }
         .auth-brand { display: none; }
     }
 </style>
 
 <aside class="auth-brand">
     <a href="{{ url('/') }}" class="auth-brand-logo">
-        <img src="{{ getSettingImage('business_logo', 'branding') }}" alt="{{ $authBizName }}">
+        <img src="{{ getSettingImage('business_logo_white', 'branding') }}" alt="{{ $authBizName }}">
     </a>
 
     <div>
