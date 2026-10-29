@@ -10,8 +10,8 @@
     .nav-util-pill-item {
         display: flex;
         align-items: center;
-        height: 42px;
-        padding: 0 4px 0 5px;
+        height: 36px;
+        padding: 0 2px 0 5px;
         border: 1px solid rgba(0, 0, 0, .1);
         border-radius: 999px;
         background: #fff;
@@ -25,8 +25,8 @@
     }
     /* common/header pins every .fi to 12x9px; make the selected flag a circle. */
     .nav-util-pill-item .select2-selection__rendered .fi {
-        width: 22px;
-        height: 22px;
+        width: 20px;
+        height: 20px;
         border-radius: 50%;
         background-size: cover;
         background-position: center;
@@ -35,31 +35,49 @@
 
     /* Restyle the Select2 widget these icons sit next to, so it reads as
        part of the same pill instead of a bordered box of its own. */
-    .nav-util-pill-item .select2-container { min-width: 78px; }
+    .nav-util-pill-item .select2-container { min-width: 62px; }
     .nav-util-pill-item .select2-selection--single {
         border: none !important;
         background: transparent !important;
-        height: 40px !important;
+        height: 34px !important;
         display: flex !important;
         align-items: center;
     }
     /* Selector chain matches common/header's Select2 rules so these win. */
     .nav-util-pill-item .select2-container--default .select2-selection--single .select2-selection__rendered {
-        padding: 0 20px 0 2px !important;
-        font-weight: 400;
-        font-size: 13px !important;
+        padding: 0 18px 0 0 !important;
+        font-weight: 500;
+        font-size: 12.5px !important;
         color: #000;
-        line-height: 40px !important;
+        line-height: 34px !important;
     }
     .nav-util-pill-item .select2-container--default .select2-selection--single .select2-selection__arrow {
         top: 0 !important;
-        height: 40px !important;
+        height: 34px !important;
         right: 2px !important;
         display: flex;
         align-items: center;
         justify-content: center;
     }
     .nav-util-pill-item .select2-selection__arrow b { display: none !important; }
+    .select2-container--open .select2-dropdown { min-width: 140px; }
+    /* No square focus outline on the language/currency selects: the round
+       pill's own blue border shows focus instead. */
+    .nav-util-pill-item .select2-selection,
+    .nav-util-pill-item .select2-selection:focus,
+    .nav-util-pill-item .select2-selection:focus-visible,
+    .nav-util-pill-item .select2-container--focus .select2-selection,
+    .nav-util-pill-item .select2-container--open .select2-selection,
+    .nav-mobile-card .select2-selection:focus,
+    .nav-mobile-card .select2-selection:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    .nav-util-pill-item:focus-within,
+    .nav-util-pill-item:has(.select2-container--open) {
+        border-color: #2563EB;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+    }
     .nav-util-pill-item .select2-selection__arrow::after {
         content: '\f078';
         font-family: 'Font Awesome 5 Free';
@@ -119,39 +137,25 @@
         color: rgba(0, 0, 0, .45);
     }
 
-    /* Support link beside the currency pill, in the same round pill shape. */
+    /* Support link beside the currency pill: a plain text link. */
     .nav-util-link {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        height: 42px;
-        padding: 0 16px 0 5px;
-        border: 1px solid rgba(0, 0, 0, .1);
-        border-radius: 999px;
-        background: #fff;
+        gap: 6px;
+        padding: 0 4px;
         color: #000;
         font-weight: 600;
-        font-size: 13px;
+        font-size: 14px;
         white-space: nowrap;
         text-decoration: none;
-        transition: border-color .15s ease, box-shadow .15s ease, color .15s ease;
+        transition: color .15s ease;
     }
-    [dir="rtl"] .nav-util-link { padding: 0 5px 0 16px; }
     .nav-util-link i {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background: rgba(37, 99, 235, .1);
         color: #2563EB;
-        font-size: 13px;
+        font-size: 14px;
     }
     .nav-util-link:hover,
     .nav-util-link.active {
-        border-color: rgba(37, 99, 235, .4);
-        box-shadow: 0 4px 12px rgba(37, 99, 235, .12);
         color: #2563EB;
         text-decoration: none;
     }
@@ -161,14 +165,14 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
-        height: 42px;
+        height: 38px;
         border: 1.5px solid #2563EB;
         color: #2563EB;
         background: #fff;
         font-weight: 600;
         font-size: 14px;
         padding: 0 18px;
-        border-radius: 12px;
+        border-radius: 999px;
         text-decoration: none;
         white-space: nowrap;
         transition: background .15s ease, box-shadow .15s ease;
@@ -418,10 +422,16 @@
                         <span>Sign Up</span>
                         <i class="fas fa-chevron-down text-xs"></i>
                     </button>
-                    <div class="absolute right-0 mt-0 pt-2 w-52 z-50 hidden group-hover:block group-focus-within:block">
+                    <div class="absolute right-0 mt-0 pt-2 w-72 z-50 hidden group-hover:block group-focus-within:block">
                         <div class="nav-dd-panel">
-                            <a href="{{ route('user.register') }}" class="nav-menu-link"><i class="fas fa-user"></i> Customer Signup</a>
-                            <a href="{{ agentSignupUrl() }}" class="nav-menu-link"><i class="fas fa-user-tie"></i> Agent Signup</a>
+                            <a href="{{ route('user.register') }}" class="nav-dd-item nav-signup-item">
+                                <span class="nav-dd-icon"><i class="fas fa-user"></i></span>
+                                <span><b>Customer Signup</b><small>Book trips for yourself and family</small></span>
+                            </a>
+                            <a href="{{ agentSignupUrl() }}" class="nav-dd-item nav-signup-item">
+                                <span class="nav-dd-icon"><i class="fas fa-user-tie"></i></span>
+                                <span><b>Agent Signup</b><small>Sell travel and earn commission</small></span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -647,17 +657,30 @@
                     templateResult: formatState,
                     templateSelection: formatState,
                     minimumResultsForSearch: Infinity,
-                    width: '100%'
+                    width: '100%',
+                    // the desktop pills are small; let the open list fit its option names
+                    dropdownAutoWidth: true
                 });
             });
+
+            // Desktop pill shows just the language code (EN, AR…); the open list keeps full names
+            function formatCode(state) {
+                if (!state.id) return state.text;
+                const flagClass = $(state.element).data('flag');
+                const isRTL = document.documentElement.dir === 'rtl';
+                const marginStyle = isRTL ? 'margin-left: 6px;' : 'margin-right: 6px;';
+                return $('<span style="display: inline-flex; align-items: center; white-space: nowrap;"><span class="' + (flagClass || '') + '" style="' + marginStyle + ' flex-shrink: 0;"></span>' + String(state.id).toUpperCase() + '</span>');
+            }
 
             // Initialize language selects with Select2
             $('#language-select, #language-select-mobile').each(function() {
                 $(this).select2({
                     templateResult: formatState,
-                    templateSelection: formatState,
+                    templateSelection: this.id === 'language-select' ? formatCode : formatState,
                     minimumResultsForSearch: Infinity,
-                    width: '100%'
+                    width: '100%',
+                    // the desktop pills are small; let the open list fit its option names
+                    dropdownAutoWidth: true
                 });
             });
 
