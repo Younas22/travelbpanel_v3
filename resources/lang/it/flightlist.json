@@ -24,5 +24,7 @@
   "evening": "Sera",
   "transit_hours": "Ore di Scalo",
   "luggage": "Bagaglio",
-  "reset_filters": "Reimposta Filtri"
+  "reset_filters": "Reimposta Filtri",
+  "cabin_bag": "Cabina",
+  "checked_bag": "In stiva"
 }

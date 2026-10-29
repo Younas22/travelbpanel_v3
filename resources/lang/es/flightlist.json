@@ -24,5 +24,7 @@
   "evening": "Noche",
   "transit_hours": "Horas de Escala",
   "luggage": "Equipaje",
-  "reset_filters": "Restablecer Filtros"
+  "reset_filters": "Restablecer Filtros",
+  "cabin_bag": "Cabina",
+  "checked_bag": "Facturado"
 }

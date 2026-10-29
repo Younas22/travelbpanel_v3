@@ -24,5 +24,7 @@
   "evening": "Вечер",
   "transit_hours": "Время пересадки",
   "luggage": "Багаж",
-  "reset_filters": "Сбросить фильтры"
+  "reset_filters": "Сбросить фильтры",
+  "cabin_bag": "Ручная",
+  "checked_bag": "Багаж"
 }

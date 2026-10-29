@@ -24,5 +24,7 @@
   "evening": "저녁",
   "transit_hours": "환승 시간",
   "luggage": "수하물",
-  "reset_filters": "필터 초기화"
+  "reset_filters": "필터 초기화",
+  "cabin_bag": "기내",
+  "checked_bag": "위탁"
 }

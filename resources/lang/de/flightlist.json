@@ -24,5 +24,7 @@
   "evening": "Abend",
   "transit_hours": "Umsteigezeit",
   "luggage": "Gepäck",
-  "reset_filters": "Filter zurücksetzen"
+  "reset_filters": "Filter zurücksetzen",
+  "cabin_bag": "Handgepäck",
+  "checked_bag": "Aufgegeben"
 }

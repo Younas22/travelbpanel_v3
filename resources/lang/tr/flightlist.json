@@ -24,5 +24,7 @@
   "evening": "Akşam",
   "transit_hours": "Aktarma Süresi",
   "luggage": "Bagaj",
-  "reset_filters": "Filtreleri Sıfırla"
+  "reset_filters": "Filtreleri Sıfırla",
+  "cabin_bag": "Kabin",
+  "checked_bag": "Bagaj"
 }

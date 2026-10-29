@@ -7896,9 +7896,183 @@ a i {
     display: none;
 }
 
+/* Popular tours: full-bleed photo card with the details over a dark fade */
+#siteRedesign #popularTours .th-card {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-width: 0;
+    aspect-ratio: 4 / 5;
+    border: 0;
+    border-radius: 18px;
+    background: #101827;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+#siteRedesign #popularTours .th-card-media {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    align-items: flex-start;
+    gap: 8px;
+    height: auto;
+    padding: 16px;
+    background: #101827;
+}
+
+#siteRedesign #popularTours .th-card-media img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    object-fit: cover;
+}
+
+#siteRedesign #popularTours .th-card:hover .th-card-media img {
+    transform: scale(1.04);
+}
+
+#siteRedesign #popularTours .th-card-media::after {
+    position: absolute;
+    inset: 35% 0 0;
+    content: "";
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.55) 45%, rgba(0, 0, 0, 0.9) 100%);
+    pointer-events: none;
+}
+
+/* badge and duration sit side by side in the top corner */
+#siteRedesign #popularTours .th-badge,
+#siteRedesign #popularTours .th-chip {
+    position: relative;
+    inset: auto;
+    z-index: 3;
+    gap: 6px;
+    height: 30px;
+    padding: 0 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#siteRedesign #popularTours .th-badge {
+    background: #E11D48;
+}
+
+#siteRedesign #popularTours .th-badge i {
+    color: #FFFFFF;
+    font-size: 11px;
+}
+
+#siteRedesign #popularTours .th-chip {
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(17, 24, 39, 0.45);
+    backdrop-filter: blur(4px);
+}
+
+#siteRedesign #popularTours .th-chip i {
+    font-size: 12px;
+}
+
+#siteRedesign #popularTours .th-card-body {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 2;
+    padding: 18px 20px 20px;
+    color: #FFFFFF;
+    pointer-events: none;
+}
+
+#siteRedesign #popularTours .th-card-body a {
+    pointer-events: auto;
+}
+
+#siteRedesign #popularTours .th-location {
+    order: -1;
+    align-items: flex-start;
+    margin: 0 0 6px;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 14px;
+}
+
+#siteRedesign #popularTours .th-location > i {
+    margin-top: 3px;
+    color: #FFFFFF;
+    font-size: 13px;
+}
+
+#siteRedesign #popularTours .th-name {
+    margin: 0 0 10px;
+    font-size: 20px;
+    line-height: 1.3;
+}
+
+#siteRedesign #popularTours .th-name a,
+#siteRedesign #popularTours .th-price {
+    color: #FFFFFF;
+}
+
+#siteRedesign #popularTours .th-name a:hover {
+    color: #DBEAFE;
+}
+
+#siteRedesign #popularTours .th-pills {
+    max-height: 24px;
+    overflow: hidden;
+}
+
+#siteRedesign #popularTours .th-pill {
+    flex: 0 0 auto;
+    background: rgba(255, 255, 255, 0.16);
+    color: #FFFFFF;
+}
+
+#siteRedesign #popularTours .th-footer {
+    align-items: center;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#siteRedesign #popularTours .th-price-label {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 14px;
+}
+
+#siteRedesign #popularTours .th-price {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+/* round arrow button; the "View" text stays for screen readers */
+#siteRedesign #popularTours .th-view-btn {
+    flex: 0 0 auto;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 50%;
+    background: #2563EB;
+    color: #FFFFFF;
+    font-size: 0;
+}
+
+#siteRedesign #popularTours .th-view-btn i {
+    margin: 0;
+    font-size: 17px;
+}
+
+#siteRedesign #popularTours .th-view-btn:hover {
+    background: #1D4ED8;
+    color: #FFFFFF;
+}
+
+#siteRedesign #popularTours .th-view-btn i {
+    transform: scaleX(-1);
+}
+
 #siteRedesign .home-flight-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 16px;
 }
 
@@ -7906,6 +8080,7 @@ a i {
 #siteRedesign .home-flight-card {
     position: relative;
     display: flex;
+    flex-direction: column;
     min-width: 0;
     background: #FFFFFF;
     border: 1px solid #E5EAF2;
@@ -7983,7 +8158,7 @@ a i {
 
 #siteRedesign .hfc-point {
     display: flex;
-    flex: 0 1 38%;
+    flex: 0 1 40%;
     flex-direction: column;
     min-width: 0;
     line-height: 1.3;
@@ -8052,25 +8227,23 @@ a i {
     color: #2563EB;
 }
 
-/* fare stub: dashed tear line with half-circle cutouts top and bottom */
+/* fare stub: dashed tear line with half-circle cutouts on both sides */
 #siteRedesign .hfc-fare {
     position: relative;
-    display: flex;
-    flex: 0 0 132px;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "label btn" "price btn" "per btn";
     align-items: center;
-    justify-content: center;
-    gap: 2px;
-    padding: 16px 12px;
-    border-left: 2px dashed #D6DEEA;
-    text-align: center;
+    gap: 0 10px;
+    padding: 14px 16px;
+    border-top: 2px dashed #D6DEEA;
 }
 
 #siteRedesign .hfc-fare::before,
 #siteRedesign .hfc-fare::after {
     content: "";
     position: absolute;
-    left: -12px;
+    top: -12px;
     width: 22px;
     height: 22px;
     background: #FFFFFF;
@@ -8079,14 +8252,19 @@ a i {
 }
 
 #siteRedesign .hfc-fare::before {
-    top: -12px;
-    clip-path: inset(50% 0 0 0);
+    left: -12px;
+    clip-path: inset(0 0 0 50%);
 }
 
 #siteRedesign .hfc-fare::after {
-    bottom: -12px;
-    clip-path: inset(0 0 50% 0);
+    right: -12px;
+    clip-path: inset(0 50% 0 0);
 }
+
+#siteRedesign .hfc-fare-label { grid-area: label; }
+#siteRedesign .hfc-price { grid-area: price; }
+#siteRedesign .hfc-per { grid-area: per; }
+#siteRedesign .hfc-view-btn { grid-area: btn; }
 
 #siteRedesign .hfc-fare-label,
 #siteRedesign .hfc-per {
@@ -8098,7 +8276,7 @@ a i {
     color: #111827;
     font-size: 20px;
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.25;
     white-space: nowrap;
 }
 
@@ -8107,23 +8285,14 @@ a i {
     font-weight: 600;
 }
 
-#siteRedesign .hfc-barcode {
-    display: block;
-    width: 92px;
-    height: 24px;
-    margin: 10px 0 12px;
-    background: repeating-linear-gradient(90deg, #1F2937 0 2px, transparent 2px 4px, #1F2937 4px 5px, transparent 5px 8px, #1F2937 8px 11px, transparent 11px 13px);
-    opacity: 0.8;
-}
-
 #siteRedesign .hfc-view-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    min-width: 100px;
+    min-width: 0;
     height: 36px;
-    padding: 0 14px;
+    padding: 0 16px;
     border: 1.5px solid #2563EB;
     border-radius: 999px;
     color: #2563EB;
@@ -8139,70 +8308,16 @@ a i {
     color: #FFFFFF;
 }
 
-@media (max-width: 1279px) {
+@media (max-width: 1023px) {
     #siteRedesign .home-flight-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 639px) {
     #siteRedesign .home-flight-grid {
         grid-template-columns: minmax(0, 1fr);
-        gap: 16px;
-    }
-}
-
-@media (max-width: 639px) {
-    /* the fare stub moves under the route, torn along a horizontal line */
-    #siteRedesign .home-flight-card {
-        flex-direction: column;
-    }
-
-    #siteRedesign .hfc-main {
-        padding: 16px;
-    }
-
-    #siteRedesign .hfc-code {
-        font-size: 22px;
-    }
-
-    #siteRedesign .hfc-fare {
-        display: grid;
-        flex: 0 0 auto;
-        grid-template-columns: 1fr auto;
-        grid-template-areas: "label btn" "price btn" "per btn";
-        align-items: center;
-        gap: 0 12px;
-        padding: 14px 16px;
-        border-left: 0;
-        border-top: 2px dashed #D6DEEA;
-        text-align: left;
-    }
-
-    #siteRedesign .hfc-fare::before,
-    #siteRedesign .hfc-fare::after {
-        top: -12px;
-        bottom: auto;
-    }
-
-    #siteRedesign .hfc-fare::before {
-        left: -12px;
-        clip-path: inset(0 0 0 50%);
-    }
-
-    #siteRedesign .hfc-fare::after {
-        right: -12px;
-        left: auto;
-        clip-path: inset(0 50% 0 0);
-    }
-
-    #siteRedesign .hfc-fare-label { grid-area: label; }
-    #siteRedesign .hfc-price { grid-area: price; }
-    #siteRedesign .hfc-per { grid-area: per; }
-    #siteRedesign .hfc-view-btn { grid-area: btn; }
-
-    #siteRedesign .hfc-barcode {
-        display: none;
+        gap: 12px;
     }
 }
 
@@ -8212,15 +8327,6 @@ a i {
 #siteRedesign .hfc-meta i { margin-right: 0; margin-left: 4px; transform: scaleX(-1); }
 #siteRedesign .hfc-meta .fa-calendar { transform: none; }
 #siteRedesign .hfc-view-btn i { transform: scaleX(-1); }
-#siteRedesign .hfc-fare { border-left: 0; border-right: 2px dashed #D6DEEA; }
-#siteRedesign .hfc-fare::before,
-#siteRedesign .hfc-fare::after { left: auto; right: -12px; }
-
-@media (max-width: 639px) {
-    #siteRedesign .hfc-fare { border-right: 0; text-align: right; }
-    #siteRedesign .hfc-fare::before { right: auto; left: -12px; }
-    #siteRedesign .hfc-fare::after { right: -12px; left: auto; }
-}
 
 #siteRedesign .th-card {
     display: flex;
@@ -11300,7 +11406,7 @@ a.tl-page-btn:hover { border-color: var(--tl-blue); color: var(--tl-blue); }
 
 .fl-card {
     display: grid;
-    grid-template-columns: 170px minmax(0, 1fr) 180px;
+    grid-template-columns: minmax(0, 1fr) 200px;
     overflow: hidden;
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 14px;
@@ -11318,26 +11424,46 @@ a.tl-page-btn:hover { border-color: var(--tl-blue); color: var(--tl-blue); }
     display: none;
 }
 
+.fl-main {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    padding: 12px 18px 10px;
+}
+
+/* airline identity: logo tile, name + flight number, stops badge */
 .fl-airline {
     display: flex;
     align-items: center;
     gap: 10px;
     min-width: 0;
-    padding: 12px 14px;
-    border-right: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.fl-airline img {
+.fl-airline-logo {
+    display: inline-flex;
     flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
     width: 34px;
     height: 34px;
+    padding: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 9px;
+    background: #FFFFFF;
+}
+
+.fl-airline-logo img {
+    width: 100%;
+    height: 100%;
     object-fit: contain;
 }
 
-.fl-airline div {
+.fl-airline > div {
     display: flex;
     flex-direction: column;
     min-width: 0;
+    line-height: 1.3;
 }
 
 .fl-airline b {
@@ -11345,7 +11471,6 @@ a.tl-page-btn:hover { border-color: var(--tl-blue); color: var(--tl-blue); }
     color: #000000;
     font-size: 13px;
     font-weight: 600;
-    line-height: 1.3;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -11355,110 +11480,165 @@ a.tl-page-btn:hover { border-color: var(--tl-blue); color: var(--tl-blue); }
     font-size: 11px;
 }
 
+.fl-stops-badge {
+    flex-shrink: 0;
+    margin-left: auto;
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.05);
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.fl-stops-badge.is-direct {
+    background: rgba(37, 99, 235, 0.08);
+    color: #2563EB;
+}
+
 .fl-legs {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 6px;
+    gap: 10px;
     min-width: 0;
-    padding: 10px 16px;
 }
 
+/* route: airports at the ends, a solid blue track with the duration on it */
 .fl-leg {
     display: grid;
-    grid-template-columns: 64px minmax(0, 1fr) 64px 110px;
-    align-items: center;
-    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) minmax(120px, 1.1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 6px 14px;
+}
+
+.fl-leg-label {
+    grid-column: 1 / -1;
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
 }
 
 .fl-point {
     display: flex;
     flex-direction: column;
-    line-height: 1.15;
+    gap: 2px;
+    min-width: 0;
 }
 
 .fl-point.is-end {
+    align-items: flex-end;
     text-align: right;
+}
+
+.fl-point-top {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    line-height: 1.1;
 }
 
 .fl-point b {
     color: #000000;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 700;
+    letter-spacing: 0.3px;
 }
 
-.fl-point span {
-    color: rgba(0, 0, 0, 0.6);
+.fl-clock {
+    color: rgba(0, 0, 0, 0.75);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.fl-place {
+    display: -webkit-box;
+    overflow: hidden;
+    color: rgba(0, 0, 0, 0.55);
     font-size: 11px;
-    font-weight: 500;
+    line-height: 1.35;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
 .fl-line {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 4px;
     min-width: 0;
-    line-height: 1.2;
+    padding-top: 2px;
 }
 
-.fl-line small {
-    color: rgba(0, 0, 0, 0.55);
-    font-size: 10.5px;
-    white-space: nowrap;
-}
-
-.fl-line small.is-direct {
+.fl-duration {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(37, 99, 235, 0.08);
     color: #2563EB;
+    font-size: 11px;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .fl-track {
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     width: 100%;
-    height: 12px;
+    height: 14px;
+    padding-right: 10px;
 }
 
+/* the line itself, with a hollow marker at the departure end */
 .fl-track::before {
     content: "";
     position: absolute;
     left: 0;
     right: 0;
     top: 50%;
-    border-top: 1px dashed rgba(0, 0, 0, 0.2);
+    border-top: 1.5px solid rgba(37, 99, 235, 0.55);
+}
+
+.fl-track::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border: 1.5px solid #2563EB;
+    border-radius: 50%;
+    background: #FFFFFF;
+    transform: translateY(-50%);
 }
 
 .fl-track i {
     position: relative;
-    padding: 0 4px;
+    padding: 0 3px;
     background: #FFFFFF;
     color: #2563EB;
-    font-size: 10px;
-}
-
-.fl-date {
-    overflow: hidden;
-    color: rgba(0, 0, 0, 0.5);
     font-size: 11px;
-    text-align: right;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .fl-extras {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 4px 14px;
-    padding-top: 6px;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    gap: 4px 16px;
+    padding-top: 7px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
     color: rgba(0, 0, 0, 0.65);
-    font-size: 11px;
+    font-size: 11.5px;
 }
 
 .fl-extras i {
+    margin-right: 3px;
     color: rgba(0, 0, 0, 0.45);
 }
 
@@ -11477,15 +11657,32 @@ a.tl-page-btn:hover { border-color: var(--tl-blue); color: var(--tl-blue); }
     color: #2563EB;
 }
 
+/* fare summary panel */
 .fl-price {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 8px;
-    padding: 12px 14px;
-    border-left: 1px solid rgba(0, 0, 0, 0.06);
-    background: rgba(37, 99, 235, 0.03);
-    text-align: right;
+    gap: 10px;
+    padding: 14px 16px;
+    border-left: 1px solid rgba(37, 99, 235, 0.12);
+    background: rgba(37, 99, 235, 0.04);
+}
+
+.fl-price > div {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.fl-fare-type {
+    align-self: flex-start;
+    margin-bottom: 6px;
+    padding: 2px 8px;
+    border: 1px solid rgba(37, 99, 235, 0.25);
+    border-radius: 6px;
+    color: #2563EB;
+    font-size: 10.5px;
+    font-weight: 600;
 }
 
 .fl-price small {
@@ -11496,9 +11693,9 @@ a.tl-page-btn:hover { border-color: var(--tl-blue); color: var(--tl-blue); }
 
 .fl-price b {
     color: #000000;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.25;
     white-space: nowrap;
 }
 
@@ -11508,7 +11705,7 @@ a.tl-page-btn:hover { border-color: var(--tl-blue); color: var(--tl-blue); }
     justify-content: center;
     gap: 6px;
     width: 100%;
-    height: 36px;
+    height: 38px;
     border: 0;
     border-radius: 10px;
     background: #2563EB;
@@ -11683,44 +11880,46 @@ a.tl-page-btn:hover { border-color: var(--tl-blue); color: var(--tl-blue); }
 
 @media (max-width: 1279px) {
     .fl-card {
-        grid-template-columns: 150px minmax(0, 1fr) 160px;
+        grid-template-columns: minmax(0, 1fr) 172px;
+    }
+
+    .fl-main {
+        padding: 12px 14px 10px;
     }
 
     .fl-leg {
-        grid-template-columns: 60px minmax(0, 1fr) 60px;
-    }
-
-    .fl-date {
-        display: none;
+        grid-template-columns: minmax(0, 1fr) minmax(96px, 0.9fr) minmax(0, 1fr);
+        gap: 6px 10px;
     }
 }
 
 @media (max-width: 767px) {
+    /* fare summary moves under the route */
     .fl-card {
         grid-template-columns: minmax(0, 1fr);
     }
 
-    .fl-airline {
-        padding: 10px 14px 0;
-        border-right: 0;
+    .fl-leg {
+        grid-template-columns: minmax(0, 1fr) 84px minmax(0, 1fr);
     }
 
-    .fl-legs {
-        padding: 8px 14px;
+    .fl-point b {
+        font-size: 18px;
     }
 
     .fl-price {
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
+        padding: 12px 14px;
         border-left: 0;
-        border-top: 1px solid rgba(0, 0, 0, 0.06);
-        text-align: left;
+        border-top: 1px solid rgba(37, 99, 235, 0.12);
     }
 
     .fl-book-btn {
         width: auto;
-        padding: 0 18px;
+        height: 42px;
+        padding: 0 22px;
     }
 
     .fl-seg-bags {
@@ -11729,17 +11928,21 @@ a.tl-page-btn:hover { border-color: var(--tl-blue); color: var(--tl-blue); }
 }
 
 /* Flight results: right-to-left */
-.fl-airline { border-right: 0; border-left: 1px solid rgba(0, 0, 0, 0.06); }
-.fl-price { border-left: 0; border-right: 1px solid rgba(0, 0, 0, 0.06); text-align: left; }
-.fl-point.is-end, .fl-date, .fl-seg-route .is-end, .fl-seg-bags { text-align: left; }
+.fl-price { border-left: 0; border-right: 1px solid rgba(37, 99, 235, 0.12); }
+.fl-stops-badge { margin-left: 0; margin-right: auto; }
+.fl-point.is-end { align-items: flex-start; text-align: left; }
+.fl-track { justify-content: flex-start; padding-right: 0; padding-left: 10px; }
+.fl-track::after { left: auto; right: 0; }
+.fl-extras i { margin-right: 0; margin-left: 3px; }
+.fl-fare-type { align-self: flex-start; }
+.fl-seg-route .is-end, .fl-seg-bags { text-align: left; }
 .fl-details-btn, .fl-seg-bags { margin-left: 0; margin-right: auto; }
 .fl-track i, .fl-book-btn i, .fl-modal-head b i, .tl-title-arrow { transform: scaleX(-1); }
 .fl-modal-panel { text-align: right; }
 .fl-modal-close { right: auto; left: 14px; }
 .fl-modal-head { padding-right: 0; padding-left: 40px; }
 @media (max-width: 767px) {
-    .fl-airline { border-left: 0; }
-    .fl-price { border-right: 0; text-align: right; }
+    .fl-price { border-right: 0; }
 }
 
 

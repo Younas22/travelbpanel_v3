@@ -24,5 +24,7 @@
   "evening": "晚上",
   "transit_hours": "中转时长",
   "luggage": "行李",
-  "reset_filters": "重置筛选"
+  "reset_filters": "重置筛选",
+  "cabin_bag": "手提",
+  "checked_bag": "托运"
 }

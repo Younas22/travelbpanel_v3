@@ -240,45 +240,69 @@
                              data-duration="{{ $toMinutes($first['total_duration'] ?? '') }}"
                              data-dep-time="{{ $first['departure']['time'] ?? '' }}">
 
-                            <div class="fl-airline">
-                                <img src="{{ $logoUrl($first['carrier']['operating']) }}" alt="" onerror="this.onerror=null;this.src='{{ url('public/assets/images/list-plane.png') }}';">
-                                <div>
-                                    <b>{{ $first['airline_name'] ?? $first['carrier']['operating'] }}</b>
-                                    <small>{{ $first['flight_number'] ?? '' }}</small>
-                                </div>
-                            </div>
-
-                            <div class="fl-legs">
-                                @foreach($legs as $legIndex => $leg)
-                                    @php $legStops = count($leg) - 1; $legLast = end($leg); @endphp
-                                    <div class="fl-leg">
-                                        <div class="fl-point">
-                                            <b>{{ $leg[0]['departure']['time'] }}</b>
-                                            <span>{{ $leg[0]['departure']['airport'] }}</span>
-                                        </div>
-                                        <div class="fl-line">
-                                            <small>{{ $leg[0]['total_duration'] ?? '' }}</small>
-                                            <span class="fl-track"><i class="fas fa-plane"></i></span>
-                                            <small class="{{ $legStops == 0 ? 'is-direct' : '' }}">{{ $stopsLabel($legStops) }}</small>
-                                        </div>
-                                        <div class="fl-point is-end">
-                                            <b>{{ $legLast['arrival']['time'] }}</b>
-                                            <span>{{ $legLast['arrival']['airport'] }}</span>
-                                        </div>
-                                        <div class="fl-date">{{ $leg[0]['departure']['date_convert'] ?? '' }}</div>
+                            @php
+                                $cabinBag = isset($first['cabin_baggage']) && $first['cabin_baggage'] !== '' ? $baggageLabel($first['cabin_baggage']) : null;
+                                $outStops = count($segment['segments'][0]) - 1;
+                            @endphp
+                            <div class="fl-main">
+                                <div class="fl-airline">
+                                    <span class="fl-airline-logo">
+                                        <img src="{{ $logoUrl($first['carrier']['operating']) }}" alt="" onerror="this.onerror=null;this.src='{{ url('public/assets/images/list-plane.png') }}';">
+                                    </span>
+                                    <div>
+                                        <b>{{ $first['airline_name'] ?? $first['carrier']['operating'] }}</b>
+                                        <small>{{ $first['carrier']['operating'] }} {{ $first['flight_number'] ?? '' }}</small>
                                     </div>
-                                @endforeach
+                                    <span class="fl-stops-badge {{ $outStops == 0 ? 'is-direct' : '' }}">{{ $stopsLabel($outStops) }}</span>
+                                </div>
+
+                                <div class="fl-legs">
+                                    @foreach($legs as $legIndex => $leg)
+                                        @php $legStops = count($leg) - 1; $legLast = end($leg); @endphp
+                                        <div class="fl-leg">
+                                            @if($isRound)
+                                                <span class="fl-leg-label">{{ $legIndex === 0 ? t('flightlist.outbound') : t('flightform.return') }}@if($legIndex > 0) · {{ $stopsLabel($legStops) }}@endif</span>
+                                            @endif
+                                            <div class="fl-point">
+                                                <span class="fl-point-top"><b>{{ $leg[0]['departure']['airport'] }}</b> <span class="fl-clock">{{ $leg[0]['departure']['time'] }}</span></span>
+                                                <span class="fl-place">{{ collect([$leg[0]['departure']['city_name'] ?? null, $leg[0]['departure']['airport_name'] ?? null])->filter()->unique()->implode(' · ') }}</span>
+                                            </div>
+                                            <div class="fl-line" aria-hidden="true">
+                                                @if(!empty($leg[0]['total_duration']))
+                                                    <small class="fl-duration"><i class="far fa-clock"></i> {{ $leg[0]['total_duration'] }}</small>
+                                                @endif
+                                                <span class="fl-track"><i class="fas fa-plane"></i></span>
+                                            </div>
+                                            <div class="fl-point is-end">
+                                                <span class="fl-point-top"><span class="fl-clock">{{ $legLast['arrival']['time'] }}</span> <b>{{ $legLast['arrival']['airport'] }}</b></span>
+                                                <span class="fl-place">{{ collect([$legLast['arrival']['city_name'] ?? null, $legLast['arrival']['airport_name'] ?? null])->filter()->unique()->implode(' · ') }}</span>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+
                                 <div class="fl-extras">
-                                    <span><i class="fas fa-suitcase"></i> {{ $first['cabin_baggage'] ?? '7 kg' }}</span>
-                                    <span><i class="fas fa-suitcase-rolling"></i> {{ $baggageLabel($first['baggage'] ?? null) }}</span>
+                                    @foreach($legs as $leg)
+                                        @if(!empty($leg[0]['departure']['date_convert']))
+                                            <span><i class="far fa-calendar"></i> {{ $leg[0]['departure']['date_convert'] }}</span>
+                                        @endif
+                                    @endforeach
+                                    @if($cabinBag)
+                                        <span><i class="fas fa-suitcase"></i> {{ t('flightlist.cabin_bag') }}: {{ $cabinBag }}</span>
+                                    @endif
+                                    <span><i class="fas fa-suitcase-rolling"></i> {{ t('flightlist.checked_bag') }}: {{ $baggageLabel($first['baggage'] ?? null) }}</span>
                                     <button type="button" class="fl-details-btn" data-fl-open="{{ $modalId }}"><i class="fas fa-circle-info"></i> Details</button>
                                 </div>
                             </div>
 
                             <div class="fl-price">
                                 <div>
+                                    @if(!empty($first['class']))
+                                        <span class="fl-fare-type">{{ ucwords(str_replace('_', ' ', $first['class'])) }}</span>
+                                    @endif
                                     <small>{{ t('flightlist.total_fare') }}</small>
                                     <b>{{ $activeCurrency->currency_name }} {{ number_format($price, 2) }}</b>
+                                    <small>{{ $flight_search['passenger_count'] ?? 1 }} {{ ($flight_search['passenger_count'] ?? 1) == 1 ? t('flightform.passenger') : t('flightform.passengers') }}</small>
                                 </div>
                                 <form action="{{ route('flights.booking') }}" method="post">
                                     @csrf
@@ -304,7 +328,7 @@
                                                     <img src="{{ $logoUrl($seg['carrier']['operating']) }}" alt="" onerror="this.onerror=null;this.src='{{ url('public/assets/images/list-plane.png') }}';">
                                                     <div><b>{{ $seg['airline_name'] }}</b><small>{{ $seg['flight_number'] }}</small></div>
                                                     <div class="fl-seg-bags">
-                                                        <span><i class="fas fa-suitcase"></i> {{ $seg['cabin_baggage'] ?? '7 kg' }}</span>
+                                                        @if(isset($seg['cabin_baggage']) && $seg['cabin_baggage'] !== '')<span><i class="fas fa-suitcase"></i> {{ $baggageLabel($seg['cabin_baggage']) }}</span>@endif
                                                         <span><i class="fas fa-suitcase-rolling"></i> {{ $baggageLabel($seg['baggage'] ?? null) }}</span>
                                                     </div>
                                                 </div>

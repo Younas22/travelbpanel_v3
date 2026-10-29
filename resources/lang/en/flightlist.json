@@ -11,7 +11,7 @@
   "outbound": "Outbound",
   "pc": "PC",
   "nonstop": "Non Stop",
-  "direct": "Directe",
+  "direct": "Direct",
   "no_flights_found": "No Flights Found",
   "no_flights_message": "We couldn’t find any flights matching your search criteria. Try adjusting your destination, dates, or passenger details.",
   "search_again": "Search Again",
@@ -24,5 +24,7 @@
   "evening": "Evening",
   "transit_hours": "Transit Hours",
   "luggage": "Luggage",
-  "reset_filters": "Reset Filters"
+  "reset_filters": "Reset Filters",
+  "cabin_bag": "Cabin",
+  "checked_bag": "Checked"
 }

@@ -24,5 +24,7 @@
   "evening": "Soir",
   "transit_hours": "Heures d'Escale",
   "luggage": "Bagages",
-  "reset_filters": "Réinitialiser les Filtres"
+  "reset_filters": "Réinitialiser les Filtres",
+  "cabin_bag": "Cabine",
+  "checked_bag": "En soute"
 }

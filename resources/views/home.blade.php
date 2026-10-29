@@ -517,7 +517,6 @@
                             <span class="hfc-fare-label">{{ t('home.starting_from') }}</span>
                             <span class="hfc-price"><small>{{ $active_currency->currency_name }}</small> {{ convertCurrency($usdPrice, 'USD', $active_currency->currency_name) }}</span>
                             <span class="hfc-per">{{ t('home.per_adult') }}</span>
-                            <span class="hfc-barcode" aria-hidden="true"></span>
                             <a href="{{ $dealUrl }}" class="hfc-view-btn">{{ t('home.view') }} <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </article>

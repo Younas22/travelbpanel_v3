@@ -24,5 +24,7 @@
   "evening": "Avond",
   "transit_hours": "Overstaptijd",
   "luggage": "Bagage",
-  "reset_filters": "Filters Resetten"
+  "reset_filters": "Filters Resetten",
+  "cabin_bag": "Cabine",
+  "checked_bag": "Ingecheckt"
 }

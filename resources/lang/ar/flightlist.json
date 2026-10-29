@@ -24,5 +24,7 @@
   "evening": "المساء",
   "transit_hours": "ساعات التوقف",
   "luggage": "الأمتعة",
-  "reset_filters": "إعادة تعيين الفلاتر"
+  "reset_filters": "إعادة تعيين الفلاتر",
+  "cabin_bag": "المقصورة",
+  "checked_bag": "مسجلة"
 }
