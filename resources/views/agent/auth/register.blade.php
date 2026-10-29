@@ -306,326 +306,259 @@
 
 
 {{-- ══ HERO ══ --}}
-<section class="ag-hero">
-    <div class="ag-hero-grid"></div>
-    <div class="ag-hero-inner">
-        <div class="ag-badge">
-            <i class="fas fa-shield-alt"></i>&nbsp; Trusted by 100+ Travel Agents
+@php $apBusiness = getSetting('business_name', 'main', 'TravelBookingPanel'); @endphp
+<div class="ap-page">
+<section class="ap-hero">
+    <div class="ap-inner ap-hero-grid">
+        <div class="ap-hero-text">
+            <span class="ap-badge"><i class="fas fa-shield-halved"></i> Trusted by 100+ Travel Agents</span>
+            <h1 class="ap-hero-title">
+                Become a <span>Travel Agent</span> &amp; <span>Start Your Business Today</span>
+            </h1>
+            <p class="ap-hero-sub">
+                Sell flights, hotels, tours, Umrah packages &amp; visa services — all from one powerful dashboard.
+                Earn commission on every booking with no upfront costs.
+            </p>
+            <div class="ap-hero-btns">
+                <a href="#register-form" class="ap-btn"><i class="fas fa-user-plus"></i> Become a Travel Agent</a>
+                <a href="#how-it-works" class="ap-btn is-outline"><i class="fas fa-circle-play"></i> How It Works</a>
+            </div>
         </div>
-        <h1>
-            Become a Travel <span>Agent</span> &amp;<br>Start Your Business Today
-        </h1>
-        <p class="ag-hero-sub">
-            Sell flights, hotels, tours, Umrah packages &amp; visa services —
-            all from one dashboard, earning commission on every booking. No upfront costs.
-        </p>
-        <div class="ag-hero-btns">
-            <button class="btn-ag-primary" onclick="openModal()">
-                <i class="fas fa-rocket"></i> Become a Travel Agent
-            </button>
-            <a href="#how-it-works" class="btn-ag-ghost">
-                <i class="fas fa-play-circle"></i> How It Works
-            </a>
-        </div>
-        <div class="ag-stats">
-            <div class="ag-stat"><div class="ag-stat-n">100+</div><div class="ag-stat-l">Active Agents</div></div>
-            <div class="ag-stat"><div class="ag-stat-n">50K+</div><div class="ag-stat-l">Bookings</div></div>
-            <div class="ag-stat"><div class="ag-stat-n">Worldwide</div><div class="ag-stat-l">Presence</div></div>
-            <div class="ag-stat"><div class="ag-stat-n">24/7</div><div class="ag-stat-l">Support</div></div>
-        </div>
-    </div>
-</section>
 
-
-{{-- ══ TRUST STRIP ══ --}}
-<div class="ag-trust">
-    <div class="ag-trust-inner">
-        <div class="ag-ti"><i class="fas fa-shield-alt"></i> Secure Platform</div>
-        <div class="ag-ti"><i class="fas fa-bolt"></i> Instant Access</div>
-        <div class="ag-ti"><i class="fas fa-globe"></i> Global Inventory</div>
-        <div class="ag-ti"><i class="fas fa-dollar-sign"></i> Earn Commission</div>
-        <div class="ag-ti"><i class="fas fa-headset"></i> Dedicated Support</div>
-        <div class="ag-ti"><i class="fas fa-mobile-alt"></i> Mobile Dashboard</div>
-    </div>
-</div>
-
-
-{{-- ══ MODULES ══ --}}
-<section class="ag-sec-sm" style="background:#fff;">
-    <div class="ag-inner">
-        <div style="text-align:center; margin-bottom:28px;">
-            <div class="ag-eyebrow" style="justify-content:center;">What You Can Sell</div>
-            <h2 class="ag-h">One Account, <span>Every Travel Product</span></h2>
-            <p class="ag-p" style="margin:0 auto; text-align:center;">Sell across all our modules from a single dashboard — no separate signups.</p>
-        </div>
-        <div class="ag-row">
-            @php
-                $mod_cards = [
-                    ['fas fa-plane',    'Flights', 'Domestic & international flight bookings.'],
-                    ['fas fa-hotel',    'Hotels',  'Thousands of hotels worldwide, best rates.'],
-                    ['fas fa-suitcase', 'Tours',   'Curated tour packages for every budget.'],
-                    ['fas fa-mosque',   'Umrah',   'Umrah packages with flights & stay included.'],
-                    ['fas fa-passport', 'Visa',    'Visa processing & documentation support.'],
-                ];
-            @endphp
-            @foreach($mod_cards as [$ico, $title, $desc])
-            <div class="ag-col" style="flex:1; min-width:170px;">
-                <div class="ben-card" style="text-align:center;">
-                    <div class="ben-ico" style="margin:0 auto 12px;"><i class="{{ $ico }}"></i></div>
-                    <h6>{{ $title }}</h6>
-                    <p>{{ $desc }}</p>
+        {{-- Illustrative dashboard + phone (decorative; built in HTML/CSS, no real data) --}}
+        <div class="ap-devices" aria-hidden="true">
+            <div class="ap-laptop">
+                <div class="ap-laptop-screen">
+                    <div class="ap-dash">
+                        <div class="ap-dash-side">
+                            <span class="ap-dash-logo"></span>
+                            @foreach(['fa-gauge', 'fa-plane', 'fa-hotel', 'fa-umbrella-beach', 'fa-kaaba', 'fa-passport', 'fa-wallet'] as $i => $icon)
+                                <span class="ap-dash-nav {{ $i === 0 ? 'is-active' : '' }}"><i class="fas {{ $icon }}"></i><b></b></span>
+                            @endforeach
+                        </div>
+                        <div class="ap-dash-main">
+                            <div class="ap-dash-top"><b>Dashboard</b><span></span></div>
+                            <div class="ap-dash-cards">
+                                @foreach(['fa-ticket', 'fa-sack-dollar', 'fa-users', 'fa-chart-line'] as $icon)
+                                    <div class="ap-dash-card"><i class="fas {{ $icon }}"></i><b></b><span></span></div>
+                                @endforeach
+                            </div>
+                            <div class="ap-dash-row">
+                                <div class="ap-dash-chart">
+                                    <span class="ap-dash-label"></span>
+                                    <div class="ap-bars">
+                                        @for($b = 0; $b < 12; $b++)<i></i>@endfor
+                                    </div>
+                                </div>
+                                <div class="ap-dash-list">
+                                    <span class="ap-dash-label"></span>
+                                    @for($r = 0; $r < 5; $r++)
+                                        <div class="ap-dash-item"><i></i><b></b><span></span></div>
+                                    @endfor
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ap-laptop-base"></div>
+            </div>
+            <div class="ap-phone">
+                <div class="ap-phone-screen">
+                    <div class="ap-phone-head"><span></span><b>{{ $apBusiness }}</b></div>
+                    <div class="ap-phone-search"><i class="fas fa-magnifying-glass"></i><span></span></div>
+                    <div class="ap-phone-grid">
+                        @foreach([['fa-plane', 'Flights'], ['fa-hotel', 'Hotels'], ['fa-umbrella-beach', 'Tours'], ['fa-kaaba', 'Umrah'], ['fa-passport', 'Visa'], ['fa-ticket', 'Bookings']] as [$icon, $label])
+                            <span><i class="fas {{ $icon }}"></i>{{ $label }}</span>
+                        @endforeach
+                    </div>
+                    <div class="ap-phone-card"><i></i><div><b></b><span></span></div></div>
+                    <div class="ap-phone-card"><i></i><div><b></b><span></span></div></div>
+                    <div class="ap-phone-btn">Book Now</div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="ap-inner">
+        <div class="ap-stats">
+            @foreach([['fa-user-tie', '100+', 'Active Agents'], ['fa-ticket', '50K+', 'Bookings'], ['fa-earth-americas', 'Worldwide', 'Presence'], ['fa-headset', '24/7', 'Support']] as [$icon, $value, $label])
+                <div class="ap-stat">
+                    <span class="ap-ico"><i class="fas {{ $icon }}"></i></span>
+                    <div><b>{{ $value }}</b><small>{{ $label }}</small></div>
+                </div>
             @endforeach
         </div>
     </div>
 </section>
 
-
-{{-- ══ BENEFITS ══ --}}
-<section class="ag-sec" style="background: var(--surface);">
-    <div class="ag-inner">
-        <div class="ag-row" style="align-items:center;">
-            <div class="ag-col ag-col-4" style="min-width:260px; flex:1;">
-                <div class="ag-eyebrow">Why Choose Us</div>
-                <h2 class="ag-h">Everything to Run Your <span>Travel Business</span></h2>
-                <p class="ag-p">All the tools top travel agencies use — available from day one, with zero upfront costs.</p>
-                <button class="btn-ag-primary mt-4" onclick="openModal()" style="margin-top:20px;">
-                    <i class="fas fa-user-plus"></i> Join Free
-                </button>
-            </div>
-            <div class="ag-col" style="flex:2; min-width:280px;">
-                <div class="ag-row">
-                    @php
-                        $benefits = [
-                            ['fas fa-globe-americas',   'All-in-One Platform',   'Flights, hotels, tours, Umrah & visa — one login, one dashboard.'],
-                            ['fas fa-chart-line',       'Earn Commission',       'Set your markup and earn on every booking across every module.'],
-                            ['fas fa-tachometer-alt',   'Ready-to-Use System',   'Log in and start selling immediately — no technical setup needed.'],
-                            ['fas fa-lock',             'Secure Payments',       'Enterprise-grade security on every transaction, always.'],
-                            ['fas fa-file-invoice',     'Instant Invoices',      'Auto-generate professional invoices and e-tickets for clients.'],
-                            ['fas fa-headset',          'Dedicated Support',     '24/7 agent support whenever you need help closing a sale.'],
-                        ];
-                    @endphp
-                    @foreach($benefits as [$ico, $title, $desc])
-                    <div class="ag-col ag-col-6">
-                        <div class="ben-card">
-                            <div class="ben-ico"><i class="{{ $ico }}"></i></div>
-                            <h6>{{ $title }}</h6>
-                            <p>{{ $desc }}</p>
-                        </div>
-                    </div>
-                    @endforeach
+{{-- ══ SERVICES ══ --}}
+<section class="ap-sec">
+    <div class="ap-inner">
+        <div class="ap-head is-center">
+            <span class="ap-eyebrow">One Account, Every Travel Product</span>
+            <h2 class="ap-title">Sell Across <span>All Travel Services</span></h2>
+            <p class="ap-sub">From flights to hotels, tours, Umrah and visa — everything in one dashboard.</p>
+        </div>
+        <div class="ap-services">
+            @foreach([
+                ['fa-plane', 'Flights', 'Domestic & international flight bookings.'],
+                ['fa-hotel', 'Hotels', 'Thousands of hotels worldwide, best rates.'],
+                ['fa-umbrella-beach', 'Tours', 'Curated tour packages for every budget.'],
+                ['fa-kaaba', 'Umrah', 'Umrah packages with flights & stay included.'],
+                ['fa-passport', 'Visa', 'Visa processing & documentation support.'],
+            ] as [$icon, $title, $desc])
+                <div class="ap-card is-center">
+                    <span class="ap-ico is-lg"><i class="fas {{ $icon }}"></i></span>
+                    <h3>{{ $title }}</h3>
+                    <p>{{ $desc }}</p>
                 </div>
-            </div>
+            @endforeach
         </div>
     </div>
 </section>
 
+{{-- ══ WHY CHOOSE US ══ --}}
+<section class="ap-sec is-tinted">
+    <div class="ap-inner ap-why">
+        <div class="ap-head">
+            <span class="ap-eyebrow">Why Choose Us</span>
+            <h2 class="ap-title">Everything You Need to Run Your <span>Travel Business</span></h2>
+            <p class="ap-sub">All the tools top travel agencies use — available from day one, with zero upfront costs.</p>
+            <a href="#register-form" class="ap-btn"><i class="fas fa-user-plus"></i> Join Free</a>
+        </div>
+        <div class="ap-benefits">
+            @foreach([
+                ['fa-earth-americas', 'All-in-One Platform', 'Flights, hotels, tours, Umrah and visa in one login and one dashboard.'],
+                ['fa-chart-line', 'Earn Commission', 'Set your markup and earn on every booking across the modules you sell.'],
+                ['fa-gauge-high', 'Ready-to-Use System', 'Once your account is approved, your agent dashboard is ready to use — no technical setup.'],
+                ['fa-lock', 'Secure Payments', 'Pay for bookings from your agent wallet or the payment gateways enabled on the platform.'],
+                ['fa-file-invoice', 'Instant Invoices', 'Every confirmed booking generates an invoice you can share with your client.'],
+                ['fa-headset', 'Dedicated Support', 'Our support team is available to help with bookings and your account.'],
+            ] as [$icon, $title, $desc])
+                <div class="ap-card is-row">
+                    <span class="ap-ico"><i class="fas {{ $icon }}"></i></span>
+                    <div>
+                        <h3>{{ $title }}</h3>
+                        <p>{{ $desc }}</p>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
 
 {{-- ══ HOW IT WORKS ══ --}}
-<section class="ag-sec" id="how-it-works">
-    <div class="ag-inner">
-        <div style="text-align:center; margin-bottom:28px;">
-            <div class="ag-eyebrow" style="justify-content:center;">Simple Process</div>
-            <h2 class="ag-h">Up &amp; Running in <span>3 Steps</span></h2>
-            <p class="ag-p" style="margin:0 auto; text-align:center;">From registration to your first booking — in under 24 hours.</p>
+<section class="ap-sec" id="how-it-works">
+    <div class="ap-inner">
+        <div class="ap-head is-center">
+            <span class="ap-eyebrow">Simple Process</span>
+            <h2 class="ap-title">Up &amp; Running in <span>3 Steps</span></h2>
+            <p class="ap-sub">From registration to your first booking.</p>
         </div>
-        <div class="ag-row">
-            <div class="ag-col ag-col-4">
-                <div class="step-card">
-                    <div class="step-num">1</div>
-                    <h6>Register Your Account</h6>
-                    <p>Fill the quick form — name, email, phone. Takes under 2 minutes.</p>
-                    <div class="step-arr"><i class="fas fa-arrow-right"></i></div>
+        <div class="ap-steps">
+            @foreach([
+                ['fa-user-pen', 'Register Your Account', 'Fill in the form below with your name, email, phone and company — it takes a couple of minutes.'],
+                ['fa-user-check', 'Get Dashboard Access', 'Our team reviews and approves your account, then your agent dashboard becomes active.'],
+                ['fa-sack-dollar', 'Sell & Earn', 'Search the available inventory, book for your clients and earn your markup on each booking.'],
+            ] as $n => [$icon, $title, $desc])
+                <div class="ap-card ap-step">
+                    <div class="ap-step-top">
+                        <span class="ap-step-num">{{ $n + 1 }}</span>
+                        <span class="ap-ico"><i class="fas {{ $icon }}"></i></span>
+                    </div>
+                    <h3>{{ $title }}</h3>
+                    <p>{{ $desc }}</p>
+                    @if($n < 2)<i class="fas fa-arrow-right ap-step-arrow" aria-hidden="true"></i>@endif
                 </div>
-            </div>
-            <div class="ag-col ag-col-4">
-                <div class="step-card">
-                    <div class="step-num">2</div>
-                    <h6>Get Dashboard Access</h6>
-                    <p>Admin review &amp; approval. Your full agent dashboard becomes live.</p>
-                    <div class="step-arr"><i class="fas fa-arrow-right"></i></div>
-                </div>
-            </div>
-            <div class="ag-col ag-col-4">
-                <div class="step-card">
-                    <div class="step-num">3</div>
-                    <h6>Sell &amp; Earn</h6>
-                    <p>Search inventory, book for clients, earn commission — repeat.</p>
-                </div>
-            </div>
-        </div>
-        <div style="text-align:center; margin-top:24px;">
-            <button class="btn-ag-primary" onclick="openModal()">
-                <i class="fas fa-user-plus"></i> Create Free Account
-            </button>
+            @endforeach
         </div>
     </div>
 </section>
 
-
-{{-- ══ CTA BAND ══ --}}
-<section class="ag-sec-sm" style="background:var(--surface);">
-    <div class="ag-inner">
-        <div class="cta-band">
-            <h3>Ready to Launch Your Travel Business?</h3>
-            <p>No monthly fees. No contracts. Start selling in minutes.</p>
-            <button class="btn-cta-w" onclick="openModal()">
-                <i class="fas fa-rocket"></i> Become a Travel Agent
-            </button>
-        </div>
-    </div>
-</section>
-
-
-{{-- ══ INLINE REGISTER FORM ══ --}}
-<section class="ag-sec" id="register-form">
-    <div class="ag-inner">
-        <div style="text-align:center; margin-bottom:24px;">
-            <div class="ag-eyebrow" style="justify-content:center;">Get Started</div>
-            <h2 class="ag-h">Create Your <span>Agent Account</span></h2>
-        </div>
-        <div class="form-wrap">
-            <div class="form-head">
-                <h4><i class="fas fa-user-plus me-2"></i>Agent Registration</h4>
-                <p>Free forever &nbsp;·&nbsp; Approved within 24 hrs &nbsp;·&nbsp; No credit card needed</p>
+{{-- ══ REGISTER ══ --}}
+<section class="ap-sec" id="register-form">
+    <div class="ap-inner">
+        <div class="ap-register">
+            <div class="ap-register-promo">
+                <span class="ap-eyebrow is-light">Get Started Today</span>
+                <h2>Create Your Agent Account</h2>
+                <p>Start building your travel business with {{ $apBusiness }}.</p>
+                <ul>
+                    <li><i class="fas fa-circle-check"></i> Access flights, hotels, tours, Umrah &amp; visa</li>
+                    <li><i class="fas fa-circle-check"></i> Earn your markup on every booking</li>
+                    <li><i class="fas fa-circle-check"></i> No upfront costs to register</li>
+                    <li><i class="fas fa-circle-check"></i> Start selling once your account is approved</li>
+                </ul>
             </div>
-            <div class="form-body">
+
+            <div class="ap-register-form">
+                <h3>Agent Registration</h3>
+                <p class="ap-register-sub">Join as a travel agent and start your business today.</p>
+
                 @if(session('success'))
                     <div class="f-alert ok"><i class="fas fa-check-circle me-1"></i>{{ session('success') }}</div>
                 @endif
                 @if($errors->any())
                     <div class="f-alert err">
                         <i class="fas fa-exclamation-triangle me-1"></i>
-                        <ul style="margin:4px 0 0 16px; padding:0;">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
+                        <ul class="ap-errors">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
                     </div>
                 @endif
+
                 <form method="POST" action="{{ route('agent.register.submit') }}" id="inlineForm">
                     @csrf
-                    <div class="ag-row">
-                        <div class="ag-col ag-col-6">
-                            <label class="f-label">First Name <span class="req">*</span></label>
-                            <input type="text" name="first_name" class="f-input @error('first_name') is-invalid @enderror" value="{{ old('first_name') }}" placeholder="John" required>
-                            @error('first_name')<span class="f-err">{{ $message }}</span>@enderror
-                        </div>
-                        <div class="ag-col ag-col-6">
-                            <label class="f-label">Last Name <span class="req">*</span></label>
-                            <input type="text" name="last_name" class="f-input @error('last_name') is-invalid @enderror" value="{{ old('last_name') }}" placeholder="Doe" required>
-                            @error('last_name')<span class="f-err">{{ $message }}</span>@enderror
-                        </div>
-                        <div class="ag-col ag-col-12">
-                            <label class="f-label">Email Address <span class="req">*</span></label>
-                            <input type="email" name="email" class="f-input @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="your@email.com" required>
-                            @error('email')<span class="f-err">{{ $message }}</span>@enderror
-                        </div>
-                        <div class="ag-col ag-col-6">
-                            <label class="f-label">Phone Number <span class="req">*</span></label>
-                            <input type="text" name="phone" class="f-input @error('phone') is-invalid @enderror" value="{{ old('phone') }}" placeholder="+92 300 0000000" required>
-                            @error('phone')<span class="f-err">{{ $message }}</span>@enderror
-                        </div>
-                        <div class="ag-col ag-col-6">
-                            <label class="f-label">Company Name</label>
-                            <input type="text" name="company_name" class="f-input" value="{{ old('company_name') }}" placeholder="ABC Travels">
-                        </div>
-                        <div class="ag-col ag-col-6">
-                            <label class="f-label">Password <span class="req">*</span></label>
+                    <div class="fb-grid">
+                        <label class="fb-field">
+                            <span>First Name *</span>
+                            <input type="text" name="first_name" class="fb-input @error('first_name') is-invalid @enderror" value="{{ old('first_name') }}" placeholder="John" required>
+                            @error('first_name')<em class="f-err">{{ $message }}</em>@enderror
+                        </label>
+                        <label class="fb-field">
+                            <span>Last Name *</span>
+                            <input type="text" name="last_name" class="fb-input @error('last_name') is-invalid @enderror" value="{{ old('last_name') }}" placeholder="Doe" required>
+                            @error('last_name')<em class="f-err">{{ $message }}</em>@enderror
+                        </label>
+                        <label class="fb-field is-wide">
+                            <span>Email Address *</span>
+                            <input type="email" name="email" class="fb-input @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="your@email.com" required>
+                            @error('email')<em class="f-err">{{ $message }}</em>@enderror
+                        </label>
+                        <label class="fb-field">
+                            <span>Phone Number *</span>
+                            <input type="text" name="phone" class="fb-input @error('phone') is-invalid @enderror" value="{{ old('phone') }}" placeholder="+92 300 0000000" required>
+                            @error('phone')<em class="f-err">{{ $message }}</em>@enderror
+                        </label>
+                        <label class="fb-field">
+                            <span>Company Name</span>
+                            <input type="text" name="company_name" class="fb-input" value="{{ old('company_name') }}" placeholder="ABC Travels">
+                        </label>
+                        <div class="fb-field">
+                            <span>Password *</span>
                             <div class="f-pw">
-                                <input type="password" name="password" id="ip1" class="f-input @error('password') is-invalid @enderror" placeholder="Min. 8 characters" required>
-                                <button type="button" class="pw-eye" onclick="pwT('ip1','ie1')"><i class="fas fa-eye" id="ie1"></i></button>
+                                <input type="password" name="password" id="ip1" class="fb-input @error('password') is-invalid @enderror" placeholder="Min. 8 characters" required>
+                                <button type="button" class="pw-eye" onclick="pwT('ip1','ie1')" aria-label="Show password"><i class="fas fa-eye" id="ie1"></i></button>
                             </div>
-                            @error('password')<span class="f-err">{{ $message }}</span>@enderror
+                            @error('password')<em class="f-err">{{ $message }}</em>@enderror
                         </div>
-                        <div class="ag-col ag-col-6">
-                            <label class="f-label">Confirm Password <span class="req">*</span></label>
+                        <div class="fb-field">
+                            <span>Confirm Password *</span>
                             <div class="f-pw">
-                                <input type="password" name="password_confirmation" id="ip2" class="f-input" placeholder="Repeat password" required>
-                                <button type="button" class="pw-eye" onclick="pwT('ip2','ie2')"><i class="fas fa-eye" id="ie2"></i></button>
+                                <input type="password" name="password_confirmation" id="ip2" class="fb-input" placeholder="Repeat password" required>
+                                <button type="button" class="pw-eye" onclick="pwT('ip2','ie2')" aria-label="Show password"><i class="fas fa-eye" id="ie2"></i></button>
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn-sub">
+                    <button type="submit" class="btn-sub ap-submit">
                         <span class="lbl"><i class="fas fa-user-check"></i> Create My Agent Account</span>
-                        <span class="spin"><div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;"></div> Creating account…</span>
+                        <span class="spin"><span class="ap-spinner"></span> Creating account…</span>
                     </button>
-                    <p class="f-note">By registering you agree to become an authorised {{ getSetting('business_name','main','TravelBookingPanel') }} agent.</p>
+                    <p class="f-note">By registering you agree to become an authorised {{ $apBusiness }} agent.</p>
                 </form>
                 <div class="f-hint">Already have an account? <a href="{{ route('login') }}">Sign In</a></div>
             </div>
         </div>
     </div>
 </section>
-
-
-{{-- ══ MODAL ══ --}}
-<div class="m-ov" id="regModal" onclick="ovClick(event)">
-    <div class="m-box">
-        <div class="m-head">
-            <h5><i class="fas fa-user-plus" style="margin-right:6px;"></i>Create Your Agent Account</h5>
-            <p>Free forever &nbsp;·&nbsp; Approved within 24 hrs &nbsp;·&nbsp; No credit card needed</p>
-            <button class="m-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="m-body">
-            @if(session('success'))
-                <div class="f-alert ok"><i class="fas fa-check-circle me-1"></i>{{ session('success') }}</div>
-            @endif
-            @if($errors->any())
-                <div class="f-alert err">
-                    <i class="fas fa-exclamation-triangle me-1"></i>
-                    <ul style="margin:4px 0 0 16px; padding:0;">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
-                </div>
-            @endif
-            <form method="POST" action="{{ route('agent.register.submit') }}" id="modalForm">
-                @csrf
-                <div class="ag-row">
-                    <div class="ag-col ag-col-6">
-                        <label class="f-label">First Name <span class="req">*</span></label>
-                        <input type="text" name="first_name" class="f-input @error('first_name') is-invalid @enderror" value="{{ old('first_name') }}" placeholder="John" required autofocus>
-                        @error('first_name')<span class="f-err">{{ $message }}</span>@enderror
-                    </div>
-                    <div class="ag-col ag-col-6">
-                        <label class="f-label">Last Name <span class="req">*</span></label>
-                        <input type="text" name="last_name" class="f-input @error('last_name') is-invalid @enderror" value="{{ old('last_name') }}" placeholder="Doe" required>
-                        @error('last_name')<span class="f-err">{{ $message }}</span>@enderror
-                    </div>
-                    <div class="ag-col ag-col-12">
-                        <label class="f-label">Email Address <span class="req">*</span></label>
-                        <input type="email" name="email" class="f-input @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="your@email.com" required>
-                        @error('email')<span class="f-err">{{ $message }}</span>@enderror
-                    </div>
-                    <div class="ag-col ag-col-6">
-                        <label class="f-label">Phone Number <span class="req">*</span></label>
-                        <input type="text" name="phone" class="f-input @error('phone') is-invalid @enderror" value="{{ old('phone') }}" placeholder="+92 300 0000000" required>
-                        @error('phone')<span class="f-err">{{ $message }}</span>@enderror
-                    </div>
-                    <div class="ag-col ag-col-6">
-                        <label class="f-label">Company Name</label>
-                        <input type="text" name="company_name" class="f-input" value="{{ old('company_name') }}" placeholder="ABC Travels">
-                    </div>
-                    <div class="ag-col ag-col-6">
-                        <label class="f-label">Password <span class="req">*</span></label>
-                        <div class="f-pw">
-                            <input type="password" name="password" id="mp1" class="f-input @error('password') is-invalid @enderror" placeholder="Min. 8 characters" required>
-                            <button type="button" class="pw-eye" onclick="pwT('mp1','me1')"><i class="fas fa-eye" id="me1"></i></button>
-                        </div>
-                        @error('password')<span class="f-err">{{ $message }}</span>@enderror
-                    </div>
-                    <div class="ag-col ag-col-6">
-                        <label class="f-label">Confirm Password <span class="req">*</span></label>
-                        <div class="f-pw">
-                            <input type="password" name="password_confirmation" id="mp2" class="f-input" placeholder="Repeat password" required>
-                            <button type="button" class="pw-eye" onclick="pwT('mp2','me2')"><i class="fas fa-eye" id="me2"></i></button>
-                        </div>
-                    </div>
-                </div>
-                <button type="submit" class="btn-sub">
-                    <span class="lbl"><i class="fas fa-user-check"></i> Create My Agent Account</span>
-                    <span class="spin"><div style="width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;"></div> Creating account…</span>
-                </button>
-                <p class="f-note">By registering you agree to become an authorised {{ getSetting('business_name','main','TravelBookingPanel') }} agent.</p>
-            </form>
-            <div class="f-hint">Already have an account? <a href="{{ route('login') }}">Sign In</a></div>
-        </div>
-    </div>
 </div>
 
 <style>
@@ -633,30 +566,17 @@
 </style>
 
 <script>
-    function openModal() {
-        document.getElementById('regModal').classList.add('show');
-        document.body.style.overflow = 'hidden';
-        setTimeout(() => document.querySelector('#modalForm input[name="first_name"]')?.focus(), 300);
-    }
-    function closeModal() {
-        document.getElementById('regModal').classList.remove('show');
-        document.body.style.overflow = '';
-    }
-    function ovClick(e) { if (e.target === document.getElementById('regModal')) closeModal(); }
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
     function pwT(fid, iid) {
         const f = document.getElementById(fid), i = document.getElementById(iid);
         f.type = f.type === 'password' ? 'text' : 'password';
         i.className = f.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
     }
 
-    ['inlineForm','modalForm'].forEach(id => {
-        document.getElementById(id)?.addEventListener('submit', () => document.body.classList.add('ag-loading'));
-    });
+    document.getElementById('inlineForm')?.addEventListener('submit', () => document.body.classList.add('ag-loading'));
 
-    @if($errors->any())
-        document.addEventListener('DOMContentLoaded', openModal);
+    @if($errors->any() || session('success'))
+        // Show the result of a submission (errors or success) next to the form
+        document.addEventListener('DOMContentLoaded', () => document.getElementById('register-form').scrollIntoView());
     @endif
 </script>
 

@@ -149,6 +149,8 @@
     .f-hint a, .fp-hint a { color: #2563EB; }
 </style>
 
+<div class="auth-split">
+@include('common.auth-brand', ['headline' => 'Welcome back, traveller'])
 <div class="login-wrap">
     <div class="form-card">
 
@@ -230,6 +232,7 @@
 
         </div>
     </div>
+</div>
 </div>
 
 <script>

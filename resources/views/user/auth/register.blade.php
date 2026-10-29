@@ -1,4 +1,4 @@
-@include('common.header')
+@include('common.header', ['hideNavbar' => true])
 
 <style>
     :root {
@@ -150,6 +150,8 @@
     .f-hint a, .fp-hint a { color: #2563EB; }
 </style>
 
+<div class="auth-split">
+@include('common.auth-brand', ['headline' => 'Start exploring the world'])
 <div class="reg-wrap">
     <div class="form-card">
 
@@ -202,27 +204,28 @@
                     @error('email')<span class="f-err">{{ $message }}</span>@enderror
                 </div>
 
-                <div class="f-group">
-                    <label class="f-label">Password <span class="req">*</span></label>
-                    <div class="f-pw">
-                        <input type="password" name="password" id="pw1"
-                               class="f-input @error('password') is-invalid @enderror"
-                               placeholder="Min. 8 characters" required>
-                        <button type="button" class="pw-eye" onclick="pwToggle('pw1','pe1')">
-                            <i class="fas fa-eye" id="pe1"></i>
-                        </button>
+                <div class="f-row">
+                    <div class="f-group">
+                        <label class="f-label">Password <span class="req">*</span></label>
+                        <div class="f-pw">
+                            <input type="password" name="password" id="pw1"
+                                   class="f-input @error('password') is-invalid @enderror"
+                                   placeholder="Min. 8 characters" required>
+                            <button type="button" class="pw-eye" onclick="pwToggle('pw1','pe1')">
+                                <i class="fas fa-eye" id="pe1"></i>
+                            </button>
+                        </div>
+                        @error('password')<span class="f-err">{{ $message }}</span>@enderror
                     </div>
-                    @error('password')<span class="f-err">{{ $message }}</span>@enderror
-                </div>
-
-                <div class="f-group">
-                    <label class="f-label">Confirm Password <span class="req">*</span></label>
-                    <div class="f-pw">
-                        <input type="password" name="password_confirmation" id="pw2"
-                               class="f-input" placeholder="Repeat password" required>
-                        <button type="button" class="pw-eye" onclick="pwToggle('pw2','pe2')">
-                            <i class="fas fa-eye" id="pe2"></i>
-                        </button>
+                    <div class="f-group">
+                        <label class="f-label">Confirm Password <span class="req">*</span></label>
+                        <div class="f-pw">
+                            <input type="password" name="password_confirmation" id="pw2"
+                                   class="f-input" placeholder="Repeat password" required>
+                            <button type="button" class="pw-eye" onclick="pwToggle('pw2','pe2')">
+                                <i class="fas fa-eye" id="pe2"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -243,6 +246,7 @@
         </div>
     </div>
 </div>
+</div>
 
 <script>
     function pwToggle(fid, iid) {
@@ -253,4 +257,4 @@
     document.getElementById('regForm').addEventListener('submit', () => document.body.classList.add('loading'));
 </script>
 
-@include('common.footer')
+@include('common.footer', ['hideFooter' => true])
