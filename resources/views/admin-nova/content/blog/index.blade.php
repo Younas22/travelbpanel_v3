@@ -205,7 +205,7 @@
                             </div>
 
                             {{-- SEO --}}
-                            <div class="lg:w-24 lg:flex-shrink-0">
+                            <div class="lg:w-24 lg:flex-shrink-0 bl-col-seo">
                                 <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold {{ $seo['bg'] }} {{ $seo['text'] }}">{{ $post->seo_score }} &middot; {{ $seo['label'] }}</span>
                             </div>
 

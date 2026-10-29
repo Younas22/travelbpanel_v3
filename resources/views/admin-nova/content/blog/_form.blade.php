@@ -69,8 +69,8 @@
                 <div>
                     <label class="bl-label" for="status">Status <span class="bl-required">*</span></label>
                     <select name="status" id="status" class="bl-input @error('status') is-invalid @enderror" required>
-                        <option value="draft" {{ old('status', $post->status ?? 'draft') == 'draft' ? 'selected' : '' }}>📝 Draft</option>
-                        <option value="published" {{ old('status', $post->status ?? '') == 'published' ? 'selected' : '' }}>🚀 Published</option>
+                        <option value="draft" {{ old('status', $post->status ?? 'draft') == 'draft' ? 'selected' : '' }}>Draft</option>
+                        <option value="published" {{ old('status', $post->status ?? '') == 'published' ? 'selected' : '' }}>Published</option>
                         <option value="scheduled" {{ old('status', $post->status ?? '') == 'scheduled' ? 'selected' : '' }}>⏰ Scheduled</option>
                     </select>
                     @error('status') <p class="bl-error">{{ $message }}</p> @enderror
@@ -88,7 +88,7 @@
                         <input type="checkbox" name="is_featured" id="is_featured" value="1" {{ old('is_featured', $post->is_featured ?? false) ? 'checked' : '' }}>
                         <span class="bl-slider"></span>
                     </span>
-                    <span class="text-xs font-semibold text-novatext">⭐ Featured Post</span>
+                    <span class="text-xs font-semibold text-novatext">Featured Post</span>
                 </label>
 
                 <label class="flex items-center gap-3">
@@ -96,7 +96,7 @@
                         <input type="checkbox" name="allow_comments" id="allow_comments" value="1" {{ old('allow_comments', $post->allow_comments ?? true) ? 'checked' : '' }}>
                         <span class="bl-slider"></span>
                     </span>
-                    <span class="text-xs font-semibold text-novatext">💬 Allow Comments</span>
+                    <span class="text-xs font-semibold text-novatext">Allow Comments</span>
                 </label>
 
                 @if($isEdit)
