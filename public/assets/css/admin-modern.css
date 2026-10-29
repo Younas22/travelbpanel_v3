@@ -4446,3 +4446,122 @@ select.tbp-language-form-input { appearance: none; background: #fff url("data:im
     .tbp-language-form-actions { flex-direction: column-reverse; }
     .tbp-language-form-btn { width: 100%; }
 }
+
+/* =====================================================================
+   Translation Management (admin-nova/content/translations/index) — "tbp-translations-*"
+   ===================================================================== */
+.tbp-translations-page { --tr-blue: #2563EB; --tr-text: #111827; --tr-muted: #64748B; --tr-border: #E5E7EB; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--tr-text); display: flex; flex-direction: column; gap: 18px; }
+.tbp-translations-page * { box-sizing: border-box; }
+.tbp-translations-page h1, .tbp-translations-page h2, .tbp-translations-page p { margin: 0; }
+.tbp-translations-page .bi { color: var(--tr-text); line-height: 1; }
+.tbp-translations-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-bottom: 18px; border-bottom: 1px solid var(--tr-border); }
+.tbp-translations-header h1 { font-size: 1.5rem; font-weight: 700; }
+.tbp-translations-header p { margin-top: 4px; font-size: 0.875rem; color: var(--tr-muted); }
+.tbp-translations-header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.tbp-translations-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 46px; padding: 0 24px; border: 1px solid var(--tr-blue); border-radius: 999px; background: var(--tr-blue); color: #fff; font: 600 0.9375rem 'Plus Jakarta Sans', sans-serif; text-decoration: none; white-space: nowrap; }
+.tbp-translations-btn:hover { background: #1D4ED8; border-color: #1D4ED8; color: #fff; }
+.tbp-translations-page .tbp-translations-btn .bi { color: #fff; }
+.tbp-translations-btn.is-outline { background: #fff; border-color: var(--tr-border); color: var(--tr-blue); }
+.tbp-translations-btn.is-outline:hover { background: #EFF6FF; color: var(--tr-blue); }
+.tbp-translations-page .tbp-translations-btn.is-outline .bi { color: var(--tr-blue); }
+.tbp-translations-btn.is-small { height: 42px; padding: 0 20px; font-size: 0.875rem; }
+
+.tbp-translations-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 22px 26px; background: #fff; border: 1px solid var(--tr-border); border-radius: 18px; box-shadow: 0 4px 16px rgba(15, 23, 42, .05); margin: 0; }
+.tbp-translations-field { display: flex; flex-direction: column; gap: 9px; margin: 0; min-width: 0; }
+.tbp-translations-field > span { display: inline-flex; align-items: center; gap: 10px; font-size: 0.875rem; font-weight: 700; }
+.tbp-translations-field select { width: 100%; height: 50px; padding: 0 44px 0 20px; border: 1px solid var(--tr-border); border-radius: 14px; appearance: none; background: #F9FAFB url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23111827' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 18px center; color: var(--tr-text); font: 400 0.9375rem 'Plus Jakarta Sans', sans-serif; outline: none; cursor: pointer; }
+.tbp-translations-field select:focus { border-color: var(--tr-blue); box-shadow: 0 0 0 3px rgba(37, 99, 235, .12); }
+
+.tbp-translations-card { background: #fff; border: 1px solid var(--tr-border); border-radius: 18px; box-shadow: 0 4px 16px rgba(15, 23, 42, .05); overflow: hidden; }
+.tbp-translations-card-head { display: flex; align-items: center; gap: 18px; padding: 22px 26px; }
+.tbp-translations-card-head > div { flex: 1; min-width: 0; }
+.tbp-translations-card-head h2 { font-size: 1.25rem; font-weight: 700; }
+.tbp-translations-card-head p { margin-top: 4px; font-size: 0.875rem; color: var(--tr-muted); }
+.tbp-translations-icon { width: 54px; height: 54px; border-radius: 50%; background: #EFF6FF; display: inline-flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+.tbp-translations-page .tbp-translations-icon .bi { color: var(--tr-blue); }
+.tbp-translations-table-wrap { overflow-x: auto; }
+.tbp-translations-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 0.9375rem; }
+.tbp-translations-table th { padding: 16px 26px; background: #F8FAFC; font-size: 0.75rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; text-align: left; color: #334155; border: 0; }
+.tbp-translations-table th:first-child { width: 28%; }
+.tbp-translations-table td { padding: 18px 26px; border-top: 1px solid #F1F5F9; vertical-align: middle; }
+.tbp-translations-table code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.875rem; font-weight: 600; color: #EC4899; background: none; padding: 0; word-break: break-all; }
+.tbp-translations-table td.is-value { color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tbp-translations-table .is-actions { width: 130px; text-align: center; }
+.tbp-translations-table form { margin: 0; display: inline-block; }
+.tbp-translations-delete { width: 44px; height: 44px; border: 0; border-radius: 50%; background: #FEF2F2; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.tbp-translations-delete:hover { background: #FEE2E2; }
+.tbp-translations-page .tbp-translations-delete .bi { color: #EF4444; }
+.tbp-translations-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 48px 20px; text-align: center; }
+.tbp-translations-empty > .bi { font-size: 2.5rem; color: var(--tr-muted); }
+.tbp-translations-empty p { color: var(--tr-muted); font-size: 0.875rem; margin-bottom: 8px; }
+
+@media (max-width: 767px) {
+    .tbp-translations-filters { grid-template-columns: 1fr; padding: 18px; gap: 16px; }
+    .tbp-translations-card-head { flex-wrap: wrap; padding: 18px; }
+    .tbp-translations-table { table-layout: auto; min-width: 560px; }
+    .tbp-translations-table th, .tbp-translations-table td { padding: 14px 16px; }
+    .tbp-translations-table td.is-value { max-width: 260px; }
+}
+.tbp-translations-table td, .tbp-translations-table td.is-value { font-size: 0.9375rem; }
+
+/* =====================================================================
+   Create Translation Group (admin-nova/content/translations/create) — "tbp-translation-create-*"
+   ===================================================================== */
+.tbp-translation-create-page { --tc-blue: #2563EB; --tc-text: #111827; --tc-muted: #64748B; --tc-border: #E5E7EB; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--tc-text); display: flex; flex-direction: column; gap: 10px; }
+.tbp-translation-create-page * { box-sizing: border-box; }
+.tbp-translation-create-page .bi { color: var(--tc-text); line-height: 1; }
+.tbp-translation-create-back { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; font-size: 0.9375rem; font-weight: 600; color: var(--tc-blue); text-decoration: none; }
+.tbp-translation-create-page .tbp-translation-create-back .bi { color: var(--tc-blue); }
+.tbp-translation-create-header { margin: 4px 0 16px; }
+.tbp-translation-create-header h1 { margin: 0; font-size: 1.875rem; font-weight: 700; }
+.tbp-translation-create-header p { margin: 6px 0 0; font-size: 1rem; color: var(--tc-muted); }
+.tbp-translation-create-card { background: #fff; border: 1px solid var(--tc-border); border-radius: 20px; box-shadow: 0 4px 18px rgba(15, 23, 42, .05); padding: 32px 36px; display: flex; flex-direction: column; gap: 22px; margin: 0; }
+.tbp-translation-create-errors { padding: 12px 16px; border-radius: 12px; background: #FEF2F2; color: #B91C1C; font-size: 0.875rem; }
+.tbp-translation-create-page .tbp-translation-create-errors .bi { color: #B91C1C; }
+.tbp-translation-create-section { display: flex; align-items: flex-start; gap: 16px; }
+.tbp-translation-create-section:first-of-type { padding-bottom: 26px; border-bottom: 1px solid var(--tc-border); }
+.tbp-translation-create-section > :last-child { flex: 1; min-width: 0; }
+.tbp-translation-create-icon { width: 46px; height: 46px; border-radius: 12px; background: #EFF6FF; display: inline-flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+.tbp-translation-create-page .tbp-translation-create-icon .bi { color: var(--tc-blue); }
+.tbp-translation-create-title { font-size: 1rem; font-weight: 700; }
+.tbp-translation-create-sub { margin: 4px 0 0; font-size: 0.875rem; color: var(--tc-muted); }
+.tbp-translation-create-page b { color: #EF4444; }
+.tbp-translation-create-field { display: flex; flex-direction: column; gap: 10px; margin: 0; min-width: 0; }
+.tbp-translation-create-field > span:not(.tbp-translation-create-title) { display: inline-flex; align-items: center; gap: 9px; font-size: 0.875rem; font-weight: 700; }
+.tbp-translation-create-field input { width: 100%; height: 46px; padding: 0 16px; border: 1px solid var(--tc-border); border-radius: 10px; background: #fff; color: var(--tc-text); font: 400 0.9375rem 'Plus Jakarta Sans', sans-serif; outline: none; }
+.tbp-translation-create-field input::placeholder { color: #94A3B8; }
+.tbp-translation-create-field input:focus { border-color: var(--tc-blue); box-shadow: 0 0 0 3px rgba(37, 99, 235, .12); }
+.tbp-translation-create-field input.is-invalid { border-color: #EF4444; }
+.tbp-translation-create-field small { font-size: 0.8125rem; color: var(--tc-muted); }
+
+.tbp-translation-create-tabs { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px; border-radius: 16px; background: #F8FAFC; padding-bottom: 6px; }
+.tbp-translation-create-tab { height: 40px; padding: 0 22px; border: 0; border-radius: 999px; background: transparent; color: var(--tc-text); font: 600 0.875rem 'Plus Jakarta Sans', sans-serif; cursor: pointer; white-space: nowrap; }
+.tbp-translation-create-tab:hover { background: #EEF2F7; }
+.tbp-translation-create-tab.is-active { background: var(--tc-blue); color: #fff; }
+.tbp-translation-create-pane { display: flex; flex-direction: column; gap: 14px; padding-top: 22px; border-top: 1px solid var(--tc-border); }
+.tbp-translation-create-pane[hidden] { display: none; }
+.tbp-translation-create-rows { display: flex; flex-direction: column; gap: 12px; }
+.tbp-translation-create-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.75fr) auto; gap: 26px; align-items: center; padding: 20px 26px; border: 1px solid var(--tc-border); border-radius: 16px; background: #F8FAFC; }
+.tbp-translation-create-remove { width: 62px; height: 48px; border: 0; border-radius: 12px; background: #FEE2E2; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.tbp-translation-create-remove:hover { background: #FECACA; }
+.tbp-translation-create-page .tbp-translation-create-remove .bi { color: #EF4444; font-size: 1.0625rem; }
+.tbp-translation-create-add { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 24px; border: 1px solid #BFDBFE; border-radius: 999px; background: #EFF6FF; color: var(--tc-blue); font: 600 0.9375rem 'Plus Jakarta Sans', sans-serif; cursor: pointer; }
+.tbp-translation-create-add:hover { background: #DBEAFE; }
+.tbp-translation-create-page .tbp-translation-create-add .bi { color: var(--tc-blue); }
+.tbp-translation-create-actions { display: flex; gap: 18px; flex-wrap: wrap; padding-top: 26px; border-top: 1px solid var(--tc-border); }
+.tbp-translation-create-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 50px; padding: 0 34px; border: 1px solid var(--tc-border); border-radius: 999px; background: #fff; color: var(--tc-text); font: 600 1rem 'Plus Jakarta Sans', sans-serif; text-decoration: none; cursor: pointer; }
+.tbp-translation-create-btn:hover { background: #F8FAFC; color: var(--tc-text); }
+.tbp-translation-create-btn:focus-visible { outline: 2px solid #93C5FD; outline-offset: 2px; }
+.tbp-translation-create-btn.is-primary { background: var(--tc-blue); border-color: var(--tc-blue); color: #fff; }
+.tbp-translation-create-btn.is-primary:hover { background: #1D4ED8; }
+.tbp-translation-create-page .tbp-translation-create-btn.is-primary .bi { color: #fff; }
+.tbp-translation-create-btn:disabled { opacity: .7; cursor: progress; }
+
+@media (max-width: 991px) { .tbp-translation-create-card { padding: 24px; } }
+@media (max-width: 767px) {
+    .tbp-translation-create-card { padding: 18px; }
+    .tbp-translation-create-row { grid-template-columns: 1fr; gap: 14px; padding: 16px; }
+    .tbp-translation-create-remove { justify-self: end; }
+    .tbp-translation-create-tab { padding: 0 14px; }
+    .tbp-translation-create-actions .tbp-translation-create-btn { flex: 1; }
+}

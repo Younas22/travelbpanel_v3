@@ -304,6 +304,34 @@
         btn.closest('.sb-group').classList.toggle('sb-group-open');
     }
 
+    // Keep the sidebar where it was across page loads: remember its scroll offset
+    // on click and restore it on the next page; otherwise bring the active item into view.
+    (function () {
+        var KEY = 'tbpSidebarScroll';
+        function scroller() {
+            return [document.querySelector('.sidebar-nav'), document.querySelector('.sidebar')]
+                .filter(function (el) { return el && el.scrollHeight > el.clientHeight + 1 && /(auto|scroll)/.test(getComputedStyle(el).overflowY); })[0];
+        }
+        function restore() {
+            var box = scroller();
+            if (!box) return;
+            var saved = null;
+            try { saved = sessionStorage.getItem(KEY); sessionStorage.removeItem(KEY); } catch (e) {}
+            var active = document.querySelector('.sidebar .sb-kid-on, .sidebar .sb-on');
+            if (saved !== null) box.scrollTop = +saved;
+            if (active) {
+                var a = active.getBoundingClientRect(), b = box.getBoundingClientRect();
+                if (a.top < b.top || a.bottom > b.bottom) box.scrollTop += a.top - b.top - box.clientHeight / 2 + a.height / 2;
+            }
+        }
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.sidebar a[href]')) return;
+            var box = scroller();
+            try { if (box) sessionStorage.setItem(KEY, box.scrollTop); } catch (err) {}
+        });
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', restore); else restore();
+    })();
+
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.sidebar .sb-row, .sidebar .sb-kid').forEach(function (el) {
             el.addEventListener('click', function () {
