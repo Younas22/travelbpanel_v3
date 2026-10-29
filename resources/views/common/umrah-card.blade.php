@@ -11,6 +11,14 @@
         : 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=400&h=300&fit=crop';
     $highlights = $package->highlights ? array_slice($package->highlights, 0, 3) : [];
     $totalNights = ($package->makkah_nights ?? 0) + ($package->madina_nights ?? 0);
+    // Icon per inclusion, matched on its name
+    $highlightIcon = fn($name) => match (true) {
+        str_contains(strtolower($name), 'flight') => 'fa-plane',
+        str_contains(strtolower($name), 'visa') => 'fa-passport',
+        str_contains(strtolower($name), 'hotel') => 'fa-hotel',
+        str_contains(strtolower($name), 'bus'), str_contains(strtolower($name), 'transfer') => 'fa-bus',
+        default => 'fa-check-circle',
+    };
 @endphp
 <article class="th-card">
     <a href="{{ $detailUrl }}" class="th-card-media">
@@ -31,7 +39,7 @@
         <div class="th-pills">
             @if(count($highlights) > 0)
                 @foreach($highlights as $highlight)
-                    <span class="th-pill"><i class="fas fa-check-circle"></i> {{ Str::limit($highlight, 15) }}</span>
+                    <span class="th-pill"><i class="fas {{ $highlightIcon($highlight) }}"></i> {{ Str::limit($highlight, 15) }}</span>
                 @endforeach
             @else
                 @if($package->makkah_nights > 0)

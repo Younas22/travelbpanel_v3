@@ -19,11 +19,6 @@ class PagesController extends Controller
     public function home() {
         $flightModule = getActiveModule('flight');
         $featuredFlightDeals = $flightModule ? array_slice(FeaturedFlightDeals::all(), 0, 6) : [];
-        // Airport names/cities for the deal cards, from the airports table
-        $flightDealAirports = collect($featuredFlightDeals)->isEmpty() ? collect() : DB::table('flights_airports')
-            ->whereIn('code', collect($featuredFlightDeals)->flatMap(fn($d) => [$d[0], $d[2]])->unique()->values())
-            ->get(['code', 'airport', 'city'])
-            ->keyBy('code');
 
         // Fetch featured tours if tours module is active
         $tours = collect();
@@ -126,7 +121,7 @@ class PagesController extends Controller
             ->limit(4)
             ->get();
 
-        return view('home', compact('tours', 'umrahPackages', 'featuredHotels', 'hotel_search', 'latestBlogPosts', 'flightModule', 'featuredFlightDeals', 'flightDealAirports'));
+        return view('home', compact('tours', 'umrahPackages', 'featuredHotels', 'hotel_search', 'latestBlogPosts', 'flightModule', 'featuredFlightDeals'));
     }
 
 

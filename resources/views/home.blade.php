@@ -456,75 +456,7 @@
 
     @if($flightModule)
     <!-- FEATURED FLIGHTS SECTION -->
-    @php
-        [$thLead, $thAccent] = $thSplitTitle(t('flight.featured_flight_deals'));
-        $flightDealDate = date('d-m-Y', strtotime('+7 days'));
-    @endphp
-    <section class="th-section" id="featuredHomeFlights">
-        <div class="th-container">
-            <div class="th-header">
-                <div class="th-header-text">
-                    <span class="th-eyebrow">{{ t('flight.featured_flight_deals') }}</span>
-                    <h2 class="th-title">{{ $thLead }} @if($thAccent)<span class="th-title-accent">{{ $thAccent }}</span>@endif</h2>
-                </div>
-            </div>
-
-            <div class="home-flight-grid">
-                @foreach($featuredFlightDeals as [$fromCode, $fromCity, $toCode, $toCity, $airline, $usdPrice, $dealImage, $airlineCode])
-                    @php
-                        $dealUrl = url('flights/' . strtolower($fromCode) . '/' . strtolower($toCode) . "/oneway/economy/{$flightDealDate}/1/0/0");
-                        $fromAirport = $flightDealAirports[$fromCode] ?? null;
-                        $toAirport = $flightDealAirports[$toCode] ?? null;
-                    @endphp
-                    <article class="home-flight-card">
-                        <div class="hfc-main">
-                            <div class="hfc-airline">
-                                <span class="hfc-logo">
-                                    <img src="https://assets.duffel.com/img/airlines/for-light-background/full-color-logo/{{ $airlineCode }}.svg" alt="{{ $airline }}" loading="lazy"
-                                         onerror="this.onerror=null;this.src='{{ url('public/assets/images/list-plane.png') }}';">
-                                </span>
-                                <span class="hfc-airline-text">
-                                    <b>{{ $airline }}</b>
-                                    <small>{{ $airlineCode }}</small>
-                                </span>
-                                <span class="hfc-badge">{{ t('flightform.one_way') }}</span>
-                            </div>
-
-                            <div class="hfc-route">
-                                <div class="hfc-point">
-                                    <b class="hfc-code">{{ $fromCode }}</b>
-                                    <span class="hfc-city">{{ $fromAirport->city ?? $fromCity }}</span>
-                                    @if($fromAirport)<small class="hfc-airport">{{ $fromAirport->airport }}</small>@endif
-                                </div>
-                                <div class="hfc-path" aria-hidden="true">
-                                    <span class="hfc-track"><i class="fas fa-plane"></i></span>
-                                </div>
-                                <div class="hfc-point is-arrival">
-                                    <b class="hfc-code">{{ $toCode }}</b>
-                                    <span class="hfc-city">{{ $toAirport->city ?? $toCity }}</span>
-                                    @if($toAirport)<small class="hfc-airport">{{ $toAirport->airport }}</small>@endif
-                                </div>
-                            </div>
-
-                            <div class="hfc-meta">
-                                <span><i class="far fa-calendar"></i> {{ date('D, d M Y', strtotime($flightDealDate)) }}</span>
-                            </div>
-                        </div>
-
-                        <div class="hfc-fare">
-                            <div class="hfc-fare-info">
-                                <span class="hfc-fare-type">{{ t('flightform.economy') }}</span>
-                                <span class="hfc-fare-label">{{ t('home.starting_from') }}</span>
-                                <span class="hfc-price"><small>{{ $active_currency->currency_name }}</small> {{ convertCurrency($usdPrice, 'USD', $active_currency->currency_name) }}</span>
-                                <span class="hfc-per">{{ t('home.per_adult') }}</span>
-                            </div>
-                            <a href="{{ $dealUrl }}" class="hfc-view-btn">{{ t('home.view') }} <i class="fas fa-arrow-right"></i></a>
-                        </div>
-                    </article>
-                @endforeach
-            </div>
-        </div>
-    </section>
+    @include('common.flight-deals', ['deals' => $featuredFlightDeals, 'sectionId' => 'featuredHomeFlights'])
     @endif
 
     @if($hotelModule)
@@ -621,63 +553,146 @@
 
     @if($umrahModule)
     <!-- FEATURED UMRAH PACKAGES SECTION -->
-    @php [$thLead, $thAccent] = $thSplitTitle(t('home.umrah_featured_title')); @endphp
+    @php
+        // Highlight the last two words of the heading ("Umrah Packages")
+        $umTitleWords = preg_split('/\s+/u', trim(t('home.umrah_featured_title')));
+        $umAccent = count($umTitleWords) > 2 ? implode(' ', array_splice($umTitleWords, -2)) : '';
+        $umLead = implode(' ', $umTitleWords);
+
+        // Default search values for the package detail links - 2 weeks from today
+        $departureDate = date('d-m-Y', strtotime('+14 days'));
+        $returnDate = date('d-m-Y', strtotime('+21 days'));
+        $adult = 2;
+        $child = 0;
+        $infant = 0;
+        $makkahNights = 4;
+        $madinaNights = 3;
+
+        // Icon per included service, matched on its name
+        $umServiceIcon = fn($name) => match (true) {
+            str_contains(strtolower($name), 'flight') => 'fa-plane',
+            str_contains(strtolower($name), 'visa') => 'fa-passport',
+            str_contains(strtolower($name), 'hotel') => 'fa-hotel',
+            str_contains(strtolower($name), 'bus'), str_contains(strtolower($name), 'transfer') => 'fa-bus',
+            default => 'fa-check-circle',
+        };
+
+        $umItems = $umrahPackages->map(function ($package) use ($departureDate, $returnDate, $adult, $child, $infant, $makkahNights, $madinaNights, $active_currency) {
+            $originCode = 'JED';
+            $destinationCode = 'JED';
+            if ($package->leaving_from) {
+                $fromAirport = DB::table('flights_airports')->where('id', $package->leaving_from)->first();
+                $originCode = $fromAirport ? $fromAirport->code : 'JED';
+            }
+            if ($package->going_to) {
+                $toAirport = DB::table('flights_airports')->where('id', $package->going_to)->first();
+                $destinationCode = $toAirport ? $toAirport->code : 'JED';
+            }
+            $slug = Str::slug($package->name);
+
+            return (object) [
+                'package' => $package,
+                'url' => url("umrah/{$slug}/{$originCode}/{$destinationCode}/{$departureDate}/{$returnDate}/{$adult}/{$child}/{$infant}/{$makkahNights}/{$madinaNights}"),
+                'image' => $package->images && $package->images->first()
+                    ? asset('public/assets/images/' . $package->images->first()->image)
+                    : 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=400&h=300&fit=crop',
+                'price' => $active_currency->currency_name . ' ' . convertCurrency($package->price, $package->currency ?? 'USD', $active_currency->currency_name),
+                'services' => array_slice($package->highlights ?? [], 0, 3),
+            ];
+        });
+        $umLeadItem = $umItems->first();
+        $umOthers = $umItems->slice(1, 3);
+    @endphp
     <section class="th-section" id="umrahPackages">
         <div class="th-container">
             <div class="th-header">
                 <div class="th-header-text">
                     <span class="th-eyebrow">{{ t('home.umrah_featured_title') }}</span>
-                    <h2 class="th-title">{{ $thLead }} @if($thAccent)<span class="th-title-accent">{{ $thAccent }}</span>@endif</h2>
+                    <h2 class="th-title">{{ $umLead }} @if($umAccent)<span class="th-title-accent">{{ $umAccent }}</span>@endif</h2>
+                    <p class="um-intro">{{ t('umrah.featuredPackagesSubtitle') }}</p>
                 </div>
-                @if($umrahPackages->count() > 1)
-                <div class="th-nav">
-                    <button type="button" class="th-nav-btn th-nav-prev" data-th-dir="-1" aria-label="Previous"><i class="fas fa-arrow-left"></i></button>
-                    <button type="button" class="th-nav-btn th-nav-next" data-th-dir="1" aria-label="Next"><i class="fas fa-arrow-right"></i></button>
+                <a href="{{ route('umrah.index') }}" class="um-all-link">{{ t('umrah.exploreAllPackages') }} <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+            @if($umLeadItem)
+            {{-- every package shows at once (one large + up to three compact), so no prev/next controls --}}
+            <div class="um-layout {{ $umOthers->isEmpty() ? 'is-single' : '' }}">
+                <div class="um-lead">
+                    <article class="um-feature">
+                        <a href="{{ $umLeadItem->url }}" class="um-feature-media">
+                            <img src="{{ $umLeadItem->image }}" alt="{{ $umLeadItem->package->name }}" loading="lazy">
+                            @if($umLeadItem->package->featured == 1)
+                                <span class="um-badge"><i class="fas fa-star"></i> {{ t('home.badge_featured') }}</span>
+                            @endif
+                        </a>
+                        <div class="um-body">
+                            <h3 class="um-name" dir="auto"><a href="{{ $umLeadItem->url }}">{{ $umLeadItem->package->name }}</a></h3>
+                            @if($umLeadItem->package->from_location && $umLeadItem->package->to_location)
+                                <p class="um-route"><i class="fas fa-plane-departure"></i> <span>{{ $umLeadItem->package->from_location }} <i class="fas fa-arrow-right um-route-arrow"></i> {{ $umLeadItem->package->to_location }}</span></p>
+                            @endif
+                            @if($umLeadItem->services)
+                                <div class="um-services">
+                                    @foreach($umLeadItem->services as $service)
+                                        <span><i class="fas {{ $umServiceIcon($service) }}"></i> {{ $service }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+                            <div class="um-foot">
+                                <div class="um-price">
+                                    <small>{{ t('home.starting_from') }}</small>
+                                    <b>{{ $umLeadItem->price }}</b>
+                                    <small>{{ t('home.per_adult') }}</small>
+                                </div>
+                                <a href="{{ $umLeadItem->url }}" class="um-btn">{{ t('home.view_details') }} <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <ul class="um-trust">
+                        <li><i class="fas fa-kaaba"></i><div><b>{{ t('umrah.hassleFreeTravel') }}</b><small>{{ t('umrah.hassleFreeTravelDesc') }}</small></div></li>
+                        <li><i class="fas fa-shield-halved"></i><div><b>{{ t('home.secure_payment') }}</b><small>{{ t('home.secure_payment_desc') }}</small></div></li>
+                        <li><i class="fas fa-headset"></i><div><b>{{ t('umrah.support247') }}</b><small>{{ t('umrah.support247Desc') }}</small></div></li>
+                        <li><i class="fas fa-tag"></i><div><b>{{ t('home.best_price_guarantee') }}</b><small>{{ t('home.best_price_guarantee_desc') }}</small></div></li>
+                    </ul>
+                </div>
+
+                @if($umOthers->isNotEmpty())
+                <div class="um-list">
+                    @foreach($umOthers as $item)
+                        <article class="um-item">
+                            <a href="{{ $item->url }}" class="um-item-media">
+                                <img src="{{ $item->image }}" alt="{{ $item->package->name }}" loading="lazy">
+                                @if($item->package->featured == 1)
+                                    <span class="um-badge"><i class="fas fa-star"></i> {{ t('home.badge_featured') }}</span>
+                                @endif
+                            </a>
+                            <div class="um-body">
+                                <h3 class="um-name" dir="auto"><a href="{{ $item->url }}">{{ $item->package->name }}</a></h3>
+                                @if($item->package->from_location && $item->package->to_location)
+                                    <p class="um-route"><i class="fas fa-plane-departure"></i> <span>{{ $item->package->from_location }} <i class="fas fa-arrow-right um-route-arrow"></i> {{ $item->package->to_location }}</span></p>
+                                @endif
+                                @if($item->services)
+                                    <div class="um-services">
+                                        @foreach($item->services as $service)
+                                            <span><i class="fas {{ $umServiceIcon($service) }}"></i> {{ $service }}</span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                                <div class="um-foot">
+                                    <div class="um-price">
+                                        <small>{{ t('home.starting_from') }}</small>
+                                        <b>{{ $item->price }}</b>
+                                        <small>{{ t('home.per_adult') }}</small>
+                                    </div>
+                                    <a href="{{ $item->url }}" class="um-btn">{{ t('home.view_details') }} <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
                 </div>
                 @endif
             </div>
-
-            <div class="th-track">
-                @php
-                    // Default date values - 2 weeks from today
-                    $departureDate = date('d-m-Y', strtotime('+14 days'));
-                    $returnDate = date('d-m-Y', strtotime('+21 days'));
-                    $adult = 2;
-                    $child = 0;
-                    $infant = 0;
-                    $makkahNights = 4;
-                    $madinaNights = 3;
-                @endphp
-
-                @foreach($umrahPackages as $package)
-                    @php
-                        // Package slug from name
-                        $slug = Str::slug($package->name);
-
-                        // Origin and destination codes
-                        $originCode = 'JED';
-                        $destinationCode = 'JED';
-
-                        if ($package->leaving_from) {
-                            $fromAirport = DB::table('flights_airports')->where('id', $package->leaving_from)->first();
-                            $originCode = $fromAirport ? $fromAirport->code : 'JED';
-                        }
-
-                        if ($package->going_to) {
-                            $toAirport = DB::table('flights_airports')->where('id', $package->going_to)->first();
-                            $destinationCode = $toAirport ? $toAirport->code : 'JED';
-                        }
-
-                        // Build detail URL
-                        $detailUrl = url("umrah/{$slug}/{$originCode}/{$destinationCode}/{$departureDate}/{$returnDate}/{$adult}/{$child}/{$infant}/{$makkahNights}/{$madinaNights}");
-                    @endphp
-
-                    @include('common.umrah-card', [
-                        'packagePrice' => $active_currency->currency_name . ' ' . convertCurrency($package->price, $package->currency ?? 'USD', $active_currency->currency_name),
-                        'umrahLabels' => ['featured' => 'home.badge_featured', 'nights' => 'home.nights', 'makkah' => 'home.nights_makkah', 'madinah' => 'home.nights_madinah', 'hotel' => 'home.hotel', 'from' => 'home.starting_from'],
-                    ])
-                @endforeach
-            </div>
+            @endif
         </div>
     </section>
     @endif
