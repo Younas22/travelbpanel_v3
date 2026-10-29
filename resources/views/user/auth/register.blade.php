@@ -2,10 +2,10 @@
 
 <style>
     :root {
-        --primary:   #0077BE;
-        --primary-m: #005a8f;
-        --accent:    #0077BE;
-        --accent-l:  #e8f4fd;
+        --primary:   #2563EB;
+        --primary-m: #1D4ED8;
+        --accent:    #2563EB;
+        --accent-l:  #EFF4FF;
         --text:      #0f172a;
         --muted:     #64748b;
         --border:    #e2e8f0;
@@ -27,12 +27,12 @@
         background: #fff;
         border: 1px solid var(--border);
         border-radius: 18px;
-        box-shadow: 0 12px 48px rgba(0,53,128,.09);
+        box-shadow: 0 12px 48px rgba(0,0,0,.09);
         overflow: hidden;
     }
 
     .form-head {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-m) 100%);
+        background: var(--primary);
         padding: 28px 32px;
         text-align: center;
     }
@@ -60,7 +60,7 @@
         transition: border-color .2s, box-shadow .2s;
         box-sizing: border-box;
     }
-    .f-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,119,190,.11); background: #fff; }
+    .f-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,.11); background: #fff; }
     .f-input.is-invalid { border-color: #ef4444; }
     .f-err { display: block; font-size: .73rem; color: #ef4444; margin-top: 3px; }
 
@@ -83,7 +83,7 @@
         display: flex; align-items: center; justify-content: center; gap: 6px;
         font-family: inherit;
     }
-    .btn-sub:hover { background: #0066a5; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,119,190,.35); }
+    .btn-sub:hover { background: #1D4ED8; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,.35); }
 
     .f-divider { text-align: center; margin: 18px 0; font-size: .78rem; color: var(--muted); position: relative; }
     .f-divider::before, .f-divider::after {
@@ -110,6 +110,44 @@
         .form-head, .form-body { padding: 22px 20px; }
         .f-row { flex-direction: column; gap: 0; }
     }
+
+    /* ---- Site redesign: brand blue, white card on the homepage cover image ---- */
+    .login-wrap, .reg-wrap, .fp-wrap {
+        min-height: calc(100vh - 0px);
+        background: #F5F9FE url('<?=getSettingImage('cover_image', 'homepage')?>') center 35% / cover no-repeat;
+    }
+    .form-card, .fp-card, .form-wrap {
+        border: 1px solid rgba(0,0,0,.08);
+        border-radius: 20px;
+        box-shadow: 0 24px 64px rgba(0,0,0,.14);
+        animation: none;
+    }
+    .form-head, .fp-head {
+        background: #fff;
+        padding: 30px 32px 6px;
+        color: #000;
+    }
+    .form-head h4, .fp-head h4 { color: #000; font-size: 1.5rem; font-weight: 700; letter-spacing: 0; margin: 0 0 4px; }
+    .form-head p, .fp-head p { color: rgba(0,0,0,.6); font-size: .85rem; }
+    .form-head .logo-ico, .fp-head .ico { background: rgba(37,99,235,.1); color: #2563EB; }
+    .f-label, .fp-label {
+        color: rgba(0,0,0,.55); font-size: 11px; font-weight: 600;
+        letter-spacing: .06em; text-transform: uppercase;
+    }
+    .f-input, .fp-input {
+        height: 46px; padding: 0 14px;
+        border: 1px solid rgba(0,0,0,.12); border-radius: 12px;
+        background: #fff; color: #000; font-size: 14px;
+    }
+    select.f-input { padding-right: 32px; }
+    .f-input:hover, .fp-input:hover { border-color: rgba(37,99,235,.45); }
+    .f-input:focus, .fp-input:focus { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37,99,235,.12); background: #fff; }
+    .btn-login, .btn-sub, .fp-btn {
+        height: 48px; padding: 0 16px; border-radius: 12px;
+        background: #2563EB; font-weight: 600; box-shadow: 0 8px 18px rgba(37,99,235,.28);
+    }
+    .btn-login:hover, .btn-sub:hover, .fp-btn:hover { background: #1D4ED8; transform: none; }
+    .f-hint a, .fp-hint a { color: #2563EB; }
 </style>
 
 <div class="reg-wrap">

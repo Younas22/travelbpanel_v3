@@ -2,10 +2,10 @@
 
 <style>
     :root {
-        --primary:   #0077BE;
-        --primary-m: #005a8f;
-        --accent:    #0077BE;
-        --accent-l:  #e8f4fd;
+        --primary:   #2563EB;
+        --primary-m: #1D4ED8;
+        --accent:    #2563EB;
+        --accent-l:  #EFF4FF;
         --text:      #0f172a;
         --muted:     #64748b;
         --border:    #e2e8f0;
@@ -14,7 +14,7 @@
 
     /* ─── HERO ─── */
     .ag-hero {
-        background: linear-gradient(160deg, #005a8f 0%, #0077BE 55%, #0093e0 100%);
+        background: #2563EB;
         padding: 42px 24px 36px;
         text-align: center;
         position: relative;
@@ -38,7 +38,7 @@
         font-weight: 800; color: #fff; line-height: 1.18;
         letter-spacing: -.02em; margin-bottom: 12px;
     }
-    .ag-hero h1 span { color: #cceeff; }
+    .ag-hero h1 span { color: #FFFFFF; }
     .ag-hero-sub {
         font-size: .88rem; color: rgba(255,255,255,.85);
         max-width: 480px; margin: 0 auto 24px; line-height: 1.65;
@@ -53,7 +53,7 @@
         box-shadow: 0 4px 18px rgba(0,0,0,.15); letter-spacing: -.01em;
         font-family: inherit;
     }
-    .btn-ag-primary:hover { background: #e8f4fd; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+    .btn-ag-primary:hover { background: #EFF4FF; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.2); }
 
     .btn-ag-ghost {
         background: rgba(255,255,255,.15); color: #fff !important;
@@ -106,7 +106,7 @@
         border-radius: 14px; padding: 20px; height: 100%;
         transition: box-shadow .25s, transform .25s, border-color .25s;
     }
-    .ben-card:hover { box-shadow: 0 8px 28px rgba(0,53,128,.07); transform: translateY(-3px); border-color: #bfdbfe; }
+    .ben-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,.07); transform: translateY(-3px); border-color: #bfdbfe; }
     .ben-ico {
         width: 40px; height: 40px; background: var(--accent-l); border-radius: 10px;
         display: flex; align-items: center; justify-content: center;
@@ -134,14 +134,14 @@
 
     /* ─── CTA BAND ─── */
     .cta-band {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-m) 100%);
+        background: var(--primary);
         border-radius: 18px; padding: 44px 36px; text-align: center;
         position: relative; overflow: hidden;
     }
     .cta-band::before {
         content: '';
         position: absolute; inset: 0;
-        background: radial-gradient(circle at 75% 50%, rgba(0,119,190,.32) 0%, transparent 60%);
+        background: none;
     }
     .cta-band h3 {
         font-size: clamp(1.1rem, 2.2vw, 1.55rem); font-weight: 800;
@@ -156,17 +156,17 @@
         box-shadow: 0 4px 16px rgba(0,0,0,.18); position: relative;
         font-family: inherit;
     }
-    .btn-cta-w:hover { background: #f0f9ff; transform: translateY(-2px); }
+    .btn-cta-w:hover { background: #EFF4FF; transform: translateY(-2px); }
 
     /* ─── FORM ─── */
     .form-wrap {
         max-width: 640px; margin: 0 auto;
         background: #fff; border: 1px solid var(--border);
-        border-radius: 18px; box-shadow: 0 12px 48px rgba(0,53,128,.09);
+        border-radius: 18px; box-shadow: 0 12px 48px rgba(0,0,0,.09);
         overflow: hidden;
     }
     .form-head {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-m) 100%);
+        background: var(--primary);
         padding: 24px 32px; text-align: center;
     }
     .form-head h4 { color: #fff; font-size: 1.1rem; font-weight: 800; margin-bottom: 3px; letter-spacing: -.01em; }
@@ -192,7 +192,7 @@
         to   { opacity:1; transform: translateY(0) scale(1); }
     }
     .m-head {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-m) 100%);
+        background: var(--primary);
         padding: 22px 26px; border-radius: 18px 18px 0 0; position: relative;
     }
     .m-head h5 { color: #fff; font-size: 1rem; font-weight: 800; margin-bottom: 2px; letter-spacing: -.01em; }
@@ -215,7 +215,7 @@
         padding: 9px 12px; font-size: .85rem; font-family: inherit;
         background: #fafafa; color: var(--text); transition: border-color .2s, box-shadow .2s;
     }
-    .f-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,119,190,.11); background: #fff; }
+    .f-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,.11); background: #fff; }
     .f-input.is-invalid { border-color: #ef4444; }
     .f-err { display: block; font-size: .73rem; color: #ef4444; margin-top: 3px; }
     .f-pw { position: relative; }
@@ -233,7 +233,7 @@
         display: flex; align-items: center; justify-content: center; gap: 6px;
         font-family: inherit; letter-spacing: -.01em;
     }
-    .btn-sub:hover { background: #0066a5; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,119,190,.35); }
+    .btn-sub:hover { background: #1D4ED8; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,.35); }
     .f-note { font-size: .72rem; color: var(--muted); text-align: center; margin-top: 10px; line-height: 1.5; }
     .f-hint { text-align: center; margin-top: 12px; font-size: .8rem; color: var(--muted); }
     .f-hint a { color: var(--primary); font-weight: 600; text-decoration: none; }
@@ -264,6 +264,44 @@
     body.ag-loading .btn-sub .lbl { display: none; }
     body.ag-loading .btn-sub .spin { display: flex; }
     .btn-sub .spin { display: none; align-items: center; gap: 7px; }
+
+    /* ---- Site redesign: brand blue, white card on the homepage cover image ---- */
+    .login-wrap, .reg-wrap, .fp-wrap {
+        min-height: calc(100vh - 0px);
+        background: #F5F9FE url('<?=getSettingImage('cover_image', 'homepage')?>') center 35% / cover no-repeat;
+    }
+    .form-card, .fp-card, .form-wrap {
+        border: 1px solid rgba(0,0,0,.08);
+        border-radius: 20px;
+        box-shadow: 0 24px 64px rgba(0,0,0,.14);
+        animation: none;
+    }
+    .form-head, .fp-head {
+        background: #fff;
+        padding: 30px 32px 6px;
+        color: #000;
+    }
+    .form-head h4, .fp-head h4 { color: #000; font-size: 1.5rem; font-weight: 700; letter-spacing: 0; margin: 0 0 4px; }
+    .form-head p, .fp-head p { color: rgba(0,0,0,.6); font-size: .85rem; }
+    .form-head .logo-ico, .fp-head .ico { background: rgba(37,99,235,.1); color: #2563EB; }
+    .f-label, .fp-label {
+        color: rgba(0,0,0,.55); font-size: 11px; font-weight: 600;
+        letter-spacing: .06em; text-transform: uppercase;
+    }
+    .f-input, .fp-input {
+        height: 46px; padding: 0 14px;
+        border: 1px solid rgba(0,0,0,.12); border-radius: 12px;
+        background: #fff; color: #000; font-size: 14px;
+    }
+    select.f-input { padding-right: 32px; }
+    .f-input:hover, .fp-input:hover { border-color: rgba(37,99,235,.45); }
+    .f-input:focus, .fp-input:focus { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37,99,235,.12); background: #fff; }
+    .btn-login, .btn-sub, .fp-btn {
+        height: 48px; padding: 0 16px; border-radius: 12px;
+        background: #2563EB; font-weight: 600; box-shadow: 0 8px 18px rgba(37,99,235,.28);
+    }
+    .btn-login:hover, .btn-sub:hover, .fp-btn:hover { background: #1D4ED8; transform: none; }
+    .f-hint a, .fp-hint a { color: #2563EB; }
 </style>
 
 
