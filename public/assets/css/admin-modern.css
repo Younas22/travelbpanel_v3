@@ -4565,3 +4565,27 @@ select.tbp-language-form-input { appearance: none; background: #fff url("data:im
     .tbp-translation-create-tab { padding: 0 14px; }
     .tbp-translation-create-actions .tbp-translation-create-btn { flex: 1; }
 }
+
+/* Agent show — Bookings tab */
+.tbp-agent-bookings-pane { display: flex; flex-direction: column; gap: 16px; }
+.tbp-agent-bookings-pane .tbp-agent-card-head { margin-bottom: 0; }
+.tbp-agent-bookings-pane .tbp-agent-card-head p { margin-top: 4px; font-size: 0.8125rem; color: var(--ad-muted); }
+.tbp-agent-btn.is-disabled { opacity: .5; pointer-events: none; }
+.tbp-agent-bookings-filters { display: grid; grid-template-columns: minmax(200px, 1.6fr) repeat(3, minmax(120px, 1fr)) repeat(2, minmax(130px, 1fr)) auto auto; gap: 10px; align-items: center; margin: 0; }
+.tbp-agent-bookings-filters input, .tbp-agent-bookings-filters select { width: 100%; height: 42px; padding: 0 12px; border: 1px solid var(--ad-border); border-radius: 10px; background: #fff; color: var(--ad-text); font: 400 0.8125rem 'Plus Jakarta Sans', sans-serif; outline: none; }
+.tbp-agent-bookings-filters input:focus, .tbp-agent-bookings-filters select:focus { border-color: var(--ad-blue); box-shadow: 0 0 0 3px rgba(37, 99, 235, .12); }
+.tbp-agent-bookings-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+.tbp-agent-bookings-table th { text-align: left; padding: 10px 12px; background: #F8FAFC; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; color: #334155; white-space: nowrap; border: 0; }
+.tbp-agent-bookings-table td { padding: 12px; border-bottom: 1px solid #F1F5F9; vertical-align: middle; white-space: nowrap; }
+.tbp-agent-bookings-table td small { display: block; margin-top: 2px; font-size: 0.75rem; color: var(--ad-muted); }
+.tbp-agent-bookings-table td.is-details { white-space: normal; min-width: 180px; }
+.tbp-agent-service { display: inline-flex; align-items: center; gap: 6px; }
+.tbp-agent-icon-link { display: inline-flex; width: 32px; height: 32px; align-items: center; justify-content: center; border-radius: 8px; }
+.tbp-agent-icon-link:hover { background: #F1F5F9; }
+.tbp-agent-bookings-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 44px 16px; border: 1px dashed var(--ad-border); border-radius: 12px; text-align: center; }
+.tbp-agent-bookings-empty .bi { font-size: 2rem; }
+.tbp-agent-bookings-empty strong { font-size: 1rem; }
+.tbp-agent-bookings-empty span { font-size: 0.8125rem; color: var(--ad-muted); }
+.tbp-agent-bookings-pages nav { display: flex; justify-content: flex-end; }
+@media (max-width: 1365px) { .tbp-agent-bookings-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); } .tbp-agent-bookings-filters input[type=search] { grid-column: 1 / -1; } }
+@media (max-width: 767px) { .tbp-agent-bookings-filters { grid-template-columns: 1fr 1fr; } }

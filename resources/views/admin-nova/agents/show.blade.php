@@ -173,10 +173,78 @@
 
         {{-- ===== BOOKINGS ===== --}}
         <div class="tab-pane fade" id="bookings" role="tabpanel" aria-labelledby="bookings-tab">
+            @php
+                $bkFiltered = collect(request()->only(['bk_type', 'bk_status', 'bk_payment', 'bk_from', 'bk_to', 'bk_search']))->filter()->isNotEmpty();
+                $bkTypeIcons = ['hotel' => 'bi-building', 'flight' => 'bi-airplane', 'tour' => 'bi-map', 'umrah' => 'bi-moon-stars'];
+            @endphp
             <section class="tbp-agent-card tbp-agent-bookings-pane">
-                <h2><i class="bi bi-calendar3"></i> Bookings</h2>
-                <p>All bookings made by this agent ({{ number_format($bookingStats['total']) }} in total).</p>
-                <a href="{{ route('admin.bookings.all') }}?agent_id={{ $agent->id }}" class="tbp-agent-btn is-primary">View all bookings by {{ $agent->full_name }} <i class="bi bi-arrow-right"></i></a>
+                <header class="tbp-agent-card-head">
+                    <div>
+                        <h2><i class="bi bi-calendar3"></i> Bookings</h2>
+                        <p>{{ number_format($agentBookings->total()) }} {{ $bkFiltered ? 'matching' : '' }} {{ \Illuminate\Support\Str::plural('booking', $agentBookings->total()) }} made by this agent</p>
+                    </div>
+                    <a href="{{ request()->fullUrlWithQuery(['print' => 1, 'bk_page' => null]) }}" target="_blank" class="tbp-agent-btn {{ $agentBookings->total() ? '' : 'is-disabled' }}"><i class="bi bi-file-earmark-pdf"></i> Export PDF</a>
+                </header>
+
+                <form method="GET" action="{{ route('admin.agents.show', $agent) }}#bookings" class="tbp-agent-bookings-filters">
+                    <input type="search" name="bk_search" value="{{ request('bk_search') }}" placeholder="Search reference, PNR or guest…" aria-label="Search bookings">
+                    <select name="bk_type" aria-label="Service">
+                        <option value="">All services</option>
+                        @foreach(['hotel' => 'Hotels', 'flight' => 'Flights', 'tour' => 'Tours', 'umrah' => 'Umrah'] as $v => $l)
+                            <option value="{{ $v }}" @selected(request('bk_type') === $v)>{{ $l }}</option>
+                        @endforeach
+                    </select>
+                    <select name="bk_status" aria-label="Status">
+                        <option value="">All statuses</option>
+                        @foreach(['confirmed', 'pending', 'cancelled'] as $v)
+                            <option value="{{ $v }}" @selected(request('bk_status') === $v)>{{ ucfirst($v) }}</option>
+                        @endforeach
+                    </select>
+                    <select name="bk_payment" aria-label="Payment">
+                        <option value="">All payments</option>
+                        @foreach(['paid', 'unpaid', 'refunded'] as $v)
+                            <option value="{{ $v }}" @selected(request('bk_payment') === $v)>{{ ucfirst($v) }}</option>
+                        @endforeach
+                    </select>
+                    <input type="date" name="bk_from" value="{{ request('bk_from') }}" aria-label="From date">
+                    <input type="date" name="bk_to" value="{{ request('bk_to') }}" aria-label="To date">
+                    <button type="submit" class="tbp-agent-btn is-primary"><i class="bi bi-funnel"></i> Filter</button>
+                    @if($bkFiltered)
+                        <a href="{{ route('admin.agents.show', $agent) }}#bookings" class="tbp-agent-btn" title="Reset filters"><i class="bi bi-arrow-clockwise"></i></a>
+                    @endif
+                </form>
+
+                @if($agentBookings->total())
+                    <div class="tbp-agent-table-wrap">
+                        <table class="tbp-agent-bookings-table">
+                            <thead><tr><th>Reference</th><th>Service</th><th>Details</th><th>Customer</th><th>Amount</th><th>Status</th><th>Payment</th><th>Date</th><th></th></tr></thead>
+                            <tbody>
+                                @foreach($agentBookings as $b)
+                                    <tr>
+                                        <td><strong>{{ $b['ref'] ?: '#' . $b['id'] }}</strong>@if($b['pnr'])<small>PNR {{ $b['pnr'] }}</small>@endif</td>
+                                        <td><span class="tbp-agent-service"><i class="bi {{ $bkTypeIcons[$b['type']] }}"></i> {{ ucfirst($b['type']) }}</span></td>
+                                        <td class="is-details">{{ $b['title'] }}@if($b['subtitle'])<small>{{ $b['subtitle'] }}</small>@endif</td>
+                                        <td>{{ $b['customer'] ?: '—' }}</td>
+                                        <td><strong>{{ $b['amount'] }}</strong></td>
+                                        <td><span class="tbp-agent-status is-{{ $b['status'] === 'confirmed' ? 'completed' : ($b['status'] === 'cancelled' ? 'rejected' : 'pending') }}">{{ ucfirst($b['status']) }}</span></td>
+                                        <td><span class="tbp-agent-status is-{{ $b['payment'] === 'paid' ? 'completed' : ($b['payment'] === 'refunded' ? 'rejected' : 'pending') }}">{{ ucfirst($b['payment']) }}</span></td>
+                                        <td>{{ $b['date']?->format('d M Y') }}</td>
+                                        <td><a href="{{ route('admin.bookings.edit', [$b['type'], $b['id']]) }}" class="tbp-agent-icon-link" title="Open booking"><i class="bi bi-box-arrow-up-right"></i></a></td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @if($agentBookings->hasPages())
+                        <div class="tbp-agent-bookings-pages">{{ $agentBookings->links() }}</div>
+                    @endif
+                @else
+                    <div class="tbp-agent-bookings-empty">
+                        <i class="bi bi-calendar-x"></i>
+                        <strong>No bookings</strong>
+                        <span>{{ $bkFiltered ? 'No bookings match these filters.' : $agent->full_name . ' has not made any bookings yet.' }}</span>
+                    </div>
+                @endif
             </section>
         </div>
     </div>

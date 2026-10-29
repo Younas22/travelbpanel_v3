@@ -190,16 +190,33 @@ class AgentController extends Controller
                          ->with('success', 'Agent created successfully! Code: ' . $agent->agent_code);
     }
 
-    public function show(User $agent)
+    public function show(Request $request, User $agent)
     {
         $this->ensureAgent($agent);
+
+        // "Export PDF" opens the full filtered list in a print layout; the
+        // browser's print dialog saves it as PDF (same pattern as the agent
+        // wallet statement).
+        if ($request->boolean('print')) {
+            $bookings = $this->agentBookings($request, $agent->id);
+            return view('admin.agents.bookings-print', compact('agent', 'bookings'));
+        }
+
         $agent->load(['wallet', 'agentPermissions', 'topupRequests' => fn($q) => $q->latest()->take(5)]);
 
         $bookingStats   = $this->getAgentBookingStats($agent->id);
         $allPermissions = AgentPermission::ALL_PERMISSIONS;
         $agentPermissions = AgentPermission::getAgentPermissions($agent->id);
 
-        return view('admin.agents.show', compact('agent', 'bookingStats', 'allPermissions', 'agentPermissions'));
+        $allBookings = $this->agentBookings($request, $agent->id);
+        $page = max(1, (int) $request->query('bk_page', 1));
+        $agentBookings = new \Illuminate\Pagination\LengthAwarePaginator(
+            $allBookings->forPage($page, 15)->values(), $allBookings->count(), 15, $page,
+            ['path' => $request->url(), 'pageName' => 'bk_page', 'fragment' => 'bookings']
+        );
+        $agentBookings->appends($request->except('bk_page'));
+
+        return view('admin.agents.show', compact('agent', 'bookingStats', 'allPermissions', 'agentPermissions', 'agentBookings'));
     }
 
     public function edit(User $agent)
@@ -427,6 +444,54 @@ class AgentController extends Controller
     private function ensureAgent(User $user): void
     {
         if (!$user->isAgent()) abort(404);
+    }
+
+    /**
+     * Every booking this agent made across the four booking tables, newest
+     * first, normalised to one row shape. Filters (all optional, prefixed
+     * "bk_" so they don't clash with other query params on the show page):
+     * bk_type, bk_status, bk_payment, bk_from, bk_to, bk_search.
+     */
+    private function agentBookings(Request $request, int $agentId): \Illuminate\Support\Collection
+    {
+        $sources = [
+            'hotel'  => [HotelBooking::class,  'hotel_info',   'booking_hotel_pnr'],
+            'flight' => [FlightBooking::class, 'flight_route', 'booking_air_pnr'],
+            'tour'   => [TourBooking::class,   'tour_info',    'booking_pnr'],
+            'umrah'  => [UmrahBooking::class,  'umrah_info',   'booking_pnr'],
+        ];
+        if (array_key_exists($request->query('bk_type'), $sources)) {
+            $sources = [$request->query('bk_type') => $sources[$request->query('bk_type')]];
+        }
+
+        $rows = collect();
+        foreach ($sources as $type => [$model, $infoAttr, $pnrCol]) {
+            $query = $model::where('agent_id', $agentId);
+            if ($request->filled('bk_status'))  $query->byStatus($request->query('bk_status'));
+            if ($request->filled('bk_payment')) $query->byPaymentState($request->query('bk_payment'));
+            if ($request->filled('bk_search'))  $query->search($request->query('bk_search'));
+            if ($request->filled('bk_from') && strtotime($request->query('bk_from'))) $query->whereDate('created_at', '>=', $request->query('bk_from'));
+            if ($request->filled('bk_to') && strtotime($request->query('bk_to')))     $query->whereDate('created_at', '<=', $request->query('bk_to'));
+
+            foreach ($query->get() as $b) {
+                $info = $b->{$infoAttr};
+                $rows->push([
+                    'id'       => $b->id,
+                    'type'     => $type,
+                    'ref'      => $b->booking_code_ref,
+                    'pnr'      => $b->{$pnrCol},
+                    'title'    => is_array($info) ? ($info['name'] ?? $info['route'] ?? '—') : ($info ?: '—'),
+                    'subtitle' => is_array($info) ? ($info['location'] ?? $info['stops'] ?? '') : '',
+                    'customer' => $b->customer_name,
+                    'amount'   => $b->formatted_amount,
+                    'status'   => $b->booking_status_flag ?: 'pending',
+                    'payment'  => $b->booking_payment_state ?: 'unpaid',
+                    'date'     => $b->created_at,
+                ]);
+            }
+        }
+
+        return $rows->sortByDesc('date')->values();
     }
 
     private function getAgentBookingStats(int $agentId): array
