@@ -11,6 +11,7 @@
     </div>
 
     <div class="adm-header-right">
+        @stack('header-actions')
 
         <!-- User Menu -->
         <div class="dropdown">
