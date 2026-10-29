@@ -1,204 +1,132 @@
 @extends('common.layout')
 @section('content')
+@php
+    $post = $blog;
+    $shareUrl = urlencode(url()->current());
+    $shareTitle = urlencode($post->title);
+@endphp
 
-<div class="flight-container">
+<div class="td-page pg-article-page">
+    <!-- Breadcrumbs -->
+    <nav class="td-breadcrumb" aria-label="Breadcrumb">
+        <a href="{{ url('/') }}">{{ t('header.Home') }}</a>
+        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        <a href="{{ route('blog.index') }}">{{ t('blog.title') }}</a>
+        @if($post->category)
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            <span>{{ $post->category->name }}</span>
+        @endif
+    </nav>
 
-    <!-- Back Link -->
-    <a href="{{ route('blog.index') }}" class="back-link">
-        <i class="fas fa-arrow-left"></i> {{t('blog.backToBlog')}}
-    </a>
-
-    <!-- Article Container -->
-    <div class="article-container">
-
-        <!-- Featured Image -->
-        <div class="featured-image">
-            @if($blog->featured_image)
-                <img src="{{ asset('public/'.$blog->featured_image) }}" class="img-fluid" alt="{{ $blog->title }}">
-            @else
-                <i class="fas fa-image"></i>
-            @endif
-            @if($blog->image_caption)
-                <div class="image-credit">{{ $blog->image_caption }}</div>
-            @endif
+    <!-- Header -->
+    <div class="td-header">
+        <h1 class="td-title pg-article-title" dir="auto">{{ $post->title }}</h1>
+        <div class="td-meta">
+            @if($post->category)<span class="fb-tag">{{ $post->category->name }}</span>@endif
+            <span class="td-meta-item"><i class="fas fa-calendar"></i> {{ $post->created_at->format('d M Y') }}</span>
+            <span class="td-meta-item"><i class="fas fa-clock"></i> {{ $post->reading_time }} {{ t('blog.minRead') }}</span>
+            <span class="td-meta-item"><i class="fas fa-user"></i> {{ $post->author ? $post->author->full_name : 'Admin' }}</span>
         </div>
+    </div>
 
-        <!-- Article Header -->
-        <div class="article-header">
-
-            <div class="article-meta">
-                <span class="article-category">{{ $blog->category->name }}</span>
-
-                <div class="article-meta-item">
-                    <i class="fas fa-calendar"></i>
-                    {{ $blog->created_at->format('d M Y') }}
-                </div>
-
-                <div class="article-meta-item">
-                    <i class="fas fa-clock"></i>
-                    {{ $blog->reading_time }} {{t('blog.minRead')}}
-                </div>
-            </div>
-
-            <h1 class="article-title">{{ $blog->title }}</h1>
-
-            @if($blog->excerpt)
-            <p class="article-excerpt">
-                {{ $blog->excerpt }}
-            </p>
+    <div class="td-main">
+        <div class="td-main-col">
+            @if($post->featured_image)
+                <figure class="pg-article-image">
+                    <img src="{{ asset('public/' . $post->featured_image) }}" alt="{{ $post->title }}">
+                    @if($post->image_caption)<figcaption>{{ $post->image_caption }}</figcaption>@endif
+                </figure>
             @endif
 
-            <!-- Author Info -->
-            <div class="author-section">
-                <div class="author-avatar">
-                    @if($blog->author && $blog->author->profile_image)
-                        <img src="{{ asset('public/' . $blog->author->profile_image) }}" alt="{{ $blog->author->full_name }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
-                    @else
-                        {{ $blog->author ? $blog->author->initials : 'AU' }}
-                    @endif
+            <article class="td-card">
+                @if($post->excerpt)
+                    <p class="pg-lead" dir="auto">{{ $post->excerpt }}</p>
+                @endif
+                <div class="pg-prose" dir="auto">
+                    {!! processImages($post->content) !!}
                 </div>
-                <div class="author-info">
-                    <div class="author-name">{{ $blog->author ? $blog->author->full_name : 'Admin' }}</div>
-                    <div class="author-details">{{ $blog->author_bio ?? t('blog.authorBio') }}</div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Article Body -->
-        <div class="article-body">
-            <div class="article-section">
-                {!! processImages($blog->content) !!}
-            </div>
-
-            <!-- Share Section -->
-            <!-- <div class="share-section">
-                <div class="share-title">{{t('blog.shareThisArticle')}}</div>
-                <div class="share-buttons">
-                    <button onclick="sharePost('facebook')" class="share-btn">
-                        <i class="fab fa-facebook"></i> {{t('blog.shareFacebook')}}
-                    </button>
-                    <button onclick="sharePost('twitter')" class="share-btn">
-                        <i class="fab fa-twitter"></i> {{t('blog.shareTwitter')}}
-                    </button>
-                    <button onclick="sharePost('linkedin')" class="share-btn">
-                        <i class="fab fa-linkedin"></i> {{t('blog.shareLinkedin')}}
-                    </button>
-                    <button onclick="sharePost('whatsapp')" class="share-btn">
-                        <i class="fab fa-whatsapp"></i> {{t('blog.shareWhatsapp')}}
-                    </button>
-                </div>
-            </div> -->
-
-            <!-- Tags -->
-            @if($blog->tags)
-            <div class="article-section">
-                <p><strong>{{t('blog.tags')}}:</strong></p>
-                <div class="tags-section">
-                    @foreach(explode(',', $blog->tags) as $tag)
-                        <span class="tag">{{ trim($tag) }}</span>
-                    @endforeach
-                </div>
-            </div>
-            @endif
-
-            <style>
-                
-            </style>
-
-            <!-- Related Articles -->
-            <div class="related-section">
-                <h2 class="related-title">{{t('blog.relatedArticles')}}</h2>
-
-                <div class="related-grid">
-                    @forelse($relatedPosts as $blog)
-                    <div class="blog-card" onclick="openBlogDetail('{{ $blog->slug }}')">
-
-                        <!-- Blog Image -->
-                        <div class="blog-image">
-                            @if($blog->featured_image)
-                                <img src="{{ asset('public/'.$blog->featured_image) }}" alt="{{ $blog->title }}">
-                            @else
-                                <div class="blog-image-placeholder">
-                                    <i class="fas fa-image"></i>
-                                </div>
-                            @endif
-
-                            <div class="blog-category">
-                                {{ $blog->category->name }}
-                            </div>
-                        </div>
-
-                        <!-- Blog Content -->
-                        <div class="blog-content">
-                            <div class="blog-date">
-                                <i class="fas fa-calendar"></i>
-                                {{ $blog->created_at->format('d M Y') }}
-                            </div>
-
-                            <div class="blog-title">{{ $blog->title }}</div>
-
-                            <div class="blog-excerpt">
-                                {{ Str::limit($blog->excerpt, 120) }}
-                            </div>
-                        </div>
-
-                        <!-- Blog Footer -->
-                        <div class="blog-footer">
-                            <div class="blog-author">
-                                <div class="author-avatar">
-                                    @if($blog->author && $blog->author->profile_image)
-                                        <img src="{{ asset('public/' . $blog->author->profile_image) }}" alt="{{ $blog->author->full_name }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
-                                    @else
-                                        {{ $blog->author ? $blog->author->initials : 'AU' }}
-                                    @endif
-                                </div>
-                                <div class="author-name">{{ $blog->author ? $blog->author->full_name : 'Admin' }}</div>
-                            </div>
-
-                            <div class="read-time">
-                                <i class="fas fa-clock"></i>
-                                {{ $blog->reading_time }} {{t('blog.minRead')}}
-                            </div>
-                        </div>
-
+                @if($post->tags)
+                    <div class="pg-tags">
+                        <b>{{ t('blog.tags') }}:</b>
+                        @foreach(explode(',', $post->tags) as $tag)
+                            @if(trim($tag) !== '')<span class="tl-pill">#{{ trim($tag) }}</span>@endif
+                        @endforeach
                     </div>
-                    @empty
-                        <p>{{t('blog.noRelatedArticles')}}</p>
-                    @endforelse
-                </div>
-            </div>
+                @endif
+            </article>
+
+            <!-- Previous / next -->
+            @if($previousPost || $nextPost)
+                <nav class="pg-prevnext" aria-label="Articles">
+                    @if($previousPost)
+                        <a href="{{ route('blog.detail', $previousPost->slug) }}" class="pg-prevnext-link">
+                            <small><i class="fas fa-arrow-left"></i> {{ t('blog.previousPage') }}</small>
+                            <b dir="auto">{{ $previousPost->title }}</b>
+                        </a>
+                    @else
+                        <span></span>
+                    @endif
+                    @if($nextPost)
+                        <a href="{{ route('blog.detail', $nextPost->slug) }}" class="pg-prevnext-link is-next">
+                            <small>{{ t('blog.nextPage') }} <i class="fas fa-arrow-right"></i></small>
+                            <b dir="auto">{{ $nextPost->title }}</b>
+                        </a>
+                    @endif
+                </nav>
+            @endif
         </div>
 
+        <aside class="td-sidebar">
+            <!-- Author -->
+            <div class="td-card">
+                <div class="pg-author-card">
+                    <span class="pg-avatar is-lg">
+                        @if($post->author && $post->author->profile_image)
+                            <img src="{{ asset('public/' . $post->author->profile_image) }}" alt="">
+                        @else
+                            {{ $post->author ? $post->author->initials : 'AU' }}
+                        @endif
+                    </span>
+                    <div>
+                        <small>{{ t('blog.author') }}</small>
+                        <b>{{ $post->author ? $post->author->full_name : 'Admin' }}</b>
+                        @if($post->author_bio)<p>{{ $post->author_bio }}</p>@endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Share -->
+            <div class="td-card">
+                <h2 class="td-side-title">{{ t('blog.shareThisArticle') }}</h2>
+                <div class="sf-social pg-share">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ $shareUrl }}" target="_blank" rel="noopener" aria-label="{{ t('blog.shareFacebook') }}"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/intent/tweet?url={{ $shareUrl }}&text={{ $shareTitle }}" target="_blank" rel="noopener" aria-label="{{ t('blog.shareTwitter') }}"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ $shareUrl }}" target="_blank" rel="noopener" aria-label="{{ t('blog.shareLinkedin') }}"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://wa.me/?text={{ $shareTitle }}%20{{ $shareUrl }}" target="_blank" rel="noopener" aria-label="{{ t('blog.shareWhatsapp') }}"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+
+            <!-- Related -->
+            <div class="td-card">
+                <h2 class="td-side-title">{{ t('blog.relatedArticles') }}</h2>
+                @forelse($relatedPosts as $related)
+                    <a href="{{ route('blog.detail', $related->slug) }}" class="pg-related">
+                        @if($related->featured_image)
+                            <img src="{{ asset('public/' . $related->featured_image) }}" alt="" loading="lazy">
+                        @else
+                            <span class="pg-post-placeholder"><i class="fas fa-image"></i></span>
+                        @endif
+                        <span>
+                            <b dir="auto">{{ $related->title }}</b>
+                            <small>{{ $related->created_at->format('d M Y') }}</small>
+                        </span>
+                    </a>
+                @empty
+                    <p class="pg-muted">{{ t('blog.noRelatedArticles') }}</p>
+                @endforelse
+            </div>
+        </aside>
     </div>
 </div>
-
-<script>
-function sharePost(platform) {
-    const url = encodeURIComponent(window.location.href);
-    const title = encodeURIComponent(document.querySelector('.article-title').textContent);
-    let shareUrl = '';
-
-    switch (platform) {
-        case 'facebook':
-            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-            break;
-        case 'twitter':
-            shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
-            break;
-        case 'linkedin':
-            shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
-            break;
-        case 'whatsapp':
-            shareUrl = `https://wa.me/?text=${title}%20${url}`;
-            break;
-    }
-
-    window.open(shareUrl, '_blank', 'width=600,height=400');
-}
-
-function openBlogDetail(slug) {
-    window.location.href = "{{ route('blog.detail', ':slug') }}".replace(':slug', slug);
-}
-</script>
-
 @endsection

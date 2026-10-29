@@ -119,6 +119,43 @@
         color: rgba(0, 0, 0, .45);
     }
 
+    /* Support link beside the currency pill, in the same round pill shape. */
+    .nav-util-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 42px;
+        padding: 0 16px 0 5px;
+        border: 1px solid rgba(0, 0, 0, .1);
+        border-radius: 999px;
+        background: #fff;
+        color: #000;
+        font-weight: 600;
+        font-size: 13px;
+        white-space: nowrap;
+        text-decoration: none;
+        transition: border-color .15s ease, box-shadow .15s ease, color .15s ease;
+    }
+    [dir="rtl"] .nav-util-link { padding: 0 5px 0 16px; }
+    .nav-util-link i {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(37, 99, 235, .1);
+        color: #2563EB;
+        font-size: 13px;
+    }
+    .nav-util-link:hover,
+    .nav-util-link.active {
+        border-color: rgba(37, 99, 235, .4);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, .12);
+        color: #2563EB;
+        text-decoration: none;
+    }
+
     .btn-signin-pill {
         display: inline-flex;
         align-items: center;
@@ -199,6 +236,12 @@
         $navItemsBefore  = $allHeaderItems->filter(fn($i) => $i->sort_order <= 1);
         $navItemsAfter   = $allHeaderItems->filter(fn($i) => $i->sort_order > 1);
 
+        // About and Blog sit after Services in the bar (and mobile menu).
+        $navPageLinks = [
+            [url('/page/about'),    'fas fa-circle-info', t('footer.About')],
+            [route('blog.index'),   'fas fa-newspaper',   t('footer.Blog')],
+        ];
+
         // Flag for a currency option: mapped currencies via getFlagClass, others
         // via the ISO 4217 rule that the first two letters are the country (KWD → kw).
         $navCurrencyFlag = function ($code) {
@@ -274,11 +317,11 @@
                 </div>
             @endif
 
-            {{-- Contact and any remaining items --}}
-            @foreach ($navItemsAfter as $item)
-                <a href="{{ $item->full_url }}" class="nav-item {{ Request::url() == $item->full_url ? 'active' : '' }}">
-                    @if($item->icon)<i class="{{ $item->icon }} nav-ico"></i>@endif
-                    <span>{{ t('header.' . $item->name) }}</span>
+            {{-- About and Blog (same pages as the footer's quick links) --}}
+            @foreach ($navPageLinks as [$linkUrl, $linkIcon, $linkLabel])
+                <a href="{{ $linkUrl }}" class="nav-item {{ Request::url() == $linkUrl ? 'active' : '' }}">
+                    <i class="{{ $linkIcon }} nav-ico"></i>
+                    <span>{{ $linkLabel }}</span>
                 </a>
             @endforeach
         </div>
@@ -314,6 +357,14 @@
                     </select>
                 </div>
             </div>
+
+            {{-- Support (Contact) and any remaining items, after currency --}}
+            @foreach ($navItemsAfter as $item)
+                <a href="{{ $item->full_url }}" class="nav-util-link {{ Request::url() == $item->full_url ? 'active' : '' }}">
+                    @if($item->icon)<i class="{{ $item->icon }}"></i>@endif
+                    <span>{{ t('header.' . $item->name) }}</span>
+                </a>
+            @endforeach
 
             <span class="nav-sep" aria-hidden="true"></span>
 
@@ -424,6 +475,13 @@
                 </a>
             @endforeach
         @endif
+
+        @foreach ($navPageLinks as [$linkUrl, $linkIcon, $linkLabel])
+            <a href="{{ $linkUrl }}" class="nav-m-link {{ Request::url() == $linkUrl ? 'active' : '' }}">
+                <i class="{{ $linkIcon }}"></i>
+                <span>{{ $linkLabel }}</span>
+            </a>
+        @endforeach
 
         {{-- Contact and remaining items --}}
         @foreach ($navItemsAfter as $item)

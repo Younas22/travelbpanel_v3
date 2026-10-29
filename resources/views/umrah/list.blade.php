@@ -1,381 +1,399 @@
 @extends('common.layout')
 @section('content')
 @php
+    // Same layout and styles as the tour listing (.tl-* in style.css)
     $active_currency = activeCurrency();
+    $sortBy = $sortBy ?? 'popular';
+    $items = $packages->getCollection();
+
+    $ulPrice = fn($p) => convertCurrency($p->price, $p->currency ?? 'USD', $active_currency->currency_name);
+    $ulNights = fn($p) => (int) ($p->night_in_mekkah ?? 0) + (int) ($p->night_in_madina ?? 0);
+    $prices = $items->map($ulPrice);
+    $minPrice = $prices->count() ? (int) floor($prices->min()) : 0;
+    $maxPrice = $prices->count() ? (int) ceil($prices->max()) : 10000;
+    if ($maxPrice <= $minPrice) $maxPrice = $minPrice + 100;
+
+    $starCounts = [];
+    for ($s = 5; $s >= 1; $s--) {
+        $starCounts[$s] = $items->filter(fn($p) => (int) $p->stars === $s)->count();
+    }
+    $nightBuckets = [
+        '1-3'  => t('umrahlist.nights_1_3'),
+        '4-7'  => t('umrahlist.nights_4_7'),
+        '8-14' => t('umrahlist.nights_8_14'),
+        '15+'  => t('umrahlist.nights_15_plus'),
+    ];
+    $inBucket = fn($n, $key) => $key === '15+' ? $n >= 15 : ($n >= (int) explode('-', $key)[0] && $n <= (int) explode('-', $key)[1]);
+    $nightCounts = collect($nightBuckets)->map(fn($label, $key) => $items->filter(fn($p) => $ulNights($p) > 0 && $inBucket($ulNights($p), $key))->count());
+    $typeCounts = $items->groupBy(fn($p) => $p->packageType->packege_type ?? $p->packege_type ?? '')->filter(fn($g, $k) => $k !== '')->map->count()->sortDesc();
+    $inclusionCounts = $items->flatMap(fn($p) => array_unique($p->inclusion_names ?? []))->countBy()->sortDesc();
+
+    $fromCity = $originAirport->city ?? $searchParams['origin'];
+    $toCity = $destinationAirport->city ?? $searchParams['destination'];
+    $mapQuery = urlencode(trim($toCity . ' ' . ($destinationAirport->country ?? '')));
 @endphp
-    <!-- Search Collapse -->
-    <div class="umrah-list-container">
-        <div class="hotel-search-collapse">
-            <button class="hotel-search-collapse-btn" id="searchCollapseBtn">
-                <span><i class="fas fa-search"></i> {{t('umrahlist.modify_search')}}</span>
-                <i class="fas fa-chevron-down" id="collapseIcon"></i>
-            </button>
-            <div class="hotel-search-collapse-content" id="searchCollapseContent">
-                <style>
-                .form-container {
-                    max-width: 1200px !important;
-                }
-                </style>
+
+<div class="tl-page">
+    <!-- Search bar (the shared Umrah search form) -->
+    <div id="siteRedesign">
+        <div class="form-container tl-search">
+            <div class="tab-content active" id="form-umrah">
                 @include('forms.umrah-form')
             </div>
         </div>
     </div>
 
-    <!-- Page Header -->
-    <div class="bg-white border-b border-gray-200">
-        <div class="umrah-page-header-inner">
-            <div class="flex flex-wrap items-center gap-4 text-sm">
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-plane-departure text-[#0077BE]"></i>
-                    <div>
-                        <p class="text-xs font-bold text-gray-600">{{ t('umrahlist.from') }}</p>
-                        <p class="font-bold text-gray-900">{{ strtoupper($originAirport->city ?? $searchParams['origin']) }}</p>
-                    </div>
-                </div>
-                <i class="fas fa-arrow-right text-gray-400"></i>
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-plane-arrival text-[#0077BE]"></i>
-                    <div>
-                        <p class="text-xs font-bold text-gray-600">{{ t('umrahlist.to') }}</p>
-                        <p class="font-bold text-gray-900">{{ strtoupper($destinationAirport->city ?? $searchParams['destination']) }}</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-calendar text-[#0077BE]"></i>
-                    <div>
-                        <p class="text-xs font-bold text-gray-600">{{ t('umrahlist.departure') }}</p>
-                        <p class="font-bold text-gray-900">{{ $searchParams['departure_date'] }}</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-calendar text-[#0077BE]"></i>
-                    <div>
-                        <p class="text-xs font-bold text-gray-600">{{ t('umrahlist.return') }}</p>
-                        <p class="font-bold text-gray-900">{{ $searchParams['return_date'] }}</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-users text-[#0077BE]"></i>
-                    <div>
-                        <p class="text-xs font-bold text-gray-600">{{ t('umrahlist.passengers') }}</p>
-                        <p class="font-bold text-gray-900">{{ $searchParams['adult'] + $searchParams['child'] + $searchParams['infant'] }}</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-moon text-[#0077BE]"></i>
-                    <div>
-                        <p class="text-xs font-bold text-gray-600">{{ t('umrahlist.nights') }}</p>
-                        <p class="font-bold text-gray-900">{{ $searchParams['makkah_nights'] }} {{ t('umrahlist.makkah') }}, {{ $searchParams['madina_nights'] }} {{ t('umrahlist.madina') }}</p>
-                    </div>
-                </div>
+    <!-- Results header -->
+    <div class="tl-head">
+        <div>
+            <h1 class="tl-title">{{ $fromCity }} <i class="fas fa-arrow-right tl-title-arrow"></i> {{ $toCity }}: <span id="tlTotal">{{ $packages->total() }}</span> {{ t('umrahlist.packages') }}</h1>
+            <p class="tl-subtitle">
+                {{ $searchParams['departure_date'] }} – {{ $searchParams['return_date'] }}
+                · {{ $searchParams['adult'] }} {{ t('umrahlist.adults') }}@if($searchParams['child'] > 0), {{ $searchParams['child'] }} {{ t('umrahlist.children') }}@endif @if($searchParams['infant'] > 0), {{ $searchParams['infant'] }} {{ t('umrahlist.infants') }}@endif
+            </p>
+        </div>
+        <div class="tl-head-actions">
+            <button type="button" class="tl-filter-toggle" id="mobileFilterToggle" aria-expanded="false" aria-controls="filterSidebar">
+                <i class="fas fa-sliders"></i> {{ t('umrahlist.show_filters') }}
+            </button>
+            <div class="tl-sort-wrap">
+                <label class="tl-sort-label" for="sortSelect"><i class="fas fa-arrow-down-wide-short"></i> {{ t('umrahlist.sort_by') }}</label>
+                <select class="tl-sort" id="sortSelect" onchange="window.location.href = addSortToUrl(this.value)">
+                    <option value="popular" {{ $sortBy == 'popular' ? 'selected' : '' }}>{{ t('umrahlist.most_popular') }}</option>
+                    <option value="price_low" {{ $sortBy == 'price_low' ? 'selected' : '' }}>{{ t('umrahlist.price_low_high') }}</option>
+                    <option value="price_high" {{ $sortBy == 'price_high' ? 'selected' : '' }}>{{ t('umrahlist.price_high_low') }}</option>
+                    <option value="duration" {{ $sortBy == 'duration' ? 'selected' : '' }}>{{ t('umrahlist.duration') }}</option>
+                    <option value="rating" {{ $sortBy == 'rating' ? 'selected' : '' }}>{{ t('umrahlist.highest_rated') }}</option>
+                </select>
             </div>
         </div>
     </div>
 
-    <!-- Main Container -->
-    <div class="umrah-list-container">
-        <section class="umrah-main-container">
-        <div class="umrah-content-wrapper">
-            <!-- Filter Sidebar -->
-            <aside class="umrah-filter-sidebar" id="filterSidebar">
-                    <!-- Price Range Filter -->
-                    <div class="umrah-filter-section">
-                        <h3 class="umrah-filter-title">{{ t('umrahlist.price_range') }}</h3>
-                        <div class="price-range-wrapper" style="padding: 5px 0;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; color: #555;">
-                                <span id="priceMinLabel">{{ $packages->min('price') ? number_format($packages->min('price')) : 0 }}</span>
-                                <span id="priceMaxLabel">{{ $packages->max('price') ? number_format($packages->max('price')) : 0 }}</span>
-                            </div>
-                            <div style="position: relative; height: 30px;">
-                                <div id="priceRangeTrack" style="position: absolute; top: 30%; transform: translateY(-50%); height: 5px; width: 100%; border-radius: 3px; background: #ddd; z-index: 0;">
-                                    <div id="priceRangeFill" style="position: absolute; height: 100%; background: #0077BE; border-radius: 3px;"></div>
-                                </div>
-                                <input type="range" id="priceMinRange" min="{{ $packages->min('price') ?? 0 }}" max="{{ $packages->max('price') ?? 10000 }}" value="{{ $packages->min('price') ?? 0 }}" style="position: absolute; width: 100%; pointer-events: none; -webkit-appearance: none; appearance: none; background: transparent; z-index: 2;">
-                                <input type="range" id="priceMaxRange" min="{{ $packages->min('price') ?? 0 }}" max="{{ $packages->max('price') ?? 10000 }}" value="{{ $packages->max('price') ?? 10000 }}" style="position: absolute; width: 100%; pointer-events: none; -webkit-appearance: none; appearance: none; background: transparent; z-index: 2;">
-                            </div>
-                        </div>
-                        <style>
-                            #priceMinRange::-webkit-slider-runnable-track, #priceMaxRange::-webkit-slider-runnable-track {
-                                -webkit-appearance: none; appearance: none; height: 0; background: transparent;
-                            }
-                            #priceMinRange::-webkit-slider-thumb, #priceMaxRange::-webkit-slider-thumb {
-                                pointer-events: all; -webkit-appearance: none; appearance: none;
-                                width: 18px; height: 18px; border-radius: 50%; background: #0077BE;
-                                cursor: pointer; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-                                margin-top: -2px;
-                            }
-                            #priceMinRange::-moz-range-track, #priceMaxRange::-moz-range-track {
-                                height: 0; background: transparent; border: none;
-                            }
-                            #priceMinRange::-moz-range-thumb, #priceMaxRange::-moz-range-thumb {
-                                pointer-events: all; width: 18px; height: 18px; border-radius: 50%;
-                                background: #0077BE; cursor: pointer; border: 2px solid #fff;
-                                box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-                            }
-                        </style>
-                    </div>
+    <div class="tl-main">
+        <!-- Filters -->
+        <aside class="tl-sidebar" id="filterSidebar">
+            <div class="tl-map">
+                <iframe src="https://maps.google.com/maps?q={{ $mapQuery }}&z=11&output=embed" title="{{ $toCity }} map" loading="lazy" tabindex="-1" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <a class="tl-map-btn" href="https://www.google.com/maps/search/?api=1&query={{ $mapQuery }}" target="_blank" rel="noopener"><i class="fas fa-map-location-dot"></i> View on Map</a>
+            </div>
 
-                    <!-- Duration Filter -->
-                    <div class="umrah-filter-section">
-                        <h3 class="umrah-filter-title">{{ t('umrahlist.duration') ?? 'Duration' }}</h3>
-                        <select id="durationFilter" class="umrah-filter-input">
-                            <option value="">{{ t('umrahlist.any_duration') ?? 'Any Duration' }}</option>
-                            @php
-                                $allNights = $packages->map(fn($p) => ($p->night_in_mekkah ?? 0) + ($p->night_in_madina ?? 0))->filter()->values();
-                                $has1to3 = $allNights->filter(fn($d) => $d >= 1 && $d <= 3)->count() > 0;
-                                $has4to7 = $allNights->filter(fn($d) => $d >= 4 && $d <= 7)->count() > 0;
-                                $has8to14 = $allNights->filter(fn($d) => $d >= 8 && $d <= 14)->count() > 0;
-                                $has15plus = $allNights->filter(fn($d) => $d >= 15)->count() > 0;
-                            @endphp
-                            @if($has1to3)<option value="1-3">{{ t('umrahlist.nights_1_3') ?? '1 - 3 Nights' }}</option>@endif
-                            @if($has4to7)<option value="4-7">{{ t('umrahlist.nights_4_7') ?? '4 - 7 Nights' }}</option>@endif
-                            @if($has8to14)<option value="8-14">{{ t('umrahlist.nights_8_14') ?? '8 - 14 Nights' }}</option>@endif
-                            @if($has15plus)<option value="15+">{{ t('umrahlist.nights_15_plus') ?? '15+ Nights' }}</option>@endif
-                        </select>
-                    </div>
+            <div class="tl-sidebar-title"><i class="fas fa-sliders"></i> {{ t('umrahlist.apply_filters') }} <span class="tl-badge-count" id="tlActiveCount">0</span></div>
 
-                    <!-- Clear Filters -->
-                    <button type="button" class="umrah-clear-filters-btn" id="clearFiltersBtn" style="display: block; width: 100%; text-align: center; cursor: pointer;">
-                        {{ t('umrahlist.clear_all') }}
-                    </button>
-            </aside>
-
-            <!-- Results Section -->
-            <main class="umrah-results-section">
-                <!-- Mobile Filter Toggle -->
-                <button class="umrah-mobile-filter-toggle" onclick="document.getElementById('filterSidebar').classList.toggle('active')">
-                    <i class="fas fa-filter"></i> {{ t('umrahlist.show_filters') }}
-                </button>
-
-                <!-- Results Header -->
-                <div class="umrah-results-header">
-                    <div class="umrah-results-count">
-                        {{ t('umrahlist.showing') }} <strong>{{ $packages->total() }} {{ t('umrahlist.packages') }}</strong>
-                    </div>
-                    <div class="umrah-sort-section">
-                        <label class="umrah-sort-label">{{ t('umrahlist.sort_by') }}:</label>
-                        <select class="umrah-sort-select" id="sortSelect">
-                            <option value="popular">{{ t('umrahlist.most_popular') }}</option>
-                            <option value="price_low">{{ t('umrahlist.price_low_high') }}</option>
-                            <option value="price_high">{{ t('umrahlist.price_high_low') }}</option>
-                            <option value="rating">{{ t('umrahlist.highest_rated') }}</option>
-                        </select>
-                    </div>
+            <!-- Price -->
+            <div class="tl-group">
+                <div class="tl-group-title">{{ t('umrahlist.price_range') }} ({{ $active_currency->currency_name }})</div>
+                <div class="tl-price-inputs">
+                    <input type="number" class="tl-price-box" id="priceMinLabel" value="{{ $minPrice }}" min="{{ $minPrice }}" max="{{ $maxPrice }}" aria-label="Minimum price">
+                    <span>—</span>
+                    <input type="number" class="tl-price-box" id="priceMaxLabel" value="{{ $maxPrice }}" min="{{ $minPrice }}" max="{{ $maxPrice }}" aria-label="Maximum price">
                 </div>
-
-                <!-- Umrah List Grid -->
-                <div class="umrah-list-grid">
-                    @forelse($packages as $package)
-                        <div class="umrah-list-card {{ $package->featured == 1 ? 'featured-card' : '' }}" data-price="{{ $package->price }}" data-nights="{{ ($package->night_in_mekkah ?? 0) + ($package->night_in_madina ?? 0) }}">
-                            <div class="umrah-list-image">
-                                @if($package->images->count() > 0)
-                                    <img src="{{ asset('public/assets/images/' . $package->images->first()->image) }}" alt="{{ $package->name }}">
-                                @else
-                                    <img src="{{ asset('assets/images/placeholder/default.jpg') }}" alt="{{ $package->name }}">
-                                @endif
-                                @if($package->featured == 1)
-                                    <div class="umrah-badge featured-badge">{{ t('umrahlist.featured') }}</div>
-                                @endif
-                                <div class="umrah-duration-badge">
-                                    <i class="fas fa-clock"></i> {{ $package->duration }}
-                                </div>
-                            </div>
-                            <div class="umrah-list-content">
-                                <div class="umrah-header">
-                                    <h3 class="umrah-title">{{ $package->name }}</h3>
-                                    <div class="umrah-location">
-                                        <i class="fas fa-map-marker-alt"></i> {{ $package->from_location }} - {{ $package->to_location }}
-                                    </div>
-                                </div>
-
-                                <!-- Rating -->
-                                @if($package->rating)
-                                    <div class="umrah-rating">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            @if($i <= $package->stars)
-                                                <i class="fas fa-star"></i>
-                                            @else
-                                                <i class="far fa-star"></i>
-                                            @endif
-                                        @endfor
-                                        <span>({{ $package->rating }})</span>
-                                    </div>
-                                @endif
-
-                                <!-- Meta Info -->
-                                <div class="umrah-meta">
-                                    <span class="umrah-meta-item">
-                                        <i class="fas fa-kaaba"></i> {{ $package->night_in_mekkah }} {{ t('umrahlist.nights_makkah') }}
-                                    </span>
-                                    <span class="umrah-meta-item">
-                                        <i class="fas fa-mosque"></i> {{ $package->night_in_madina }} {{ t('umrahlist.nights_madina') }}
-                                    </span>
-                                </div>
-
-                                <!-- Inclusions -->
-                                @if(count($package->inclusion_names) > 0)
-                                    <div class="umrah-highlights">
-                                        @foreach(array_slice($package->inclusion_names, 0, 3) as $inclusion)
-                                            <span class="umrah-highlight-item">
-                                                <i class="fas fa-check"></i> {{ $inclusion }}
-                                            </span>
-                                        @endforeach
-                                        @if(count($package->inclusion_names) > 3)
-                                            <span class="umrah-highlight-item">
-                                                +{{ count($package->inclusion_names) - 3 }} {{ t('umrahlist.more') }}
-                                            </span>
-                                        @endif
-                                    </div>
-                                @endif
-
-                                <div class="umrah-footer">
-                                    <div class="umrah-price-section">
-                                        <span class="umrah-price-label">{{ t('umrahlist.starting_from') }}</span>
-                                        <div class="umrah-price">
-                                            <span class="umrah-price-currency">{{$active_currency->currency_name}}</span> {{convertCurrency($package->price, $package->currency ?? 'USD', $active_currency->currency_name)}}
-                                        </div>
-                                        <span class="umrah-per-person">{{ t('umrahlist.per_person') }}</span>
-                                    </div>
-                                    <a href="{{ route('umrah.details', [
-                                        'slug' => \Str::slug($package->name),
-                                        'origin' => strtolower($searchParams['origin']),
-                                        'destination' => strtolower($searchParams['destination']),
-                                        'departure_date' => $searchParams['departure_date'],
-                                        'return_date' => $searchParams['return_date'],
-                                        'adult' => $searchParams['adult'],
-                                        'child' => $searchParams['child'],
-                                        'infant' => $searchParams['infant'],
-                                        'makkah_nights' => $searchParams['makkah_nights'],
-                                        'madina_nights' => $searchParams['madina_nights']
-                                    ]) }}" class="umrah-view-details-btn">{{ t('umrahlist.view_details') }}</a>
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="umrah-no-results">
-                            <i class="fas fa-search"></i>
-                            <h3>{{ t('umrahlist.no_packages_found') }}</h3>
-                            <p>{{ t('umrahlist.try_different_search') }}</p>
-                        </div>
-                    @endforelse
+                <div class="tl-range">
+                    <div class="tl-range-track"></div>
+                    <div class="tl-range-fill" id="priceRangeFill"></div>
+                    <input type="range" id="priceMinRange" class="tl-range-input" min="{{ $minPrice }}" max="{{ $maxPrice }}" value="{{ $minPrice }}" aria-label="Minimum price">
+                    <input type="range" id="priceMaxRange" class="tl-range-input" min="{{ $minPrice }}" max="{{ $maxPrice }}" value="{{ $maxPrice }}" aria-label="Maximum price">
                 </div>
+            </div>
 
-                <!-- Pagination -->
-                @if($packages->hasPages())
-                    <div class="umrah-pagination-wrapper">
-                        {{ $packages->links() }}
-                    </div>
+            <!-- Nights -->
+            @if($nightCounts->filter()->count())
+            <div class="tl-group">
+                <div class="tl-group-title">{{ t('umrahlist.duration') }}</div>
+                @foreach($nightBuckets as $key => $label)
+                    @if($nightCounts[$key] > 0)
+                        <label class="tl-check"><span><input type="checkbox" class="tl-duration" value="{{ $key }}"> {{ $label }}</span><span class="tl-count">{{ $nightCounts[$key] }}</span></label>
+                    @endif
+                @endforeach
+            </div>
+            @endif
+
+            <!-- Star rating -->
+            @if(array_sum($starCounts) > 0)
+            <div class="tl-group">
+                <div class="tl-group-title">{{ t('umrahlist.star_rating') }}</div>
+                @for($star = 5; $star >= 1; $star--)
+                    @if($starCounts[$star] > 0)
+                        <label class="tl-check"><span><input type="checkbox" class="tl-star" value="{{ $star }}"> <span class="tl-stars-inline">{!! str_repeat('★', $star) !!}</span></span><span class="tl-count">{{ $starCounts[$star] }}</span></label>
+                    @endif
+                @endfor
+            </div>
+            @endif
+
+            <!-- Package name -->
+            <div class="tl-group">
+                <div class="tl-input-icon">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="text" id="tlNameSearch" class="tl-name-search" placeholder="{{ t('umrahlist.umrah_packages') }}…">
+                </div>
+            </div>
+
+            <!-- Package type -->
+            @if($typeCounts->count() > 1)
+            <div class="tl-group">
+                <div class="tl-group-title">{{ t('umrahlist.package_type') }}</div>
+                @foreach($typeCounts as $type => $count)
+                    <label class="tl-check"><span><input type="checkbox" class="tl-type" value="{{ strtolower($type) }}"> {{ ucfirst($type) }}</span><span class="tl-count">{{ $count }}</span></label>
+                @endforeach
+            </div>
+            @endif
+
+            <!-- Inclusions -->
+            @if($inclusionCounts->count())
+            <div class="tl-group" id="tlInclGroup">
+                <div class="tl-group-title">{{ t('umrahlist.whats_included') }}</div>
+                @foreach($inclusionCounts as $name => $count)
+                    <label class="tl-check {{ $loop->index >= 5 ? 'is-extra' : '' }}"><span><input type="checkbox" class="tl-incl" value="{{ \Str::slug($name) }}"> {{ $name }}</span><span class="tl-count">{{ $count }}</span></label>
+                @endforeach
+                @if($inclusionCounts->count() > 5)
+                    <button type="button" class="tl-show-more" id="tlInclMore">{{ t('umrahlist.more') }} <i class="fas fa-chevron-down"></i></button>
                 @endif
-            </main>
+            </div>
+            @endif
+
+            <button type="button" class="tl-clear" id="clearFiltersBtn">{{ t('umrahlist.clear_all') }}</button>
+        </aside>
+
+        <!-- Results -->
+        <div class="tl-results-col">
+            <div class="tl-results" id="tlResults">
+                @forelse($items as $package)
+                    @php
+                        $price = $ulPrice($package);
+                        $nights = $ulNights($package);
+                        $stars = max(0, min(5, (int) $package->stars));
+                        $type = $package->packageType->packege_type ?? $package->packege_type ?? '';
+                        $inclusions = $package->inclusion_names ?? [];
+                        $detailUrl = route('umrah.details', [
+                            'slug' => \Str::slug($package->name),
+                            'origin' => strtolower($searchParams['origin']),
+                            'destination' => strtolower($searchParams['destination']),
+                            'departure_date' => $searchParams['departure_date'],
+                            'return_date' => $searchParams['return_date'],
+                            'adult' => $searchParams['adult'],
+                            'child' => $searchParams['child'],
+                            'infant' => $searchParams['infant'],
+                            'makkah_nights' => $searchParams['makkah_nights'],
+                            'madina_nights' => $searchParams['madina_nights'],
+                        ]);
+                    @endphp
+                    <article class="tl-card umrah-list-card"
+                        data-price="{{ round($price, 2) }}"
+                        data-days="{{ $nights }}"
+                        data-stars="{{ $stars }}"
+                        data-name="{{ strtolower($package->name . ' ' . $package->from_location . ' ' . $package->to_location) }}"
+                        data-type="{{ strtolower($type) }}"
+                        data-incl="{{ collect($inclusions)->map(fn($i) => \Str::slug($i))->implode(' ') }}">
+                        <a href="{{ $detailUrl }}" class="tl-card-image">
+                            <img src="{{ $package->images->count() ? asset('public/assets/images/' . $package->images->first()->image) : asset('public/assets/images/placeholder/default.jpg') }}" alt="{{ $package->name }}" loading="lazy">
+                            @if($package->featured == 1)
+                                <span class="tl-featured"><i class="fas fa-star"></i> {{ t('umrahlist.featured') }}</span>
+                            @endif
+                            @if($package->images->count() > 1)
+                                <span class="tl-photos"><i class="fas fa-images"></i> {{ $package->images->count() }}</span>
+                            @endif
+                        </a>
+                        <div class="tl-card-body">
+                            <h3 class="tl-card-title" dir="auto"><a href="{{ $detailUrl }}">{{ $package->name }}</a></h3>
+                            <div class="tl-card-meta">
+                                @if($stars > 0)
+                                    <span class="tl-stars">@for($i = 1; $i <= 5; $i++)<i class="fas fa-star {{ $i <= $stars ? 'is-on' : '' }}"></i>@endfor</span>
+                                @endif
+                                @if(is_numeric($package->rating) && $package->rating > 0)
+                                    <span class="tl-score">{{ rtrim(rtrim(number_format((float) $package->rating, 1), '0'), '.') }}</span>
+                                @endif
+                            </div>
+                            <div class="tl-facts">
+                                @if($package->from_location && $package->to_location)
+                                    <span><i class="fas fa-plane-departure"></i> {{ $package->from_location }} <i class="fas fa-arrow-right"></i> {{ $package->to_location }}</span>
+                                @endif
+                                @if($package->duration)<span><i class="fas fa-clock"></i> {{ $package->duration }}</span>@endif
+                                @if($package->night_in_mekkah)<span><i class="fas fa-kaaba"></i> {{ $package->night_in_mekkah }} {{ t('umrahlist.nights_makkah') }}</span>@endif
+                                @if($package->night_in_madina)<span><i class="fas fa-mosque"></i> {{ $package->night_in_madina }} {{ t('umrahlist.nights_madina') }}</span>@endif
+                                @if($package->class)<span><i class="fas fa-plane"></i> {{ ucfirst($package->class) }}</span>@endif
+                            </div>
+                            @if(trim((string) $package->desc) !== '')
+                                <p class="tl-desc">{{ \Str::limit(strip_tags($package->desc), 130) }}</p>
+                            @endif
+                            @if(count($inclusions))
+                                <div class="tl-pills">
+                                    @foreach(array_slice($inclusions, 0, 3) as $inclusion)
+                                        <span class="tl-pill"><i class="fas fa-check"></i> {{ $inclusion }}</span>
+                                    @endforeach
+                                    @if(count($inclusions) > 3)
+                                        <span class="tl-pill is-more">+{{ count($inclusions) - 3 }} {{ t('umrahlist.more') }}</span>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                        <div class="tl-price-panel">
+                            <div>
+                                <div class="tl-price-label">{{ t('umrahlist.starting_from') }}</div>
+                                <div class="tl-price">{{ $active_currency->currency_name }} {{ number_format($price) }}</div>
+                                <div class="tl-price-unit">{{ t('umrahlist.per_person') }}</div>
+                            </div>
+                            <a href="{{ $detailUrl }}" class="tl-view-btn">{{ t('umrahlist.view_details') }} <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </article>
+                @empty
+                    <div class="tl-empty">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <h3>{{ t('umrahlist.no_packages_found') }}</h3>
+                        <p>{{ t('umrahlist.try_different_search') }}</p>
+                    </div>
+                @endforelse
+                <div class="tl-empty" id="tlNoMatch" hidden>
+                    <i class="fas fa-magnifying-glass"></i>
+                    <h3>{{ t('umrahlist.no_packages_found') }}</h3>
+                    <p>{{ t('umrahlist.try_different_search') }}</p>
+                </div>
+            </div>
+
+            @if($packages->total() > 0)
+                <nav class="tl-pagination" aria-label="Pagination">
+                    <div class="tl-pages">
+                        @if($packages->onFirstPage())
+                            <span class="tl-page-btn is-disabled" aria-hidden="true"><i class="fas fa-chevron-left"></i></span>
+                        @else
+                            <a class="tl-page-btn" href="{{ $packages->previousPageUrl() }}" aria-label="Previous page"><i class="fas fa-chevron-left"></i></a>
+                        @endif
+                        @php
+                            $last = $packages->lastPage();
+                            $cur = $packages->currentPage();
+                            $show = collect([1, $last, $cur - 1, $cur, $cur + 1])->filter(fn($n) => $n >= 1 && $n <= $last)->unique()->sort()->values();
+                            $prev = 0;
+                        @endphp
+                        @foreach($show as $n)
+                            @if($n - $prev > 1)<span class="tl-page-gap">…</span>@endif
+                            @if($n == $cur)
+                                <span class="tl-page-btn is-active" aria-current="page">{{ $n }}</span>
+                            @else
+                                <a class="tl-page-btn" href="{{ $packages->url($n) }}">{{ $n }}</a>
+                            @endif
+                            @php $prev = $n; @endphp
+                        @endforeach
+                        @if($packages->hasMorePages())
+                            <a class="tl-page-btn" href="{{ $packages->nextPageUrl() }}" aria-label="Next page"><i class="fas fa-chevron-right"></i></a>
+                        @else
+                            <span class="tl-page-btn is-disabled" aria-hidden="true"><i class="fas fa-chevron-right"></i></span>
+                        @endif
+                    </div>
+                    <div class="tl-page-summary">{{ t('umrahlist.showing') }} {{ $packages->firstItem() }}–{{ $packages->lastItem() }} / {{ $packages->total() }} {{ t('umrahlist.packages') }}</div>
+                </nav>
+            @endif
         </div>
-        </section>
     </div>
+</div>
 
-    <script>
-        const searchCollapseBtn = document.getElementById('searchCollapseBtn');
-        const searchCollapseContent = document.getElementById('searchCollapseContent');
-        const collapseIcon = document.getElementById('collapseIcon');
+<script>
+    (function () {
+        const mobileFilterToggle = document.getElementById('mobileFilterToggle');
+        const filterSidebar = document.getElementById('filterSidebar');
+        if (mobileFilterToggle) {
+            mobileFilterToggle.addEventListener('click', function () {
+                const open = filterSidebar.classList.toggle('active');
+                mobileFilterToggle.setAttribute('aria-expanded', String(open));
+            });
+        }
 
-        searchCollapseBtn.addEventListener('click', function() {
-            searchCollapseBtn.classList.toggle('active');
-            searchCollapseContent.classList.toggle('active');
-            collapseIcon.style.transform = searchCollapseContent.classList.contains('active')
-                ? 'rotate(180deg)'
-                : 'rotate(0deg)';
-        });
+        const inclMore = document.getElementById('tlInclMore');
+        if (inclMore) {
+            inclMore.addEventListener('click', function () {
+                const open = document.getElementById('tlInclGroup').classList.toggle('is-expanded');
+                inclMore.querySelector('i').className = open ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+            });
+        }
 
-        // Frontend filtering
         const priceMinRange = document.getElementById('priceMinRange');
         const priceMaxRange = document.getElementById('priceMaxRange');
         const priceMinLabel = document.getElementById('priceMinLabel');
         const priceMaxLabel = document.getElementById('priceMaxLabel');
         const priceRangeFill = document.getElementById('priceRangeFill');
-        const durationFilter = document.getElementById('durationFilter');
-        const clearFiltersBtn = document.getElementById('clearFiltersBtn');
-
-        function formatNumber(n) {
-            return Number(n).toLocaleString();
-        }
+        const nameSearch = document.getElementById('tlNameSearch');
+        const groups = ['.tl-duration', '.tl-star', '.tl-type', '.tl-incl'].map(s => Array.from(document.querySelectorAll(s)));
+        const cards = Array.from(document.querySelectorAll('.tl-card'));
+        const totalEl = document.getElementById('tlTotal');
+        const activeEl = document.getElementById('tlActiveCount');
+        const noMatch = document.getElementById('tlNoMatch');
+        const serverTotal = {{ (int) $packages->total() }};
 
         function updateRangeFill() {
-            const min = parseInt(priceMinRange.min);
-            const max = parseInt(priceMinRange.max);
-            const range = max - min || 1;
-            const leftPercent = ((parseInt(priceMinRange.value) - min) / range) * 100;
-            const rightPercent = ((parseInt(priceMaxRange.value) - min) / range) * 100;
-            priceRangeFill.style.left = leftPercent + '%';
-            priceRangeFill.style.width = (rightPercent - leftPercent) + '%';
+            const min = +priceMinRange.min, max = +priceMinRange.max, range = (max - min) || 1;
+            const l = ((+priceMinRange.value - min) / range) * 100;
+            const r = ((+priceMaxRange.value - min) / range) * 100;
+            priceRangeFill.style.left = l + '%';
+            priceRangeFill.style.width = (r - l) + '%';
+            priceMinLabel.value = priceMinRange.value;
+            priceMaxLabel.value = priceMaxRange.value;
         }
+
+        const values = list => list.filter(c => c.checked).map(c => c.value);
 
         function applyFrontendFilters() {
-            const minPrice = parseInt(priceMinRange.value);
-            const maxPrice = parseInt(priceMaxRange.value);
-            const durationVal = durationFilter.value;
-            const cards = document.querySelectorAll('.umrah-list-card');
-            let visibleCount = 0;
+            const minP = +priceMinRange.value, maxP = +priceMaxRange.value;
+            const q = nameSearch.value.trim().toLowerCase();
+            const [dur, stars, types, incl] = groups.map(values);
+            let active = (q ? 1 : 0) + ((priceMinRange.value != priceMinRange.min || priceMaxRange.value != priceMaxRange.max) ? 1 : 0);
+            active += dur.length + stars.length + types.length + incl.length;
+            activeEl.textContent = active;
 
-            cards.forEach(function(card) {
-                const price = parseFloat(card.getAttribute('data-price'));
-                const days = parseInt(card.getAttribute('data-nights'));
-                let show = true;
-
-                if (price < minPrice || price > maxPrice) show = false;
-
-                if (durationVal) {
-                    if (durationVal === '1-3' && (days < 1 || days > 3)) show = false;
-                    else if (durationVal === '4-7' && (days < 4 || days > 7)) show = false;
-                    else if (durationVal === '8-14' && (days < 8 || days > 14)) show = false;
-                    else if (durationVal === '15+' && days < 15) show = false;
-                }
-
-                card.style.display = show ? '' : 'none';
-                if (show) visibleCount++;
+            let visible = 0;
+            cards.forEach(function (card) {
+                const nights = +card.dataset.days;
+                const ok =
+                    +card.dataset.price >= minP && +card.dataset.price <= maxP &&
+                    (q === '' || card.dataset.name.includes(q)) &&
+                    (dur.length === 0 || dur.some(d => d === '15+' ? nights >= 15 : (nights >= +d.split('-')[0] && nights <= +d.split('-')[1]))) &&
+                    (stars.length === 0 || stars.includes(card.dataset.stars)) &&
+                    (types.length === 0 || types.includes(card.dataset.type)) &&
+                    incl.every(i => (' ' + card.dataset.incl + ' ').includes(' ' + i + ' '));
+                card.hidden = !ok;
+                if (ok) visible++;
             });
-
-            const countEl = document.querySelector('.umrah-results-count strong');
-            if (countEl) {
-                countEl.textContent = visibleCount + ' {{ t("umrahlist.packages") }}';
-            }
+            totalEl.textContent = active ? visible : serverTotal;
+            if (noMatch) noMatch.hidden = !(cards.length && visible === 0);
         }
 
-        priceMinRange.addEventListener('input', function() {
-            if (parseInt(priceMinRange.value) > parseInt(priceMaxRange.value)) {
-                priceMinRange.value = priceMaxRange.value;
-            }
-            priceMinLabel.textContent = formatNumber(priceMinRange.value);
-            updateRangeFill();
-            applyFrontendFilters();
+        function clampBox(box, range) {
+            box.addEventListener('change', function () {
+                range.value = Math.min(Math.max(+box.value || 0, +range.min), +range.max);
+                if (+priceMinRange.value > +priceMaxRange.value) {
+                    if (range === priceMinRange) priceMaxRange.value = range.value; else priceMinRange.value = range.value;
+                }
+                updateRangeFill(); applyFrontendFilters();
+            });
+        }
+
+        priceMinRange.addEventListener('input', function () {
+            if (+priceMinRange.value > +priceMaxRange.value) priceMinRange.value = priceMaxRange.value;
+            updateRangeFill(); applyFrontendFilters();
         });
-
-        priceMaxRange.addEventListener('input', function() {
-            if (parseInt(priceMaxRange.value) < parseInt(priceMinRange.value)) {
-                priceMaxRange.value = priceMinRange.value;
-            }
-            priceMaxLabel.textContent = formatNumber(priceMaxRange.value);
-            updateRangeFill();
-            applyFrontendFilters();
+        priceMaxRange.addEventListener('input', function () {
+            if (+priceMaxRange.value < +priceMinRange.value) priceMaxRange.value = priceMinRange.value;
+            updateRangeFill(); applyFrontendFilters();
         });
+        clampBox(priceMinLabel, priceMinRange);
+        clampBox(priceMaxLabel, priceMaxRange);
+        nameSearch.addEventListener('input', applyFrontendFilters);
+        groups.forEach(list => list.forEach(c => c.addEventListener('change', applyFrontendFilters)));
 
-        durationFilter.addEventListener('change', applyFrontendFilters);
-
-        clearFiltersBtn.addEventListener('click', function() {
+        document.getElementById('clearFiltersBtn').addEventListener('click', function () {
             priceMinRange.value = priceMinRange.min;
             priceMaxRange.value = priceMaxRange.max;
-            priceMinLabel.textContent = formatNumber(priceMinRange.min);
-            priceMaxLabel.textContent = formatNumber(priceMaxRange.max);
-            durationFilter.value = '';
-            updateRangeFill();
-            document.querySelectorAll('.umrah-list-card').forEach(function(card) {
-                card.style.display = '';
-            });
-            const countEl = document.querySelector('.umrah-results-count strong');
-            if (countEl) {
-                countEl.textContent = '{{ $packages->total() }} {{ t("umrahlist.packages") }}';
-            }
+            nameSearch.value = '';
+            groups.forEach(list => list.forEach(c => { c.checked = false; }));
+            updateRangeFill(); applyFrontendFilters();
         });
 
-        // Initialize fill on load
         updateRangeFill();
-    </script>
+    })();
+
+    // Sort (server side, keeps the other query parameters)
+    function addSortToUrl(sortValue) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('sort_by', sortValue);
+        url.searchParams.delete('page');
+        return url.toString();
+    }
+</script>
 
 @endsection

@@ -93,8 +93,26 @@ class UmrahController extends Controller
             $query->where('going_to', $destinationId);
         }
 
+        // Sorting (an explicit sort replaces featured-first; price and rating
+        // are stored as strings, so compare them numerically)
+        $sortBy = request('sort_by', 'popular');
+        switch ($sortBy) {
+            case 'price_low':
+                $query->reorder()->orderByRaw('CAST(price AS DECIMAL(14,2)) asc');
+                break;
+            case 'price_high':
+                $query->reorder()->orderByRaw('CAST(price AS DECIMAL(14,2)) desc');
+                break;
+            case 'duration':
+                $query->reorder()->orderByRaw('(COALESCE(night_in_mekkah,0) + COALESCE(night_in_madina,0)) asc');
+                break;
+            case 'rating':
+                $query->reorder()->orderByRaw('CAST(rating AS DECIMAL(4,2)) desc');
+                break;
+        }
+
         // Paginate results (20 per page)
-        $packages = $query->paginate(20);
+        $packages = $query->paginate(20)->withQueryString();
 
         // Get all inclusions and exclusions for mapping
         $allInclusions = UmrahInclusion::pluck('name', 'id')->toArray();
@@ -175,6 +193,7 @@ class UmrahController extends Controller
         ]]);
 
         return view('umrah.list', [
+            'sortBy' => $sortBy,
             'packages' => $packages,
             'searchParams' => $searchParams,
             'originAirport' => $originAirport,
@@ -236,7 +255,13 @@ class UmrahController extends Controller
             'madina_nights' => (int) $madina_nights,
         ];
 
+        // The package's own route (leaving_from / going_to store flights_airports ids)
+        $packageFrom = $package->leaving_from ? DB::table('flights_airports')->where('id', $package->leaving_from)->first() : null;
+        $packageTo = $package->going_to ? DB::table('flights_airports')->where('id', $package->going_to)->first() : null;
+
         return view('umrah.details', [
+            'packageFrom' => $packageFrom,
+            'packageTo' => $packageTo,
             'package' => $package,
             'searchParams' => $searchParams,
             'originAirport' => $originAirport,
