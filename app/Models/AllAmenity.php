@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class AllAmenity extends Model
 {
+    use \App\Models\Concerns\HasCatalogTranslations;
+
     use HasFactory;
 
     protected $table = 'all_amenities';
@@ -15,7 +17,10 @@ class AllAmenity extends Model
         'agent_id',
         'name',
         'icon',
+        'status',
     ];
+
+    protected $casts = ['status' => 'boolean'];
 
     public $timestamps = false;
 

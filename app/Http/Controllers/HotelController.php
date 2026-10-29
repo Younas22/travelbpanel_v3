@@ -253,12 +253,22 @@ class HotelController extends Controller
                     ->map(fn($img) => asset('public/assets/images/' . $img->image_path))
                     ->toArray();
 
-                $roomsData = $hotel->roomTypes->map(function ($roomType) use ($adults, $childs, $nights, $currency) {
+                $roomsData = $hotel->roomTypes->map(function ($roomType) use ($adults, $childs, $nights, $currency, $checkinDate) {
                     $roomImages = $roomType->images
                         ->map(fn($img) => asset('public/assets/images/' . $img->image_path))
                         ->toArray();
                     $amenities  = $roomType->amenities->pluck('name')->toArray();
                     $price      = round($roomType->price_per_night * $nights, 2);
+
+                    // Refund policy set on the room type (admin → Room Types)
+                    $fee          = $roomType->cancellationFeeFor($price);
+                    $freeUntil    = $roomType->freeCancellationUntil($checkinDate);
+                    $isRefundable = $freeUntil !== null && $freeUntil->isFuture();
+                    $refundDate   = $isRefundable ? $freeUntil->format('Y-m-d H:i:s') : null;
+                    $cancelRules  = $isRefundable
+                        ? [['type' => 'free', 'from_date' => null, 'to_date' => $refundDate, 'cancel_charge' => 0, 'amend_charge' => null, 'description' => 'Free cancellation', 'cancel_restricted' => false, 'amend_restricted' => false],
+                           ['type' => $fee > 0 ? 'penalty' : 'free', 'from_date' => $refundDate, 'to_date' => null, 'cancel_charge' => $fee, 'amend_charge' => null, 'description' => 'Cancellation charge', 'cancel_restricted' => false, 'amend_restricted' => false]]
+                        : [['type' => $fee > 0 ? 'penalty' : 'free', 'from_date' => null, 'to_date' => null, 'cancel_charge' => $fee, 'amend_charge' => null, 'description' => $fee > 0 ? 'Non-refundable — cancellation charge: ' . number_format($fee, 2) . ' ' . $currency->currency_name : 'Non-refundable', 'cancel_restricted' => false, 'amend_restricted' => false]];
 
                     return [
                         'id'        => (string) $roomType->id,
@@ -271,8 +281,8 @@ class HotelController extends Controller
                         "per_day"  => round($roomType->price_per_night, 2),
                         "actual_per_day"  => round($roomType->price_per_night, 2),
                         "original_currency" =>  $currency->currency_name,
-                        "refundable"  =>  0,
-                        "refund_date" => null,
+                        "refundable"  =>  $fee,
+                        "refund_date" => $refundDate,
                         'options'   => [
                             [
                                 'id'                  => 'RT-' . $roomType->id . '-' . $adults . '-' . $childs,
@@ -287,15 +297,12 @@ class HotelController extends Controller
                                 'actual_per_day'      => round($roomType->price_per_night, 2),
                                 'currency_id'         => $currency->currency_name,
                                 'passengers_required' => (int) $adults + (int) $childs,
-                                // Manually added hotels have no external supplier
-                                // cancellation policy — treat as freely refundable
-                                // with no restrictions, rather than leaving these
-                                // fields absent (same parameter set as WebBeds).
-                                'is_refundable'       => true,
-                                'non_refundable'      => false,
-                                'refundable'          => 0,
-                                'refund_date'         => null,
-                                'cancellation_rules'  => [],
+                                // Cancellation policy from the room type, in the same shape as WebBeds
+                                'is_refundable'       => $isRefundable,
+                                'non_refundable'      => !$isRefundable,
+                                'refundable'          => $fee,
+                                'refund_date'         => $refundDate,
+                                'cancellation_rules'  => $cancelRules,
                                 'meal_included'       => false,
                                 'left_to_sell'        => 0,
                                 'on_request'          => 0,

@@ -112,8 +112,12 @@
                     <div class="sb-right"><i class="bi bi-chevron-right sb-chev"></i></div>
                 </button>
                 <div class="sb-kids">
-                    <a href="{{ route('admin.hotels.index') }}" class="sb-kid {{ request()->routeIs('admin.hotels.index*') || request()->routeIs('admin.hotels.edit*') || request()->routeIs('admin.hotels.create*') ? 'sb-kid-on' : '' }}"><i class="bi bi-building-fill"></i> Hotels</a>
-                    <a href="{{ route('admin.hotels.amenities.index') }}" class="sb-kid {{ request()->routeIs('admin.hotels.amenities*') ? 'sb-kid-on' : '' }}"><i class="bi bi-stars"></i> Amenities</a>
+                    <a href="{{ route('admin.hotels.index') }}" class="sb-kid {{ request()->routeIs('admin.hotels.index*') || request()->routeIs('admin.hotels.edit*') || request()->routeIs('admin.hotels.create*') || request()->routeIs('admin.hotels.room-types.*', 'admin.hotels.rooms.*', 'admin.hotels.rate-calendar.*') ? 'sb-kid-on' : '' }}"><i class="bi bi-building-fill"></i> Hotels</a>
+                    <a href="{{ route('admin.hotels.catalog.index', 'stay-types') }}" class="sb-kid {{ request()->routeIs('admin.hotels.catalog.*') && request()->route('section') === 'stay-types' ? 'sb-kid-on' : '' }}"><i class="bi bi-tags"></i> Stay types</a>
+                    <a href="{{ route('admin.hotels.catalog.index', 'stay-amenities') }}" class="sb-kid {{ request()->routeIs('admin.hotels.catalog.*') && request()->route('section') === 'stay-amenities' ? 'sb-kid-on' : '' }}"><i class="bi bi-stars"></i> Stay amenities</a>
+                    <a href="{{ route('admin.hotels.catalog.index', 'room-types') }}" class="sb-kid {{ request()->routeIs('admin.hotels.catalog.*') && request()->route('section') === 'room-types' ? 'sb-kid-on' : '' }}"><i class="bi bi-door-closed"></i> Room types</a>
+                    <a href="{{ route('admin.hotels.catalog.index', 'room-amenities') }}" class="sb-kid {{ request()->routeIs('admin.hotels.catalog.*') && request()->route('section') === 'room-amenities' ? 'sb-kid-on' : '' }}"><i class="bi bi-lamp"></i> Room amenities</a>
+                    <a href="{{ route('admin.hotels.catalog.index', 'meal-plans') }}" class="sb-kid {{ request()->routeIs('admin.hotels.catalog.*') && request()->route('section') === 'meal-plans' ? 'sb-kid-on' : '' }}"><i class="bi bi-cup-hot"></i> Meal plans</a>
                     <a href="{{ route('admin.bookings.all') }}?type=hotel" class="sb-kid {{ request()->routeIs('admin.bookings.all') && request('type') === 'hotel' ? 'sb-kid-on' : '' }}"><i class="bi bi-calendar-check"></i> Hotel bookings</a>
                 </div>
             </div>

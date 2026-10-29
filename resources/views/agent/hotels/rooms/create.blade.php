@@ -63,6 +63,13 @@
                         </div>
 
                         <div>
+                            <label class="ap-label">Room Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="name" class="ap-input @error('name') ap-input-error @enderror"
+                                   value="{{ old('name') }}" placeholder="e.g. Sea View Deluxe" maxlength="100" required>
+                            @error('name')<p class="ap-error">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div>
                             <label class="ap-label">Room Number <span class="text-red-500">*</span></label>
                             <input type="text" name="room_number" class="ap-input @error('room_number') ap-input-error @enderror"
                                    value="{{ old('room_number') }}" placeholder="e.g. 101, A-5" required>

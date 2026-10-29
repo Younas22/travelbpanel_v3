@@ -27,7 +27,7 @@ class HotelController extends Controller
         $status = $request->input('status');
         $type   = $request->input('type');
 
-        $query = Hotel::with(['images', 'location']);
+        $query = Hotel::with(['images', 'location'])->withCount(['rooms', 'roomTypes']);
 
         // Agents see only their own records
         if ($this->isAgent()) {
@@ -94,14 +94,14 @@ class HotelController extends Controller
         $validated = $request->validate([
             'name'           => 'required|string|max:255',
             'location_id'    => 'required|integer|exists:locations,id',
-            'type'           => 'required|string|in:hotel,guest house,resort',
+            'type'           => ['required', 'string', \Illuminate\Validation\Rule::in(\App\Support\HotelTypes::all())],
             'description'    => 'nullable|string',
             'address'        => 'nullable|string|max:255',
             'phone'          => 'nullable|string|max:20',
             'whatsapp'       => 'nullable|string|max:20',
             'email'          => 'nullable|email|max:100',
-            'check_in_time'  => 'nullable|date_format:H:i',
-            'check_out_time' => 'nullable|date_format:H:i',
+            'check_in_time'  => 'required|date_format:H:i',
+            'check_out_time' => 'required|date_format:H:i',
             'total_rooms'    => 'nullable|integer|min:0',
             'stars'          => 'nullable|integer|min:1|max:5',
             'total_rating'   => 'nullable|integer|min:0',
@@ -110,7 +110,14 @@ class HotelController extends Controller
             'amenities.*'    => 'integer|exists:all_amenities,id',
             'images.*'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image_types.*'  => 'nullable|string',
+            'translations'                         => 'nullable|array',
+            'translations.*.name'                  => 'nullable|string|max:255',
+            'translations.*.address'               => 'nullable|string|max:255',
+            'translations.*.description'           => 'nullable|string',
+            'translations.*.cancellation_policy'   => 'nullable|string',
+            'translations.*.privacy_policy'        => 'nullable|string',
         ]);
+        unset($validated['translations']);
 
         if ($this->isAgent()) {
             $validated['agent_id']       = auth()->id();
@@ -123,6 +130,7 @@ class HotelController extends Controller
         }
 
         $hotel = Hotel::create($validated);
+        $this->syncTranslations($hotel, $request);
 
         if ($request->has('amenities')) {
             $hotel->amenities()->attach($request->amenities);
@@ -163,8 +171,9 @@ class HotelController extends Controller
                 ->with('success', 'Hotel submitted for approval successfully!');
         }
 
-        return redirect()->route('admin.hotels.index')
-            ->with('success', 'Hotel created successfully!');
+        // next step of the workflow: add this hotel's room types
+        return redirect()->route('admin.hotels.room-types.create', ['hotel_id' => $hotel->id])
+            ->with('success', 'Hotel created successfully! Now add its room types.');
     }
 
     public function edit(Hotel $hotel)
@@ -175,7 +184,7 @@ class HotelController extends Controller
 
         $locations      = Location::where('status', '1')->get();
         $amenities      = AllAmenity::all();
-        $hotel->load(['images', 'amenities', 'policies']);
+        $hotel->load(['images', 'amenities', 'policies', 'translations']);
         $hotelRoomTypes = $hotel->roomTypes()->with('images')->get();
         $hotelRooms     = $hotel->rooms()->with('roomType')->get();
 
@@ -195,14 +204,14 @@ class HotelController extends Controller
         $validated = $request->validate([
             'name'           => 'required|string|max:255',
             'location_id'    => 'required|integer|exists:locations,id',
-            'type'           => 'required|string|in:hotel,guest house,resort',
+            'type'           => ['required', 'string', \Illuminate\Validation\Rule::in(\App\Support\HotelTypes::all())],
             'description'    => 'nullable|string',
             'address'        => 'nullable|string|max:255',
             'phone'          => 'nullable|string|max:20',
             'whatsapp'       => 'nullable|string|max:20',
             'email'          => 'nullable|email|max:100',
-            'check_in_time'  => 'nullable|date_format:H:i',
-            'check_out_time' => 'nullable|date_format:H:i',
+            'check_in_time'  => 'required|date_format:H:i',
+            'check_out_time' => 'required|date_format:H:i',
             'total_rooms'    => 'nullable|integer|min:0',
             'stars'          => 'nullable|integer|min:1|max:5',
             'total_rating'   => 'nullable|integer|min:0',
@@ -211,7 +220,14 @@ class HotelController extends Controller
             'amenities.*'    => 'integer|exists:all_amenities,id',
             'images.*'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image_types.*'  => 'nullable|string',
+            'translations'                         => 'nullable|array',
+            'translations.*.name'                  => 'nullable|string|max:255',
+            'translations.*.address'               => 'nullable|string|max:255',
+            'translations.*.description'           => 'nullable|string',
+            'translations.*.cancellation_policy'   => 'nullable|string',
+            'translations.*.privacy_policy'        => 'nullable|string',
         ]);
+        unset($validated['translations']);
 
         // Re-submit for approval when agent edits
         if ($this->isAgent()) {
@@ -220,6 +236,7 @@ class HotelController extends Controller
         }
 
         $hotel->update($validated);
+        $this->syncTranslations($hotel, $request);
 
         if ($request->has('amenities')) {
             $hotel->amenities()->sync($request->amenities);
@@ -253,6 +270,56 @@ class HotelController extends Controller
 
         return redirect()->route('admin.hotels.index')
             ->with('success', 'Hotel updated successfully!');
+    }
+
+    /**
+     * Save the per-language fields posted as translations[locale][field].
+     * Languages left completely empty are removed; the default language's
+     * name/address/description fall back to (and stay in sync with) the
+     * hotel's own columns, and its cancellation/privacy text is mirrored into
+     * hotel_policies, which the rest of the app already reads.
+     */
+    private function syncTranslations(Hotel $hotel, Request $request): void
+    {
+        if (!$request->has('translations')) {
+            return; // older forms (classic/agent) don't send translations — leave them untouched
+        }
+
+        $default = \App\Models\Language::where('is_default', 1)->value('code') ?? 'en';
+        $allowed = \App\Models\Language::pluck('code')->all();
+
+        foreach ((array) $request->input('translations') as $locale => $fields) {
+            if (!in_array($locale, $allowed, true)) {
+                continue;
+            }
+            $data = collect(\App\Models\HotelTranslation::FIELDS)
+                ->mapWithKeys(fn ($f) => [$f => filled($fields[$f] ?? null) ? trim($fields[$f]) : null])
+                ->all();
+
+            if ($locale === $default) {
+                foreach (['name', 'address', 'description'] as $f) {
+                    $data[$f] ??= $hotel->{$f};
+                }
+            }
+
+            if (collect($data)->filter()->isEmpty()) {
+                $hotel->translations()->where('locale', $locale)->delete();
+                continue;
+            }
+
+            $hotel->translations()->updateOrCreate(['locale' => $locale], $data);
+
+            if ($locale === $default) {
+                // keep the hotel's own columns (read by the website, search, bookings) equal to the default language
+                $hotel->update(array_filter(['name' => $data['name'], 'address' => $data['address'], 'description' => $data['description']], 'filled'));
+
+                foreach (['cancellation' => 'cancellation_policy', 'privacy' => 'privacy_policy'] as $type => $field) {
+                    if (filled($data[$field])) {
+                        HotelPolicy::updateOrCreate(['hotel_id' => $hotel->id, 'policy_type' => $type], ['description' => $data[$field]]);
+                    }
+                }
+            }
+        }
     }
 
     public function destroy(Hotel $hotel)

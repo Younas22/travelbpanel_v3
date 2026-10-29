@@ -90,6 +90,7 @@
     </div>
 
     @include('admin-modern.layouts.partials.scripts')
+    @include('admin-nova.partials._confirm-dialog')
     @include('admin.layouts.partials.theme-quick-switcher')
     <script>
         function toggleNovaSidebar() {

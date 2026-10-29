@@ -29,7 +29,7 @@ class RoomController extends Controller
         }
 
         if ($search) {
-            $query->where('room_number', 'like', "%{$search}%");
+            $query->where(fn ($q) => $q->where('room_number', 'like', "%{$search}%")->orWhere('name', 'like', "%{$search}%"));
         }
 
         if ($hotelId) {
@@ -86,10 +86,11 @@ class RoomController extends Controller
         $validated = $request->validate([
             'hotel_id'     => 'required|integer|exists:hotels,id',
             'room_type_id' => 'required|integer|exists:room_types,id',
+            'name'         => 'required|string|max:100',
             'room_number'  => 'required|string|max:20',
             'floor'        => 'nullable|string|max:20',
             'status'       => 'required|in:available,occupied,maintenance',
-        ]);
+        ], [], ['name' => 'room name']);
 
         if ($this->isAgent()) {
             Hotel::where('agent_id', auth()->id())->findOrFail($validated['hotel_id']);
@@ -110,7 +111,7 @@ class RoomController extends Controller
                 ->with('success', 'Room created successfully!');
         }
 
-        return redirect()->route('admin.hotels.edit', ['hotel' => $validated['hotel_id'], 'tab' => 'rooms'])
+        return redirect()->route('admin.hotels.rooms.index', ['hotel_id' => $validated['hotel_id']])
             ->with('success', 'Room created successfully!');
     }
 
@@ -141,10 +142,11 @@ class RoomController extends Controller
         $validated = $request->validate([
             'hotel_id'     => 'required|integer|exists:hotels,id',
             'room_type_id' => 'required|integer|exists:room_types,id',
+            'name'         => 'required|string|max:100',
             'room_number'  => 'required|string|max:20',
             'floor'        => 'nullable|string|max:20',
             'status'       => 'required|in:available,occupied,maintenance',
-        ]);
+        ], [], ['name' => 'room name']);
 
         $exists = Room::where('hotel_id', $validated['hotel_id'])
                      ->where('room_number', $validated['room_number'])
@@ -162,7 +164,7 @@ class RoomController extends Controller
                 ->with('success', 'Room updated successfully!');
         }
 
-        return redirect()->route('admin.hotels.edit', ['hotel' => $room->hotel_id, 'tab' => 'rooms'])
+        return redirect()->route('admin.hotels.rooms.index', ['hotel_id' => $room->hotel_id])
             ->with('success', 'Room updated successfully!');
     }
 

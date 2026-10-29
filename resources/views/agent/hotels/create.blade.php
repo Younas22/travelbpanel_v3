@@ -64,9 +64,9 @@
                                 <select name="type"
                                         class="ap-input @error('type') ap-input-error @enderror" required>
                                     <option value="">Select Type</option>
-                                    <option value="hotel"       {{ old('type') == 'hotel'       ? 'selected' : '' }}>Hotel</option>
-                                    <option value="guest house" {{ old('type') == 'guest house' ? 'selected' : '' }}>Guest House</option>
-                                    <option value="resort"      {{ old('type') == 'resort'      ? 'selected' : '' }}>Resort</option>
+                                    @foreach(\App\Support\HotelTypes::options() as $typeValue => $typeLabel)
+                                        <option value="{{ $typeValue }}" {{ old('type') == $typeValue ? 'selected' : '' }}>{{ $typeLabel }}</option>
+                                    @endforeach
                                 </select>
                                 @error('type')<p class="ap-error">{{ $message }}</p>@enderror
                             </div>
@@ -119,12 +119,12 @@
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div>
                             <label class="ap-label">Check-in Time</label>
-                            <input type="time" name="check_in_time" class="ap-input"
+                            <input type="time" name="check_in_time" required class="ap-input"
                                    value="{{ old('check_in_time') }}">
                         </div>
                         <div>
                             <label class="ap-label">Check-out Time</label>
-                            <input type="time" name="check_out_time" class="ap-input"
+                            <input type="time" name="check_out_time" required class="ap-input"
                                    value="{{ old('check_out_time') }}">
                         </div>
                         <div>

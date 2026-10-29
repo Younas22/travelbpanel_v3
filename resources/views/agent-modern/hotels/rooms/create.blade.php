@@ -49,6 +49,11 @@
                                 </select>
                                 @error('room_type_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Room Name <span style="color: var(--danger-color);">*</span></label>
+                                <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="e.g., Sea View Deluxe" maxlength="100" required>
+                                @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
                             <div class="col-md-6">
                                 <label class="form-label">Room Number <span style="color: var(--danger-color);">*</span></label>
                                 <input type="text" name="room_number" class="form-control @error('room_number') is-invalid @enderror" value="{{ old('room_number') }}" placeholder="e.g. 101, A-5" required>

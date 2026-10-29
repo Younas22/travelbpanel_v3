@@ -3,7 +3,7 @@
 @section('title', 'Create Room Type')
 
 @section('content')
-<div class="content-area p-4">
+<div class="content-area p-4 tbp-hotel-module">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4 class="mb-1">Create Room Type</h4>

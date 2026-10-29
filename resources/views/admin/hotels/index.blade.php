@@ -87,9 +87,9 @@
                 <div class="col-md-3">
                     <select name="type" class="form-select">
                         <option value="">All Types</option>
-                        <option value="hotel" {{ ($type ?? '') == 'hotel' ? 'selected' : '' }}>Hotel</option>
-                        <option value="guest house" {{ ($type ?? '') == 'guest house' ? 'selected' : '' }}>Guest House</option>
-                        <option value="resort" {{ ($type ?? '') == 'resort' ? 'selected' : '' }}>Resort</option>
+                        @foreach(\App\Support\HotelTypes::options() as $typeValue => $typeLabel)
+                            <option value="{{ $typeValue }}" {{ ($type ?? '') == $typeValue ? 'selected' : '' }}>{{ $typeLabel }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="col-md-2">

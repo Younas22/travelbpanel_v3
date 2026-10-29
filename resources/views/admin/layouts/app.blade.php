@@ -108,5 +108,6 @@
         }
     </script>
     @stack('scripts')
+    @include('admin-nova.partials._confirm-dialog')
 </body>
 </html>

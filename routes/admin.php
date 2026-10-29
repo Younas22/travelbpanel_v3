@@ -393,6 +393,26 @@ Route::prefix('modules')->name('admin.modules.')->group(function () {
 
     // Hotel Management
     Route::prefix('hotels')->name('admin.hotels.')->group(function () {
+        // Hotels menu lists — Stay Types, Stay Amenities, Room Types, Room Amenities, Meal Plans.
+        // Registered before the /{hotel} routes so "catalog" isn't read as a hotel id.
+        Route::prefix('catalog/{section}')->name('catalog.')
+            ->where(['section' => 'stay-types|stay-amenities|room-types|room-amenities|meal-plans'])
+            ->controller(\App\Http\Controllers\Admin\HotelCatalogController::class)->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/create', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                Route::get('/{id}/edit', 'edit')->whereNumber('id')->name('edit');
+                Route::patch('/{id}', 'update')->whereNumber('id')->name('update');
+                Route::delete('/{id}', 'destroy')->whereNumber('id')->name('destroy');
+                Route::patch('/{id}/toggle-status', 'toggleStatus')->whereNumber('id')->name('toggle-status');
+            });
+        // Rate calendar: per-date nightly price for each room type
+        Route::get('/rate-calendar', [\App\Http\Controllers\Admin\RateCalendarController::class, 'index'])->name('rate-calendar.index');
+        Route::get('/rate-calendar/{roomType}/rates', [\App\Http\Controllers\Admin\RateCalendarController::class, 'rates'])->name('rate-calendar.rates');
+        Route::post('/rate-calendar/{roomType}/rates', [\App\Http\Controllers\Admin\RateCalendarController::class, 'save'])->name('rate-calendar.save');
+        // old "Hotel types" page → Stay Types
+        Route::get('/types', fn () => redirect()->route('admin.hotels.catalog.index', 'stay-types'))->name('types.index');
+
         // Hotels
         Route::get('/', [\App\Http\Controllers\Admin\HotelController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\Admin\HotelController::class, 'create'])->name('create');
@@ -433,7 +453,7 @@ Route::prefix('modules')->name('admin.modules.')->group(function () {
 
         // Amenities
         Route::prefix('amenities')->name('amenities.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Admin\AmenityController::class, 'index'])->name('index');
+            Route::get('/', fn () => redirect()->route('admin.hotels.catalog.index', 'stay-amenities'))->name('index');
             Route::post('/', [\App\Http\Controllers\Admin\AmenityController::class, 'store'])->name('store');
             Route::patch('/{amenity}', [\App\Http\Controllers\Admin\AmenityController::class, 'update'])->name('update');
             Route::delete('/{amenity}', [\App\Http\Controllers\Admin\AmenityController::class, 'destroy'])->name('destroy');

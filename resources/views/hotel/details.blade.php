@@ -1279,7 +1279,7 @@
                     <div class="hotel-description">
                         <div class="section-title">{{ t('hoteldetails.about_hotel') }}</div>
                         <div class="hd-clamp" data-hd-clamp>
-                            <p class="hotel-description-text">{{ $hotel['desc'] }}</p>
+                            <div class="hotel-description-text">{!! richText($hotel['desc']) !!}</div>
                         </div>
                         <button type="button" class="hd-more-btn" data-hd-toggle hidden>Read more <i class="fas fa-chevron-down"></i></button>
                     </div>

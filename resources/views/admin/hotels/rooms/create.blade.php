@@ -3,7 +3,7 @@
 @section('title', 'Create Room')
 
 @section('content')
-<div class="content-area p-4">
+<div class="content-area p-4 tbp-hotel-module">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4 class="mb-1">Create Room</h4>
@@ -55,6 +55,10 @@
                                         </option>
                                     @endforeach
                                 </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Room Name <span class="text-danger">*</span></label>
+                                <input type="text" name="name" class="form-control" value="{{ old('name') }}" placeholder="e.g., Sea View Deluxe" maxlength="100" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Room Number <span class="text-danger">*</span></label>

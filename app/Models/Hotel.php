@@ -30,10 +30,12 @@ class Hotel extends Model
         'status',
         'featured',
         'approval_status',
+        'refundable',
     ];
 
     protected $casts = [
         'status' => 'boolean',
+        'refundable' => 'boolean',
         'total_rooms' => 'integer',
         'location_id' => 'integer',
         'stars' => 'integer',
@@ -43,6 +45,22 @@ class Hotel extends Model
     public $timestamps = true;
 
     // Relationships
+    public function translations()
+    {
+        return $this->hasMany(HotelTranslation::class);
+    }
+
+    /** A translated field for the given (or current) locale, falling back to the hotel's own value. */
+    public function translated(string $field, ?string $locale = null): ?string
+    {
+        $locale ??= app()->getLocale();
+        $row = $this->relationLoaded('translations')
+            ? $this->translations->firstWhere('locale', $locale)
+            : $this->translations()->where('locale', $locale)->first();
+
+        return ($row && filled($row->{$field})) ? $row->{$field} : $this->{$field} ?? null;
+    }
+
     public function location()
     {
         return $this->belongsTo(Location::class);

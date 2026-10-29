@@ -257,3 +257,28 @@ if (!function_exists('t')) {
         return \App\Helpers\TranslationHelper::translate($key, $locale);
     }
 }
+
+if (!function_exists('richText')) {
+    /**
+     * Render admin-entered rich text (CKEditor HTML) safely: keeps basic formatting tags,
+     * drops scripts/styles, event-handler attributes and javascript: links. Plain text
+     * (older records, supplier data) is escaped and turned into paragraphs.
+     */
+    function richText(?string $html): string
+    {
+        $html = trim((string) $html);
+        if ($html === '') {
+            return '';
+        }
+        if (!preg_match('#</?[a-z][a-z0-9]*\b[^>]*>#i', $html)) {
+            return nl2br(e($html));
+        }
+        $html = preg_replace('#<(script|style|iframe|object|embed)\b[^>]*>.*?</\1>#is', '', $html);
+        $html = strip_tags($html, '<p><br><strong><b><em><i><u><ul><ol><li><a><h2><h3><h4><blockquote><table><thead><tbody><tr><th><td><figure>');
+        $html = preg_replace('/\s+on[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $html);
+        $html = preg_replace('/\s+(style|class|id)\s*=\s*("[^"]*"|\'[^\']*\')/i', '', $html);
+        $html = preg_replace('/href\s*=\s*("|\')\s*(javascript|data|vbscript):[^"\']*\1/i', 'href="#"', $html);
+
+        return $html;
+    }
+}

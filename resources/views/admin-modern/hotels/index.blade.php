@@ -52,9 +52,9 @@
             </select>
             <select name="type" class="form-select">
                 <option value="">All types</option>
-                <option value="hotel" {{ ($type ?? '') == 'hotel' ? 'selected' : '' }}>Hotel</option>
-                <option value="guest house" {{ ($type ?? '') == 'guest house' ? 'selected' : '' }}>Guest House</option>
-                <option value="resort" {{ ($type ?? '') == 'resort' ? 'selected' : '' }}>Resort</option>
+                @foreach(\App\Support\HotelTypes::options() as $typeValue => $typeLabel)
+                    <option value="{{ $typeValue }}" {{ ($type ?? '') == $typeValue ? 'selected' : '' }}>{{ $typeLabel }}</option>
+                @endforeach
             </select>
             <button type="submit" class="tpk-btn tpk-btn-primary"><i class="bi bi-funnel"></i> Filter</button>
         </form>

@@ -3,238 +3,132 @@
 @section('title', 'Room Types')
 
 @section('content')
-<div class="content-area p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 class="mb-1">Room Types</h4>
-            <p class="text-muted mb-0">Manage all room types</p>
-        </div>
-        <a href="{{ route('admin.hotels.room-types.create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Add New Room Type
-        </a>
+@php
+    $cards = [
+        ['Total Room Types', 'bi-door-open', $stats['total']],
+        ['Active', 'bi-check-circle', $stats['active']],
+        ['Inactive', 'bi-x-circle', $stats['inactive']],
+    ];
+    $filtered = ($search ?? '') !== '' || ($hotelId ?? '') !== '' && $hotelId !== null || ($status ?? '') !== '' && $status !== null;
+@endphp
+<div class="tbp-units-page">
+    @include('admin.hotels.room-types._tabs')
+    <header class="tbp-units-header">
+        <div><h1>Room Types</h1><p>Manage all room types</p></div>
+        <a href="{{ route('admin.hotels.room-types.create', request('hotel_id') ? ['hotel_id' => request('hotel_id')] : []) }}" class="tbp-units-btn is-primary"><i class="bi bi-plus-circle"></i> Add New Room Type</a>
+    </header>
+
+    <div class="tbp-units-stats is-3">
+        @foreach($cards as [$label, $icon, $value])
+            <div class="tbp-units-stat"><span class="tbp-units-stat-icon"><i class="bi {{ $icon }}"></i></span><div><small>{{ $label }}</small><strong>{{ number_format($value) }}</strong></div></div>
+        @endforeach
     </div>
 
-    <!-- Stats Cards -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-4">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="mb-0">Total Room Types</h6>
-                            <h3 class="mb-0">{{ $stats['total'] }}</h3>
-                        </div>
-                        <i class="bi bi-door-open fs-1 opacity-50"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card bg-success text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="mb-0">Active</h6>
-                            <h3 class="mb-0">{{ $stats['active'] }}</h3>
-                        </div>
-                        <i class="bi bi-check-circle fs-1 opacity-50"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card bg-danger text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h6 class="mb-0">Inactive</h6>
-                            <h3 class="mb-0">{{ $stats['inactive'] }}</h3>
-                        </div>
-                        <i class="bi bi-x-circle fs-1 opacity-50"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <form action="{{ route('admin.hotels.room-types.index') }}" method="GET" class="tbp-units-toolbar is-rt">
+        <label class="tbp-units-input"><i class="bi bi-search"></i>
+            <input type="text" name="search" placeholder="Search room type name..." value="{{ $search ?? '' }}" aria-label="Search room type name"></label>
+        <label class="tbp-units-input"><i class="bi bi-building"></i>
+            <select name="hotel_id" aria-label="Hotel">
+                <option value="">All Hotels</option>
+                @foreach($hotels as $hotel)
+                    <option value="{{ $hotel->id }}" @selected(($hotelId ?? '') == $hotel->id)>{{ $hotel->name }}</option>
+                @endforeach
+            </select></label>
+        <label class="tbp-units-input"><i class="bi bi-tag"></i>
+            <select name="status" aria-label="Status">
+                <option value="">All Status</option>
+                <option value="1" @selected(($status ?? '') == '1')>Active</option>
+                <option value="0" @selected(($status ?? '') === '0')>Inactive</option>
+            </select></label>
+        <button type="submit" class="tbp-units-btn is-primary"><i class="bi bi-funnel"></i> Filter</button>
+        <a href="{{ route('admin.hotels.room-types.index') }}" class="tbp-units-btn is-icon" title="Reset filters" aria-label="Reset filters"><i class="bi bi-arrow-clockwise"></i></a>
+    </form>
 
-    <!-- Filters -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form action="{{ route('admin.hotels.room-types.index') }}" method="GET" class="row g-3">
-                <div class="col-md-4">
-                    <input type="text" name="search" class="form-control" placeholder="Search by name..." value="{{ $search ?? '' }}">
-                </div>
-                <div class="col-md-3">
-                    <select name="hotel_id" class="form-select">
-                        <option value="">All Hotels</option>
-                        @foreach($hotels as $hotel)
-                            <option value="{{ $hotel->id }}" {{ ($hotelId ?? '') == $hotel->id ? 'selected' : '' }}>{{ $hotel->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <select name="status" class="form-select">
-                        <option value="">All Status</option>
-                        <option value="1" {{ ($status ?? '') == '1' ? 'selected' : '' }}>Active</option>
-                        <option value="0" {{ ($status ?? '') === '0' ? 'selected' : '' }}>Inactive</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> Filter</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Room Types Table -->
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Image</th>
-                            <th>Room Type</th>
-                            <th>Hotel</th>
-                            <th>Price/Night</th>
-                            <th>Capacity</th>
-                            <th>Beds</th>
-                            <th>AC</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($roomTypes as $roomType)
-                        <tr>
-                            <td>
-                                @if($roomType->images->first())
-                                    <img src="{{ asset('public/assets/images/' . $roomType->images->first()->image_path) }}" alt="" class="rounded hotel-thumb-img">
-                                @else
-                                    <div class="bg-light rounded d-flex align-items-center justify-content-center hotel-thumb-placeholder">
-                                        <i class="bi bi-door-open text-muted"></i>
+    <section class="tbp-units-card">
+        <div class="tbp-units-scroll">
+            <table class="tbp-units-table">
+                <thead><tr><th>Image</th><th>Room Type</th><th>Hotel</th><th>Price / Night</th><th>Capacity</th><th>Beds</th><th>AC</th><th>Status</th><th class="is-actions">Actions</th></tr></thead>
+                <tbody>
+                @forelse($roomTypes as $roomType)
+                    @php $img = $roomType->images->first(); @endphp
+                    <tr>
+                        <td>
+                            <span class="tbp-units-thumb">@if($img)<img src="{{ asset('public/assets/images/' . $img->image_path) }}" alt="" loading="lazy">@else<i class="bi bi-door-open"></i>@endif</span>
+                        </td>
+                        <td class="tbp-units-strong">{{ $roomType->name }}</td>
+                        <td>{{ optional($roomType->hotel)->name ?? '—' }}</td>
+                        <td class="tbp-units-price">USD {{ number_format($roomType->price_per_night, 2) }}</td>
+                        <td>
+                            <span class="tbp-units-meta"><i class="bi bi-people"></i> {{ $roomType->max_adults }} {{ Str::plural('Adult', $roomType->max_adults) }}</span>
+                            @if($roomType->max_children > 0)
+                                <span class="tbp-units-meta"><i class="bi bi-person"></i> {{ $roomType->max_children }} {{ Str::plural('Child', $roomType->max_children) }}</span>
+                            @endif
+                        </td>
+                        <td><span class="tbp-units-chip"><i class="bi bi-hospital"></i> {{ $roomType->beds }} Bed(s)</span></td>
+                        <td>
+                            @if($roomType->ac)
+                                <span class="tbp-units-ac" title="AC available"><i class="bi bi-snow"></i><span class="visually-hidden">AC available</span></span>
+                            @else
+                                <span class="tbp-units-ac is-off" title="No AC"><i class="bi bi-dash-circle"></i><span class="visually-hidden">No AC</span></span>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="tbp-units-status">
+                                <button type="button" class="tbp-units-switch js-rt-toggle" role="switch" aria-checked="{{ $roomType->status ? 'true' : 'false' }}"
+                                        aria-label="Active: {{ $roomType->name }}" data-url="{{ route('admin.hotels.room-types.toggle-status', $roomType) }}"><i></i></button>
+                                <span class="tbp-units-badge {{ $roomType->status ? 'is-green' : 'is-red' }}">{{ $roomType->status ? 'Active' : 'Inactive' }}</span>
+                            </div>
+                        </td>
+                        <td class="is-actions">
+                            <div class="tbp-units-actions">
+                                <a href="{{ route('admin.hotels.room-types.edit', $roomType) }}" class="tbp-units-icon-btn" title="Edit" aria-label="Edit {{ $roomType->name }}"><i class="bi bi-pencil"></i></a>
+                                <form method="POST" action="{{ route('admin.hotels.room-types.destroy', $roomType) }}" class="js-units-delete"
+                                      data-confirm="Delete room type &quot;{{ $roomType->name }}&quot;{{ $roomType->hotel ? ' at ' . $roomType->hotel->name : '' }}? Its images are deleted too. This action cannot be undone.">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="tbp-units-icon-btn" title="Delete" aria-label="Delete {{ $roomType->name }}"><i class="bi bi-trash3"></i></button>
+                                </form>
+                                <details class="tbp-units-menu">
+                                    <summary class="tbp-units-icon-btn" title="More actions" aria-label="More actions"><i class="bi bi-three-dots-vertical"></i></summary>
+                                    <div>
+                                        <a href="{{ route('admin.hotels.rooms.index', ['hotel_id' => $roomType->hotel_id, 'room_type_id' => $roomType->id]) }}"><i class="bi bi-door-closed"></i> View rooms</a>
+                                        <a href="{{ route('admin.hotels.rooms.create', ['hotel_id' => $roomType->hotel_id, 'room_type_id' => $roomType->id]) }}"><i class="bi bi-plus-circle"></i> Add room</a>
+                                        <a href="{{ route('admin.hotels.rate-calendar.index', ['hotel_id' => $roomType->hotel_id, 'room_type_id' => $roomType->id]) }}"><i class="bi bi-calendar3"></i> Rate calendar</a>
                                     </div>
-                                @endif
-                            </td>
-                            <td>
-                                <strong>{{ $roomType->name }}</strong>
-                            </td>
-                            <td>
-                                @if($roomType->hotel)
-                                    <small>{{ $roomType->hotel->name }}</small>
-                                @endif
-                            </td>
-                            <td>
-                                <strong class="text-success">{{ number_format($roomType->price_per_night, 2) }}</strong>
-                            </td>
-                            <td>
-                                <small>
-                                    <i class="bi bi-people"></i> {{ $roomType->max_adults }} Adults
-                                    @if($roomType->max_children > 0)
-                                        <br><i class="bi bi-person"></i> {{ $roomType->max_children }} Children
-                                    @endif
-                                </small>
-                            </td>
-                            <td>
-                                <span class="badge bg-secondary">{{ $roomType->beds }} Bed(s)</span>
-                            </td>
-                            <td>
-                                @if($roomType->ac)
-                                    <i class="bi bi-snow text-primary" title="AC Available"></i>
-                                @else
-                                    <i class="bi bi-x-circle text-muted" title="No AC"></i>
-                                @endif
-                            </td>
-                            <td>
-                                <button type="button"
-                                    class="status-toggle-btn {{ $roomType->status ? 'active' : 'inactive' }}"
-                                    data-id="{{ $roomType->id }}"
-                                    data-status="{{ $roomType->status }}">
-                                    <span class="toggle-track">
-                                        <span class="toggle-thumb"></span>
-                                    </span>
-                                </button>
-                            </td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <a href="{{ route('admin.hotels.room-types.edit', $roomType) }}" class="btn btn-sm btn-outline-primary" title="Edit">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <button type="button" class="btn btn-sm btn-outline-danger delete-btn" data-id="{{ $roomType->id }}" title="Delete">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="9" class="text-center py-4">
-                                <i class="bi bi-inbox fs-1 text-muted"></i>
-                                <p class="text-muted mb-0">No room types found</p>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-3">
-                {{ $roomTypes->links('pagination::bootstrap-4') }}
-            </div>
+                                </details>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="9" class="tbp-units-empty"><i class="bi bi-inbox"></i><strong>No room types found</strong>
+                        <span>{{ $filtered ? 'No room types match your search or filters.' : 'Add your first room type to get started.' }}</span></td></tr>
+                @endforelse
+                </tbody>
+            </table>
         </div>
-    </div>
+        @include('admin-nova.partials._tbp-pagination', ['paginator' => $roomTypes])
+    </section>
 </div>
-
+@include('admin.hotels.rooms._units-scripts')
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Status toggle
-    document.querySelectorAll('.status-toggle-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const roomTypeId = this.dataset.id;
-
-            fetch(`{{ url('admin/hotels/room-types') }}/${roomTypeId}/toggle-status`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
+document.querySelectorAll('.js-rt-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        if (btn.disabled) return;
+        btn.disabled = true;
+        fetch(btn.dataset.url, { method: 'PATCH', headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content } })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (!data.success) throw new Error(data.message || 'Failed');
+                var on = !!data.status;
+                btn.setAttribute('aria-checked', on ? 'true' : 'false');
+                var badge = btn.nextElementSibling;
+                badge.textContent = on ? 'Active' : 'Inactive';
+                badge.className = 'tbp-units-badge ' + (on ? 'is-green' : 'is-red');
+                tbpUnitsToast(data.message);
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    this.classList.toggle('active');
-                    this.classList.toggle('inactive');
-                    const alert = document.createElement('div');
-                    alert.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3';
-                    alert.style.zIndex = '9999';
-                    alert.innerHTML = `${data.message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
-                    document.body.appendChild(alert);
-                    setTimeout(() => alert.remove(), 3000);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        });
-    });
-
-    // Delete button
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const roomTypeId = this.dataset.id;
-
-            if (confirm('Are you sure you want to delete this room type?')) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/admin/hotels/room-types/${roomTypeId}`;
-                form.innerHTML = `
-                    <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').content}">
-                    <input type="hidden" name="_method" value="DELETE">
-                `;
-                document.body.appendChild(form);
-                form.submit();
-            }
-        });
+            .catch(function () { tbpUnitsToast('Could not update the status.', true); })
+            .finally(function () { btn.disabled = false; });
     });
 });
 </script>

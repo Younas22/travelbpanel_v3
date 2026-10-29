@@ -83,15 +83,25 @@ class RoomTypeController extends Controller
             'name'           => 'required|string|max:100',
             'description'    => 'nullable|string',
             'price_per_night'=> 'required|numeric|min:0',
+            'non_refundable_price' => 'nullable|numeric|min:0',
             'beds'           => 'required|integer|min:1',
             'max_adults'     => 'required|integer|min:1',
             'max_children'   => 'required|integer|min:0',
             'ac'             => 'required|in:0,1',
             'status'         => 'required|in:0,1',
+            'cancellation_type'     => 'nullable|in:refundable,non_refundable',
+            'free_cancel_days'      => 'required_if:cancellation_type,refundable|nullable|integer|min:0|max:365',
+            'free_cancel_time'      => 'required_if:cancellation_type,refundable|nullable|date_format:H:i',
+            'cancellation_fee'      => 'nullable|numeric|min:0',
+            'cancellation_fee_type' => 'nullable|in:percent,fixed',
             'amenities'      => 'nullable|array',
             'amenities.*'    => 'integer|exists:all_amenities,id',
+            'room_amenities'   => 'nullable|array',
+            'room_amenities.*' => 'integer|exists:hotel_catalog_items,id',
             'images.*'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        $validated = $this->cancellationPolicy($validated);
 
         // Verify hotel ownership if agent
         if ($this->isAgent()) {
@@ -99,6 +109,7 @@ class RoomTypeController extends Controller
         }
 
         $roomType = RoomType::create($validated);
+        $roomType->roomAmenities()->sync($request->input('room_amenities', []));
 
         if ($request->has('amenities')) {
             $roomType->amenities()->attach($request->amenities);
@@ -124,8 +135,9 @@ class RoomTypeController extends Controller
                 ->with('success', 'Room Type created successfully!');
         }
 
-        return redirect()->route('admin.hotels.edit', ['hotel' => $validated['hotel_id'], 'tab' => 'room-types'])
-            ->with('success', 'Room Type created successfully!');
+        // next step of the workflow: add rooms of this type to the hotel
+        return redirect()->route('admin.hotels.rooms.create', ['hotel_id' => $validated['hotel_id'], 'room_type_id' => $roomType->id])
+            ->with('success', 'Room Type created successfully! Now add its rooms.');
     }
 
     public function edit(RoomType $roomType)
@@ -138,7 +150,7 @@ class RoomTypeController extends Controller
             ? Hotel::where('agent_id', auth()->id())->where('status', 1)->get()
             : Hotel::where('status', 1)->get();
         $amenities = AllAmenity::all();
-        $roomType->load(['images', 'amenities']);
+        $roomType->load(['images', 'amenities', 'roomAmenities']);
 
         if ($this->isAgent()) {
             return view('agent.hotels.room-types.edit', compact('roomType', 'hotels', 'amenities'));
@@ -158,22 +170,35 @@ class RoomTypeController extends Controller
             'name'           => 'required|string|max:100',
             'description'    => 'nullable|string',
             'price_per_night'=> 'required|numeric|min:0',
+            'non_refundable_price' => 'nullable|numeric|min:0',
             'beds'           => 'required|integer|min:1',
             'max_adults'     => 'required|integer|min:1',
             'max_children'   => 'required|integer|min:0',
             'ac'             => 'required|in:0,1',
             'status'         => 'required|in:0,1',
+            'cancellation_type'     => 'nullable|in:refundable,non_refundable',
+            'free_cancel_days'      => 'required_if:cancellation_type,refundable|nullable|integer|min:0|max:365',
+            'free_cancel_time'      => 'required_if:cancellation_type,refundable|nullable|date_format:H:i',
+            'cancellation_fee'      => 'nullable|numeric|min:0',
+            'cancellation_fee_type' => 'nullable|in:percent,fixed',
             'amenities'      => 'nullable|array',
             'amenities.*'    => 'integer|exists:all_amenities,id',
+            'room_amenities'   => 'nullable|array',
+            'room_amenities.*' => 'integer|exists:hotel_catalog_items,id',
             'images.*'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        $validated = $this->cancellationPolicy($validated);
 
         $roomType->update($validated);
 
         if ($request->has('amenities')) {
             $roomType->amenities()->sync($request->amenities);
-        } else {
-            $roomType->amenities()->detach();
+        } elseif (!$request->has('room_amenities_present')) {
+            $roomType->amenities()->detach(); // classic/agent forms: an empty amenities list means "none"
+        }
+        if ($request->has('room_amenities_present')) {
+            $roomType->roomAmenities()->sync($request->input('room_amenities', []));
         }
 
         if ($request->hasFile('images')) {
@@ -196,7 +221,7 @@ class RoomTypeController extends Controller
                 ->with('success', 'Room Type updated successfully!');
         }
 
-        return redirect()->route('admin.hotels.edit', ['hotel' => $roomType->hotel_id, 'tab' => 'room-types'])
+        return redirect()->route('admin.hotels.room-types.index', ['hotel_id' => $roomType->hotel_id])
             ->with('success', 'Room Type updated successfully!');
     }
 
@@ -225,6 +250,25 @@ class RoomTypeController extends Controller
 
         return redirect()->route('admin.hotels.room-types.index')
             ->with('success', 'Room Type deleted successfully!');
+    }
+
+    /** Forms without the policy fields leave it unchanged (new rows get the refundable defaults). Percent fees are capped at 100. */
+    private function cancellationPolicy(array $data): array
+    {
+        if (empty($data['cancellation_type'])) {
+            return array_diff_key($data, array_flip(['cancellation_type', 'free_cancel_days', 'free_cancel_time', 'cancellation_fee', 'cancellation_fee_type']));
+        }
+        $data['cancellation_fee_type'] = $data['cancellation_fee_type'] ?? 'percent';
+        $data['cancellation_fee'] = (float) ($data['cancellation_fee'] ?? 0);
+        if ($data['cancellation_fee_type'] === 'percent') {
+            $data['cancellation_fee'] = min($data['cancellation_fee'], 100);
+        }
+        if ($data['cancellation_type'] === 'non_refundable') {
+            $data['free_cancel_days'] = null;
+            $data['free_cancel_time'] = null;
+        }
+
+        return $data;
     }
 
     public function toggleStatus(RoomType $roomType)

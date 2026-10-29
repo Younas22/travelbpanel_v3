@@ -49,9 +49,9 @@
                                         <label class="form-label">Type <span class="text-danger">*</span></label>
                                         <select name="type" class="form-select" required>
                                             <option value="">Select Type</option>
-                                            <option value="hotel" {{ old('type') == 'hotel' ? 'selected' : '' }}>Hotel</option>
-                                            <option value="guest house" {{ old('type') == 'guest house' ? 'selected' : '' }}>Guest House</option>
-                                            <option value="resort" {{ old('type') == 'resort' ? 'selected' : '' }}>Resort</option>
+                                            @foreach(\App\Support\HotelTypes::options() as $typeValue => $typeLabel)
+                                                <option value="{{ $typeValue }}" {{ old('type') == $typeValue ? 'selected' : '' }}>{{ $typeLabel }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                     <div class="col-md-12">
@@ -81,8 +81,8 @@
                             <div class="card-header"><h5 class="mb-0">Hotel Details</h5></div>
                             <div class="card-body">
                                 <div class="row g-3">
-                                    <div class="col-md-4"><label class="form-label">Check-in Time</label><input type="time" name="check_in_time" class="form-control" value="{{ old('check_in_time') }}"></div>
-                                    <div class="col-md-4"><label class="form-label">Check-out Time</label><input type="time" name="check_out_time" class="form-control" value="{{ old('check_out_time') }}"></div>
+                                    <div class="col-md-4"><label class="form-label">Check-in Time</label><input type="time" name="check_in_time" required class="form-control" value="{{ old('check_in_time') }}"></div>
+                                    <div class="col-md-4"><label class="form-label">Check-out Time</label><input type="time" name="check_out_time" required class="form-control" value="{{ old('check_out_time') }}"></div>
                                     <div class="col-md-4"><label class="form-label">Total Rooms</label><input type="number" name="total_rooms" class="form-control" value="{{ old('total_rooms') }}" min="0"></div>
                                     <div class="col-md-4">
                                         <label class="form-label">Stars</label>
