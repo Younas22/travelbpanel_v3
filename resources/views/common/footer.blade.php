@@ -1260,7 +1260,9 @@
                 umrahFromDropdown.classList.toggle('active');
                 if (umrahToDropdown) umrahToDropdown.classList.remove('active');
                 if (umrahPassengerDropdown) umrahPassengerDropdown.classList.remove('active');
-                if (umrahOverlay) umrahOverlay.classList.toggle('active');
+                // dimmed backdrop on mobile only, like the hotel form
+                if (umrahOverlay) umrahOverlay.classList.remove('active');
+                if (umrahFromDropdown.classList.contains('active')) showOverlay('umrahDropdownOverlay');
                 if (umrahFromDropdown.classList.contains('active') && umrahFromSearch) {
                     umrahFromSearch.focus();
                 }
@@ -1273,7 +1275,9 @@
                 umrahToDropdown.classList.toggle('active');
                 if (umrahFromDropdown) umrahFromDropdown.classList.remove('active');
                 if (umrahPassengerDropdown) umrahPassengerDropdown.classList.remove('active');
-                if (umrahOverlay) umrahOverlay.classList.toggle('active');
+                // dimmed backdrop on mobile only, like the hotel form
+                if (umrahOverlay) umrahOverlay.classList.remove('active');
+                if (umrahToDropdown.classList.contains('active')) showOverlay('umrahDropdownOverlay');
                 if (umrahToDropdown.classList.contains('active') && umrahToSearch) {
                     umrahToSearch.focus();
                 }
@@ -1312,7 +1316,9 @@
                 umrahPassengerDropdown.classList.toggle('active');
                 if (umrahFromDropdown) umrahFromDropdown.classList.remove('active');
                 if (umrahToDropdown) umrahToDropdown.classList.remove('active');
-                if (umrahOverlay) umrahOverlay.classList.toggle('active');
+                // dimmed backdrop on mobile only, like the hotel form
+                if (umrahOverlay) umrahOverlay.classList.remove('active');
+                if (umrahPassengerDropdown.classList.contains('active')) showOverlay('umrahDropdownOverlay');
             });
         }
 

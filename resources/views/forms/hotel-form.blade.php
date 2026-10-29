@@ -298,9 +298,9 @@
             </div>
 
             <!-- Search Button -->
-            <button type="submit" id="hotelSearchBtn" class="w-full py-2.5 px-6 bg-[#0346FA] text-white rounded-lg font-bold text-sm hover:bg-[#005f99] transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
-                {{t('hotel.searchHotels')}}
+            <button type="submit" id="hotelSearchBtn" class="ff-search-btn w-full py-2.5 px-6 bg-[#0346FA] text-white rounded-lg font-bold text-sm hover:bg-[#005f99] transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
                 <i class="fas fa-search text-xs"></i>
+                <span>{{t('hotel.searchHotels')}}</span>
             </button>
         </div>
     </form>

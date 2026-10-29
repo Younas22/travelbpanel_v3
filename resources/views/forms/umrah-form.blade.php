@@ -382,9 +382,9 @@
             </div>
 
             <!-- Search Button -->
-            <button type="submit" id="umrahSearchBtn" class="w-full px-6 py-2.5 bg-[#0346FA] text-white rounded-lg font-bold text-sm hover:bg-[#005f99] transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
-                {{t('umrahform.search_umrah')}}
+            <button type="submit" id="umrahSearchBtn" class="ff-search-btn w-full px-6 py-2.5 bg-[#0346FA] text-white rounded-lg font-bold text-sm hover:bg-[#005f99] transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
                 <i class="fas fa-search text-xs"></i>
+                <span>{{t('umrahform.search_umrah')}}</span>
             </button>
         </div>
     </form>
