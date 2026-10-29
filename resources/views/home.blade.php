@@ -470,24 +470,55 @@
             </div>
 
             <div class="home-flight-grid">
-                @foreach($featuredFlightDeals as [$fromCode, $fromCity, $toCode, $toCity, $airline, $usdPrice])
-                    @php $dealUrl = url('flights/' . strtolower($fromCode) . '/' . strtolower($toCode) . "/oneway/economy/{$flightDealDate}/1/0/0"); @endphp
-                    <article class="th-card is-compact home-flight-card">
-                        <div class="th-card-body">
-                            <span class="home-flight-route-code"><i class="fas fa-plane"></i> {{ $fromCode }} - {{ $toCode }}</span>
-                            <div class="th-route">
-                                <span class="th-route-city">{{ $fromCity }}</span>
-                                <span class="th-route-icon"><i class="fas fa-plane"></i></span>
-                                <span class="th-route-city">{{ $toCity }}</span>
+                @foreach($featuredFlightDeals as [$fromCode, $fromCity, $toCode, $toCity, $airline, $usdPrice, $dealImage, $airlineCode])
+                    @php
+                        $dealUrl = url('flights/' . strtolower($fromCode) . '/' . strtolower($toCode) . "/oneway/economy/{$flightDealDate}/1/0/0");
+                        $fromAirport = $flightDealAirports[$fromCode] ?? null;
+                        $toAirport = $flightDealAirports[$toCode] ?? null;
+                    @endphp
+                    <article class="home-flight-card">
+                        <div class="hfc-main">
+                            <div class="hfc-airline">
+                                <span class="hfc-logo">
+                                    <img src="https://assets.duffel.com/img/airlines/for-light-background/full-color-logo/{{ $airlineCode }}.svg" alt="{{ $airline }}" loading="lazy"
+                                         onerror="this.onerror=null;this.src='{{ url('public/assets/images/list-plane.png') }}';">
+                                </span>
+                                <span class="hfc-airline-text">
+                                    <b>{{ $airline }}</b>
+                                    <small>{{ $airlineCode }}</small>
+                                </span>
                             </div>
-                            <p class="th-location"><i class="fas fa-plane-departure"></i> <span>{{ $airline }}</span></p>
-                            <div class="th-footer">
-                                <div class="th-price-wrap">
-                                    <span class="th-price-label">{{ t('home.starting_from') }}</span>
-                                    <span class="th-price">{{ $active_currency->currency_name }} {{ convertCurrency($usdPrice, 'USD', $active_currency->currency_name) }}</span>
+
+                            <div class="hfc-route">
+                                <div class="hfc-point">
+                                    <b class="hfc-code">{{ $fromCode }}</b>
+                                    <span class="hfc-city">{{ $fromAirport->city ?? $fromCity }}</span>
+                                    @if($fromAirport)<small class="hfc-airport">{{ $fromAirport->airport }}</small>@endif
                                 </div>
-                                <a href="{{ $dealUrl }}" class="th-view-btn">{{ t('home.view') }} <i class="fas fa-arrow-right"></i></a>
+                                <div class="hfc-path" aria-hidden="true">
+                                    <span class="hfc-line"></span>
+                                    <i class="fas fa-plane"></i>
+                                    <span class="hfc-line"></span>
+                                </div>
+                                <div class="hfc-point is-arrival">
+                                    <b class="hfc-code">{{ $toCode }}</b>
+                                    <span class="hfc-city">{{ $toAirport->city ?? $toCity }}</span>
+                                    @if($toAirport)<small class="hfc-airport">{{ $toAirport->airport }}</small>@endif
+                                </div>
                             </div>
+
+                            <div class="hfc-meta">
+                                <span><i class="far fa-calendar"></i> {{ date('D, d M Y', strtotime($flightDealDate)) }}</span>
+                                <span><i class="fas fa-arrow-right-long"></i> {{ t('flightform.one_way') }} · {{ t('flightform.economy') }}</span>
+                            </div>
+                        </div>
+
+                        <div class="hfc-fare">
+                            <span class="hfc-fare-label">{{ t('home.starting_from') }}</span>
+                            <span class="hfc-price"><small>{{ $active_currency->currency_name }}</small> {{ convertCurrency($usdPrice, 'USD', $active_currency->currency_name) }}</span>
+                            <span class="hfc-per">{{ t('home.per_adult') }}</span>
+                            <span class="hfc-barcode" aria-hidden="true"></span>
+                            <a href="{{ $dealUrl }}" class="hfc-view-btn">{{ t('home.view') }} <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </article>
                 @endforeach
