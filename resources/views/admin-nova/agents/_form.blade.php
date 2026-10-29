@@ -1,122 +1,100 @@
 {{-- Expects: $agent (User|null — null on create, the model on edit).
-     Shared by create.blade.php / edit.blade.php so both stay pixel-identical
-     except for the password fields and the action buttons, which each parent
-     file adds around this include. --}}
+     Shared by create.blade.php / edit.blade.php; the parents add the header and actions. --}}
+@php
+    $field = fn ($name, $default = '') => old($name, $agent->{$name} ?? $default);
+    $inputClass = fn ($name) => 'tbp-agent-form-input' . ($errors->has($name) ? ' is-invalid' : '');
+@endphp
 
 @if($errors->any())
-    <div class="bg-red-50 border border-red-200 rounded-2xl p-4 mb-5">
-        <p class="text-xs font-semibold text-novadanger flex items-center gap-1.5 mb-2">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
-            Please fix the following:
-        </p>
-        <ul class="text-xs text-novadanger list-disc pl-5 space-y-0.5">
-            @foreach($errors->all() as $e)
-                <li>{{ $e }}</li>
-            @endforeach
-        </ul>
+    <div class="tbp-agent-form-errors">
+        <strong><i class="bi bi-exclamation-circle"></i> Please fix the following:</strong>
+        <ul>@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
     </div>
 @endif
 
-{{-- ===== PERSONAL INFORMATION ===== --}}
-<div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5 mb-5">
-    <h2 class="text-sm font-semibold text-novatext flex items-center gap-2 mb-4">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.25"/><path d="M4.75 19c.6-3.7 3.4-6 7.25-6s6.65 2.3 7.25 6"/></svg>
-        Personal Information
-    </h2>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-            <label class="ag-label">First Name <span class="ag-required">*</span></label>
-            <input type="text" name="first_name" class="ag-input" value="{{ old('first_name', $agent->first_name ?? '') }}" required>
-        </div>
-        <div>
-            <label class="ag-label">Last Name <span class="ag-required">*</span></label>
-            <input type="text" name="last_name" class="ag-input" value="{{ old('last_name', $agent->last_name ?? '') }}" required>
-        </div>
-        <div>
-            <label class="ag-label">Email <span class="ag-required">*</span></label>
-            <input type="email" name="email" class="ag-input" value="{{ old('email', $agent->email ?? '') }}" required>
-        </div>
-        <div>
-            <label class="ag-label">Phone</label>
-            <input type="text" name="phone" class="ag-input" value="{{ old('phone', $agent->phone ?? '') }}">
-        </div>
-
+<section class="tbp-agent-form-card">
+    <header><i class="bi bi-person"></i><div><h2>Personal Information</h2><p>{{ $agent ? 'Basic details of the agent account' : 'Basic details for the new agent account' }}</p></div></header>
+    <div class="tbp-agent-form-grid">
+        <label class="tbp-agent-form-field"><span>First Name <b>*</b></span>
+            <input type="text" name="first_name" class="{{ $inputClass('first_name') }}" value="{{ $field('first_name') }}" placeholder="Enter first name" required maxlength="100"></label>
+        <label class="tbp-agent-form-field"><span>Last Name <b>*</b></span>
+            <input type="text" name="last_name" class="{{ $inputClass('last_name') }}" value="{{ $field('last_name') }}" placeholder="Enter last name" required maxlength="100"></label>
+        <label class="tbp-agent-form-field"><span>Email <b>*</b></span>
+            <input type="email" name="email" class="{{ $inputClass('email') }}" value="{{ $field('email') }}" placeholder="Enter email address" required></label>
+        <label class="tbp-agent-form-field"><span>Phone</span>
+            <input type="text" name="phone" class="{{ $inputClass('phone') }}" value="{{ $field('phone') }}" placeholder="Enter phone number" maxlength="30"></label>
         @unless($agent)
-            <div>
-                <label class="ag-label">Password <span class="ag-required">*</span></label>
-                <input type="password" name="password" class="ag-input" required>
-            </div>
-            <div>
-                <label class="ag-label">Confirm Password <span class="ag-required">*</span></label>
-                <input type="password" name="password_confirmation" class="ag-input" required>
-            </div>
+            <label class="tbp-agent-form-field"><span>Password <b>*</b></span>
+                <span class="tbp-agent-form-password">
+                    <input type="password" name="password" class="{{ $inputClass('password') }}" placeholder="Create password" required minlength="8" autocomplete="new-password">
+                    <button type="button" data-toggle-password title="Show password"><i class="bi bi-eye"></i></button>
+                </span></label>
+            <label class="tbp-agent-form-field"><span>Confirm Password <b>*</b></span>
+                <span class="tbp-agent-form-password">
+                    <input type="password" name="password_confirmation" class="{{ $inputClass('password') }}" placeholder="Confirm password" required minlength="8" autocomplete="new-password">
+                    <button type="button" data-toggle-password title="Show password"><i class="bi bi-eye"></i></button>
+                </span></label>
         @endunless
     </div>
-</div>
+</section>
 
-{{-- ===== COMPANY INFORMATION ===== --}}
-<div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5 mb-5">
-    <h2 class="text-sm font-semibold text-novatext flex items-center gap-2 mb-4">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="12" rx="1.5"/><path d="M8 9V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v4"/></svg>
-        Company Information
-    </h2>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-        <div>
-            <label class="ag-label">Company Name</label>
-            <input type="text" name="company_name" class="ag-input" value="{{ old('company_name', $agent->company_name ?? '') }}">
-        </div>
-        <div>
-            <label class="ag-label">Company Phone</label>
-            <input type="text" name="company_phone" class="ag-input" value="{{ old('company_phone', $agent->company_phone ?? '') }}">
-        </div>
-        <div>
-            <label class="ag-label">Tax Number</label>
-            <input type="text" name="tax_number" class="ag-input" value="{{ old('tax_number', $agent->tax_number ?? '') }}">
-        </div>
-        <div>
-            <label class="ag-label">Commission Type <span class="ag-required">*</span></label>
-            <select name="commission_type" id="commissionType" class="ag-input" required>
-                <option value="percentage" {{ old('commission_type', $agent->commission_type ?? 'percentage') === 'percentage' ? 'selected' : '' }}>Percentage</option>
-                <option value="fixed" {{ old('commission_type', $agent->commission_type ?? '') === 'fixed' ? 'selected' : '' }}>Fixed Amount</option>
-            </select>
-        </div>
-        <div>
-            <label class="ag-label" id="commissionRateLabel">Commission Rate (%)</label>
-            <input type="number" name="commission_rate" id="commissionRate" class="ag-input" min="0" max="100" step="0.01" value="{{ old('commission_rate', $agent->commission_rate ?? 0) }}">
-        </div>
+<section class="tbp-agent-form-card">
+    <header><i class="bi bi-building"></i><div><h2>Company Information</h2><p>Company and commission details</p></div></header>
+    <div class="tbp-agent-form-grid">
+        <label class="tbp-agent-form-field"><span>Company Name</span>
+            <input type="text" name="company_name" class="{{ $inputClass('company_name') }}" value="{{ $field('company_name') }}" placeholder="Enter company name"></label>
+        <label class="tbp-agent-form-field"><span>Company Phone</span>
+            <input type="text" name="company_phone" class="{{ $inputClass('company_phone') }}" value="{{ $field('company_phone') }}" placeholder="Enter company phone"></label>
+        <label class="tbp-agent-form-field"><span>Tax Number</span>
+            <input type="text" name="tax_number" class="{{ $inputClass('tax_number') }}" value="{{ $field('tax_number') }}" placeholder="Enter tax number"></label>
+        <label class="tbp-agent-form-field"><span>Commission Type <b>*</b></span>
+            <select name="commission_type" id="commissionType" class="{{ $inputClass('commission_type') }}" required>
+                <option value="percentage" @selected($field('commission_type', 'percentage') === 'percentage')>Percentage</option>
+                <option value="fixed" @selected($field('commission_type', 'percentage') === 'fixed')>Fixed Amount</option>
+            </select></label>
+        <label class="tbp-agent-form-field"><span id="commissionRateLabel">Commission Rate (%)</span>
+            <input type="number" name="commission_rate" id="commissionRate" class="{{ $inputClass('commission_rate') }}" min="0" max="100" step="0.01" value="{{ $field('commission_rate', 0) }}"></label>
+        <label class="tbp-agent-form-field"><span>Company Address</span>
+            <textarea name="company_address" class="{{ $inputClass('company_address') }}" rows="2" placeholder="Enter company address">{{ $field('company_address') }}</textarea></label>
     </div>
+</section>
 
-    <div class="mb-4">
-        <label class="ag-label">Company Address</label>
-        <textarea name="company_address" class="ag-input" rows="2">{{ old('company_address', $agent->company_address ?? '') }}</textarea>
-    </div>
+<section class="tbp-agent-form-card">
+    <header><i class="bi bi-file-earmark-text"></i><div><h2>Internal Notes</h2><p>Visible only to admins, not to the agent</p></div></header>
+    <label class="tbp-agent-form-field tbp-agent-form-notes">
+        <textarea name="internal_notes" id="internalNotes" class="{{ $inputClass('internal_notes') }}" rows="1" maxlength="500" placeholder="Admin-only notes...">{{ $field('internal_notes') }}</textarea>
+        <small><span data-notes-count>0</span>/500</small>
+    </label>
+</section>
 
-    <div>
-        <label class="ag-label">Internal Notes</label>
-        <textarea name="internal_notes" class="ag-input" rows="2" placeholder="Admin-only notes...">{{ old('internal_notes', $agent->internal_notes ?? '') }}</textarea>
-        <p class="ag-field-help">Visible only to admins, not to the agent</p>
-    </div>
-</div>
-
+@push('scripts')
 <script>
-    (function () {
-        const typeSelect = document.getElementById('commissionType');
-        const rateInput  = document.getElementById('commissionRate');
-        const rateLabel  = document.getElementById('commissionRateLabel');
+(function () {
+    var type = document.getElementById('commissionType'), rate = document.getElementById('commissionRate'), label = document.getElementById('commissionRateLabel');
+    function sync() {
+        var fixed = type.value === 'fixed';
+        label.textContent = fixed ? 'Commission Amount' : 'Commission Rate (%)';
+        fixed ? rate.removeAttribute('max') : rate.setAttribute('max', '100');
+    }
+    type.addEventListener('change', sync); sync();
 
-        function syncCommissionFields() {
-            if (typeSelect.value === 'fixed') {
-                rateLabel.textContent = 'Commission Amount';
-                rateInput.removeAttribute('max');
-            } else {
-                rateLabel.textContent = 'Commission Rate (%)';
-                rateInput.setAttribute('max', '100');
-            }
-        }
+    var notes = document.getElementById('internalNotes'), count = document.querySelector('[data-notes-count]');
+    function countNotes() { count.textContent = notes.value.length; }
+    notes.addEventListener('input', countNotes); countNotes();
 
-        typeSelect.addEventListener('change', syncCommissionFields);
-        syncCommissionFields();
-    })();
+    document.querySelectorAll('[data-toggle-password]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var input = btn.previousElementSibling, show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            btn.innerHTML = '<i class="bi bi-eye' + (show ? '-slash' : '') + '"></i>';
+        });
+    });
+
+    var form = notes.closest('form');
+    form.addEventListener('submit', function () {
+        var btn = form.querySelector('.tbp-agent-form-submit');
+        if (btn) { btn.disabled = true; btn.querySelector('span').textContent = btn.dataset.loading; }
+    });
+})();
 </script>
+@endpush

@@ -2,229 +2,202 @@
 
 @section('title', 'Agent: ' . $agent->full_name)
 
-@push('styles')
-@include('admin-nova.agents._styles')
-@endpush
-
 @section('content')
 @php
-    $initials = collect(explode(' ', $agent->full_name))
-        ->map(fn($n) => strtoupper(substr($n, 0, 1)))
-        ->take(2)->implode('');
-
-    // show() eager-loads $agent->wallet and $agent->topupRequests (latest 5)
-    // but doesn't hand the Wallet tab its own $wallet/$recentTransactions/
-    // $topupRequests variables the way AgentWalletController::index() does —
-    // computed here from the same real, already-authorized data/query scope
-    // so the Wallet tab renders instead of hitting an undefined variable.
     $wallet = $agent->wallet;
-    $recentTransactions = \App\Models\AgentWalletTransaction::byAgent($agent->id)->latest()->take(10)->get();
-    $topupRequests = $agent->topupRequests;
+    // Same display rule as the wallet page: stored "PKR" wallets show as USD.
+    $walletCurrency = ($wallet?->currency && $wallet->currency !== 'PKR') ? $wallet->currency : 'USD';
+    $money = fn ($v) => $walletCurrency . ' ' . number_format((float) $v, 2);
+    $isFixed = $agent->commission_type === 'fixed';
+    $commission = $isFixed ? $money($agent->commission_rate ?? 0) : rtrim(rtrim(number_format((float) ($agent->commission_rate ?? 0), 2), '0'), '.') . '%';
 
-    $avatarPalette = [
-        ['bg' => '#DBEAFE', 'text' => '#1D4ED8'],
-        ['bg' => '#DCFCE7', 'text' => '#15803D'],
-        ['bg' => '#FEF3C7', 'text' => '#B45309'],
-        ['bg' => '#FCE7F3', 'text' => '#BE185D'],
-        ['bg' => '#EDE9FE', 'text' => '#6D28D9'],
+    // Recent activity: latest wallet movements plus the account creation event.
+    $activity = \App\Models\AgentWalletTransaction::byAgent($agent->id)->latest()->take(5)->get()
+        ->map(fn ($t) => [
+            'date'    => $t->created_at,
+            'title'   => $t->type === 'credit' ? 'Wallet Credit' : 'Wallet Debit',
+            'details' => $t->note ?: ($t->reference ?: '—'),
+            'amount'  => ($t->type === 'credit' ? '+' : '−') . $money($t->amount),
+            'status'  => ucfirst($t->status ?: 'completed'),
+        ])
+        ->push([
+            'date' => $agent->created_at, 'title' => 'Agent Created', 'details' => 'Agent account was created',
+            'amount' => '—', 'status' => 'Completed',
+        ])
+        ->filter(fn ($a) => $a['date'])->sortByDesc('date')->take(5);
+
+    $infoLeft = [
+        ['bi-person', 'Full Name', $agent->full_name],
+        ['bi-envelope', 'Email Address', $agent->email],
+        ['bi-telephone', 'Phone Number', $agent->phone],
+        ['bi-building', 'Company', $agent->company_name],
+        ['bi-geo-alt', 'Company Address', $agent->company_address],
     ];
-    $avatar = $avatarPalette[crc32($agent->full_name) % count($avatarPalette)];
+    $infoRight = [
+        ['bi-grid', 'Agent Code', $agent->agent_code],
+        ['bi-telephone-forward', 'Company Phone', $agent->company_phone],
+        ['bi-file-earmark-text', 'Tax Number', $agent->tax_number],
+        ['bi-percent', 'Commission Rate', $commission],
+    ];
+    $statRows = [['bi-building', 'Hotels', 'hotels'], ['bi-airplane', 'Flights', 'flights'], ['bi-map', 'Tours', 'tours'], ['bi-moon-stars', 'Umrah', 'umrah']];
 @endphp
 
-<div id="agPage" class="tt-fade-in font-jakarta">
-
-    {{-- ===== HEADER ===== --}}
-    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div class="flex items-center gap-3 min-w-0">
-            <div class="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-                 style="background:{{ $avatar['bg'] }}; color:{{ $avatar['text'] }}">{{ $initials }}</div>
-            <div class="min-w-0">
-                <h1 class="text-lg font-bold text-novatext truncate">{{ $agent->full_name }}</h1>
-                <p class="text-xs text-novamuted mt-0.5 truncate">{{ $agent->agent_code }} &middot; {{ $agent->email }}</p>
-            </div>
-        </div>
-        <div class="flex items-center gap-2 flex-shrink-0">
-            <a href="{{ route('admin.agents.edit', $agent) }}" class="ag-btn-nova px-4 py-2.5 text-xs font-semibold">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16.474 5.408 18.592 7.526M4 20l1.11-3.92a2 2 0 0 1 .53-.9l9.9-9.9a1.5 1.5 0 0 1 2.12 0l1.06 1.06a1.5 1.5 0 0 1 0 2.12l-9.9 9.9a2 2 0 0 1-.9.53L4 20Z"/></svg>
-                Edit
-            </a>
-            <a href="{{ route('admin.agents.index') }}" class="ag-btn-nova px-4 py-2.5 text-xs font-semibold">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                Back
-            </a>
-        </div>
-    </div>
-
-    {{-- ===== TABS (Bootstrap tab-pane machinery kept, pills restyled) ===== --}}
-    <div class="ag-tabs" role="tablist">
-        <a class="ag-tab active" id="overview-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.25"/><path d="M4.75 19c.6-3.7 3.4-6 7.25-6s6.65 2.3 7.25 6"/></svg>
-            Overview
-        </a>
-        <a class="ag-tab" id="permissions-tab" data-bs-toggle="tab" href="#permissions" role="tab" aria-controls="permissions" aria-selected="false">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/></svg>
-            Permissions
-        </a>
-        <a class="ag-tab" id="wallet-tab" data-bs-toggle="tab" href="#wallet" role="tab" aria-controls="wallet" aria-selected="false">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14.5h1.5"/></svg>
-            Wallet
-        </a>
-        <a class="ag-tab" id="bookings-tab" data-bs-toggle="tab" href="#bookings" role="tab" aria-controls="bookings" aria-selected="false">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
-            Bookings
-        </a>
-    </div>
+<div class="tbp-agent-detail-page" id="agPage">
+    @include('admin-nova.agents._detail_header', ['activeTab' => 'overview', 'inPageTabs' => true])
 
     <div class="tab-content">
 
-        {{-- ===== OVERVIEW TAB ===== --}}
+        {{-- ===== OVERVIEW ===== --}}
         <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="tbp-agent-card tbp-agent-summary-row">
+                <div class="tbp-agent-summary-card">
+                    <span class="tbp-agent-icon-box"><i class="bi bi-calendar3"></i></span>
+                    <div><small>Total Bookings</small><strong>{{ number_format($bookingStats['total']) }}</strong><em>Across all services</em></div>
+                </div>
+                <div class="tbp-agent-summary-card">
+                    <span class="tbp-agent-icon-box"><i class="bi bi-wallet2"></i></span>
+                    <div><small>Wallet Balance</small><strong>{{ $money($wallet?->balance ?? 0) }}</strong><em>Available balance</em></div>
+                </div>
+                <div class="tbp-agent-summary-card">
+                    <span class="tbp-agent-icon-box"><i class="bi bi-percent"></i></span>
+                    <div><small>Commission Rate</small><strong>{{ $commission }}</strong><em>{{ $isFixed ? 'Fixed per booking' : 'Percentage' }}</em></div>
+                </div>
+                <div class="tbp-agent-summary-card">
+                    <span class="tbp-agent-icon-box"><i class="bi bi-calendar-check"></i></span>
+                    <div><small>Member Since</small><strong>{{ $agent->created_at?->format('d M Y') ?? '—' }}</strong><em>{{ $agent->created_at?->diffForHumans() }}</em></div>
+                </div>
+            </div>
 
-                {{-- Agent Information --}}
-                <div class="lg:col-span-2 tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
-                    <h2 class="text-sm font-semibold text-novatext mb-4">Agent Information</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <p class="text-[10px] font-semibold uppercase tracking-wide text-novamuted mb-1">Full Name</p>
-                            <p class="text-xs text-novatext">{{ $agent->full_name }}</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-semibold uppercase tracking-wide text-novamuted mb-1">Email</p>
-                            <p class="text-xs text-novatext">{{ $agent->email }}</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-semibold uppercase tracking-wide text-novamuted mb-1">Phone</p>
-                            <p class="text-xs text-novatext">{{ $agent->phone ?? '—' }}</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-semibold uppercase tracking-wide text-novamuted mb-1">Agent Code</p>
-                            <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-novatext">{{ $agent->agent_code }}</span>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-semibold uppercase tracking-wide text-novamuted mb-1">Company</p>
-                            <p class="text-xs text-novatext">{{ $agent->company_name ?? '—' }}</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-semibold uppercase tracking-wide text-novamuted mb-1">Company Phone</p>
-                            <p class="text-xs text-novatext">{{ $agent->company_phone ?? '—' }}</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-semibold uppercase tracking-wide text-novamuted mb-1">Tax Number</p>
-                            <p class="text-xs text-novatext">{{ $agent->tax_number ?? '—' }}</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-semibold uppercase tracking-wide text-novamuted mb-1">Commission Rate</p>
-                            <p class="text-xs text-novatext">{{ $agent->commission_rate ?? 0 }}{{ $agent->commission_type === 'fixed' ? ' (flat)' : '%' }}</p>
-                        </div>
-                        <div class="sm:col-span-2">
-                            <p class="text-[10px] font-semibold uppercase tracking-wide text-novamuted mb-1">Company Address</p>
-                            <p class="text-xs text-novatext">{{ $agent->company_address ?? '—' }}</p>
+            <div class="tbp-agent-overview-grid">
+                <div class="tbp-agent-overview-main">
+                    <section class="tbp-agent-card tbp-agent-information-card">
+                        <header class="tbp-agent-card-head">
+                            <h2><i class="bi bi-person"></i> Agent Information</h2>
+                            <span class="tbp-agent-status is-{{ $agent->approval_status }}">{{ ucfirst($agent->approval_status ?? 'unknown') }}</span>
+                        </header>
+                        <div class="tbp-agent-info-columns">
+                            @foreach([$infoLeft, $infoRight] as $col)
+                                <dl>
+                                    @foreach($col as [$icon, $label, $value])
+                                        <div class="tbp-agent-info-row">
+                                            <i class="bi {{ $icon }}"></i>
+                                            <div>
+                                                <dt>{{ $label }}</dt>
+                                                <dd>
+                                                    {{ filled($value) ? $value : '—' }}
+                                                    @if($label === 'Agent Code' && filled($value))
+                                                        <button type="button" class="tbp-agent-copy" data-copy="{{ $value }}" title="Copy"><i class="bi bi-copy"></i></button>
+                                                    @endif
+                                                </dd>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                    @if($col === $infoRight)
+                                        <div class="tbp-agent-info-row">
+                                            <i class="bi bi-shield-check"></i>
+                                            <div><dt>Status</dt><dd><span class="tbp-agent-status is-{{ $agent->approval_status }}">{{ ucfirst($agent->approval_status ?? 'unknown') }}</span></dd></div>
+                                        </div>
+                                    @endif
+                                </dl>
+                            @endforeach
                         </div>
                         @if($agent->internal_notes)
-                            <div class="sm:col-span-2">
-                                <p class="text-[10px] font-semibold uppercase tracking-wide text-novamuted mb-1">Internal Notes</p>
-                                <p class="text-xs text-novamuted">{{ $agent->internal_notes }}</p>
-                            </div>
+                            <div class="tbp-agent-notes"><strong>Internal Notes</strong><p>{{ $agent->internal_notes }}</p></div>
                         @endif
-                    </div>
+                    </section>
+
+                    <section class="tbp-agent-card tbp-agent-recent-activity">
+                        <header class="tbp-agent-card-head">
+                            <h2><i class="bi bi-clock-history"></i> Recent Activity</h2>
+                            <a href="{{ route('admin.agents.wallet.transactions', $agent) }}" class="tbp-agent-btn is-small">View All</a>
+                        </header>
+                        <div class="tbp-agent-table-wrap">
+                            <table>
+                                <thead><tr><th>Date</th><th>Activity</th><th>Details</th><th>Amount</th><th>Status</th></tr></thead>
+                                <tbody>
+                                    @forelse($activity as $row)
+                                        <tr>
+                                            <td>{{ $row['date']->format('d M Y') }}</td>
+                                            <td>{{ $row['title'] }}</td>
+                                            <td class="is-details">{{ \Illuminate\Support\Str::limit($row['details'] ?? '', 60) }}</td>
+                                            <td>{{ $row['amount'] }}</td>
+                                            <td><span class="tbp-agent-status is-{{ strtolower($row['status']) }}">{{ $row['status'] }}</span></td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="5" class="tbp-agent-empty">No activity yet.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
                 </div>
 
-                {{-- Sidebar --}}
-                <div class="space-y-4">
-                    <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
-                        <div class="mb-3">{!! $agent->approval_status_badge !!}</div>
-
+                <aside class="tbp-agent-overview-side">
+                    <section class="tbp-agent-card tbp-agent-quick-actions">
+                        <h2><i class="bi bi-lightning"></i> Quick Actions</h2>
+                        <a href="{{ route('admin.agents.edit', $agent) }}" class="tbp-agent-btn is-outline-blue"><i class="bi bi-pencil"></i> Edit Agent</a>
                         @if($agent->approval_status === 'pending')
                             <form method="POST" action="{{ route('admin.agents.approve', $agent) }}">
                                 @csrf
-                                <button type="submit" class="ag-btn-nova w-full py-2.5 text-xs font-semibold" style="background:#22C55E; color:#fff; border-color:#22C55E;">
-                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                                    Approve Agent
-                                </button>
+                                <button type="submit" class="tbp-agent-btn is-outline-green"><i class="bi bi-check-lg"></i> Approve Agent</button>
                             </form>
                         @elseif($agent->approval_status === 'active')
-                            <button type="button" class="ag-btn-nova w-full py-2.5 text-xs font-semibold" style="color:#F59E0B; border-color:#F59E0B;" data-bs-toggle="modal" data-bs-target="#suspendModal">
-                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
-                                Suspend Agent
-                            </button>
+                            <button type="button" class="tbp-agent-btn is-outline-red" data-bs-toggle="modal" data-bs-target="#suspendModal"><i class="bi bi-pause-fill"></i> Suspend Agent</button>
                         @elseif($agent->approval_status === 'suspended')
                             <form method="POST" action="{{ route('admin.agents.activate', $agent) }}">
                                 @csrf
-                                <button type="submit" class="ag-btn-nova w-full py-2.5 text-xs font-semibold" style="background:#22C55E; color:#fff; border-color:#22C55E;">
-                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4.5v15l13-7.5-13-7.5Z"/></svg>
-                                    Reactivate Agent
-                                </button>
+                                <button type="submit" class="tbp-agent-btn is-outline-green"><i class="bi bi-play-fill"></i> Activate Agent</button>
                             </form>
                         @endif
-                    </div>
+                        <a href="{{ route('admin.agents.wallet', $agent) }}" class="tbp-agent-btn"><i class="bi bi-wallet2"></i> View Wallet</a>
+                        <a href="#bookings" class="tbp-agent-btn" data-open-tab="bookings"><i class="bi bi-calendar3"></i> View Bookings</a>
+                    </section>
 
-                    <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
-                        <h3 class="text-sm font-semibold text-novatext mb-3">Booking Stats</h3>
-                        <div class="space-y-2.5">
-                            <div class="flex items-center justify-between text-xs">
-                                <span class="text-novamuted">Hotels</span><strong class="text-novatext">{{ $bookingStats['hotels'] }}</strong>
-                            </div>
-                            <div class="flex items-center justify-between text-xs">
-                                <span class="text-novamuted">Flights</span><strong class="text-novatext">{{ $bookingStats['flights'] }}</strong>
-                            </div>
-                            <div class="flex items-center justify-between text-xs">
-                                <span class="text-novamuted">Tours</span><strong class="text-novatext">{{ $bookingStats['tours'] }}</strong>
-                            </div>
-                            <div class="flex items-center justify-between text-xs">
-                                <span class="text-novamuted">Umrah</span><strong class="text-novatext">{{ $bookingStats['umrah'] }}</strong>
-                            </div>
-                            <div class="flex items-center justify-between text-xs pt-2.5 border-t border-novaborder">
-                                <span class="font-semibold text-novatext">Total</span><strong class="text-novablue">{{ $bookingStats['total'] }}</strong>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    <section class="tbp-agent-card tbp-agent-booking-statistics">
+                        <h2><i class="bi bi-bar-chart"></i> Booking Statistics</h2>
+                        <ul>
+                            @foreach($statRows as [$icon, $label, $key])
+                                <li><span><i class="bi {{ $icon }}"></i> {{ $label }}</span><strong>{{ number_format($bookingStats[$key]) }}</strong></li>
+                            @endforeach
+                        </ul>
+                        <div class="tbp-agent-stat-total"><span>Total Bookings</span><strong>{{ number_format($bookingStats['total']) }}</strong></div>
+                    </section>
+                </aside>
             </div>
         </div>
 
-        {{-- ===== PERMISSIONS TAB ===== --}}
+        {{-- ===== PERMISSIONS ===== --}}
         <div class="tab-pane fade" id="permissions" role="tabpanel" aria-labelledby="permissions-tab">
             @include('admin-nova.agents._tab_permissions')
         </div>
 
-        {{-- ===== WALLET TAB ===== --}}
-        <div class="tab-pane fade" id="wallet" role="tabpanel" aria-labelledby="wallet-tab">
-            @include('admin-nova.agents._tab_wallet')
-        </div>
-
-        {{-- ===== BOOKINGS TAB ===== --}}
+        {{-- ===== BOOKINGS ===== --}}
         <div class="tab-pane fade" id="bookings" role="tabpanel" aria-labelledby="bookings-tab">
-            <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
-                <p class="text-xs text-novamuted mb-4">All bookings made by this agent.</p>
-                <a href="{{ route('admin.bookings.all') }}?agent_id={{ $agent->id }}" class="ag-btn-nova ag-btn-primary px-4 py-2.5 text-xs font-semibold">
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
-                    View all bookings by {{ $agent->full_name }}
-                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-                </a>
-            </div>
+            <section class="tbp-agent-card tbp-agent-bookings-pane">
+                <h2><i class="bi bi-calendar3"></i> Bookings</h2>
+                <p>All bookings made by this agent ({{ number_format($bookingStats['total']) }} in total).</p>
+                <a href="{{ route('admin.bookings.all') }}?agent_id={{ $agent->id }}" class="tbp-agent-btn is-primary">View all bookings by {{ $agent->full_name }} <i class="bi bi-arrow-right"></i></a>
+            </section>
         </div>
     </div>
 
     {{-- ===== SUSPEND MODAL ===== --}}
     <div class="modal fade" id="suspendModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content" style="border-radius:1.5rem; font-family:'Plus Jakarta Sans',sans-serif;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content tbp-agent-modal">
                 <form method="POST" action="{{ route('admin.agents.suspend', $agent) }}">
                     @csrf
-                    <div class="modal-header" style="border-bottom:1px solid #E5E7EB;">
-                        <h5 class="modal-title" style="font-weight:700;">Suspend Agent</h5>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Suspend Agent</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <label class="form-label" style="font-size:.8rem; font-weight:600;">Reason (optional)</label>
-                        <textarea name="reason" class="form-control" style="border-radius:1rem;" rows="3"></textarea>
+                        <label class="form-label" for="suspendReason">Reason (optional)</label>
+                        <textarea name="reason" id="suspendReason" class="form-control" rows="3"></textarea>
                     </div>
-                    <div class="modal-footer" style="border-top:1px solid #E5E7EB;">
-                        <button type="button" data-bs-dismiss="modal"
-                                style="display:inline-flex; align-items:center; border-radius:9999px; padding:10px 20px; font-size:13px; font-weight:600; font-family:'Plus Jakarta Sans',sans-serif; background:#F7F8FC; color:#000; border:1px solid #E5E7EB; cursor:pointer;">Cancel</button>
-                        <button type="submit"
-                                style="display:inline-flex; align-items:center; border-radius:9999px; padding:10px 20px; font-size:13px; font-weight:600; font-family:'Plus Jakarta Sans',sans-serif; background:#F59E0B; color:#fff; border:1px solid #F59E0B; cursor:pointer;">Confirm Suspend</button>
+                    <div class="modal-footer">
+                        <button type="button" class="tbp-agent-btn" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="tbp-agent-btn is-warning">Confirm Suspend</button>
                     </div>
                 </form>
             </div>
@@ -234,16 +207,33 @@
 
 @push('scripts')
 <script>
-    // Bootstrap's tab JS toggles .show/.active on .tab-pane already; this just
-    // mirrors the same active state onto our .ag-tab pills since they're <a>
-    // elements (Bootstrap's tab plugin manages .nav-link internally, but we
-    // dropped the .nav/.nav-link classes in favor of .ag-tab for the Nova look).
-    document.querySelectorAll('#agPage .ag-tab').forEach(function (tab) {
+(function () {
+    var tabs = document.querySelectorAll('#agPage .tbp-agent-tab[data-bs-toggle="tab"]');
+    tabs.forEach(function (tab) {
         tab.addEventListener('shown.bs.tab', function (e) {
-            document.querySelectorAll('#agPage .ag-tab').forEach(function (t) { t.classList.remove('active'); });
-            e.target.classList.add('active');
+            tabs.forEach(function (t) { t.classList.remove('is-active'); });
+            e.target.classList.add('is-active');
         });
     });
+    function openTab(name) {
+        var tab = document.querySelector('#agPage .tbp-agent-tab[href="#' + name + '"]');
+        if (tab && window.bootstrap) bootstrap.Tab.getOrCreateInstance(tab).show();
+    }
+    document.querySelectorAll('#agPage [data-open-tab]').forEach(function (el) {
+        el.addEventListener('click', function (e) { e.preventDefault(); openTab(el.dataset.openTab); });
+    });
+    // Wallet lives on its own page; older #wallet links go there.
+    if (location.hash === '#wallet') location.replace(@json(route('admin.agents.wallet', $agent)));
+    else if (location.hash) openTab(location.hash.slice(1));
+
+    document.querySelectorAll('#agPage [data-copy]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            if (navigator.clipboard) navigator.clipboard.writeText(btn.dataset.copy);
+            btn.innerHTML = '<i class="bi bi-check2"></i>';
+            setTimeout(function () { btn.innerHTML = '<i class="bi bi-copy"></i>'; }, 1200);
+        });
+    });
+})();
 </script>
 @endpush
 @endsection

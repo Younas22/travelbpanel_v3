@@ -3630,3 +3630,579 @@ body.design-nova .sb-row .sb-ico { flex: 0 0 18px; width: 18px; min-width: 0; ma
 }
 /* bi-person-badge etc. match the generic [class*="-badge"] status-badge rule — not for sidebar icons. */
 .sidebar .sb-row .sb-ico, .sidebar .sb-kid i { padding: 0; border-radius: 0; background: none; gap: 0; }
+
+/* =====================================================================
+   Agents Management (admin-nova/agents/index) — "tbp-agents-*"
+   ===================================================================== */
+.tbp-agents-page { --tbp-blue: #2563EB; --tbp-text: #111827; --tbp-muted: #64748B; --tbp-border: #E5E7EB; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--tbp-text); display: flex; flex-direction: column; gap: 18px; }
+.tbp-agents-page *, .tbp-agents-page *::before, .tbp-agents-page *::after { box-sizing: border-box; }
+
+.tbp-agents-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.tbp-agents-title { font-size: 1.5rem; font-weight: 800; margin: 0; color: var(--tbp-text); }
+.tbp-agents-subtitle { font-size: 0.875rem; color: var(--tbp-muted); margin: 4px 0 0; }
+.tbp-agents-add-button { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 10px; background: var(--tbp-blue); color: #fff; font-size: 0.875rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.tbp-agents-add-button:hover { background: #1D4ED8; color: #fff; }
+
+/* KPI */
+.tbp-agents-stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.tbp-agents-stat-card { display: flex; align-items: flex-start; gap: 14px; background: #fff; border: 1px solid var(--tbp-border); border-radius: 14px; padding: 18px; box-shadow: 0 1px 2px rgba(16,24,40,.04); min-width: 0; position: relative; }
+.tbp-agents-stat-icon { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+.tbp-agents-stat-body { min-width: 0; flex: 1; }
+.tbp-agents-stat-label { font-size: 0.8125rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tbp-agents-stat-value { font-size: 1.625rem; font-weight: 800; line-height: 1.2; margin-top: 4px; }
+.tbp-agents-stat-change { font-size: 0.75rem; font-weight: 700; margin-top: 4px; display: flex; align-items: center; gap: 3px; }
+.tbp-agents-stat-change.is-up { color: #16A34A; }
+.tbp-agents-stat-change.is-down { color: #EF4444; }
+.tbp-agents-stat-change.is-flat { color: var(--tbp-muted); }
+.tbp-agents-sparkline { width: 120px; height: 44px; flex-shrink: 0; align-self: center; }
+.tbp-agents-sparkline-line { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.tbp-agents-sparkline-area { stroke: none; opacity: .12; }
+.tbp-agents-tone-blue .tbp-agents-stat-icon { background: #EFF6FF; color: #2563EB; }
+.tbp-agents-tone-blue .tbp-agents-sparkline-line { stroke: #2563EB; } .tbp-agents-tone-blue .tbp-agents-sparkline-area { fill: #2563EB; }
+.tbp-agents-tone-green .tbp-agents-stat-icon { background: #ECFDF5; color: #16A34A; }
+.tbp-agents-tone-green .tbp-agents-sparkline-line { stroke: #16A34A; } .tbp-agents-tone-green .tbp-agents-sparkline-area { fill: #16A34A; }
+.tbp-agents-tone-amber .tbp-agents-stat-icon { background: #FFFBEB; color: #F59E0B; }
+.tbp-agents-tone-amber .tbp-agents-sparkline-line { stroke: #F59E0B; } .tbp-agents-tone-amber .tbp-agents-sparkline-area { fill: #F59E0B; }
+.tbp-agents-tone-red .tbp-agents-stat-icon { background: #FEF2F2; color: #EF4444; }
+.tbp-agents-tone-red .tbp-agents-sparkline-line { stroke: #F87171; } .tbp-agents-tone-red .tbp-agents-sparkline-area { fill: #F87171; }
+
+/* filters */
+.tbp-agents-filters { display: grid; grid-template-columns: minmax(220px, 3fr) minmax(140px, 1fr) minmax(150px, 1.1fr) minmax(160px, 1.3fr) auto; align-items: end; gap: 16px; background: #fff; border: 1px solid var(--tbp-border); border-radius: 14px; padding: 18px 20px; box-shadow: 0 1px 2px rgba(16,24,40,.04); }
+.tbp-agents-field { display: flex; flex-direction: column; gap: 8px; margin: 0; min-width: 0; }
+.tbp-agents-field > span:first-child { font-size: 0.875rem; font-weight: 700; color: var(--tbp-text); }
+.tbp-agents-field select, .tbp-agents-search, .tbp-agents-date { height: 46px; border: 1px solid var(--tbp-border); border-radius: 10px; background: #fff; color: var(--tbp-text); font-size: 0.875rem; width: 100%; }
+.tbp-agents-field select { padding: 0 12px; cursor: pointer; }
+.tbp-agents-search, .tbp-agents-date { display: flex; align-items: center; gap: 10px; padding: 0 14px; }
+.tbp-agents-search i, .tbp-agents-date i { color: var(--tbp-muted); }
+.tbp-agents-search input, .tbp-agents-date input { flex: 1; min-width: 0; border: none; outline: none; background: transparent; font-size: 0.875rem; color: var(--tbp-text); height: 100%; }
+.tbp-agents-field select:focus, .tbp-agents-search:focus-within, .tbp-agents-date:focus-within { border-color: var(--tbp-blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); outline: none; }
+.tbp-agents-filter-actions { display: flex; gap: 10px; }
+.tbp-agents-filter-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 46px; padding: 0 26px; border: none; border-radius: 10px; background: var(--tbp-blue); color: #fff; font-size: 0.875rem; font-weight: 600; cursor: pointer; }
+.tbp-agents-filter-btn:hover { background: #1D4ED8; }
+.tbp-agents-reset-btn { width: 46px; height: 46px; border: 1px solid var(--tbp-border); border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; color: var(--tbp-text); text-decoration: none; font-size: 1.0625rem; }
+.tbp-agents-reset-btn:hover { border-color: var(--tbp-blue); color: var(--tbp-blue); }
+
+/* table card */
+.tbp-agents-table-container { background: #fff; border: 1px solid var(--tbp-border); border-radius: 14px; padding: 16px 18px; box-shadow: 0 1px 2px rgba(16,24,40,.04); min-width: 0; }
+.tbp-agents-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.tbp-agents-status-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.tbp-agents-status-tabs a { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border: 1px solid var(--tbp-border); border-radius: 10px; background: #fff; color: var(--tbp-text); font-size: 0.875rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.tbp-agents-status-tabs a:hover { border-color: var(--tbp-blue); }
+.tbp-agents-status-tabs a.is-active { color: var(--tbp-blue); background: #EFF6FF; border-color: #BFDBFE; box-shadow: inset 0 -2px 0 var(--tbp-blue); }
+.tbp-agents-tab-count { min-width: 22px; height: 22px; padding: 0 7px; border-radius: 999px; background: #F1F5F9; color: var(--tbp-text); font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+.tbp-agents-status-tabs a.is-active .tbp-agents-tab-count { background: var(--tbp-blue); color: #fff; }
+.tbp-agents-dot { width: 9px; height: 9px; border-radius: 50%; }
+.tbp-agents-dot-green { background: #16A34A; } .tbp-agents-dot-amber { background: #F59E0B; } .tbp-agents-dot-red { background: #EF4444; }
+.tbp-agents-toolbar-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.tbp-agents-export-btn { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px; border: 1px solid var(--tbp-border); border-radius: 10px; color: var(--tbp-text); font-size: 0.875rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.tbp-agents-export-btn:hover { border-color: var(--tbp-blue); color: var(--tbp-blue); }
+.tbp-agents-sort { display: flex; align-items: center; gap: 10px; font-size: 0.8125rem; color: var(--tbp-muted); margin: 0; white-space: nowrap; }
+.tbp-agents-sort select { height: 44px; padding: 0 12px; border: 1px solid var(--tbp-border); border-radius: 10px; background: #fff; color: var(--tbp-text); font-size: 0.8125rem; font-weight: 500; cursor: pointer; }
+
+.tbp-agents-table-scroll { overflow-x: auto; }
+.tbp-agents-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; font-size: 0.8125rem; }
+.tbp-agents-table th { text-align: left; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; color: var(--tbp-text); padding: 6px 10px 2px; white-space: nowrap; }
+.tbp-agents-table td { background: #fff; padding: 12px 10px; border-top: 1px solid var(--tbp-border); border-bottom: 1px solid var(--tbp-border); vertical-align: middle; }
+.tbp-agents-table td:first-child { border-left: 1px solid var(--tbp-border); border-radius: 12px 0 0 12px; }
+.tbp-agents-table td:last-child { border-right: 1px solid var(--tbp-border); border-radius: 0 12px 12px 0; }
+.tbp-agents-row:hover td { background: #F8FAFC; }
+.tbp-agents-row.is-selected td { background: #EFF6FF; border-color: #BFDBFE; }
+.tbp-agents-check-col { width: 40px; text-align: center; }
+.tbp-agents-check-col input { width: 18px; height: 18px; accent-color: var(--tbp-blue); cursor: pointer; }
+.tbp-agents-agent { display: flex; align-items: center; gap: 14px; min-width: 220px; }
+.tbp-agents-avatar { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; flex-shrink: 0; }
+.tbp-agents-agent-text { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
+.tbp-agents-agent-text strong { font-size: 0.875rem; font-weight: 700; white-space: nowrap; }
+.tbp-agents-agent-text small { font-size: 0.75rem; color: var(--tbp-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+.tbp-agents-code { align-self: flex-start; margin-top: 2px; font-size: 0.6875rem; font-weight: 700; background: #F1F5F9; border-radius: 999px; padding: 1px 8px; }
+.tbp-agents-company { display: inline-flex; align-items: center; gap: 10px; white-space: nowrap; }
+.tbp-agents-company-icon { width: 30px; height: 30px; border-radius: 8px; background: #F8FAFC; border: 1px solid var(--tbp-border); display: inline-flex; align-items: center; justify-content: center; color: var(--tbp-muted); flex-shrink: 0; }
+.tbp-agents-status-badge { display: inline-flex; padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+.tbp-agents-status-badge.is-active { background: #ECFDF5; color: #16A34A; }
+.tbp-agents-status-badge.is-pending { background: #FFFBEB; color: #D97706; }
+.tbp-agents-status-badge.is-suspended { background: #FEF2F2; color: #EF4444; }
+.tbp-agents-strong { font-weight: 700; white-space: nowrap; }
+.tbp-agents-joined { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.tbp-agents-joined i { color: var(--tbp-muted); }
+.tbp-agents-actions { display: flex; align-items: center; gap: 6px; }
+.tbp-agents-actions form { margin: 0; }
+.tbp-agents-actions > a, .tbp-agents-actions > button, .tbp-agents-actions form > button { height: 36px; min-width: 36px; padding: 0; border: 1px solid var(--tbp-border); border-radius: 9px; background: #fff; color: var(--tbp-text); display: inline-flex; align-items: center; justify-content: center; text-decoration: none; cursor: pointer; font-size: 0.875rem; }
+.tbp-agents-actions > a:hover, .tbp-agents-actions > button:hover { border-color: var(--tbp-blue); color: var(--tbp-blue); }
+.tbp-agents-actions .tbp-agents-label-btn { padding: 0 14px; gap: 6px; font-size: 0.8125rem; font-weight: 600; white-space: nowrap; min-width: 104px; }
+.tbp-agents-actions .tbp-agents-label-btn.is-approve { color: #16A34A; border-color: #BBF7D0; }
+.tbp-agents-actions .tbp-agents-label-btn.is-approve:hover { background: #ECFDF5; }
+.tbp-agents-actions .tbp-agents-label-btn.is-suspend { color: #D97706; border-color: #FDE68A; }
+.tbp-agents-actions .tbp-agents-label-btn.is-suspend:hover { background: #FFFBEB; border-color: #F59E0B; color: #D97706; }
+.tbp-agents-actions .is-danger { color: #EF4444; border-color: #FECACA; }
+.tbp-agents-actions .is-danger:hover { background: #FEF2F2; border-color: #EF4444; color: #EF4444; }
+.tbp-agents-empty { text-align: center; padding: 40px 12px !important; border-radius: 12px; }
+.tbp-agents-empty i { display: block; font-size: 2rem; color: #CBD5E1; }
+.tbp-agents-empty strong { display: block; margin-top: 6px; }
+.tbp-agents-empty span { color: var(--tbp-muted); font-size: 0.75rem; }
+
+.tbp-agents-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 10px; font-size: 0.8125rem; color: var(--tbp-text); }
+.tbp-agents-pages { display: flex; gap: 8px; }
+.tbp-agents-pages a { min-width: 38px; height: 38px; padding: 0 8px; border: 1px solid var(--tbp-border); border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; color: var(--tbp-text); text-decoration: none; font-weight: 600; }
+.tbp-agents-pages a:hover { border-color: var(--tbp-blue); color: var(--tbp-blue); }
+.tbp-agents-pages a.is-active { background: var(--tbp-blue); border-color: var(--tbp-blue); color: #fff; }
+.tbp-agents-pages a.is-disabled { color: #CBD5E1; pointer-events: none; }
+
+.tbp-agents-modal { border-radius: 16px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.tbp-agents-modal .modal-title { font-weight: 700; }
+.tbp-agents-modal .modal-title.is-danger { color: #EF4444; }
+.tbp-agents-modal .modal-body { font-size: 0.875rem; }
+.tbp-agents-modal-warn { color: #EF4444; font-size: 0.8125rem; }
+.tbp-agents-modal-btn { height: 40px; padding: 0 18px; border-radius: 10px; border: 1px solid #E5E7EB; background: #fff; color: #111827; font-size: 0.8125rem; font-weight: 600; cursor: pointer; }
+.tbp-agents-modal-btn.is-danger { background: #EF4444; border-color: #EF4444; color: #fff; }
+.tbp-agents-modal-btn.is-warning { background: #F59E0B; border-color: #F59E0B; color: #fff; }
+
+@media (max-width: 1399px) {
+    .tbp-agents-sparkline { width: 80px; }
+    .tbp-agents-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .tbp-agents-field-search { grid-column: 1 / -1; }
+    .tbp-agents-filter-actions { grid-column: 1 / -1; justify-content: flex-end; }
+}
+@media (max-width: 1199px) { .tbp-agents-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 767px) {
+    .tbp-agents-stats-grid, .tbp-agents-filters { grid-template-columns: 1fr; }
+    .tbp-agents-toolbar-right { width: 100%; justify-content: space-between; }
+}
+/* agents: laptop-width fit */
+.tbp-agents-stat-label { white-space: normal; overflow: visible; }
+@media (max-width: 1720px) {
+    .tbp-agents-sparkline { width: 76px; height: 36px; }
+    .tbp-agents-stat-card { padding: 16px; gap: 12px; }
+    .tbp-agents-stat-icon { width: 42px; height: 42px; font-size: 1.0625rem; }
+    .tbp-agents-table td, .tbp-agents-table th { padding-left: 7px; padding-right: 7px; }
+    .tbp-agents-agent { min-width: 0; gap: 10px; }
+    .tbp-agents-avatar { width: 40px; height: 40px; font-size: 0.875rem; }
+    .tbp-agents-agent-text small { max-width: 170px; }
+    .tbp-agents-company { white-space: normal; }
+    .tbp-agents-company-icon { width: 26px; height: 26px; }
+    .tbp-agents-actions { gap: 4px; }
+    .tbp-agents-actions > a, .tbp-agents-actions > button, .tbp-agents-actions form > button { height: 32px; min-width: 32px; font-size: 0.8125rem; }
+    .tbp-agents-actions .tbp-agents-label-btn { min-width: 0; padding: 0 10px; font-size: 0.75rem; }
+    .tbp-agents-joined i { display: none; }
+}
+@media (max-width: 1439px) {
+    .tbp-agents-agent-text small { max-width: 130px; }
+    .tbp-agents-company-icon { display: none; }
+    .tbp-agents-actions .tbp-agents-label-btn { padding: 0 8px; }
+}
+@media (max-width: 1365px) { .tbp-agents-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 767px) { .tbp-agents-stats-grid { grid-template-columns: 1fr; } }
+.tbp-agents-table thead th, .tbp-agents-table thead tr { background: transparent; border: none; box-shadow: none; }
+
+/* =====================================================================
+   Agent Wallet (admin-nova/agents/wallet) — "tbp-agent-wallet-*"
+   ===================================================================== */
+.tbp-agent-wallet-page { --aw-blue: #2563EB; --aw-text: #111827; --aw-muted: #64748B; --aw-border: #E5E7EB; --aw-green: #16A34A; --aw-red: #EF4444; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--aw-text); display: flex; flex-direction: column; gap: 18px; }
+.tbp-agent-wallet-page *, .tbp-agent-wallet-page *::before, .tbp-agent-wallet-page *::after { box-sizing: border-box; }
+.tbp-agent-wallet-page h1, .tbp-agent-wallet-page h2, .tbp-agent-wallet-page h3, .tbp-agent-wallet-page p, .tbp-agent-wallet-page ul { margin: 0; padding: 0; list-style: none; }
+
+/* header */
+.tbp-agent-wallet-header { display: flex; flex-direction: column; gap: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--aw-border); }
+.tbp-agent-wallet-header-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.tbp-agent-wallet-profile { display: flex; align-items: center; gap: 18px; min-width: 0; }
+.tbp-agent-wallet-avatar { width: 72px; height: 72px; border-radius: 50%; background: #EDE9FE; color: #6D28D9; display: flex; align-items: center; justify-content: center; font-size: 1.375rem; font-weight: 800; flex-shrink: 0; box-shadow: 0 6px 16px -8px rgba(109,40,217,.45); }
+.tbp-agent-wallet-name { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.tbp-agent-wallet-name h1 { font-size: 1.5rem; font-weight: 800; }
+.tbp-agent-wallet-meta { font-size: 0.9375rem; color: #334155; margin-top: 4px; }
+.tbp-agent-wallet-meta span { margin: 0 6px; color: var(--aw-muted); }
+.tbp-agent-wallet-status { display: inline-flex; padding: 3px 12px; border-radius: 999px; font-size: 0.8125rem; font-weight: 600; background: #F1F5F9; color: #334155; }
+.tbp-agent-wallet-status.is-active { background: #ECFDF5; color: var(--aw-green); }
+.tbp-agent-wallet-status.is-pending { background: #FFFBEB; color: #D97706; }
+.tbp-agent-wallet-status.is-suspended { background: #FEF2F2; color: var(--aw-red); }
+.tbp-agent-wallet-header-actions { display: flex; gap: 10px; }
+.tbp-agent-wallet-btn { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border: 1px solid var(--aw-border); border-radius: 10px; background: #fff; color: var(--aw-text); font-size: 0.875rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.tbp-agent-wallet-btn:hover { border-color: var(--aw-blue); color: var(--aw-blue); }
+.tbp-agent-wallet-btn.is-primary { background: var(--aw-blue); border-color: var(--aw-blue); color: #fff; }
+.tbp-agent-wallet-btn.is-primary:hover { background: #1D4ED8; color: #fff; }
+.tbp-agent-wallet-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.tbp-agent-wallet-tab { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-width: 150px; height: 44px; padding: 0 20px; border: 1px solid var(--aw-border); border-radius: 10px; background: #fff; color: var(--aw-text); font-size: 0.875rem; font-weight: 600; text-decoration: none; }
+.tbp-agent-wallet-tab:hover { border-color: var(--aw-blue); color: var(--aw-blue); }
+.tbp-agent-wallet-tab.is-active { background: var(--aw-blue); border-color: var(--aw-blue); color: #fff; }
+
+/* summary */
+.tbp-agent-wallet-summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.tbp-agent-wallet-summary-card { display: flex; align-items: center; gap: 18px; padding: 22px 24px; border-radius: 14px; border: 1px solid var(--aw-border); text-decoration: none; color: var(--aw-text); min-width: 0; }
+.tbp-agent-wallet-summary-card.is-blue { background: #EFF6FF; border-color: #DBEAFE; }
+.tbp-agent-wallet-summary-card.is-green { background: #F0FDF4; border-color: #DCFCE7; }
+.tbp-agent-wallet-summary-card.is-red { background: #FEF2F2; border-color: #FEE2E2; }
+a.tbp-agent-wallet-summary-card:hover { border-color: var(--aw-blue); color: var(--aw-text); }
+.tbp-agent-wallet-summary-icon { width: 52px; height: 52px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.375rem; flex-shrink: 0; }
+.is-blue > .tbp-agent-wallet-summary-icon { background: var(--aw-blue); }
+.is-green > .tbp-agent-wallet-summary-icon { background: var(--aw-green); }
+.is-red > .tbp-agent-wallet-summary-icon { background: var(--aw-red); }
+.tbp-agent-wallet-summary-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.tbp-agent-wallet-summary-text span { font-size: 0.875rem; color: #334155; }
+.tbp-agent-wallet-summary-text strong { font-size: 1.5rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tbp-agent-wallet-summary-end { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.is-blue > .tbp-agent-wallet-summary-end { background: #DBEAFE; color: var(--aw-blue); }
+.is-green > .tbp-agent-wallet-summary-end { background: #DCFCE7; color: var(--aw-green); }
+.is-red > .tbp-agent-wallet-summary-end { background: #FEE2E2; color: var(--aw-red); }
+
+/* main grid */
+.tbp-agent-wallet-main-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(280px, 0.72fr); gap: 16px; align-items: start; }
+.tbp-agent-wallet-credit-card, .tbp-agent-wallet-debit-card { background: #fff; border: 1px solid var(--aw-border); border-radius: 16px; padding: 22px 24px; box-shadow: 0 1px 2px rgba(16,24,40,.04); min-width: 0; }
+.tbp-agent-wallet-credit-card { background: linear-gradient(160deg, #F0FDF4 0, #fff 120px); }
+.tbp-agent-wallet-debit-card { background: linear-gradient(160deg, #FEF2F2 0, #fff 120px); }
+.tbp-agent-wallet-card-head { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; }
+.tbp-agent-wallet-card-head h2 { font-size: 1.125rem; font-weight: 800; color: var(--aw-text); }
+.tbp-agent-wallet-card-head h2.is-red { color: #DC2626; }
+.tbp-agent-wallet-card-head p { font-size: 0.8125rem; color: var(--aw-muted); margin-top: 4px; line-height: 1.5; }
+.tbp-agent-wallet-round-icon { width: 46px; height: 46px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+.tbp-agent-wallet-round-icon.is-green { background: var(--aw-green); box-shadow: 0 6px 14px -6px rgba(22,163,74,.6); }
+.tbp-agent-wallet-round-icon.is-red { background: var(--aw-red); box-shadow: 0 6px 14px -6px rgba(239,68,68,.6); }
+.tbp-agent-wallet-form { display: flex; flex-direction: column; gap: 16px; }
+.tbp-agent-wallet-row { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 14px; }
+.tbp-agent-wallet-field { display: flex; flex-direction: column; gap: 8px; margin: 0; min-width: 0; }
+.tbp-agent-wallet-field > span:first-child { font-size: 0.875rem; font-weight: 700; }
+.tbp-agent-wallet-field em { color: var(--aw-red); font-style: normal; }
+.tbp-agent-wallet-field select, .tbp-agent-wallet-field textarea, .tbp-agent-wallet-amount, .tbp-agent-wallet-select-icon { width: 100%; border: 1px solid var(--aw-border); border-radius: 10px; background: #fff; color: var(--aw-text); font-size: 0.875rem; }
+.tbp-agent-wallet-field select { height: 46px; padding: 0 12px; cursor: pointer; }
+.tbp-agent-wallet-field textarea { padding: 12px 14px; resize: vertical; min-height: 84px; font-family: inherit; }
+.tbp-agent-wallet-amount { display: flex; align-items: stretch; height: 46px; overflow: hidden; }
+.tbp-agent-wallet-amount b { display: flex; align-items: center; padding: 0 16px; background: #F8FAFC; border-right: 1px solid var(--aw-border); font-weight: 600; font-size: 0.875rem; }
+.tbp-agent-wallet-amount input { flex: 1; min-width: 0; border: none; outline: none; padding: 0 14px; font-size: 0.875rem; background: transparent; color: var(--aw-text); }
+.tbp-agent-wallet-select-icon { display: flex; align-items: center; height: 46px; padding-left: 14px; }
+.tbp-agent-wallet-select-icon i { color: var(--aw-muted); }
+.tbp-agent-wallet-select-icon select { border: none; height: 100%; flex: 1; min-width: 0; background: transparent; padding: 0 12px; }
+.tbp-agent-wallet-field select:focus, .tbp-agent-wallet-field textarea:focus, .tbp-agent-wallet-amount:focus-within, .tbp-agent-wallet-select-icon:focus-within { border-color: var(--aw-blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); outline: none; }
+.tbp-agent-wallet-select-icon select:focus { box-shadow: none; }
+.tbp-agent-wallet-counter { align-self: flex-end; font-size: 0.75rem; color: var(--aw-muted); }
+.tbp-agent-wallet-hint { font-size: 0.75rem; color: var(--aw-muted); }
+.tbp-agent-wallet-submit { display: flex; align-items: center; justify-content: center; gap: 10px; height: 50px; border: none; border-radius: 999px; color: #fff; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 4px; }
+.tbp-agent-wallet-submit.is-blue { background: var(--aw-blue); box-shadow: 0 8px 18px -10px rgba(37,99,235,.8); }
+.tbp-agent-wallet-submit.is-blue:hover { background: #1D4ED8; }
+.tbp-agent-wallet-submit.is-red { background: var(--aw-red); box-shadow: 0 8px 18px -10px rgba(239,68,68,.8); }
+.tbp-agent-wallet-submit.is-red:hover { background: #DC2626; }
+.tbp-agent-wallet-submit:disabled { opacity: .55; cursor: not-allowed; box-shadow: none; }
+.tbp-agent-wallet-spin { animation: tbp-agent-wallet-spin 1s linear infinite; display: inline-block; }
+@keyframes tbp-agent-wallet-spin { to { transform: rotate(360deg); } }
+
+/* sidebar */
+.tbp-agent-wallet-sidebar { background: #fff; border: 1px solid var(--aw-border); border-radius: 16px; overflow: hidden; box-shadow: 0 1px 2px rgba(16,24,40,.04); }
+.tbp-agent-wallet-hero { background: var(--aw-blue); color: #fff; padding: 20px; border-radius: 16px; }
+.tbp-agent-wallet-hero-top { display: flex; justify-content: space-between; gap: 10px; }
+.tbp-agent-wallet-hero-top strong { display: block; font-size: 1.125rem; font-weight: 800; }
+.tbp-agent-wallet-hero-top span { font-size: 0.8125rem; opacity: .85; }
+.tbp-agent-wallet-hero-icon { width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; font-size: 1.375rem; opacity: 1 !important; }
+.tbp-agent-wallet-hero-balance { font-size: 1.875rem; font-weight: 800; margin: 10px 0 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tbp-agent-wallet-hero-actions { display: grid; grid-template-columns: auto auto 1fr; gap: 8px; }
+.tbp-agent-wallet-hero-actions > * { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 36px; padding: 0 10px; border: none; border-radius: 8px; background: #fff; color: var(--aw-blue); font-size: 0.75rem; font-weight: 700; text-decoration: none; cursor: pointer; white-space: nowrap; }
+.tbp-agent-wallet-hero-actions > .is-red { color: var(--aw-red); }
+.tbp-agent-wallet-hero-actions > *:hover { background: #EFF6FF; }
+.tbp-agent-wallet-info { padding: 8px 20px 10px !important; }
+.tbp-agent-wallet-info li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px 0; border-bottom: 1px solid #F1F5F9; font-size: 0.8125rem; }
+.tbp-agent-wallet-info li:last-child { border-bottom: none; }
+.tbp-agent-wallet-info li > span { display: flex; align-items: center; gap: 12px; color: #334155; }
+.tbp-agent-wallet-info li > span i { width: 30px; height: 30px; border-radius: 50%; background: #EFF6FF; color: var(--aw-blue); display: inline-flex; align-items: center; justify-content: center; font-size: 0.875rem; }
+.tbp-agent-wallet-info strong { font-weight: 600; text-align: right; }
+.tbp-agent-wallet-zero { display: flex; align-items: center; justify-content: center; gap: 6px; width: calc(100% - 40px); margin: 0 20px 18px; height: 38px; border: 1px solid #FECACA; border-radius: 10px; background: #fff; color: var(--aw-red); font-size: 0.8125rem; font-weight: 600; cursor: pointer; }
+.tbp-agent-wallet-zero:hover { background: #FEF2F2; }
+
+/* tables */
+.tbp-agent-wallet-tables { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.82fr); gap: 16px; align-items: start; }
+.tbp-agent-wallet-topup-section, .tbp-agent-wallet-transactions-section { background: #fff; border: 1px solid var(--aw-border); border-radius: 16px; padding: 18px 20px; box-shadow: 0 1px 2px rgba(16,24,40,.04); min-width: 0; }
+.tbp-agent-wallet-table-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.tbp-agent-wallet-table-title { display: flex; gap: 12px; align-items: flex-start; }
+.tbp-agent-wallet-table-title > i { font-size: 1.375rem; color: var(--aw-text); line-height: 1; margin-top: 2px; }
+.tbp-agent-wallet-table-title h3 { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.tbp-agent-wallet-table-title p { font-size: 0.8125rem; color: var(--aw-muted); margin-top: 2px; }
+.tbp-agent-wallet-pill { font-size: 0.6875rem; font-weight: 600; background: #FFFBEB; color: #D97706; border-radius: 999px; padding: 2px 8px; }
+.tbp-agent-wallet-txn-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0; }
+.tbp-agent-wallet-filter { height: 40px; padding: 0 12px; border: 1px solid var(--aw-border); border-radius: 10px; background: #fff; color: var(--aw-text); font-size: 0.8125rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.tbp-agent-wallet-range { padding: 12px; min-width: 220px; border-radius: 12px; border: 1px solid var(--aw-border); }
+.tbp-agent-wallet-range label { display: flex; flex-direction: column; gap: 4px; font-size: 0.75rem; font-weight: 600; color: var(--aw-muted); margin-bottom: 8px; }
+.tbp-agent-wallet-range input { height: 36px; border: 1px solid var(--aw-border); border-radius: 8px; padding: 0 8px; font-size: 0.8125rem; color: var(--aw-text); }
+.tbp-agent-wallet-range button { width: 100%; height: 36px; border: none; border-radius: 8px; background: var(--aw-blue); color: #fff; font-weight: 600; font-size: 0.8125rem; }
+.tbp-agent-wallet-range a { display: block; text-align: center; margin-top: 6px; font-size: 0.75rem; color: var(--aw-muted); }
+.tbp-agent-wallet-link { color: var(--aw-blue); font-size: 0.8125rem; font-weight: 600; text-decoration: none; }
+.tbp-agent-wallet-table-scroll { overflow-x: auto; }
+.tbp-agent-wallet-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+.tbp-agent-wallet-table thead th { background: #F8FAFC; text-align: left; font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; color: var(--aw-text); padding: 10px 12px; border-bottom: 1px solid var(--aw-border); white-space: nowrap; }
+.tbp-agent-wallet-table td { padding: 12px; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+.tbp-agent-wallet-nowrap { white-space: nowrap; }
+.tbp-agent-wallet-muted { color: var(--aw-muted); }
+.tbp-agent-wallet-strong { font-weight: 700; white-space: nowrap; }
+.tbp-agent-wallet-strong.is-credit { color: var(--aw-green); }
+.tbp-agent-wallet-strong.is-debit { color: var(--aw-red); }
+.tbp-agent-wallet-badge { display: inline-flex; padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; background: #F1F5F9; color: #334155; }
+.tbp-agent-wallet-badge.is-pending { background: #FFFBEB; color: #D97706; }
+.tbp-agent-wallet-badge.is-approved, .tbp-agent-wallet-badge.is-credit { background: #ECFDF5; color: var(--aw-green); }
+.tbp-agent-wallet-badge.is-rejected, .tbp-agent-wallet-badge.is-debit { background: #FEF2F2; color: var(--aw-red); }
+.tbp-agent-wallet-row-actions { display: flex; gap: 6px; }
+.tbp-agent-wallet-row-actions form { margin: 0; }
+.tbp-agent-wallet-row-actions button { height: 30px; padding: 0 12px; border-radius: 8px; background: #fff; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+.tbp-agent-wallet-row-actions .is-green { color: var(--aw-green); border: 1px solid #BBF7D0; }
+.tbp-agent-wallet-row-actions .is-red { color: var(--aw-red); border: 1px solid #FECACA; }
+.tbp-agent-wallet-empty-state { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 30px 12px; text-align: center; }
+.tbp-agent-wallet-empty-state i { font-size: 2.25rem; color: #94A3B8; }
+.tbp-agent-wallet-empty-state strong { font-size: 0.875rem; margin-top: 6px; }
+.tbp-agent-wallet-empty-state span { font-size: 0.75rem; color: var(--aw-muted); }
+
+/* responsive */
+@media (max-width: 1499px) {
+    .tbp-agent-wallet-main-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tbp-agent-wallet-sidebar { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
+    .tbp-agent-wallet-zero { grid-column: 1 / -1; }
+    .tbp-agent-wallet-tables { grid-template-columns: 1fr; }
+}
+@media (max-width: 1199px) { .tbp-agent-wallet-summary-text strong { font-size: 1.25rem; } }
+@media (max-width: 991px) {
+    .tbp-agent-wallet-summary-grid, .tbp-agent-wallet-main-grid { grid-template-columns: 1fr; }
+    .tbp-agent-wallet-sidebar { display: block; }
+}
+@media (max-width: 575px) {
+    .tbp-agent-wallet-tab { min-width: 0; flex: 1 1 calc(50% - 8px); }
+    .tbp-agent-wallet-row { grid-template-columns: 1fr; }
+    .tbp-agent-wallet-avatar { width: 56px; height: 56px; font-size: 1.125rem; }
+}
+.tbp-agent-wallet-summary-text strong { font-size: clamp(1.125rem, 1.35vw, 1.5rem); }
+.tbp-agent-wallet-summary-card { padding: 20px; gap: 14px; }
+
+/* =====================================================================
+   Agent Overview + Permissions (admin-nova/agents/show, permissions) — "tbp-agent-*"
+   ===================================================================== */
+.tbp-agent-detail-page { --ad-blue: #2563EB; --ad-text: #111827; --ad-muted: #64748B; --ad-border: #E5E7EB; --ad-green: #16A34A; --ad-amber: #F59E0B; --ad-red: #EF4444; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--ad-text); display: flex; flex-direction: column; gap: 18px; }
+.tbp-agent-detail-page *, .tbp-agent-detail-page *::before, .tbp-agent-detail-page *::after { box-sizing: border-box; }
+.tbp-agent-detail-page h1, .tbp-agent-detail-page h2, .tbp-agent-detail-page h3, .tbp-agent-detail-page p, .tbp-agent-detail-page ul, .tbp-agent-detail-page dl, .tbp-agent-detail-page dd { margin: 0; padding: 0; list-style: none; }
+.tbp-agent-detail-page .bi { color: var(--ad-text); line-height: 1; }
+.tbp-agent-detail-page .tab-content > .tab-pane > * + * { margin-top: 18px; }
+
+/* header + tabs */
+.tbp-agent-profile-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.tbp-agent-profile-main { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.tbp-agent-profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: #EEF2FF; color: var(--ad-text); display: inline-flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 700; flex-shrink: 0; }
+.tbp-agent-profile-text { min-width: 0; }
+.tbp-agent-profile-name { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.tbp-agent-profile-name h1 { font-size: 1.375rem; font-weight: 700; color: var(--ad-text); }
+.tbp-agent-profile-text p { margin-top: 4px; font-size: 0.875rem; color: var(--ad-muted); overflow-wrap: anywhere; }
+.tbp-agent-profile-actions { display: flex; gap: 10px; }
+.tbp-agent-navigation-tabs { display: flex; gap: 8px; flex-wrap: nowrap; overflow: visible; }
+.tbp-agent-tab { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-width: 118px; height: 44px; padding: 0 20px; border: 1px solid var(--ad-border); border-radius: 10px; background: #fff; color: var(--ad-text); font-size: 0.875rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.tbp-agent-tab:hover { border-color: var(--ad-blue); color: var(--ad-text); }
+.tbp-agent-tab.is-active, .tbp-agent-tab.is-active:hover { background: var(--ad-blue); border-color: var(--ad-blue); color: #fff; }
+.tbp-agent-detail-page .tbp-agent-tab.is-active .bi { color: #fff; }
+
+/* buttons + badges */
+.tbp-agent-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 42px; padding: 0 18px; border: 1px solid var(--ad-border); border-radius: 10px; background: #fff; color: var(--ad-text); font-size: 0.875rem; font-weight: 600; text-decoration: none; cursor: pointer; white-space: nowrap; font-family: inherit; }
+.tbp-agent-btn:hover { border-color: #CBD5E1; background: #F8FAFC; color: var(--ad-text); }
+.tbp-agent-btn.is-small { height: 34px; padding: 0 14px; font-size: 0.8125rem; color: var(--ad-blue); }
+.tbp-agent-btn.is-primary { background: var(--ad-blue); border-color: var(--ad-blue); color: #fff; }
+.tbp-agent-btn.is-primary:hover { background: #1D4ED8; }
+.tbp-agent-detail-page .tbp-agent-btn.is-primary .bi, .tbp-agent-detail-page .tbp-agent-btn.is-warning .bi { color: #fff; }
+.tbp-agent-btn.is-warning { background: var(--ad-amber); border-color: var(--ad-amber); color: #fff; }
+.tbp-agent-btn.is-outline-blue { border-color: var(--ad-blue); color: var(--ad-blue); }
+.tbp-agent-btn.is-outline-red { border-color: var(--ad-red); color: var(--ad-red); }
+.tbp-agent-btn.is-outline-green { border-color: var(--ad-green); color: var(--ad-green); }
+.tbp-agent-btn:disabled { opacity: .65; cursor: progress; }
+.tbp-agent-status { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; background: #F1F5F9; color: var(--ad-muted); }
+.tbp-agent-status.is-active, .tbp-agent-status.is-completed, .tbp-agent-status.is-approved { background: #DCFCE7; color: var(--ad-green); }
+.tbp-agent-status.is-pending { background: #FEF3C7; color: #B45309; }
+.tbp-agent-status.is-suspended, .tbp-agent-status.is-rejected, .tbp-agent-status.is-failed { background: #FEE2E2; color: #DC2626; }
+
+/* cards */
+.tbp-agent-card { background: #fff; border: 1px solid var(--ad-border); border-radius: 14px; box-shadow: 0 1px 2px rgba(15, 23, 42, .04); padding: 20px; min-width: 0; }
+.tbp-agent-card h2 { display: flex; align-items: center; gap: 10px; font-size: 1.0625rem; font-weight: 700; color: var(--ad-text); }
+.tbp-agent-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.tbp-agent-icon-box { width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--ad-border); display: inline-flex; align-items: center; justify-content: center; font-size: 1.125rem; flex-shrink: 0; background: #fff; }
+.tbp-agent-summary-row, .tbp-agent-permissions-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; padding: 14px; }
+.tbp-agent-permissions-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 0; margin-top: 18px; }
+.tbp-agent-summary-card { display: flex; align-items: center; gap: 14px; padding: 18px; border: 1px solid var(--ad-border); border-radius: 12px; min-width: 0; }
+.tbp-agent-summary-card > div { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.tbp-agent-summary-card small { font-size: 0.8125rem; color: var(--ad-muted); }
+.tbp-agent-summary-card strong { font-size: clamp(1.125rem, 1.3vw, 1.375rem); font-weight: 700; color: var(--ad-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tbp-agent-summary-card em { font-style: normal; font-size: 0.75rem; color: var(--ad-muted); }
+
+/* overview */
+.tbp-agent-overview-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; align-items: start; }
+.tbp-agent-overview-main, .tbp-agent-overview-side { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.tbp-agent-info-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
+.tbp-agent-info-row { display: flex; align-items: flex-start; gap: 14px; padding: 13px 0; border-bottom: 1px solid #F1F5F9; }
+.tbp-agent-info-columns dl > .tbp-agent-info-row:last-child { border-bottom: 0; }
+.tbp-agent-info-row > .bi { font-size: 1.125rem; margin-top: 2px; width: 22px; text-align: center; }
+.tbp-agent-info-row dt { font-size: 0.875rem; font-weight: 600; color: var(--ad-text); }
+.tbp-agent-info-row dd { margin-top: 2px; font-size: 0.875rem; color: #334155; display: flex; align-items: center; gap: 6px; overflow-wrap: anywhere; }
+.tbp-agent-copy { border: 0; background: none; padding: 2px; cursor: pointer; }
+.tbp-agent-notes { margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: #F8FAFC; font-size: 0.8125rem; color: var(--ad-muted); }
+.tbp-agent-notes strong { display: block; color: var(--ad-text); margin-bottom: 4px; }
+.tbp-agent-quick-actions { display: flex; flex-direction: column; gap: 10px; }
+.tbp-agent-quick-actions h2 { margin-bottom: 4px; }
+.tbp-agent-quick-actions .tbp-agent-btn, .tbp-agent-quick-actions form { width: 100%; }
+.tbp-agent-detail-page .tbp-agent-btn.is-outline-blue .bi { color: var(--ad-blue); }
+.tbp-agent-detail-page .tbp-agent-btn.is-outline-red .bi { color: var(--ad-red); }
+.tbp-agent-detail-page .tbp-agent-btn.is-outline-green .bi { color: var(--ad-green); }
+.tbp-agent-booking-statistics ul { margin-top: 14px; }
+.tbp-agent-booking-statistics li { display: flex; justify-content: space-between; align-items: center; padding: 9px 4px; font-size: 0.875rem; color: #334155; }
+.tbp-agent-booking-statistics li span { display: inline-flex; align-items: center; gap: 12px; }
+.tbp-agent-stat-total { display: flex; justify-content: space-between; margin-top: 8px; padding: 11px 12px; border-radius: 10px; background: #F8FAFC; font-size: 0.875rem; font-weight: 600; }
+.tbp-agent-table-wrap { overflow-x: auto; }
+.tbp-agent-recent-activity table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+.tbp-agent-recent-activity th { text-align: left; padding: 10px 12px; background: #F8FAFC; color: #334155; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; border: 0; white-space: nowrap; }
+.tbp-agent-recent-activity td { padding: 12px; border-bottom: 1px solid #F1F5F9; color: var(--ad-text); white-space: nowrap; }
+.tbp-agent-recent-activity td.is-details { white-space: normal; min-width: 180px; color: #334155; }
+.tbp-agent-empty { text-align: center; color: var(--ad-muted) !important; padding: 28px 12px !important; }
+.tbp-agent-bookings-pane p { margin: 8px 0 16px; font-size: 0.875rem; color: var(--ad-muted); }
+.tbp-agent-modal { border-radius: 14px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.tbp-agent-modal .modal-footer { gap: 8px; }
+
+/* permissions */
+.tbp-agent-permissions-page { display: flex; flex-direction: column; gap: 18px; }
+.tbp-agent-permissions-header { display: flex; align-items: center; gap: 16px; }
+.tbp-agent-permissions-header > div { flex: 1; min-width: 0; }
+.tbp-agent-permissions-header h2 { font-size: 1.1875rem; }
+.tbp-agent-permissions-header p { margin-top: 4px; font-size: 0.875rem; color: var(--ad-muted); }
+.tbp-agent-permission-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+.tbp-agent-permission-column { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.tbp-agent-permission-group { padding: 18px 20px 8px; }
+.tbp-agent-permission-group header { display: flex; align-items: flex-start; gap: 14px; padding-bottom: 14px; border-bottom: 1px solid #F1F5F9; }
+.tbp-agent-permission-group header > .bi { font-size: 1.375rem; }
+.tbp-agent-permission-group h3 { font-size: 0.9375rem; font-weight: 700; color: var(--ad-text); }
+.tbp-agent-permission-group header p { margin-top: 2px; font-size: 0.8125rem; color: var(--ad-muted); }
+.tbp-agent-permission-row { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid #F1F5F9; }
+.tbp-agent-permission-row:last-child { border-bottom: 0; }
+.tbp-agent-permission-row > .bi { font-size: 1.0625rem; width: 22px; text-align: center; flex-shrink: 0; }
+.tbp-agent-permission-row label { flex: 1; min-width: 0; margin: 0; cursor: pointer; display: flex; flex-direction: column; gap: 2px; }
+.tbp-agent-permission-row label strong { font-size: 0.875rem; font-weight: 600; color: var(--ad-text); }
+.tbp-agent-permission-row label span { font-size: 0.8125rem; color: var(--ad-muted); }
+.tbp-agent-permission-toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+.tbp-agent-permission-toggle input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 1; }
+.tbp-agent-permission-toggle span { position: absolute; inset: 0; border-radius: 999px; background: #CBD5E1; transition: background .2s; }
+.tbp-agent-permission-toggle span::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); transition: transform .2s; }
+.tbp-agent-permission-toggle input:checked + span { background: var(--ad-blue); }
+.tbp-agent-permission-toggle input:checked + span::after { transform: translateX(20px); }
+.tbp-agent-permission-toggle input:focus-visible + span { outline: 2px solid #93C5FD; outline-offset: 2px; }
+
+@media (max-width: 1279px) {
+    .tbp-agent-summary-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tbp-agent-overview-grid { grid-template-columns: 1fr; }
+    .tbp-agent-overview-side { display: grid; grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 991px) { .tbp-agent-permission-groups { grid-template-columns: 1fr; } }
+@media (max-width: 767px) {
+    .tbp-agent-summary-row, .tbp-agent-permissions-summary, .tbp-agent-info-columns, .tbp-agent-overview-side { grid-template-columns: 1fr; }
+    .tbp-agent-info-columns dl:first-child > .tbp-agent-info-row:last-child { border-bottom: 1px solid #F1F5F9; }
+    .tbp-agent-permissions-header { flex-wrap: wrap; }
+    .tbp-agent-permissions-header .tbp-agent-save-permissions { width: 100%; }
+    .tbp-agent-tab { min-width: 0; flex: 1 1 0; padding: 0 8px; gap: 6px; font-size: 0.8125rem; }
+    .tbp-agent-profile-avatar { width: 52px; height: 52px; font-size: 1.0625rem; }
+}
+@media (max-width: 420px) { .tbp-agent-tab .bi { display: none; } }
+.tbp-agent-detail-page .tab-content > .tab-pane { display: none; }
+.tbp-agent-detail-page .tab-content > .tab-pane.active { display: block; }
+
+/* =====================================================================
+   Wallet Transactions + Agent create/edit forms — "tbp-wallet-*", "tbp-agent-form-*"
+   ===================================================================== */
+.tbp-wallet-transactions-page, .tbp-agent-form-page { --wt-blue: #2563EB; --wt-text: #111827; --wt-muted: #64748B; --wt-border: #E5E7EB; --wt-soft: #F8FAFC; --wt-green: #16A34A; --wt-red: #EF4444; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--wt-text); display: flex; flex-direction: column; gap: 18px; }
+.tbp-wallet-transactions-page *, .tbp-agent-form-page * { box-sizing: border-box; }
+.tbp-wallet-transactions-page h1, .tbp-wallet-transactions-page p, .tbp-agent-form-page h1, .tbp-agent-form-page h2, .tbp-agent-form-page p, .tbp-agent-form-page ul { margin: 0; padding: 0; }
+.tbp-wallet-transactions-page .bi, .tbp-agent-form-page .bi { color: var(--wt-text); line-height: 1; }
+.tbp-agent-form-page { max-width: 1040px; width: 100%; margin: 0 auto; }
+
+/* shared header + buttons + inputs */
+.tbp-wallet-transactions-header, .tbp-agent-form-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.tbp-wallet-transactions-header h1, .tbp-agent-form-header h1 { font-size: 1.375rem; font-weight: 700; }
+.tbp-wallet-transactions-header p, .tbp-agent-form-header p { margin-top: 4px; font-size: 0.875rem; color: var(--wt-muted); }
+.tbp-agent-form-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 42px; padding: 0 18px; border: 1px solid var(--wt-border); border-radius: 10px; background: #fff; color: var(--wt-text); font: 600 0.875rem 'Plus Jakarta Sans', sans-serif; text-decoration: none; cursor: pointer; white-space: nowrap; }
+.tbp-agent-form-btn:hover { background: var(--wt-soft); color: var(--wt-text); }
+.tbp-agent-form-btn.is-primary { background: var(--wt-blue); border-color: var(--wt-blue); color: #fff; }
+.tbp-agent-form-btn.is-primary:hover { background: #1D4ED8; color: #fff; }
+.tbp-agent-form-btn.is-primary .bi { color: #fff; }
+.tbp-agent-form-btn.is-icon { width: 42px; padding: 0; }
+.tbp-agent-form-btn:disabled { opacity: .65; cursor: progress; }
+.tbp-agent-form-field { display: flex; flex-direction: column; gap: 7px; margin: 0; min-width: 0; }
+.tbp-agent-form-field > span:first-child { font-size: 0.8125rem; font-weight: 600; color: var(--wt-text); }
+.tbp-agent-form-field b { color: var(--wt-red); font-weight: 600; }
+.tbp-agent-form-input { width: 100%; height: 44px; padding: 0 14px; border: 1px solid var(--wt-border); border-radius: 10px; background: #fff; color: var(--wt-text); font: 400 0.875rem 'Plus Jakarta Sans', sans-serif; outline: none; }
+textarea.tbp-agent-form-input { height: auto; min-height: 44px; padding: 11px 14px; resize: vertical; }
+select.tbp-agent-form-input { appearance: none; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23111827' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center; padding-right: 36px; }
+.tbp-agent-form-input::placeholder { color: #94A3B8; }
+.tbp-agent-form-input:focus { border-color: var(--wt-blue); box-shadow: 0 0 0 3px rgba(37, 99, 235, .12); }
+.tbp-agent-form-input.is-invalid { border-color: var(--wt-red); }
+
+/* wallet summary */
+.tbp-wallet-summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.tbp-wallet-summary-card { display: flex; align-items: center; gap: 16px; padding: 20px; border: 1px solid var(--wt-border); border-radius: 14px; background: #fff; min-width: 0; }
+.tbp-wallet-summary-card.is-balance { background: #F5F8FF; border-color: #DBEAFE; }
+.tbp-wallet-summary-card.is-credit { background: #F3FBF6; border-color: #DCFCE7; }
+.tbp-wallet-summary-card.is-debit { background: #FEF6F6; border-color: #FEE2E2; }
+.tbp-wallet-summary-icon { width: 48px; height: 48px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; background: #fff; border: 1px solid var(--wt-border); }
+.tbp-wallet-transactions-page .is-credit .tbp-wallet-summary-icon { background: var(--wt-green); border-color: var(--wt-green); }
+.tbp-wallet-transactions-page .is-debit .tbp-wallet-summary-icon { background: var(--wt-red); border-color: var(--wt-red); }
+.tbp-wallet-transactions-page .is-credit .tbp-wallet-summary-icon .bi, .tbp-wallet-transactions-page .is-debit .tbp-wallet-summary-icon .bi { color: #fff; }
+.tbp-wallet-summary-card > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.tbp-wallet-summary-card small { font-size: 0.8125rem; color: var(--wt-text); }
+.tbp-wallet-summary-card strong { font-size: clamp(1.125rem, 1.4vw, 1.375rem); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* filters */
+.tbp-wallet-transactions-filters { display: grid; grid-template-columns: 180px 190px 190px auto minmax(220px, 1fr); align-items: end; gap: 14px; padding: 16px 18px; background: #fff; border: 1px solid var(--wt-border); border-radius: 14px; margin: 0; }
+.tbp-wallet-filter-control { position: relative; display: block; }
+.tbp-wallet-filter-control > .bi { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.tbp-wallet-filter-control select { padding-left: 38px; }
+.tbp-wallet-filter-buttons { display: flex; gap: 8px; }
+.tbp-wallet-filter-search { position: relative; margin: 0; }
+.tbp-wallet-filter-search .bi { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); }
+.tbp-wallet-filter-search input { padding-left: 40px; }
+
+/* table */
+.tbp-wallet-transactions-table { background: #fff; border: 1px solid var(--wt-border); border-radius: 14px; overflow: hidden; }
+.tbp-wallet-table-scroll { overflow-x: auto; }
+.tbp-wallet-transactions-table table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.tbp-wallet-transactions-table th { padding: 13px 16px; background: var(--wt-soft); font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; text-align: left; white-space: nowrap; border: 0; color: var(--wt-text); }
+.tbp-wallet-transactions-table td { padding: 14px 16px; border-top: 1px solid #F1F5F9; white-space: nowrap; color: var(--wt-text); vertical-align: middle; }
+.tbp-wallet-transactions-table td.is-id { font-weight: 600; }
+.tbp-wallet-transactions-table td.is-note { white-space: normal; min-width: 220px; }
+.tbp-wallet-transactions-table td.is-amount { font-weight: 600; }
+.tbp-wallet-transactions-table td.is-amount.is-credit { color: var(--wt-green); }
+.tbp-wallet-transactions-table td.is-amount.is-debit { color: var(--wt-red); }
+.tbp-wallet-transactions-table td.is-date .bi { margin-right: 8px; }
+.tbp-wallet-transaction-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; font-size: 0.8125rem; font-weight: 600; }
+.tbp-wallet-transaction-badge.is-credit { background: #DCFCE7; color: var(--wt-green); }
+.tbp-wallet-transaction-badge.is-debit { background: #FEE2E2; color: var(--wt-red); }
+.tbp-wallet-transactions-page .tbp-wallet-transaction-badge.is-credit .bi { color: var(--wt-green); }
+.tbp-wallet-transactions-page .tbp-wallet-transaction-badge.is-debit .bi { color: var(--wt-red); }
+.tbp-wallet-transactions-table td.tbp-wallet-empty { text-align: center; padding: 48px 16px; white-space: normal; }
+.tbp-wallet-empty .bi { font-size: 2rem; display: block; margin-bottom: 10px; }
+.tbp-wallet-empty strong { display: block; font-size: 0.9375rem; }
+.tbp-wallet-empty span { font-size: 0.8125rem; color: var(--wt-muted); }
+.tbp-wallet-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 0.8125rem; color: var(--wt-muted); }
+.tbp-wallet-pagination nav { display: flex; gap: 6px; }
+.tbp-wallet-pagination a { min-width: 36px; height: 36px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--wt-border); border-radius: 8px; background: #fff; color: var(--wt-text); font-weight: 600; text-decoration: none; }
+.tbp-wallet-pagination a.is-active { background: var(--wt-blue); border-color: var(--wt-blue); color: #fff; }
+.tbp-wallet-pagination a.is-disabled { opacity: .45; pointer-events: none; }
+
+/* agent forms */
+.tbp-agent-form-page form { display: flex; flex-direction: column; gap: 16px; margin: 0; }
+.tbp-agent-form-card { background: #fff; border: 1px solid var(--wt-border); border-radius: 14px; padding: 18px 20px 20px; box-shadow: 0 1px 2px rgba(15, 23, 42, .04); }
+.tbp-agent-form-card > header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
+.tbp-agent-form-card > header > .bi { font-size: 1.25rem; margin-top: 2px; }
+.tbp-agent-form-card h2 { font-size: 0.9375rem; font-weight: 700; }
+.tbp-agent-form-card header p { margin-top: 2px; font-size: 0.75rem; color: var(--wt-muted); }
+.tbp-agent-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
+.tbp-agent-form-password { position: relative; display: block; }
+.tbp-agent-form-password input { padding-right: 44px; }
+.tbp-agent-form-password button { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border: 0; background: none; cursor: pointer; }
+.tbp-agent-form-notes { flex-direction: row; align-items: center; gap: 12px; }
+.tbp-agent-form-notes textarea { flex: 1; }
+.tbp-agent-form-notes small { font-size: 0.75rem; color: var(--wt-muted); white-space: nowrap; }
+.tbp-agent-form-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.tbp-agent-form-submit { min-width: 150px; }
+.tbp-agent-form-errors { padding: 14px 16px; border: 1px solid #FECACA; border-radius: 12px; background: #FEF2F2; color: #B91C1C; font-size: 0.8125rem; }
+.tbp-agent-form-errors ul { margin: 6px 0 0 18px; }
+.tbp-agent-form-page .tbp-agent-form-errors .bi { color: #B91C1C; }
+
+@media (max-width: 1365px) {
+    .tbp-wallet-transactions-filters { grid-template-columns: repeat(3, minmax(0, 1fr)) auto; }
+    .tbp-wallet-filter-search { grid-column: 1 / -1; }
+}
+@media (max-width: 991px) { .tbp-wallet-summary-grid { grid-template-columns: 1fr; } }
+@media (max-width: 767px) {
+    .tbp-wallet-transactions-filters, .tbp-agent-form-grid { grid-template-columns: 1fr; }
+    .tbp-wallet-filter-buttons .is-primary { flex: 1; }
+    .tbp-agent-form-actions .tbp-agent-form-btn { flex: 1; }
+}
+.tbp-wallet-transactions-page .is-balance .tbp-wallet-summary-icon { background: var(--wt-blue); border-color: var(--wt-blue); }
+.tbp-wallet-transactions-page .is-balance .tbp-wallet-summary-icon .bi { color: #fff; }

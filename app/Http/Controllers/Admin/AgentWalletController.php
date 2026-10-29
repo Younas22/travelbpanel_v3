@@ -11,14 +11,36 @@ use Illuminate\Http\Request;
 
 class AgentWalletController extends Controller
 {
-    public function index(User $agent)
+    public const DEBIT_REASONS = ['Booking adjustment', 'Refund reversal', 'Service fee', 'Penalty / charge', 'Balance correction', 'Other'];
+    public const PAYMENT_METHODS = ['Bank Transfer', 'Cash', 'Card', 'Cheque', 'Online Payment', 'Other'];
+
+    public function index(Request $request, User $agent)
     {
         $wallet = $agent->wallet ?? AgentWallet::create(['agent_id' => $agent->id]);
-        $recentTransactions = AgentWalletTransaction::byAgent($agent->id)->latest()->take(10)->get();
-        $topupRequests = AgentTopupRequest::byAgent($agent->id)->latest()->take(10)->get();
-        $currencies = allCurrencies();
 
-        return view('admin.agents.wallet', compact('agent', 'wallet', 'recentTransactions', 'topupRequests', 'currencies'));
+        $txnQuery = AgentWalletTransaction::byAgent($agent->id);
+        if (in_array($request->query('txn_type'), ['credit', 'debit'], true)) {
+            $txnQuery->where('type', $request->query('txn_type'));
+        }
+        if ($request->filled('from') && strtotime($request->query('from'))) {
+            $txnQuery->whereDate('created_at', '>=', $request->query('from'));
+        }
+        if ($request->filled('to') && strtotime($request->query('to'))) {
+            $txnQuery->whereDate('created_at', '<=', $request->query('to'));
+        }
+        $recentTransactions = $txnQuery->latest()->take(10)->get();
+
+        $topupQuery = AgentTopupRequest::byAgent($agent->id);
+        if (in_array($request->query('topup_status'), ['pending', 'approved', 'rejected'], true)) {
+            $topupQuery->where('status', $request->query('topup_status'));
+        }
+        $topupRequests = $topupQuery->latest()->take(10)->get();
+
+        $currencies = allCurrencies();
+        $debitReasons = self::DEBIT_REASONS;
+        $paymentMethods = self::PAYMENT_METHODS;
+
+        return view('admin.agents.wallet', compact('agent', 'wallet', 'recentTransactions', 'topupRequests', 'currencies', 'debitReasons', 'paymentMethods'));
     }
 
     public function credit(Request $request, User $agent)
@@ -45,9 +67,12 @@ class AgentWalletController extends Controller
 
     public function debit(Request $request, User $agent)
     {
+        // The redesigned wallet page sends a reason (+ optional note); the
+        // agent show page's Wallet tab still sends just a required note.
         $request->validate([
             'amount' => 'required|numeric|min:1',
-            'note'   => 'required|string|max:500',
+            'reason' => 'nullable|string|in:' . implode(',', self::DEBIT_REASONS),
+            'note'   => 'required_without:reason|nullable|string|max:500',
         ]);
 
         $wallet = $agent->wallet;
@@ -56,9 +81,13 @@ class AgentWalletController extends Controller
             return back()->with('error', 'Insufficient wallet balance.');
         }
 
+        $note = $request->filled('reason')
+            ? $request->reason . ($request->filled('note') ? ' — ' . $request->note : '')
+            : $request->note;
+
         $wallet->debit(
             amount:      $request->amount,
-            note:        $request->note,
+            note:        $note,
             performedBy: auth()->id(),
         );
 
@@ -96,6 +125,21 @@ class AgentWalletController extends Controller
 
         if ($request->filled('from') && $request->filled('to')) {
             $query->byDateRange($request->from, $request->to . ' 23:59:59');
+        } elseif ($request->filled('from')) {
+            $query->whereDate('created_at', '>=', $request->from);
+        } elseif ($request->filled('to')) {
+            $query->whereDate('created_at', '<=', $request->to);
+        }
+
+        if ($request->filled('search')) {
+            $term = '%' . $request->search . '%';
+            $query->where(function ($q) use ($term) {
+                $q->where('note', 'like', $term)
+                  ->orWhere('reference', 'like', $term)
+                  ->orWhereHas('performedBy', fn ($u) => $u->where('first_name', 'like', $term)
+                      ->orWhere('last_name', 'like', $term)
+                      ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", [$term]));
+            });
         }
 
         $transactions = $query->latest()->paginate(20);

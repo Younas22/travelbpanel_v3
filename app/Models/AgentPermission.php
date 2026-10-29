@@ -25,6 +25,8 @@ class AgentPermission extends Model
         // Wallet
         'wallet.view'     => 'View Wallet Balance',
         'wallet.request'  => 'Request Wallet Top-up',
+        'wallet.transactions' => 'View Transactions',
+        'wallet.invoices' => 'Download Invoices',
 
         // Booking permissions
         'bookings.make'   => 'Make Bookings (via Website)',

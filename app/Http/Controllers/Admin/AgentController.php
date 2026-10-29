@@ -18,26 +18,58 @@ use Resend\Laravel\Facades\Resend;
 
 class AgentController extends Controller
 {
-    public function index(Request $request)
+    public const SORTS = [
+        'newest' => 'Date Joined (Newest)',
+        'oldest' => 'Date Joined (Oldest)',
+        'name_asc' => 'Name (A–Z)',
+        'name_desc' => 'Name (Z–A)',
+        'commission_desc' => 'Commission (High–Low)',
+    ];
+
+    /** Search / company / joined filters shared by the list, the tab counts and the export. */
+    private function filteredAgents(Request $request)
     {
-        $query = User::agents()->with('wallet');
+        $query = User::agents();
 
         if ($request->filled('search')) {
             $s = $request->search;
             $query->where(function ($q) use ($s) {
                 $q->where('first_name', 'like', "%{$s}%")
                   ->orWhere('last_name', 'like', "%{$s}%")
+                  ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$s}%"])
                   ->orWhere('email', 'like', "%{$s}%")
                   ->orWhere('company_name', 'like', "%{$s}%")
                   ->orWhere('agent_code', 'like', "%{$s}%");
             });
         }
+        if ($request->filled('company')) {
+            $query->where('company_name', $request->company);
+        }
+        if ($request->filled('joined') && strtotime($request->joined)) {
+            $query->whereDate('created_at', '>=', $request->joined);
+        }
 
+        return $query;
+    }
+
+    private function applySort($query, ?string $sort)
+    {
+        return match ($sort) {
+            'oldest' => $query->oldest(),
+            'name_asc' => $query->orderBy('first_name')->orderBy('last_name'),
+            'name_desc' => $query->orderByDesc('first_name')->orderByDesc('last_name'),
+            'commission_desc' => $query->orderByRaw('COALESCE(commission_rate, 0) DESC'),
+            default => $query->latest(),
+        };
+    }
+
+    public function index(Request $request)
+    {
+        $query = $this->filteredAgents($request)->with('wallet');
         if ($request->filled('status')) {
             $query->where('approval_status', $request->status);
         }
-
-        $agents = $query->latest()->paginate(20);
+        $agents = $this->applySort($query, $request->sort)->paginate(20)->withQueryString();
 
         $stats = [
             'total'     => User::agents()->count(),
@@ -46,9 +78,68 @@ class AgentController extends Controller
             'suspended' => User::agents()->where('approval_status', 'suspended')->count(),
         ];
 
+        // Tab counts follow the search/company/joined filters (not the status itself).
+        $base = $this->filteredAgents($request);
+        $tabCounts = [
+            ''          => (clone $base)->count(),
+            'active'    => (clone $base)->where('approval_status', 'active')->count(),
+            'pending'   => (clone $base)->where('approval_status', 'pending')->count(),
+            'suspended' => (clone $base)->where('approval_status', 'suspended')->count(),
+        ];
+
+        // KPI trends: cumulative agents per month (last 8 months) and new agents
+        // in the last 30 days vs the 30 days before, per status.
+        $all = User::agents()->get(['approval_status', 'created_at']);
+        $trends = [];
+        foreach (['total' => null, 'active' => 'active', 'pending' => 'pending', 'suspended' => 'suspended'] as $key => $status) {
+            $set = $status ? $all->where('approval_status', $status) : $all;
+            $spark = [];
+            for ($i = 7; $i >= 0; $i--) {
+                $end = now()->subMonthsNoOverflow($i)->endOfMonth();
+                $spark[] = $set->filter(fn ($a) => $a->created_at <= $end)->count();
+            }
+            $recent = $set->filter(fn ($a) => $a->created_at >= now()->subDays(30))->count();
+            $before = $set->filter(fn ($a) => $a->created_at < now()->subDays(30) && $a->created_at >= now()->subDays(60))->count();
+            $trends[$key] = [
+                'spark' => $spark,
+                'change' => $before ? round(($recent - $before) / $before * 100, 1) : ($recent ? null : 0.0),
+                'new' => $recent,
+            ];
+        }
+
+        $companies = User::agents()->whereNotNull('company_name')->where('company_name', '!=', '')
+            ->distinct()->orderBy('company_name')->pluck('company_name');
+        $sorts = self::SORTS;
         $pendingTopups = \App\Models\AgentTopupRequest::pending()->count();
 
-        return view('admin.agents.index', compact('agents', 'stats', 'pendingTopups'));
+        return view('admin.agents.index', compact('agents', 'stats', 'pendingTopups', 'tabCounts', 'trends', 'companies', 'sorts'));
+    }
+
+    /** CSV of the current filtered list, or only the selected agents (ids[]). */
+    public function export(Request $request)
+    {
+        $query = $this->filteredAgents($request)->with('wallet');
+        if ($request->filled('status')) {
+            $query->where('approval_status', $request->status);
+        }
+        if ($ids = array_filter((array) $request->input('ids', []), 'is_numeric')) {
+            $query->whereIn('id', $ids);
+        }
+        $agents = $this->applySort($query, $request->sort)->get();
+
+        return response()->streamDownload(function () use ($agents) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['Agent Code', 'Name', 'Email', 'Phone', 'Company', 'Status', 'Wallet Balance', 'Wallet Currency', 'Commission Rate', 'Joined']);
+            foreach ($agents as $a) {
+                fputcsv($out, [
+                    $a->agent_code, $a->full_name, $a->email, $a->phone, $a->company_name, $a->approval_status,
+                    // Same currency display rule as the agents list (stored "PKR" is shown as USD).
+                    $a->wallet->balance ?? '', $a->wallet ? (($a->wallet->currency && $a->wallet->currency !== 'PKR') ? $a->wallet->currency : 'USD') : '',
+                    $a->commission_rate ?? 0, $a->created_at?->format('Y-m-d'),
+                ]);
+            }
+            fclose($out);
+        }, 'agents-' . now()->format('Y-m-d') . '.csv', ['Content-Type' => 'text/csv']);
     }
 
     public function create()
@@ -82,6 +173,7 @@ class AgentController extends Controller
             'company_phone'   => $request->company_phone,
             'company_address' => $request->company_address,
             'tax_number'      => $request->tax_number,
+            'internal_notes'  => $request->internal_notes,
             'commission_type' => $request->commission_type,
             'commission_rate' => $request->commission_rate ?? 0,
             'agent_code'      => User::generateAgentCode(),

@@ -447,6 +447,7 @@ Route::prefix('modules')->name('admin.modules.')->group(function () {
     Route::prefix('agents')->name('admin.agents.')->group(function () {
         Route::get('/',                           [\App\Http\Controllers\Admin\AgentController::class, 'index'])->name('index');
         Route::get('/create',                     [\App\Http\Controllers\Admin\AgentController::class, 'create'])->name('create');
+        Route::get('/export',                     [\App\Http\Controllers\Admin\AgentController::class, 'export'])->name('export');
         Route::post('/',                          [\App\Http\Controllers\Admin\AgentController::class, 'store'])->name('store');
         Route::get('/{agent}',                    [\App\Http\Controllers\Admin\AgentController::class, 'show'])->name('show');
         Route::get('/{agent}/edit',               [\App\Http\Controllers\Admin\AgentController::class, 'edit'])->name('edit');
