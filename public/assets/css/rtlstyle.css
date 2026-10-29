@@ -12058,10 +12058,13 @@ a.tl-page-btn:hover { border-color: var(--tl-blue); color: var(--tl-blue); }
     transform: scale(1.04);
 }
 
-.pg-post-media .th-chip {
+#siteRedesign .pg-post-media .th-chip {
     position: absolute;
     left: 10px;
+    right: auto;
     bottom: 10px;
+    width: auto;
+    max-width: calc(100% - 20px);
 }
 
 .pg-post-placeholder {
@@ -12364,4 +12367,22 @@ a.tl-page-btn:hover { border-color: var(--tl-blue); color: var(--tl-blue); }
 .pg-prose blockquote { border-left: 0; border-right: 4px solid #2563EB; border-radius: 12px 0 0 12px; }
 .pg-prevnext-link.is-next { text-align: left; }
 .pg-prevnext-link i, .pg-read i { transform: scaleX(-1); }
-.pg-post-media .th-chip { left: auto; right: 10px; }
+#siteRedesign .pg-post-media .th-chip { left: auto; right: 10px; }
+
+/* Blog: missing image files fall back to the tinted placeholder */
+.pg-post-media.is-broken::before {
+    content: "\f03e";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(37, 99, 235, 0.4);
+    font-family: "Font Awesome 6 Free";
+    font-size: 28px;
+    font-weight: 900;
+}
+
+.pg-related img.is-broken {
+    visibility: hidden;
+}

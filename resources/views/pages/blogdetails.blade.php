@@ -33,7 +33,7 @@
         <div class="td-main-col">
             @if($post->featured_image)
                 <figure class="pg-article-image">
-                    <img src="{{ asset('public/' . $post->featured_image) }}" alt="{{ $post->title }}">
+                    <img src="{{ asset('public/' . $post->featured_image) }}" alt="{{ $post->title }}" onerror="this.closest('figure').remove()">
                     @if($post->image_caption)<figcaption>{{ $post->image_caption }}</figcaption>@endif
                 </figure>
             @endif
@@ -113,7 +113,7 @@
                 @forelse($relatedPosts as $related)
                     <a href="{{ route('blog.detail', $related->slug) }}" class="pg-related">
                         @if($related->featured_image)
-                            <img src="{{ asset('public/' . $related->featured_image) }}" alt="" loading="lazy">
+                            <img src="{{ asset('public/' . $related->featured_image) }}" alt="" loading="lazy" onerror="this.onerror=null;this.classList.add('is-broken');this.removeAttribute('src')">
                         @else
                             <span class="pg-post-placeholder"><i class="fas fa-image"></i></span>
                         @endif

@@ -38,7 +38,7 @@
                 <article class="pg-post" data-category="{{ $blog->category_id }}" data-text="{{ strtolower($blog->title . ' ' . $blog->excerpt) }}">
                     <a href="{{ $url }}" class="pg-post-media">
                         @if($blog->featured_image)
-                            <img src="{{ asset('public/' . $blog->featured_image) }}" alt="{{ $blog->title }}" loading="lazy">
+                            <img src="{{ asset('public/' . $blog->featured_image) }}" alt="{{ $blog->title }}" loading="lazy" onerror="this.onerror=null;this.parentNode.classList.add('is-broken');this.remove()">
                         @else
                             <span class="pg-post-placeholder"><i class="fas fa-image"></i></span>
                         @endif
