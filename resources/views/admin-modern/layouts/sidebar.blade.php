@@ -75,18 +75,90 @@
             </div>
         </div>
 
-        {{-- Support Tickets --}}
-        <a href="{{ route('admin.support.index') }}"
-           class="sb-row {{ request()->routeIs('admin.support*') ? 'sb-on' : '' }}">
-            <i class="bi bi-headset sb-ico"></i>
-            <span>Support Tickets</span>
-        </a>
+        @php
+            // Show module in sidebar only when it has at least one active manual partner
+            $sidebarModule = function(string $slug) {
+                return \App\Models\Module::where('slug', $slug)
+                    ->whereHas('partners', fn($p) => $p->where('status', 'active')->where('supplier_type', 'manual'))
+                    ->first();
+            };
+            $visaModule   = $sidebarModule('visa');
+            $umrahModule  = $sidebarModule('umrah');
+            $toursModule  = $sidebarModule('tours');
+            $hotelsModule = $sidebarModule('hotel');
+        @endphp
 
-        {{-- Suppliers --}}
-        <a href="{{ route('admin.travel-partners.index') }}"
-           class="sb-row {{ request()->routeIs('admin.travel-partners*') ? 'sb-on' : '' }}">
-            <i class="bi bi-building sb-ico"></i>
-            <span>Suppliers</span>
+        {{-- Hotels --}}
+        @if($hotelsModule)
+            <div class="sb-group {{ request()->routeIs('admin.hotels*') ? 'sb-group-open' : '' }}">
+                <button class="sb-row {{ request()->routeIs('admin.hotels*') ? 'sb-on' : '' }}"
+                        onclick="toggleSbGroup(this)" type="button">
+                    <i class="bi bi-building sb-ico"></i>
+                    <span>Hotels</span>
+                    <div class="sb-right"><i class="bi bi-chevron-right sb-chev"></i></div>
+                </button>
+                <div class="sb-kids">
+                    <a href="{{ route('admin.hotels.index') }}" class="sb-kid {{ request()->routeIs('admin.hotels.index*') || request()->routeIs('admin.hotels.edit*') || request()->routeIs('admin.hotels.create*') ? 'sb-kid-on' : '' }}"><i class="bi bi-building-fill"></i> Hotels</a>
+                    <a href="{{ route('admin.hotels.amenities.index') }}" class="sb-kid {{ request()->routeIs('admin.hotels.amenities*') ? 'sb-kid-on' : '' }}"><i class="bi bi-stars"></i> Amenities</a>
+                    <a href="{{ route('admin.bookings.all') }}?type=hotel" class="sb-kid {{ request()->routeIs('admin.bookings.all') && request('type') === 'hotel' ? 'sb-kid-on' : '' }}"><i class="bi bi-calendar-check"></i> Hotel bookings</a>
+                </div>
+            </div>
+        @endif
+
+        {{-- Tours --}}
+        @if($toursModule)
+            <div class="sb-group {{ request()->routeIs('admin.tours*') ? 'sb-group-open' : '' }}">
+                <button class="sb-row {{ request()->routeIs('admin.tours*') ? 'sb-on' : '' }}"
+                        onclick="toggleSbGroup(this)" type="button">
+                    <i class="bi bi-geo-alt sb-ico"></i>
+                    <span>Tours</span>
+                    <div class="sb-right"><i class="bi bi-chevron-right sb-chev"></i></div>
+                </button>
+                <div class="sb-kids">
+                    <a href="{{ route('admin.tours.packages.index') }}" class="sb-kid {{ request()->routeIs('admin.tours.packages*') ? 'sb-kid-on' : '' }}"><i class="bi bi-box-seam"></i> Tour packages</a>
+                    <a href="{{ route('admin.tours.package-types.index') }}" class="sb-kid {{ request()->routeIs('admin.tours.package-types*') ? 'sb-kid-on' : '' }}"><i class="bi bi-tags"></i> Package types</a>
+                    <a href="{{ route('admin.tours.inclusions.index') }}" class="sb-kid {{ request()->routeIs('admin.tours.inclusions*') ? 'sb-kid-on' : '' }}"><i class="bi bi-check-circle"></i> Inclusions</a>
+                    <a href="{{ route('admin.tours.exclusions.index') }}" class="sb-kid {{ request()->routeIs('admin.tours.exclusions*') ? 'sb-kid-on' : '' }}"><i class="bi bi-x-circle"></i> Exclusions</a>
+                    <a href="{{ route('admin.bookings.all') }}?type=tour" class="sb-kid {{ request()->routeIs('admin.bookings.all') && request('type') === 'tour' ? 'sb-kid-on' : '' }}"><i class="bi bi-calendar-check"></i> Tour bookings</a>
+                </div>
+            </div>
+        @endif
+
+        {{-- Visa --}}
+        @if($visaModule)
+            <a href="{{ route('admin.visa-requests.visaindex') }}"
+               class="sb-row {{ request()->routeIs('admin.visa-requests*') ? 'sb-on' : '' }}">
+                <i class="bi bi-passport sb-ico"></i>
+                <span>Visa requests</span>
+            </a>
+        @endif
+
+        {{-- Umrah --}}
+        @if($umrahModule)
+            <div class="sb-group {{ request()->routeIs('admin.umrah*') ? 'sb-group-open' : '' }}">
+                <button class="sb-row {{ request()->routeIs('admin.umrah*') ? 'sb-on' : '' }}"
+                        onclick="toggleSbGroup(this)" type="button">
+                    <i class="bi bi-moon-stars sb-ico"></i>
+                    <span>Umrah</span>
+                    <div class="sb-right"><i class="bi bi-chevron-right sb-chev"></i></div>
+                </button>
+                <div class="sb-kids">
+                    <a href="{{ route('admin.umrah.packages.index') }}" class="sb-kid {{ request()->routeIs('admin.umrah.packages*') ? 'sb-kid-on' : '' }}"><i class="bi bi-box-seam"></i> Umrah packages</a>
+                    <a href="{{ route('admin.umrah.package-types.index') }}" class="sb-kid {{ request()->routeIs('admin.umrah.package-types*') ? 'sb-kid-on' : '' }}"><i class="bi bi-tags"></i> Package types</a>
+                    <a href="{{ route('admin.umrah.inclusions.index') }}" class="sb-kid {{ request()->routeIs('admin.umrah.inclusions*') ? 'sb-kid-on' : '' }}"><i class="bi bi-check-circle"></i> Inclusions</a>
+                    <a href="{{ route('admin.umrah.exclusions.index') }}" class="sb-kid {{ request()->routeIs('admin.umrah.exclusions*') ? 'sb-kid-on' : '' }}"><i class="bi bi-x-circle"></i> Exclusions</a>
+                    <a href="{{ route('admin.bookings.all') }}?type=umrah" class="sb-kid {{ request()->routeIs('admin.bookings.all') && request('type') === 'umrah' ? 'sb-kid-on' : '' }}"><i class="bi bi-calendar-check"></i> Umrah bookings</a>
+                </div>
+            </div>
+        @endif
+
+        <div class="sb-sep"></div>
+
+        {{-- Customers --}}
+        <a href="{{ route('admin.customers.index') }}"
+           class="sb-row {{ request()->routeIs('admin.customers*') ? 'sb-on' : '' }}">
+            <i class="bi bi-people sb-ico"></i>
+            <span>Customers</span>
         </a>
 
         {{-- Agents — hidden in B2C-only mode --}}
@@ -117,82 +189,19 @@
             </div>
         @endif
 
-        @php
-            // Show module in sidebar only when it has at least one active manual partner
-            $sidebarModule = function(string $slug) {
-                return \App\Models\Module::where('slug', $slug)
-                    ->whereHas('partners', fn($p) => $p->where('status', 'active')->where('supplier_type', 'manual'))
-                    ->first();
-            };
-            $visaModule   = $sidebarModule('visa');
-            $umrahModule  = $sidebarModule('umrah');
-            $toursModule  = $sidebarModule('tours');
-            $hotelsModule = $sidebarModule('hotel');
-        @endphp
+        {{-- Suppliers --}}
+        <a href="{{ route('admin.travel-partners.index') }}"
+           class="sb-row {{ request()->routeIs('admin.travel-partners*') ? 'sb-on' : '' }}">
+            <i class="bi bi-building sb-ico"></i>
+            <span>Suppliers</span>
+        </a>
 
-        {{-- Visa --}}
-        @if($visaModule)
-            <a href="{{ route('admin.visa-requests.visaindex') }}"
-               class="sb-row {{ request()->routeIs('admin.visa-requests*') ? 'sb-on' : '' }}">
-                <i class="bi bi-passport sb-ico"></i>
-                <span>Visa requests</span>
-            </a>
-        @endif
-
-        {{-- Umrah --}}
-        @if($umrahModule)
-            <div class="sb-group {{ request()->routeIs('admin.umrah*') ? 'sb-group-open' : '' }}">
-                <button class="sb-row {{ request()->routeIs('admin.umrah*') ? 'sb-on' : '' }}"
-                        onclick="toggleSbGroup(this)" type="button">
-                    <i class="bi bi-moon-stars sb-ico"></i>
-                    <span>Umrah</span>
-                    <div class="sb-right"><i class="bi bi-chevron-right sb-chev"></i></div>
-                </button>
-                <div class="sb-kids">
-                    <a href="{{ route('admin.umrah.packages.index') }}" class="sb-kid {{ request()->routeIs('admin.umrah.packages*') ? 'sb-kid-on' : '' }}"><i class="bi bi-box-seam"></i> Umrah packages</a>
-                    <a href="{{ route('admin.umrah.package-types.index') }}" class="sb-kid {{ request()->routeIs('admin.umrah.package-types*') ? 'sb-kid-on' : '' }}"><i class="bi bi-tags"></i> Package types</a>
-                    <a href="{{ route('admin.umrah.inclusions.index') }}" class="sb-kid {{ request()->routeIs('admin.umrah.inclusions*') ? 'sb-kid-on' : '' }}"><i class="bi bi-check-circle"></i> Inclusions</a>
-                    <a href="{{ route('admin.umrah.exclusions.index') }}" class="sb-kid {{ request()->routeIs('admin.umrah.exclusions*') ? 'sb-kid-on' : '' }}"><i class="bi bi-x-circle"></i> Exclusions</a>
-                    <a href="{{ route('admin.bookings.all') }}?type=umrah" class="sb-kid {{ request()->routeIs('admin.bookings.all') && request('type') === 'umrah' ? 'sb-kid-on' : '' }}"><i class="bi bi-calendar-check"></i> Umrah bookings</a>
-                </div>
-            </div>
-        @endif
-
-        {{-- Tours --}}
-        @if($toursModule)
-            <div class="sb-group {{ request()->routeIs('admin.tours*') ? 'sb-group-open' : '' }}">
-                <button class="sb-row {{ request()->routeIs('admin.tours*') ? 'sb-on' : '' }}"
-                        onclick="toggleSbGroup(this)" type="button">
-                    <i class="bi bi-geo-alt sb-ico"></i>
-                    <span>Tours</span>
-                    <div class="sb-right"><i class="bi bi-chevron-right sb-chev"></i></div>
-                </button>
-                <div class="sb-kids">
-                    <a href="{{ route('admin.tours.packages.index') }}" class="sb-kid {{ request()->routeIs('admin.tours.packages*') ? 'sb-kid-on' : '' }}"><i class="bi bi-box-seam"></i> Tour packages</a>
-                    <a href="{{ route('admin.tours.package-types.index') }}" class="sb-kid {{ request()->routeIs('admin.tours.package-types*') ? 'sb-kid-on' : '' }}"><i class="bi bi-tags"></i> Package types</a>
-                    <a href="{{ route('admin.tours.inclusions.index') }}" class="sb-kid {{ request()->routeIs('admin.tours.inclusions*') ? 'sb-kid-on' : '' }}"><i class="bi bi-check-circle"></i> Inclusions</a>
-                    <a href="{{ route('admin.tours.exclusions.index') }}" class="sb-kid {{ request()->routeIs('admin.tours.exclusions*') ? 'sb-kid-on' : '' }}"><i class="bi bi-x-circle"></i> Exclusions</a>
-                    <a href="{{ route('admin.bookings.all') }}?type=tour" class="sb-kid {{ request()->routeIs('admin.bookings.all') && request('type') === 'tour' ? 'sb-kid-on' : '' }}"><i class="bi bi-calendar-check"></i> Tour bookings</a>
-                </div>
-            </div>
-        @endif
-
-        {{-- Hotels --}}
-        @if($hotelsModule)
-            <div class="sb-group {{ request()->routeIs('admin.hotels*') ? 'sb-group-open' : '' }}">
-                <button class="sb-row {{ request()->routeIs('admin.hotels*') ? 'sb-on' : '' }}"
-                        onclick="toggleSbGroup(this)" type="button">
-                    <i class="bi bi-building sb-ico"></i>
-                    <span>Hotels</span>
-                    <div class="sb-right"><i class="bi bi-chevron-right sb-chev"></i></div>
-                </button>
-                <div class="sb-kids">
-                    <a href="{{ route('admin.hotels.index') }}" class="sb-kid {{ request()->routeIs('admin.hotels.index*') || request()->routeIs('admin.hotels.edit*') || request()->routeIs('admin.hotels.create*') ? 'sb-kid-on' : '' }}"><i class="bi bi-building-fill"></i> Hotels</a>
-                    <a href="{{ route('admin.hotels.amenities.index') }}" class="sb-kid {{ request()->routeIs('admin.hotels.amenities*') ? 'sb-kid-on' : '' }}"><i class="bi bi-stars"></i> Amenities</a>
-                    <a href="{{ route('admin.bookings.all') }}?type=hotel" class="sb-kid {{ request()->routeIs('admin.bookings.all') && request('type') === 'hotel' ? 'sb-kid-on' : '' }}"><i class="bi bi-calendar-check"></i> Hotel bookings</a>
-                </div>
-            </div>
-        @endif
+        {{-- Support Tickets --}}
+        <a href="{{ route('admin.support.index') }}"
+           class="sb-row {{ request()->routeIs('admin.support*') ? 'sb-on' : '' }}">
+            <i class="bi bi-headset sb-ico"></i>
+            <span>Support Tickets</span>
+        </a>
 
         {{-- Messages --}}
         @php $newMessages = \App\Models\ContactMessage::where('status', 'new')->count(); @endphp
@@ -250,7 +259,7 @@
         </div>
 
         {{-- Quick Actions --}}
-        <div class="sb-sep"></div>
+        <div class="sb-sep sb-quick-sep"></div>
         <span class="sb-section-label">Quick actions</span>
 
         <a href="{{ route('admin.pages.create') }}" class="sb-row sb-quick {{ request()->routeIs('admin.pages.create') ? 'sb-quick-on' : '' }}">
@@ -264,6 +273,17 @@
         </a>
 
     </nav>
+
+    {{-- Need Help — Nova only (hidden in Modern via .sb-help default display:none). --}}
+    @php $sbSupportEmail = getSetting('support_email', 'contact'); @endphp
+    <div class="sb-help">
+        <div class="sb-help-icon"><i class="bi bi-headset"></i></div>
+        <div class="sb-help-title">Need Help?</div>
+        <p class="sb-help-text">Our support team is here to help you with bookings, suppliers and setup.</p>
+        <a href="{{ $sbSupportEmail ? 'mailto:'.$sbSupportEmail : route('admin.support.index') }}" class="sb-help-btn">
+            Contact Support <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
 </div>
 
 <script>

@@ -9732,3 +9732,8 @@ input:checked + .status-slider:before {
 .tbp-webbeds-import-live-meta { display: flex; gap: 18px; flex-wrap: wrap; font-size: 0.8125rem; color: var(--text-color); margin: 8px 0 4px; }
 .tbp-webbeds-import-bar-fill.is-running { min-width: 6px; background-image: linear-gradient(45deg, rgba(255,255,255,.35) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.35) 50%, rgba(255,255,255,.35) 75%, transparent 75%); background-size: 16px 16px; animation: tbp-webbeds-stripes .8s linear infinite; }
 @keyframes tbp-webbeds-stripes { to { background-position: 16px 0; } }
+
+/* Sidebar "Need Help" card is a Nova-only element of the shared sidebar. */
+.sb-help { display: none; }
+/* bi-person-badge etc. match the generic [class*="-badge"] status-badge rule — not for sidebar icons. */
+.sidebar .sb-row .sb-ico, .sidebar .sb-kid i { padding: 0; border-radius: 0; background: none; gap: 0; }
