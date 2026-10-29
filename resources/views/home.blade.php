@@ -487,6 +487,7 @@
                                     <b>{{ $airline }}</b>
                                     <small>{{ $airlineCode }}</small>
                                 </span>
+                                <span class="hfc-badge">{{ t('flightform.one_way') }}</span>
                             </div>
 
                             <div class="hfc-route">
@@ -496,9 +497,7 @@
                                     @if($fromAirport)<small class="hfc-airport">{{ $fromAirport->airport }}</small>@endif
                                 </div>
                                 <div class="hfc-path" aria-hidden="true">
-                                    <span class="hfc-line"></span>
-                                    <i class="fas fa-plane"></i>
-                                    <span class="hfc-line"></span>
+                                    <span class="hfc-track"><i class="fas fa-plane"></i></span>
                                 </div>
                                 <div class="hfc-point is-arrival">
                                     <b class="hfc-code">{{ $toCode }}</b>
@@ -509,14 +508,16 @@
 
                             <div class="hfc-meta">
                                 <span><i class="far fa-calendar"></i> {{ date('D, d M Y', strtotime($flightDealDate)) }}</span>
-                                <span><i class="fas fa-arrow-right-long"></i> {{ t('flightform.one_way') }} · {{ t('flightform.economy') }}</span>
                             </div>
                         </div>
 
                         <div class="hfc-fare">
-                            <span class="hfc-fare-label">{{ t('home.starting_from') }}</span>
-                            <span class="hfc-price"><small>{{ $active_currency->currency_name }}</small> {{ convertCurrency($usdPrice, 'USD', $active_currency->currency_name) }}</span>
-                            <span class="hfc-per">{{ t('home.per_adult') }}</span>
+                            <div class="hfc-fare-info">
+                                <span class="hfc-fare-type">{{ t('flightform.economy') }}</span>
+                                <span class="hfc-fare-label">{{ t('home.starting_from') }}</span>
+                                <span class="hfc-price"><small>{{ $active_currency->currency_name }}</small> {{ convertCurrency($usdPrice, 'USD', $active_currency->currency_name) }}</span>
+                                <span class="hfc-per">{{ t('home.per_adult') }}</span>
+                            </div>
                             <a href="{{ $dealUrl }}" class="hfc-view-btn">{{ t('home.view') }} <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </article>
