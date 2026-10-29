@@ -157,6 +157,7 @@
             </div>
         </div>
     </section>
+    @include('common.mobile-app-showcase')
 </div>
 
     <!-- Promotional Section - Grab up to 35% off -->

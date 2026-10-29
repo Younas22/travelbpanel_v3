@@ -7608,6 +7608,91 @@ footer {
     display: none;
 }
 
+#siteRedesign #popularTours .th-track {
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - 3 * 16px) / 4);
+}
+
+#siteRedesign #popularTours .th-card {
+    position: relative;
+    height: auto;
+    width: 100%;
+    min-width: 0;
+    aspect-ratio: 2 / 3;
+    background: #101827;
+}
+
+#siteRedesign #popularTours .th-card-media {
+    position: absolute;
+    inset: 0;
+    height: auto;
+    background: #101827;
+}
+
+#siteRedesign #popularTours .th-card-media img {
+    display: block;
+    object-fit: contain;
+}
+
+#siteRedesign #popularTours .th-card:hover .th-card-media img {
+    transform: none;
+}
+
+#siteRedesign #popularTours .th-card-media::after {
+    position: absolute;
+    inset: 30% 0 0;
+    content: "";
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.88) 100%);
+    pointer-events: none;
+}
+
+#siteRedesign #popularTours .th-card-body {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 2;
+    padding: 18px;
+    color: #FFFFFF;
+}
+
+#siteRedesign #popularTours .th-name a,
+#siteRedesign #popularTours .th-location,
+#siteRedesign #popularTours .th-location > i,
+#siteRedesign #popularTours .th-price {
+    color: #FFFFFF;
+}
+
+#siteRedesign #popularTours .th-pills {
+    max-height: none;
+}
+
+#siteRedesign #popularTours .th-pill {
+    background: rgba(255, 255, 255, 0.18);
+    color: #FFFFFF;
+}
+
+#siteRedesign #popularTours .th-footer {
+    border-top-color: rgba(255, 255, 255, 0.35);
+}
+
+#siteRedesign #popularTours .th-price-label {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+#siteRedesign #popularTours .th-view-btn {
+    background: #FFFFFF;
+    color: #2563EB;
+}
+
+#siteRedesign #popularTours .th-view-btn:hover {
+    background: #EFF6FF;
+    color: #1D4ED8;
+}
+
+#siteRedesign #popularTours .th-badge,
+#siteRedesign #popularTours .th-chip {
+    z-index: 3;
+}
+
 #siteRedesign .home-flight-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -7972,6 +8057,10 @@ footer {
     #siteRedesign .home-flight-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    #siteRedesign #popularTours .th-track {
+        grid-auto-columns: calc((100% - 16px) / 2);
+    }
 }
 
 @media (max-width: 639px) {
@@ -7994,6 +8083,10 @@ footer {
     #siteRedesign .home-flight-grid {
         grid-template-columns: minmax(0, 1fr);
         gap: 12px;
+    }
+
+    #siteRedesign #popularTours .th-track {
+        grid-auto-columns: 100%;
     }
 
     #siteRedesign .th-card {

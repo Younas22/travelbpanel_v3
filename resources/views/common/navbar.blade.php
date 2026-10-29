@@ -442,7 +442,7 @@
                         <span>Sign Up</span>
                         <i class="fas fa-chevron-down text-xs"></i>
                     </button>
-                    <div class="nav-dd-under absolute left-1/2 -translate-x-1/2 top-full pt-2 w-64 z-50 hidden group-hover:block group-focus-within:block">
+                    <div class="nav-dd-under absolute left-1/2 -translate-x-1/2 top-full pt-2 w-72 z-50 hidden group-hover:block group-focus-within:block">
                         <div class="nav-dd-panel">
                             <a href="{{ route('user.register') }}" class="nav-dd-item nav-signup-item">
                                 <span class="nav-dd-icon"><i class="fas fa-user"></i></span>

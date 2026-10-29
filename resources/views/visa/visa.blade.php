@@ -268,6 +268,7 @@
             </div>
         </form>
     </div>
+    @include('common.mobile-app-showcase')
 </div>
 
     <style>

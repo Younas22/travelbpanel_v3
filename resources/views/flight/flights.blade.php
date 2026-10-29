@@ -123,6 +123,7 @@
             </div>
         </div>
     </section>
+    @include('common.mobile-app-showcase')
 </div>
 
 @endsection
