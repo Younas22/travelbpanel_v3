@@ -29,8 +29,8 @@
         background-image: url('<?=getSettingImage('cover_image', 'homepage')?>');
     }
 
-    /* Tab Styles — a glass pill bar above the search panel (outside the
-       white card). Centering uses auto margins on the first/last tab (not
+    /* Tab Styles — a white pill bar above the search panel (outside the
+       white card), thin separators between services. Centering uses auto margins on the first/last tab (not
        justify-content) so an overflowing row still scrolls to its first tab
        on small screens. */
     .tab-buttons-wrapper {
@@ -46,15 +46,13 @@
     .tab-buttons {
         display: flex;
         justify-content: flex-start;
-        gap: 4px;
+        gap: 2px;
         max-width: 100%;
         padding: 6px;
         border-radius: 9999px;
-        border: 1px solid rgba(255, 255, 255, 0.55);
-        background: rgba(37, 99, 235, 0.32);
-        backdrop-filter: blur(14px) saturate(140%);
-        -webkit-backdrop-filter: blur(14px) saturate(140%);
-        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.18);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        background: #fff;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
         overflow-x: auto;
         scrollbar-width: none;
     }
@@ -63,17 +61,17 @@
     .tab-buttons > .tab-btn:last-child { margin-right: auto; }
 
     .tab-btn {
+        position: relative;
         flex: 0 0 auto;
         height: 46px;
         padding: 0 22px;
         background: transparent;
         border: 0;
-        font-weight: 400;
+        font-weight: 500;
         font-size: 15px;
         letter-spacing: 0;
         text-transform: none;
-        color: #fff;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+        color: #000;
         text-decoration: none;
         cursor: pointer;
         transition: background-color .2s ease, color .2s ease, box-shadow .2s ease;
@@ -87,26 +85,47 @@
     }
 
     .tab-btn i {
-        color: #fff;
+        color: rgba(0, 0, 0, 0.7);
         font-size: 14px;
     }
 
-    .tab-btn:hover {
-        color: #fff;
-        background: rgba(255, 255, 255, 0.2);
+    /* separator before every tab except the first, hidden next to the active one */
+    .tab-btn + .tab-btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: -1px;
+        height: 20px;
+        border-left: 1px solid rgba(0, 0, 0, 0.1);
+        transform: translateY(-50%);
     }
 
-    /* the selected module's name stands out from the others */
+    .tab-btn.active::before,
+    .tab-btn.active + .tab-btn::before,
+    .tab-btn:hover::before,
+    .tab-btn:hover + .tab-btn::before {
+        display: none;
+    }
+
+    .tab-btn:hover {
+        color: #2563EB;
+        background: rgba(37, 99, 235, 0.06);
+    }
+
+    .tab-btn:hover i {
+        color: #2563EB;
+    }
+
+    /* the selected service */
     .tab-btn.active {
-        color: #000;
+        color: #fff;
         font-weight: 600;
-        text-shadow: none;
-        background: #fff;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
+        background: #2563EB;
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
     }
 
     .tab-btn.active i {
-        color: #2563EB;
+        color: #fff;
     }
 
     /* Primary-action color override, scoped to the homepage only — .cta-button,
@@ -183,6 +202,10 @@
             padding: 0 14px;
             font-size: 13px;
             gap: 6px;
+        }
+
+        .tab-btn + .tab-btn::before {
+            display: none;
         }
 
         .tab-btn i {

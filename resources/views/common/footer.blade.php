@@ -876,6 +876,20 @@
             });
         }
 
+        // Swap origin and destination (code + label)
+        const flightSwapBtn = document.getElementById('flightSwapBtn');
+        if (flightSwapBtn) {
+            flightSwapBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const fromValue = document.getElementById('flightFromValue');
+                const toValue = document.getElementById('flightToValue');
+                const fromDisplay = document.getElementById('flightFromDisplay');
+                const toDisplay = document.getElementById('flightToDisplay');
+                [fromValue.value, toValue.value] = [toValue.value, fromValue.value];
+                [fromDisplay.textContent, toDisplay.textContent] = [toDisplay.textContent, fromDisplay.textContent];
+            });
+        }
+
         // Flight From
         const flightFromBtn = document.getElementById('flightFromBtn');
         const flightFromDropdown = document.getElementById('flightFromDropdown');

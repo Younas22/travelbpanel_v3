@@ -7763,6 +7763,235 @@ a i {
 }
 
 
+
+/* ---------- Flight form (forms/flight-form.blade.php, .ff-*) ----------
+   Trip type as one segmented control; on wide screens the fields join into a
+   single bar with a swap button between From and To and a wide Search Flights
+   button at the end. Narrower screens keep the shared grid / stacked fields. */
+#siteRedesign .form-container .ff-top {
+    justify-content: space-between;
+}
+
+#siteRedesign .form-container .ff-trip {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.04);
+}
+
+#siteRedesign .form-container .ff-trip .trip-type-btn {
+    height: 34px;
+    padding: 0 16px;
+    border: 0;
+    background: transparent;
+    color: rgba(0, 0, 0, 0.75);
+    font-size: 13px;
+}
+
+#siteRedesign .form-container .ff-trip .trip-type-btn:hover {
+    background: #FFFFFF;
+    color: #000000;
+}
+
+#siteRedesign .form-container .ff-trip .trip-type-btn.active {
+    background: #2563EB;
+    color: #FFFFFF;
+}
+
+#siteRedesign .form-container .ff-fields > .ff-field.is-from {
+    position: relative;
+}
+
+#siteRedesign .form-container .ff-swap {
+    position: absolute;
+    top: 50%;
+    right: -22px;
+    z-index: 6;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 50%;
+    background: #FFFFFF;
+    color: #2563EB;
+    font-size: 13px;
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+#siteRedesign .form-container .ff-swap:hover {
+    border-color: #2563EB;
+    background: #2563EB;
+    color: #FFFFFF;
+}
+
+#siteRedesign .form-container .ff-swap:focus-visible,
+#siteRedesign .form-container .ff-search-btn:focus-visible {
+    outline: 2px solid #2563EB;
+    outline-offset: 2px;
+}
+
+#siteRedesign .form-container .ff-fields > .ff-field.is-to {
+    padding-left: 22px;
+}
+
+#siteRedesign .form-container .tab-content form > div > button.ff-search-btn {
+    font-weight: 600;
+}
+
+#siteRedesign .form-container .tab-content form > div > button.ff-search-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (min-width: 1280px) {
+    #siteRedesign .form-container .tab-content #flightSearchForm > div {
+        padding-right: 196px;
+    }
+
+    #siteRedesign .form-container .ff-fields {
+        gap: 0;
+        min-height: 66px;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 16px;
+        background: #FFFFFF;
+    }
+
+    #siteRedesign .form-container .ff-fields > .ff-field {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+    }
+
+    #siteRedesign .form-container .ff-fields > .ff-field + .ff-field {
+        border-left: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    /* the return date stays hidden for one-way trips */
+    #siteRedesign .form-container .ff-fields > .ff-field.hidden {
+        display: none;
+    }
+
+    #siteRedesign .form-container .ff-fields > .ff-field .text-\[13px\] {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #siteRedesign .form-container .ff-fields > .ff-field.is-to {
+        padding-left: 26px;
+    }
+
+    #siteRedesign .form-container .ff-fields > .ff-field:hover {
+        background: rgba(37, 99, 235, 0.03);
+    }
+
+    #siteRedesign .form-container .ff-fields > .ff-field:focus-within {
+        background: rgba(37, 99, 235, 0.05);
+        box-shadow: none;
+    }
+
+    #siteRedesign .form-container .ff-fields > .ff-field:first-child {
+        border-radius: 15px 0 0 15px;
+    }
+
+    #siteRedesign .form-container .ff-fields > .ff-field:last-child {
+        border-radius: 0 15px 15px 0;
+    }
+
+    #siteRedesign .form-container .ff-fields > .ff-field > .flex {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    #siteRedesign .form-container .ff-swap {
+        right: -17px;
+    }
+
+    #siteRedesign .form-container .tab-content form > div > button.ff-search-btn {
+        width: 180px;
+        height: 66px;
+        gap: 10px;
+        border-radius: 16px;
+        font-size: 15px;
+        box-shadow: 0 10px 24px rgba(37, 99, 235, 0.3);
+    }
+
+    #siteRedesign .form-container .tab-content form > div > button.ff-search-btn i {
+        font-size: 15px;
+    }
+
+    #siteRedesign .form-container .tab-content form > div > button.ff-search-btn:hover {
+        background: #1D4ED8;
+    }
+}
+
+@media (max-width: 1279px) {
+    /* the search button sits under the fields at full width */
+    #siteRedesign .form-container .tab-content #flightSearchForm > div {
+        padding-right: 0;
+    }
+
+    #siteRedesign .form-container .tab-content form > div > button.ff-search-btn {
+        position: static;
+        width: 100%;
+        height: 50px;
+        margin-top: 6px;
+        gap: 10px;
+        border-radius: 12px;
+        background: #2563EB;
+        font-size: 15px;
+        box-shadow: none;
+        transform: none;
+    }
+
+    #siteRedesign .form-container .tab-content form > div > button.ff-search-btn i {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 639px) {
+    /* stacked fields: the swap button sits between From and To */
+    #siteRedesign .form-container .ff-swap {
+        top: auto;
+        right: 18px;
+        bottom: -22px;
+        transform: rotate(90deg);
+    }
+
+    #siteRedesign .form-container .ff-fields > .ff-field.is-to {
+        padding-left: 12px;
+    }
+}
+
+/* Flight form: right-to-left */
+#siteRedesign .form-container .ff-swap { right: auto; left: -22px; }
+#siteRedesign .form-container .ff-fields > .ff-field.is-to { padding-left: 12px; padding-right: 22px; }
+@media (min-width: 1280px) {
+    #siteRedesign .form-container .tab-content #flightSearchForm > div { padding-right: 0; padding-left: 196px; }
+    #siteRedesign .form-container .ff-fields > .ff-field + .ff-field { border-left: 0; border-right: 1px solid rgba(0, 0, 0, 0.08); }
+    #siteRedesign .form-container .ff-fields > .ff-field.is-to { padding-left: 16px; padding-right: 26px; }
+    #siteRedesign .form-container .ff-fields > .ff-field:first-child { border-radius: 0 15px 15px 0; }
+    #siteRedesign .form-container .ff-fields > .ff-field:last-child { border-radius: 15px 0 0 15px; }
+    #siteRedesign .form-container .ff-swap { left: -17px; }
+}
+@media (max-width: 1279px) {
+    #siteRedesign .form-container .tab-content #flightSearchForm > div { padding-left: 0; }
+}
+@media (max-width: 639px) {
+    #siteRedesign .form-container .ff-swap { right: auto; left: 18px; }
+    #siteRedesign .form-container .ff-fields > .ff-field.is-to { padding-right: 12px; }
+}
+
+
 /* ==========================================================================
    Homepage card sections: Hotels / Tours / Umrah / How It Works
    (resources/views/home.blade.php, .th-section)

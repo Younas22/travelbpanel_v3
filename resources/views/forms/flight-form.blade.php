@@ -176,13 +176,15 @@
     <form id="flightSearchForm" onsubmit="return submitFlightForm(event)">
         <div class="flex flex-col gap-2">
             <!-- Trip Type Toggle -->
-            <div class="flex items-center gap-2 mb-2">
+            <div class="ff-top flex flex-wrap items-center gap-2 mb-2">
+                <div class="ff-trip" role="group" aria-label="Trip type">
                 <button type="button" id="roundTripBtn" class="trip-type-btn @if(isset($flight_search['trip_type']) && $flight_search['trip_type'] == 'round') active @endif">
                     <i class="fas fa-exchange-alt mr-2"></i>{{t('flightform.round_trip')}}
                 </button>
                 <button type="button" id="oneWayBtn" class="trip-type-btn @if(session('flight_search.trip_type') == 'oneway') active @elseif(!session('flight_search.trip_type')) active @endif">
                     <i class="fas fa-long-arrow-alt-right mr-2"></i>{{t('flightform.one_way')}}
                 </button>
+                </div>
                 <!-- AI search entry point (homepage only; behaviour to be wired up later) -->
                 <button type="button" id="aiSearchBtn" class="ai-search-btn" title="Search with AI" aria-label="Search with AI">
                     <i class="fas fa-wand-magic-sparkles"></i>
@@ -192,9 +194,9 @@
             </div>
 
             <!-- Input Fields Row -->
-            <div class="flex flex-col sm:flex-row items-stretch gap-2">
+            <div class="ff-fields flex flex-col sm:flex-row items-stretch gap-2">
                 <!-- From -->
-                <div class="w-full sm:flex-1 bg-gray-50 rounded-lg p-2 location-wrapper border border-gray-200">
+                <div class="ff-field is-from w-full sm:flex-1 bg-gray-50 rounded-lg p-2 location-wrapper border border-gray-200">
                     <div class="flex items-start gap-2">
                         <i class="fas fa-plane-departure text-gray-400 text-[14px] mt-0.5"></i>
                         <div class="flex-1">
@@ -206,6 +208,11 @@
                         </div>
                     </div>
 
+                    <!-- Swap origin and destination -->
+                    <button type="button" id="flightSwapBtn" class="ff-swap" aria-label="Swap origin and destination" title="Swap">
+                        <i class="fas fa-right-left"></i>
+                    </button>
+
                     <!-- From Airport Dropdown -->
                     <div id="flightFromDropdown" class="airport-dropdown">
                         <input type="text" id="flightFromSearch" class="airport-search" placeholder="{{t('flightform.from_placeholder')}}">
@@ -216,7 +223,7 @@
                 </div>
 
                 <!-- To -->
-                <div class="w-full sm:flex-1 bg-gray-50 rounded-lg p-2 location-wrapper border border-gray-200">
+                <div class="ff-field is-to w-full sm:flex-1 bg-gray-50 rounded-lg p-2 location-wrapper border border-gray-200">
                     <div class="flex items-start gap-2">
                         <i class="fas fa-plane-arrival text-gray-400 text-[14px] mt-0.5"></i>
                         <div class="flex-1">
@@ -238,7 +245,7 @@
                 </div>
 
                 <!-- Departure Date -->
-                <div class="w-full sm:flex-1 bg-gray-50 rounded-lg p-2 border border-gray-200">
+                <div class="ff-field w-full sm:flex-1 bg-gray-50 rounded-lg p-2 border border-gray-200">
                     <div class="flex items-start gap-2">
                         <i class="fas fa-calendar-alt text-gray-400 text-[14px] mt-0.5"></i>
                         <div class="flex-1">
@@ -249,7 +256,7 @@
                 </div>
 
                 <!-- Return Date -->
-                <div id="returnDateField" class="w-full sm:flex-1 bg-gray-50 rounded-lg p-2 border border-gray-200 {{ empty($flight_search['return_date']) ? 'hidden' : '' }}">
+                <div id="returnDateField" class="ff-field w-full sm:flex-1 bg-gray-50 rounded-lg p-2 border border-gray-200 {{ empty($flight_search['return_date']) ? 'hidden' : '' }}">
                     <div class="flex items-start gap-2">
                         <i class="fas fa-calendar-alt text-gray-400 text-[14px] mt-0.5"></i>
                         <div class="flex-1">
@@ -260,7 +267,7 @@
                 </div>
 
                 <!-- Passengers -->
-                <div class="w-full sm:flex-1 bg-gray-50 rounded-lg p-2 relative border border-gray-200">
+                <div class="ff-field w-full sm:flex-1 bg-gray-50 rounded-lg p-2 relative border border-gray-200">
                     <div class="flex items-start gap-2 cursor-pointer" id="flightPassengerBtn">
                         <i class="fas fa-user text-gray-400 text-[14px] mt-0.5"></i>
                         <div class="flex-1">
@@ -331,7 +338,7 @@
                 </div>
 
                 <!-- Class -->
-                <div class="w-full sm:flex-1 bg-gray-50 rounded-lg p-2 relative border border-gray-200">
+                <div class="ff-field w-full sm:flex-1 bg-gray-50 rounded-lg p-2 relative border border-gray-200">
                     <div class="flex items-start gap-2 cursor-pointer" id="flightClassBtn">
                         <i class="fas fa-chair text-gray-400 text-[14px] mt-0.5"></i>
                         <div class="flex-1">
@@ -369,9 +376,9 @@
             </div>
 
             <!-- Search Button -->
-            <button type="submit" id="flightSearchBtn" class="w-full py-2.5 px-6 bg-[#0346FA] text-white rounded-lg font-bold text-sm hover:bg-[#005f99] transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
-                {{t('flightform.search_flights')}}
+            <button type="submit" id="flightSearchBtn" class="ff-search-btn w-full py-2.5 px-6 bg-[#0346FA] text-white rounded-lg font-bold text-sm hover:bg-[#005f99] transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
                 <i class="fas fa-search text-xs"></i>
+                <span>{{t('flightform.search_flights')}}</span>
             </button>
         </div>
     </form>
