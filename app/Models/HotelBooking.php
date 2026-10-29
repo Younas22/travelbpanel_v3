@@ -128,6 +128,11 @@ class HotelBooking extends Model
                     $parts = explode(',', $address);
                     if (count($parts) >= 2) {
                         $location = trim($parts[count($parts) - 2]);
+                    } elseif (str_contains($address, ' - ')) {
+                        // e.g. "Al Sabkha Rd 109 Street - Dubai" — city after the last dash
+                        $location = trim(substr($address, strrpos($address, ' - ') + 3));
+                    } else {
+                        $location = trim($address);
                     }
                 }
 

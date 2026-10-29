@@ -16,9 +16,26 @@
             if (selectedCountSpan) selectedCountSpan.textContent = count;
         }
 
+        var selectAll = document.getElementById('bkSelectAll');
+
         bookingCheckboxes.forEach(function (checkbox) {
-            checkbox.addEventListener('change', updateBulkDeleteButton);
+            checkbox.addEventListener('change', function () {
+                if (selectAll) {
+                    var checked = document.querySelectorAll('.booking-checkbox:checked').length;
+                    selectAll.checked = checked === bookingCheckboxes.length;
+                    selectAll.indeterminate = checked > 0 && checked < bookingCheckboxes.length;
+                }
+                updateBulkDeleteButton();
+            });
         });
+
+        if (selectAll) {
+            selectAll.disabled = bookingCheckboxes.length === 0;
+            selectAll.addEventListener('change', function () {
+                bookingCheckboxes.forEach(function (checkbox) { checkbox.checked = selectAll.checked; });
+                updateBulkDeleteButton();
+            });
+        }
 
         if (bulkDeleteBtn) {
             bulkDeleteBtn.addEventListener('click', function () {

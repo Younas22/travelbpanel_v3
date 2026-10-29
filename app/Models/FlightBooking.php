@@ -182,8 +182,10 @@ class FlightBooking extends Model
             if (!empty($segments[0]) && is_array($segments[0])) {
                 $firstSegment = $segments[0][0] ?? $segments[0];
                 
-                if (!empty($firstSegment['departure']['date'])) {
-                    $date = Carbon::parse($firstSegment['departure']['date']);
+                // Some suppliers (e.g. Duffel) store only departure.booking_time, not departure.date.
+                $departureDate = $firstSegment['departure']['date'] ?? $firstSegment['departure']['booking_time'] ?? null;
+                if (!empty($departureDate)) {
+                    $date = Carbon::parse($departureDate);
                     $time = $firstSegment['departure']['time'] ?? '';
                     
                     return [

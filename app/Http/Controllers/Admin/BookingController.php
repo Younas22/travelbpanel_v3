@@ -37,7 +37,7 @@ class BookingController extends Controller
             $bookings = $this->getUmrahBookings($request);
         } else {
             // Merge all bookings (flight, hotel, tour, umrah)
-            $bookings = $this->getAllBookings($request);
+            $bookings = $this->hydrateBookingPage($this->getAllBookings($request));
         }
 
         // Commission is computed from each booking's own agent via
@@ -59,6 +59,38 @@ class BookingController extends Controller
         $stats = $this->getBookingStats($bookingType);
 
         return view('admin.bookings.all', compact('bookings', 'stats', 'bookingType', 'agents'));
+    }
+
+    /**
+     * The "all types" lists come from a UNION query that selects only a few
+     * shared columns and hydrates every row as FlightBooking, so the
+     * type-specific accessors (hotel_info, stay_dates, guest_count,
+     * travel_date, ...) had nothing to read and showed N/A. Swap each row on
+     * the current page for its real model (one query per type), keeping the
+     * union's order and booking_type.
+     */
+    private function hydrateBookingPage($bookings)
+    {
+        $models = ['flight' => FlightBooking::class, 'hotel' => HotelBooking::class, 'tour' => TourBooking::class, 'umrah' => UmrahBooking::class];
+        $items = $bookings->getCollection();
+
+        $loaded = [];
+        foreach ($items->groupBy('booking_type') as $type => $rows) {
+            if (isset($models[$type])) {
+                $loaded[$type] = $models[$type]::whereIn('id', $rows->pluck('id'))->get()->keyBy('id');
+            }
+        }
+
+        $bookings->setCollection($items->map(function ($row) use ($loaded) {
+            $full = $loaded[$row->booking_type][$row->id] ?? null;
+            if (!$full) {
+                return $row;
+            }
+            $full->setAttribute('booking_type', $row->booking_type);
+            return $full;
+        }));
+
+        return $bookings;
     }
 
     /**
@@ -369,7 +401,7 @@ class BookingController extends Controller
         } elseif ($bookingType === 'umrah') {
             $bookings = $this->getCancelledUmrahBookings($request);
         } else {
-            $bookings = $this->getAllCancelledBookings($request);
+            $bookings = $this->hydrateBookingPage($this->getAllCancelledBookings($request));
         }
 
         $stats = $this->getBookingStats($bookingType);
@@ -382,8 +414,7 @@ class BookingController extends Controller
     private function getCancelledFlightBookings(Request $request)
     {
         $query = FlightBooking::query()
-            ->whereIn('booking_status_flag', ['cancelled'])
-            ->orWhere('booking_payment_state', 'refunded');
+            ->where(fn ($q) => $q->where('booking_status_flag', 'cancelled')->orWhere('booking_payment_state', 'refunded'));
 
         if ($request->filled('search')) {
             $query->search($request->search);
@@ -404,8 +435,7 @@ class BookingController extends Controller
     private function getCancelledHotelBookings(Request $request)
     {
         $query = HotelBooking::query()
-            ->whereIn('booking_status_flag', ['cancelled'])
-            ->orWhere('booking_payment_state', 'refunded');
+            ->where(fn ($q) => $q->where('booking_status_flag', 'cancelled')->orWhere('booking_payment_state', 'refunded'));
 
         if ($request->filled('search')) {
             $query->search($request->search);
@@ -426,8 +456,7 @@ class BookingController extends Controller
     private function getCancelledTourBookings(Request $request)
     {
         $query = TourBooking::query()
-            ->whereIn('booking_status_flag', ['cancelled'])
-            ->orWhere('booking_payment_state', 'refunded');
+            ->where(fn ($q) => $q->where('booking_status_flag', 'cancelled')->orWhere('booking_payment_state', 'refunded'));
 
         if ($request->filled('search')) {
             $query->search($request->search);
@@ -448,8 +477,7 @@ class BookingController extends Controller
     private function getCancelledUmrahBookings(Request $request)
     {
         $query = UmrahBooking::query()
-            ->whereIn('booking_status_flag', ['cancelled'])
-            ->orWhere('booking_payment_state', 'refunded');
+            ->where(fn ($q) => $q->where('booking_status_flag', 'cancelled')->orWhere('booking_payment_state', 'refunded'));
 
         if ($request->filled('search')) {
             $query->search($request->search);
@@ -482,8 +510,7 @@ class BookingController extends Controller
             'booking_supplier_name',
             'created_at'
         )
-        ->whereIn('booking_status_flag', ['cancelled'])
-        ->orWhere('booking_payment_state', 'refunded')
+        ->where(fn ($q) => $q->where('booking_status_flag', 'cancelled')->orWhere('booking_payment_state', 'refunded'))
         ->when($request->filled('search'), fn($q) => $q->search($request->search))
         ->when($request->filled('date_from') || $request->filled('date_to'), function($q) use ($request) {
             $dateFrom = $request->date_from ? Carbon::parse($request->date_from)->startOfDay() : null;
@@ -505,8 +532,7 @@ class BookingController extends Controller
             'booking_supplier_name',
             'created_at'
         )
-        ->whereIn('booking_status_flag', ['cancelled'])
-        ->orWhere('booking_payment_state', 'refunded')
+        ->where(fn ($q) => $q->where('booking_status_flag', 'cancelled')->orWhere('booking_payment_state', 'refunded'))
         ->when($request->filled('search'), fn($q) => $q->search($request->search))
         ->when($request->filled('date_from') || $request->filled('date_to'), function($q) use ($request) {
             $dateFrom = $request->date_from ? Carbon::parse($request->date_from)->startOfDay() : null;
@@ -528,8 +554,7 @@ class BookingController extends Controller
             'booking_supplier_name',
             'created_at'
         )
-        ->whereIn('booking_status_flag', ['cancelled'])
-        ->orWhere('booking_payment_state', 'refunded')
+        ->where(fn ($q) => $q->where('booking_status_flag', 'cancelled')->orWhere('booking_payment_state', 'refunded'))
         ->when($request->filled('search'), fn($q) => $q->search($request->search))
         ->when($request->filled('date_from') || $request->filled('date_to'), function($q) use ($request) {
             $dateFrom = $request->date_from ? Carbon::parse($request->date_from)->startOfDay() : null;
@@ -551,8 +576,7 @@ class BookingController extends Controller
             'booking_supplier_name',
             'created_at'
         )
-        ->whereIn('booking_status_flag', ['cancelled'])
-        ->orWhere('booking_payment_state', 'refunded')
+        ->where(fn ($q) => $q->where('booking_status_flag', 'cancelled')->orWhere('booking_payment_state', 'refunded'))
         ->when($request->filled('search'), fn($q) => $q->search($request->search))
         ->when($request->filled('date_from') || $request->filled('date_to'), function($q) use ($request) {
             $dateFrom = $request->date_from ? Carbon::parse($request->date_from)->startOfDay() : null;
@@ -588,7 +612,7 @@ class BookingController extends Controller
         } elseif ($bookingType === 'umrah') {
             $bookings = $this->getPendingUmrahBookings($request);
         } else {
-            $bookings = $this->getAllPendingBookings($request);
+            $bookings = $this->hydrateBookingPage($this->getAllPendingBookings($request));
         }
 
         $stats = $this->getBookingStats($bookingType);
