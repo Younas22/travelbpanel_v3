@@ -20,5 +20,7 @@
     "first_class": "First Class",
     "search_flights": "Flüge suchen",
     "modify_search": "Suche ändern",
-    "date": "Datum"
+    "date": "Datum",
+    "multi_city": "Gabelflug",
+    "coming_soon": "Demnächst"
 }

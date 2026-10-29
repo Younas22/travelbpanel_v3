@@ -7481,7 +7481,7 @@ footer {
    single bar with a swap button between From and To and a wide Search Flights
    button at the end. Narrower screens keep the shared grid / stacked fields. */
 #siteRedesign .form-container .ff-top {
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 
 #siteRedesign .form-container .ff-trip {
@@ -7509,6 +7509,123 @@ footer {
 #siteRedesign .form-container .ff-trip .trip-type-btn.active {
     background: #2563EB;
     color: #FFFFFF;
+}
+
+/* locked options (Multi-city, Search with AI): visible but not usable yet */
+#siteRedesign .form-container .ff-trip .trip-type-btn.is-locked,
+#siteRedesign.has-ai-search .ai-search-btn.is-locked {
+    color: rgba(0, 0, 0, 0.45);
+    cursor: not-allowed;
+}
+
+#siteRedesign .form-container .ff-trip .trip-type-btn.is-locked:hover {
+    background: transparent;
+    color: rgba(0, 0, 0, 0.45);
+}
+
+#siteRedesign .form-container .ff-trip .trip-type-btn.is-locked i,
+#siteRedesign.has-ai-search .ai-search-btn.is-locked i {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+#siteRedesign.has-ai-search .ai-search-btn.is-locked {
+    padding-right: 14px;
+}
+
+#siteRedesign.has-ai-search .ai-search-btn.is-locked:hover {
+    border-color: rgba(0, 0, 0, 0.12);
+    color: rgba(0, 0, 0, 0.45);
+}
+
+#siteRedesign .form-container .ff-lock {
+    margin-left: 2px;
+    font-size: 11px;
+}
+
+/* cabin class: a compact dropdown in the top row */
+#siteRedesign .form-container .ff-cabin {
+    position: relative;
+}
+
+#siteRedesign .form-container .ff-cabin-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    padding: 0 16px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 999px;
+    background: #FFFFFF;
+    color: #000000;
+    font-size: 13px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+#siteRedesign .form-container .ff-cabin-btn:hover {
+    border-color: #2563EB;
+}
+
+#siteRedesign .form-container .ff-cabin-btn:focus-visible {
+    outline: 2px solid #2563EB;
+    outline-offset: 2px;
+}
+
+#siteRedesign .form-container .ff-cabin-btn > i:first-child {
+    color: #2563EB;
+}
+
+#siteRedesign .form-container .ff-cabin-caret {
+    color: rgba(0, 0, 0, 0.4);
+    font-size: 10px;
+}
+
+@media (min-width: 1025px) {
+    #siteRedesign .form-container .ff-cabin .class-dropdown {
+        left: 0;
+        right: auto;
+        width: 240px;
+        min-width: 0;
+    }
+}
+
+/* the AI button sits in the far right corner */
+#siteRedesign .form-container .ff-top .ai-search-btn {
+    margin-left: auto;
+}
+
+@media (min-width: 1280px) {
+    /* the top row spans the search button column too, so AI sits in the panel's corner */
+    #siteRedesign .form-container .ff-top {
+        margin-right: -196px;
+    }
+}
+
+@media (max-width: 639px) {
+    #siteRedesign .form-container .ff-trip {
+        display: flex;
+        width: 100%;
+    }
+
+    #siteRedesign .form-container .ff-trip .trip-type-btn {
+        flex: 1 1 auto;
+        justify-content: center;
+        gap: 4px;
+        padding: 0 8px;
+        font-size: 12.5px;
+    }
+
+    #siteRedesign .form-container .ff-trip .trip-type-btn > i:first-child {
+        display: none;
+    }
+
+    #siteRedesign.has-ai-search .form-container .ai-search-btn.is-locked {
+        width: auto;
+        gap: 6px;
+        height: 42px;
+        padding: 0 14px;
+    }
 }
 
 #siteRedesign .form-container .ff-fields > .ff-field.is-from {
@@ -7585,6 +7702,16 @@ footer {
 
     #siteRedesign .form-container .ff-fields > .ff-field + .ff-field {
         border-left: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    /* From and To get extra room so full airport names fit */
+    #siteRedesign .form-container .ff-fields > .ff-field {
+        flex: 1 1 0;
+    }
+
+    #siteRedesign .form-container .ff-fields > .ff-field.is-from,
+    #siteRedesign .form-container .ff-fields > .ff-field.is-to {
+        flex: 1.6 1 0;
     }
 
     /* the return date stays hidden for one-way trips */
@@ -7680,6 +7807,25 @@ footer {
     }
 
     #siteRedesign .form-container .ff-fields > .ff-field.is-to {
+        padding-left: 12px;
+    }
+}
+
+
+
+/* swap button on forms with separate field boxes (Umrah): centred in the gap */
+#siteRedesign .form-container .sm\:flex-row > .ff-swap-next {
+    padding-left: 24px;
+}
+
+@media (min-width: 1280px) {
+    #siteRedesign .form-container .ff-swap.is-boxed {
+        right: -22px;
+    }
+}
+
+@media (max-width: 639px) {
+    #siteRedesign .form-container .sm\:flex-row > .ff-swap-next {
         padding-left: 12px;
     }
 }

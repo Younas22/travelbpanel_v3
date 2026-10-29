@@ -1198,6 +1198,20 @@
             });
         }
 
+        // Swap origin and destination (code + label)
+        const umrahSwapBtn = document.getElementById('umrahSwapBtn');
+        if (umrahSwapBtn) {
+            umrahSwapBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const fromValue = document.getElementById('umrahFromValue');
+                const toValue = document.getElementById('umrahToValue');
+                const fromDisplay = document.getElementById('umrahFromDisplay');
+                const toDisplay = document.getElementById('umrahToDisplay');
+                [fromValue.value, toValue.value] = [toValue.value, fromValue.value];
+                [fromDisplay.textContent, toDisplay.textContent] = [toDisplay.textContent, fromDisplay.textContent];
+            });
+        }
+
         // Location dropdowns (From/To)
         const umrahFromBtn = document.getElementById('umrahFromBtn');
         const umrahFromDropdown = document.getElementById('umrahFromDropdown');

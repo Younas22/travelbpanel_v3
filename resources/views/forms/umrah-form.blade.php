@@ -208,6 +208,11 @@
                         </div>
                     </div>
 
+                    <!-- Swap origin and destination -->
+                    <button type="button" id="umrahSwapBtn" class="ff-swap is-boxed" aria-label="Swap origin and destination" title="Swap">
+                        <i class="fas fa-right-left"></i>
+                    </button>
+
                     <!-- From Airport Dropdown -->
                     <div id="umrahFromDropdown" class="airport-dropdown">
                         <input type="text" id="umrahFromSearch" class="airport-search" placeholder="{{t('umrahform.search_location')}}">
@@ -218,7 +223,7 @@
                 </div>
 
                 <!-- To -->
-                <div class="w-full sm:flex-1 bg-gray-50 rounded-lg p-2 airport-wrapper border border-gray-200">
+                <div class="ff-swap-next w-full sm:flex-1 bg-gray-50 rounded-lg p-2 airport-wrapper border border-gray-200">
                     <div class="flex items-start gap-2">
                         <i class="fas fa-kaaba text-gray-400 text-[14px] mt-0.5"></i>
                         <div class="flex-1">

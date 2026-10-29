@@ -20,5 +20,7 @@
     "first_class": "퍼스트 클래스",
     "search_flights": "항공편 검색",
     "modify_search": "검색 수정",
-    "date": "날짜"
+    "date": "날짜",
+    "multi_city": "다구간",
+    "coming_soon": "곧 출시"
 }

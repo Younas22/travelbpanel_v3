@@ -20,5 +20,7 @@
     "first_class": "First Class",
     "search_flights": "Uçuş Ara",
     "modify_search": "Aramayı Değiştir",
-    "date": "Tarih"
+    "date": "Tarih",
+    "multi_city": "Çoklu şehir",
+    "coming_soon": "Yakında"
 }

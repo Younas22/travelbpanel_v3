@@ -20,5 +20,7 @@
     "first_class": "First Class",
     "search_flights": "Search Flights",
     "modify_search": "Modify Search",
-    "date": "Date"
+    "date": "Date",
+    "multi_city": "Multi-city",
+    "coming_soon": "Coming soon"
 }

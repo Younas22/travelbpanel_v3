@@ -20,5 +20,7 @@
     "first_class": "ファーストクラス",
     "search_flights": "フライト検索",
     "modify_search": "検索条件を変更",
-    "date": "日付"
+    "date": "日付",
+    "multi_city": "複数都市",
+    "coming_soon": "近日公開"
 }

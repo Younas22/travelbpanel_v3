@@ -178,18 +178,55 @@
             <!-- Trip Type Toggle -->
             <div class="ff-top flex flex-wrap items-center gap-2 mb-2">
                 <div class="ff-trip" role="group" aria-label="Trip type">
-                <button type="button" id="roundTripBtn" class="trip-type-btn @if(isset($flight_search['trip_type']) && $flight_search['trip_type'] == 'round') active @endif">
-                    <i class="fas fa-exchange-alt mr-2"></i>{{t('flightform.round_trip')}}
-                </button>
                 <button type="button" id="oneWayBtn" class="trip-type-btn @if(session('flight_search.trip_type') == 'oneway') active @elseif(!session('flight_search.trip_type')) active @endif">
                     <i class="fas fa-long-arrow-alt-right mr-2"></i>{{t('flightform.one_way')}}
                 </button>
+                <button type="button" id="roundTripBtn" class="trip-type-btn @if(isset($flight_search['trip_type']) && $flight_search['trip_type'] == 'round') active @endif">
+                    <i class="fas fa-exchange-alt mr-2"></i>{{t('flightform.round_trip')}}
+                </button>
+                <!-- Multi-city: not supported by the search yet, so it is shown locked -->
+                <button type="button" id="multiCityBtn" class="trip-type-btn is-locked" disabled aria-disabled="true" title="{{ t('flightform.coming_soon') }}">
+                    <i class="fas fa-route mr-2"></i>{{ t('flightform.multi_city') }} <i class="fas fa-lock ff-lock"></i>
+                </button>
                 </div>
-                <!-- AI search entry point (homepage only; behaviour to be wired up later) -->
-                <button type="button" id="aiSearchBtn" class="ai-search-btn" title="Search with AI" aria-label="Search with AI">
+
+                <!-- Cabin class -->
+                <div class="ff-cabin">
+                    <button type="button" class="ff-cabin-btn" id="flightClassBtn" aria-label="{{t('flightform.class')}}">
+                        <i class="fas fa-chair"></i>
+                        <span id="flightClassDisplay">{{t('flightform.economy')}}</span>
+                        <i class="fas fa-chevron-down ff-cabin-caret"></i>
+                    </button>
+                    <input type="hidden" id="flightClassValue" value="{{ isset($flight_search['flight_type']) && $flight_search['flight_type'] ? ($flight_search['flight_type']) : 'economy'}}">
+
+                    <!-- Class Dropdown -->
+                    <div id="flightClassDropdown" class="class-dropdown">
+                        <div id="flightClassList">
+                            <div class="class-item" data-class="economy">
+                                <i class="fas fa-chair text-gray-500"></i>
+                                <span class="class-name">{{t('flightform.economy')}}</span>
+                            </div>
+                            <div class="class-item" data-class="premium_economy">
+                                <i class="fas fa-chair text-gray-500"></i>
+                                <span class="class-name">{{t('flightform.premium_economy')}}</span>
+                            </div>
+                            <div class="class-item" data-class="business">
+                                <i class="fas fa-chair text-gray-500"></i>
+                                <span class="class-name">{{t('flightform.business')}}</span>
+                            </div>
+                            <div class="class-item" data-class="first">
+                                <i class="fas fa-chair text-gray-500"></i>
+                                <span class="class-name">{{t('flightform.first_class')}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI search entry point (homepage only), locked for now -->
+                <button type="button" id="aiSearchBtn" class="ai-search-btn is-locked" disabled aria-disabled="true" title="{{ t('flightform.coming_soon') }}" aria-label="Search with AI ({{ t('flightform.coming_soon') }})">
                     <i class="fas fa-wand-magic-sparkles"></i>
                     <span>Search with AI</span>
-                    <span class="ai-search-new">New</span>
+                    <i class="fas fa-lock ff-lock"></i>
                 </button>
             </div>
 
@@ -334,43 +371,6 @@
                         <button type="button" id="flightApplyPassengerBtn" class="w-full py-2.5 bg-[#0346FA] text-white rounded-xl font-semibold text-[13px] hover:bg-[#005f99] transition-all">
                             {{t('flightform.apply')}}
                         </button>
-                    </div>
-                </div>
-
-                <!-- Class -->
-                <div class="ff-field w-full sm:flex-1 bg-gray-50 rounded-lg p-2 relative border border-gray-200">
-                    <div class="flex items-start gap-2 cursor-pointer" id="flightClassBtn">
-                        <i class="fas fa-chair text-gray-400 text-[14px] mt-0.5"></i>
-                        <div class="flex-1">
-                            <label class="text-[10px] text-gray-500 block mb-0.5 font-medium uppercase tracking-wide">{{t('flightform.class')}}</label>
-                            <div class="text-gray-900 font-semibold text-[13px]">
-                                <span id="flightClassDisplay">{{t('flightform.economy')}}</span>
-                                <i class="fas fa-chevron-down text-gray-400 text-[14px] ml-1"></i>
-                            </div>
-                            <input type="hidden" id="flightClassValue" value="{{ isset($flight_search['flight_type']) && $flight_search['flight_type'] ? ($flight_search['flight_type']) : 'economy'}}">
-                        </div>
-                    </div>
-
-                    <!-- Class Dropdown -->
-                    <div id="flightClassDropdown" class="class-dropdown">
-                        <div id="flightClassList">
-                            <div class="class-item" data-class="economy">
-                                <i class="fas fa-chair text-gray-500"></i>
-                                <span class="class-name">{{t('flightform.economy')}}</span>
-                            </div>
-                            <div class="class-item" data-class="premium_economy">
-                                <i class="fas fa-chair text-gray-500"></i>
-                                <span class="class-name">{{t('flightform.premium_economy')}}</span>
-                            </div>
-                            <div class="class-item" data-class="business">
-                                <i class="fas fa-chair text-gray-500"></i>
-                                <span class="class-name">{{t('flightform.business')}}</span>
-                            </div>
-                            <div class="class-item" data-class="first">
-                                <i class="fas fa-chair text-gray-500"></i>
-                                <span class="class-name">{{t('flightform.first_class')}}</span>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

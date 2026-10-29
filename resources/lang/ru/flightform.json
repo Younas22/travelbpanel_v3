@@ -20,5 +20,7 @@
     "first_class": "Первый класс",
     "search_flights": "Найти рейсы",
     "modify_search": "Изменить поиск",
-    "date": "Дата"
+    "date": "Дата",
+    "multi_city": "Сложный маршрут",
+    "coming_soon": "Скоро"
 }

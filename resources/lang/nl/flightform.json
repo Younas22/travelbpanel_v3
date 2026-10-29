@@ -20,5 +20,7 @@
     "first_class": "Eerste klasse",
     "search_flights": "Zoek vluchten",
     "modify_search": "Zoekopdracht aanpassen",
-    "date": "Datum"
+    "date": "Datum",
+    "multi_city": "Meerdere steden",
+    "coming_soon": "Binnenkort"
 }

@@ -20,5 +20,7 @@
     "first_class": "头等舱",
     "search_flights": "搜索航班",
     "modify_search": "修改搜索",
-    "date": "日期"
+    "date": "日期",
+    "multi_city": "多城市",
+    "coming_soon": "即将推出"
 }
