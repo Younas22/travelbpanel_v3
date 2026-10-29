@@ -75,6 +75,20 @@
             </div>
         </div>
 
+        {{-- Suppliers --}}
+        <a href="{{ route('admin.travel-partners.index') }}"
+           class="sb-row {{ request()->routeIs('admin.travel-partners*') ? 'sb-on' : '' }}">
+            <i class="bi bi-building sb-ico"></i>
+            <span>Suppliers</span>
+        </a>
+
+        {{-- Support Tickets --}}
+        <a href="{{ route('admin.support.index') }}"
+           class="sb-row {{ request()->routeIs('admin.support*') ? 'sb-on' : '' }}">
+            <i class="bi bi-headset sb-ico"></i>
+            <span>Support Tickets</span>
+        </a>
+
         @php
             // Show module in sidebar only when it has at least one active manual partner
             $sidebarModule = function(string $slug) {
@@ -189,20 +203,6 @@
             </div>
         @endif
 
-        {{-- Suppliers --}}
-        <a href="{{ route('admin.travel-partners.index') }}"
-           class="sb-row {{ request()->routeIs('admin.travel-partners*') ? 'sb-on' : '' }}">
-            <i class="bi bi-building sb-ico"></i>
-            <span>Suppliers</span>
-        </a>
-
-        {{-- Support Tickets --}}
-        <a href="{{ route('admin.support.index') }}"
-           class="sb-row {{ request()->routeIs('admin.support*') ? 'sb-on' : '' }}">
-            <i class="bi bi-headset sb-ico"></i>
-            <span>Support Tickets</span>
-        </a>
-
         {{-- Messages --}}
         @php $newMessages = \App\Models\ContactMessage::where('status', 'new')->count(); @endphp
         <a href="{{ route('admin.contact-messages.index') }}"
@@ -224,8 +224,8 @@
         </a>
 
         {{-- Content --}}
-        <div class="sb-group {{ request()->routeIs('admin.content*') || request()->routeIs('admin.pages*') || request()->routeIs('admin.menus*') ? 'sb-group-open' : '' }}">
-            <button class="sb-row {{ request()->routeIs('admin.content*') || request()->routeIs('admin.pages*') || request()->routeIs('admin.menus*') ? 'sb-on' : '' }}"
+        <div class="sb-group {{ (request()->routeIs('admin.content*') && !request()->routeIs('admin.content.translations*')) || request()->routeIs('admin.pages*') || request()->routeIs('admin.menus*') ? 'sb-group-open' : '' }}">
+            <button class="sb-row {{ (request()->routeIs('admin.content*') && !request()->routeIs('admin.content.translations*')) || request()->routeIs('admin.pages*') || request()->routeIs('admin.menus*') ? 'sb-on' : '' }}"
                     onclick="toggleSbGroup(this)" type="button">
                 <i class="bi bi-file-earmark-text sb-ico"></i>
                 <span>Content</span>
@@ -236,14 +236,28 @@
                 <a href="{{ route('admin.content.blog.index') }}" class="sb-kid {{ request()->routeIs('admin.content.blog*') ? 'sb-kid-on' : '' }}"><i class="bi bi-journal-text"></i> Blog</a>
                 <a href="{{ route('admin.menus.index') }}" class="sb-kid {{ request()->routeIs('admin.menus*') ? 'sb-kid-on' : '' }}"><i class="bi bi-menu-app"></i> Menus</a>
                 <a href="{{ route('admin.content.newsletter.subscribers') }}" class="sb-kid {{ request()->routeIs('admin.content.newsletter.subscribers*') ? 'sb-kid-on' : '' }}"><i class="bi bi-people-fill"></i> Newsletter</a>
-                <a href="{{ route('admin.settings.languages.index') }}" class="sb-kid {{ request()->routeIs('admin.settings.languages*') ? 'sb-kid-on' : '' }}"><i class="bi bi-globe"></i> Languages</a>
+            </div>
+        </div>
+
+        {{-- Languages --}}
+        @php $sbLangOpen = request()->routeIs('admin.settings.languages*') || request()->routeIs('admin.content.translations*'); @endphp
+        <div class="sb-group {{ $sbLangOpen ? 'sb-group-open' : '' }}">
+            <button class="sb-row {{ $sbLangOpen ? 'sb-on' : '' }}"
+                    onclick="toggleSbGroup(this)" type="button">
+                <i class="bi bi-translate sb-ico"></i>
+                <span>Languages</span>
+                <div class="sb-right"><i class="bi bi-chevron-right sb-chev"></i></div>
+            </button>
+            <div class="sb-kids">
+                <a href="{{ route('admin.settings.languages.index') }}" class="sb-kid {{ request()->routeIs('admin.settings.languages.index') || request()->routeIs('admin.settings.languages.edit') ? 'sb-kid-on' : '' }}"><i class="bi bi-globe"></i> All languages</a>
+                <a href="{{ route('admin.settings.languages.create') }}" class="sb-kid {{ request()->routeIs('admin.settings.languages.create') ? 'sb-kid-on' : '' }}"><i class="bi bi-plus-circle"></i> Add language</a>
                 <a href="{{ route('admin.content.translations.index') }}" class="sb-kid {{ request()->routeIs('admin.content.translations*') ? 'sb-kid-on' : '' }}"><i class="bi bi-translate"></i> Translations</a>
             </div>
         </div>
 
         {{-- Settings --}}
-        <div class="sb-group {{ request()->routeIs('admin.settings*') ? 'sb-group-open' : '' }}">
-            <button class="sb-row {{ request()->routeIs('admin.settings*') ? 'sb-on' : '' }}"
+        <div class="sb-group {{ (request()->routeIs('admin.settings*') && !request()->routeIs('admin.settings.languages*')) ? 'sb-group-open' : '' }}">
+            <button class="sb-row {{ (request()->routeIs('admin.settings*') && !request()->routeIs('admin.settings.languages*')) ? 'sb-on' : '' }}"
                     onclick="toggleSbGroup(this)" type="button">
                 <i class="bi bi-gear sb-ico"></i>
                 <span>Settings</span>
@@ -253,7 +267,6 @@
                 <a href="{{ route('admin.settings.website') }}" class="sb-kid {{ request()->routeIs('admin.settings.website*') ? 'sb-kid-on' : '' }}"><i class="bi bi-globe"></i> Website</a>
                 <a href="{{ route('admin.settings.email') }}" class="sb-kid {{ request()->routeIs('admin.settings.email*') ? 'sb-kid-on' : '' }}"><i class="bi bi-envelope-at"></i> Email</a>
                 <a href="{{ route('admin.settings.payment') }}" class="sb-kid {{ request()->routeIs('admin.settings.payment*') ? 'sb-kid-on' : '' }}"><i class="bi bi-wallet2"></i> Payment</a>
-                <a href="{{ route('admin.settings.languages.index') }}" class="sb-kid {{ request()->routeIs('admin.settings.languages*') ? 'sb-kid-on' : '' }}"><i class="bi bi-translate"></i> Languages</a>
                 <a href="{{ route('admin.settings.theme') }}" class="sb-kid {{ request()->routeIs('admin.settings.theme*') ? 'sb-kid-on' : '' }}"><i class="bi bi-palette"></i> Theme</a>
             </div>
         </div>

@@ -94,8 +94,7 @@ class LanguageController extends Controller
     {
         $language->update(['status' => !$language->status]);
 
-        return redirect()->route('admin.settings.languages.index')
-                       ->with('success', 'Language status updated!');
+        return back()->with('success', 'Language status updated!');
     }
 
     /**
@@ -110,8 +109,7 @@ class LanguageController extends Controller
 
         $language->update(['is_default' => !$language->is_default]);
 
-        return redirect()->route('admin.settings.languages.index')
-                       ->with('success', 'Default language updated!');
+        return back()->with('success', 'Default language updated!');
     }
 
     /**
@@ -121,7 +119,6 @@ class LanguageController extends Controller
     {
         $language->delete();
 
-        return redirect()->route('admin.settings.languages.index')
-                       ->with('success', 'Language deleted successfully!');
+        return back()->with('success', 'Language deleted successfully!');
     }
 }
