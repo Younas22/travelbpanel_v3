@@ -2,602 +2,501 @@
 
 @section('title', 'Dashboard')
 
-@push('styles')
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-    tailwind.config = {
-        corePlugins: { preflight: false },
-        theme: {
-            extend: {
-                fontFamily: {
-                    jakarta: ['Plus Jakarta Sans', 'sans-serif'],
-                },
-                colors: {
-                    novabg: '#F7F8FC',
-                    novablue: '#2563EB',
-                    novablue2: '#3B82F6',
-                    novacyan: '#06B6D4',
-                    novatext: '#000000',
-                    novamuted: '#000000',
-                    novaborder: '#E5E7EB',
-                    novasuccess: '#22C55E',
-                    novawarning: '#F59E0B',
-                    novadanger: '#EF4444',
-                },
-            },
-        },
+@php
+    $cur = $dash['base_currency'];
+    $money = fn ($v) => $cur . ' ' . number_format((float) $v);
+
+    // Smooth SVG path through points (Catmull-Rom → cubic Bézier).
+    $smooth = function (array $pts) {
+        if (!$pts) return '';
+        if (count($pts) === 1) return 'M' . $pts[0][0] . ',' . $pts[0][1];
+        $d = 'M' . round($pts[0][0], 1) . ',' . round($pts[0][1], 1);
+        for ($i = 0; $i < count($pts) - 1; $i++) {
+            $p0 = $pts[max(0, $i - 1)]; $p1 = $pts[$i]; $p2 = $pts[$i + 1]; $p3 = $pts[min(count($pts) - 1, $i + 2)];
+            $c1 = [$p1[0] + ($p2[0] - $p0[0]) / 6, $p1[1] + ($p2[1] - $p0[1]) / 6];
+            $c2 = [$p2[0] - ($p3[0] - $p1[0]) / 6, $p2[1] - ($p3[1] - $p1[1]) / 6];
+            $d .= sprintf(' C%.1f,%.1f %.1f,%.1f %.1f,%.1f', $c1[0], $c1[1], $c2[0], $c2[1], $p2[0], $p2[1]);
+        }
+        return $d;
     };
-</script>
-<style>
-    /* Scoped resets — Tailwind Preflight is disabled globally (so it doesn't
-       fight the shared Bootstrap-based chrome this phased-in design still
-       borrows), so this dashboard neutralises Bootstrap's own element
-       defaults just inside its own root. */
-    #dashTT, #dashTT *, #dashTT *::before, #dashTT *::after { box-sizing: border-box; }
-    /* Nova's own fixed typeface (see body.design-nova in admin-modern.css,
-       which also loads this same family for the sidebar/header — this and
-       that stay driven by the same design decision, never diverge). */
-    #dashTT { font-family: 'Plus Jakarta Sans', sans-serif; }
-    #dashTT h1, #dashTT h2, #dashTT h3, #dashTT h4, #dashTT h5, #dashTT h6,
-    #dashTT p, #dashTT ul, #dashTT ol, #dashTT dl, #dashTT dd { margin: 0; padding: 0; }
-    #dashTT ul, #dashTT ol { list-style: none; }
-    #dashTT a { text-decoration: none; color: inherit; }
-    #dashTT button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; padding: 0; }
-    #dashTT svg { display: block; }
+    $scalePts = function (array $values, float $w, float $h, float $pad = 4) {
+        $n = count($values); $max = max($values ?: [0]) ?: 1;
+        return array_map(fn ($v, $i) => [$n > 1 ? $i * $w / ($n - 1) : $w / 2, $h - $pad - ($v / $max) * ($h - 2 * $pad)], $values, array_keys($values));
+    };
+    $niceMax = function ($v) {
+        if ($v <= 0) return 1;
+        $p = pow(10, floor(log10($v))); $n = $v / $p;
+        return ($n <= 1 ? 1 : ($n <= 2 ? 2 : ($n <= 5 ? 5 : 10))) * $p;
+    };
+    $short = fn ($v) => $v >= 1000000 ? round($v / 1000000, 1) . 'M' : ($v >= 1000 ? round($v / 1000, 1) . 'K' : (string) round($v));
 
-    #dashTT .tt-fade-in { animation: ttFadeIn .5s ease both; }
-    @keyframes ttFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    // Donut segments (stroke-dasharray on r=15.9155 → circumference 100).
+    $donut = function (array $items) {
+        $total = array_sum(array_column($items, 'count')); $offset = 25; $out = [];
+        foreach ($items as $it) {
+            if (!$total || !$it['count']) continue;
+            $pct = $it['count'] / $total * 100;
+            $out[] = ['color' => $it['color'], 'dash' => max(0, $pct - 0.6) . ' ' . (100 - max(0, $pct - 0.6)), 'offset' => $offset];
+            $offset -= $pct;
+        }
+        return $out;
+    };
 
-    #dashTT .tt-card { transition: transform .3s cubic-bezier(.4,0,.2,1), box-shadow .3s cubic-bezier(.4,0,.2,1); }
-    #dashTT .tt-card:hover { transform: translateY(-3px); box-shadow: 0 20px 40px -14px rgba(37,99,235,.16); }
+    $series = $dash['series'];
+    $revMax = $niceMax(max(array_column($series, 'revenue') ?: [0]));
+    $bkMax = $niceMax(max(array_column($series, 'bookings') ?: [0]));
+    $W = 700; $H = 220;
+    $revPts = array_map(fn ($s, $i) => [count($series) > 1 ? $i * $W / (count($series) - 1) : $W / 2, $H - ($s['revenue'] / $revMax) * $H], $series, array_keys($series));
+    $bkPts = array_map(fn ($s, $i) => [count($series) > 1 ? $i * $W / (count($series) - 1) : $W / 2, $H - ($s['bookings'] / $bkMax) * $H], $series, array_keys($series));
+    $labelStep = max(1, (int) ceil(count($series) / 7));
 
-    #dashTT .tt-row { transition: background .2s ease, border-color .2s ease, transform .2s ease; }
-    #dashTT .tt-row:hover { background: #F7F8FC; border-color: #DBEAFE; transform: translateX(2px); }
+    $serviceColors = ['flight' => '#2563EB', 'hotel' => '#3B82F6', 'tour' => '#60A5FA', 'umrah' => '#93C5FD', 'visa' => '#1E40AF'];
+    $serviceIcons = ['flight' => 'bi-airplane', 'hotel' => 'bi-building', 'tour' => 'bi-compass', 'umrah' => 'bi-moon', 'visa' => 'bi-file-earmark-text'];
+    $serviceItems = [];
+    foreach ($dash['by_service'] as $k => $s) $serviceItems[$k] = $s + ['color' => $serviceColors[$k] ?? '#BFDBFE'];
 
-    #dashTT .tt-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
-    #dashTT .tt-scrollbar::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 9999px; }
+    $statusColors = ['confirmed' => '#16A34A', 'pending' => '#F59E0B', 'cancelled' => '#EF4444', 'failed' => '#B91C1C', 'on_hold' => '#94A3B8'];
+    $statusItems = [];
+    foreach ($dash['by_status'] as $k => $s) $statusItems[$k] = $s + ['color' => $statusColors[$k] ?? '#64748B'];
 
-    #dashTT .tt-btn { transition: background .2s ease, box-shadow .2s ease, transform .2s ease; }
-    #dashTT .tt-btn:hover { transform: translateY(-1px); }
+    $revenueRows = array_filter($dash['by_service'], fn ($s) => $s['revenue'] !== null);
+    $revenueTop = max(array_column($revenueRows, 'revenue') ?: [0]) ?: 1;
+    $destTop = max(array_column($dash['destinations'], 'count') ?: [0]) ?: 1;
 
-    #dashTT .tt-pill.active { background: #2563EB !important; color: #fff !important; border-color: #2563EB !important; }
-    #dashTT .tt-dropdown-panel { display: none; }
-    #dashTT .tt-dropdown.open .tt-dropdown-panel { display: block; }
-    #dashTT .tt-dropdown.open .tt-chev { transform: rotate(180deg); }
-    #dashTT .tt-chev { transition: transform .15s ease; }
-    #dashTT .tt-row.tt-hidden { display: none; }
-</style>
+    $rangeQuery = fn ($r) => request()->fullUrlWithQuery(['range' => $r, 'from' => null, 'to' => null]);
+    $openMessages = \App\Models\ContactMessage::whereNotIn('status', ['read', 'replied'])->count();
+
+    $typeConfig = [
+        'flight' => ['label' => 'Flight', 'icon' => 'bi-airplane', 'tab' => 'Flights'],
+        'hotel'  => ['label' => 'Stay',   'icon' => 'bi-building', 'tab' => 'Hotels'],
+        'tour'   => ['label' => 'Tour',   'icon' => 'bi-compass',  'tab' => 'Tours'],
+        'umrah'  => ['label' => 'Umrah',  'icon' => 'bi-moon',     'tab' => 'Umrah'],
+    ];
+    $avatarPalette = [['#DBEAFE', '#1D4ED8'], ['#DCFCE7', '#15803D'], ['#FEF3C7', '#B45309'], ['#FCE7F3', '#BE185D'], ['#EDE9FE', '#6D28D9']];
+@endphp
+
+@push('header-actions')
+    <div class="tbp-dashboard-header-actions">
+        <div class="dropdown">
+            <button type="button" class="tbp-dashboard-range-btn" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                <i class="bi bi-calendar3"></i>
+                <span>{{ $dash['from']->format('M j, Y') }} – {{ $dash['to']->format('M j, Y') }}</span>
+                <i class="bi bi-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end tbp-dashboard-range-menu">
+                @foreach($dash['presets'] as $key => $label)
+                    <a class="tbp-dashboard-range-opt {{ $dash['range'] === (string) $key ? 'is-active' : '' }}" href="{{ $rangeQuery($key) }}">{{ $label }}</a>
+                @endforeach
+                <form method="GET" action="{{ url()->current() }}" class="tbp-dashboard-range-custom">
+                    <div class="tbp-dashboard-range-custom-title">Custom range</div>
+                    <input type="date" name="from" value="{{ $dash['from']->format('Y-m-d') }}" required>
+                    <input type="date" name="to" value="{{ $dash['to']->format('Y-m-d') }}" required>
+                    <button type="submit">Apply</button>
+                </form>
+            </div>
+        </div>
+        <a href="{{ route('admin.contact-messages.index') }}" class="tbp-dashboard-bell" title="Contact messages">
+            <i class="bi bi-bell"></i>
+            @if($openMessages)<span class="tbp-dashboard-bell-dot">{{ $openMessages }}</span>@endif
+        </a>
+    </div>
 @endpush
 
 @section('content')
-@php
-    // Every figure below maps 1:1 to a key DashboardController already
-    // computes in $stats — nothing here is invented.
-    $ttKpis = [
-        ['label' => 'Total Bookings',   'value' => number_format($stats['total_bookings'] ?? 0),    'circle' => 'bg-novablue',   'icon' => 'check',    'spark' => 'M2,26 C10,22 16,24 22,18 C28,12 34,16 40,10 C46,6 52,10 58,4'],
-        ['label' => 'Visa Requests',    'value' => number_format($stats['total_visarequest'] ?? 0), 'circle' => 'bg-novacyan',   'icon' => 'passport', 'spark' => 'M2,10 C10,14 16,8 22,16 C28,22 34,14 40,20 C46,24 52,18 58,22'],
-        ['label' => 'Total Revenue',    'value' => '$' . number_format(($stats['total_revenue'] ?? 0) / 1000, 1) . 'k', 'circle' => 'bg-novatext', 'icon' => 'currency', 'spark' => 'M2,22 C10,20 16,24 22,14 C28,6 34,10 40,8 C46,6 52,12 58,6'],
-        ['label' => 'No. of Customers', 'value' => number_format($stats['total_customers'] ?? 0),   'circle' => 'bg-novasuccess', 'icon' => 'users',  'spark' => 'M2,18 C10,24 16,20 22,22 C28,24 34,10 40,14 C46,18 52,8 58,12'],
-    ];
-
-    $ttTypeConfig = [
-        'flight' => ['label' => 'Flight', 'badge' => 'bg-blue-50 text-novablue', 'icon' => 'bg-blue-50 text-novablue'],
-        'hotel'  => ['label' => 'Stay',   'badge' => 'bg-emerald-50 text-emerald-600', 'icon' => 'bg-emerald-50 text-emerald-600'],
-        'tour'   => ['label' => 'Tour',   'badge' => 'bg-amber-50 text-amber-600', 'icon' => 'bg-amber-50 text-amber-600'],
-        'umrah'  => ['label' => 'Umrah',  'badge' => 'bg-violet-50 text-violet-600', 'icon' => 'bg-violet-50 text-violet-600'],
-    ];
-
-    // Same avatar palette as admin-nova/bookings/_list.blade.php, so the
-    // dashboard's booking rows share the exact same look as the full
-    // bookings pages.
-    $ttAvatarPalette = [
-        ['bg' => '#DBEAFE', 'text' => '#1D4ED8'],
-        ['bg' => '#DCFCE7', 'text' => '#15803D'],
-        ['bg' => '#FEF3C7', 'text' => '#B45309'],
-        ['bg' => '#FCE7F3', 'text' => '#BE185D'],
-        ['bg' => '#EDE9FE', 'text' => '#6D28D9'],
-    ];
-@endphp
-
-<div id="dashTT" class="tt-fade-in font-jakarta">
+<div class="tbp-dashboard-page" id="tbpDashboard">
 
     {{-- ============ KPI CARDS ============ --}}
-    <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
-        @foreach($ttKpis as $kpi)
-            <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 min-w-0">
-                <div class="flex items-center justify-between mb-2.5">
-                    <p class="text-xs font-medium text-novamuted truncate">{{ $kpi['label'] }}</p>
-                    <div class="w-8 h-8 rounded-full {{ $kpi['circle'] }} text-white flex items-center justify-center flex-shrink-0">
-                        @switch($kpi['icon'])
-                            @case('passport')
-                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8 17h8"/></svg>
-                                @break
-                            @case('currency')
-                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v12M15.5 9.5c0-1.38-1.57-2.5-3.5-2.5s-3.5 1.12-3.5 2.5 1.57 2.5 3.5 2.5 3.5 1.12 3.5 2.5-1.57 2.5-3.5 2.5-3.5-1.12-3.5-2.5"/></svg>
-                                @break
-                            @case('users')
-                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.25"/><path d="M2.75 19c.5-3.2 3-5.25 6.25-5.25S15.25 15.8 15.75 19"/><circle cx="17" cy="9" r="2.5"/><path d="M15 13.75c2.4.2 4.2 1.9 4.75 5.25"/></svg>
-                                @break
-                            @default
-                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12.75 11.25 15 15 9.75"/></svg>
-                        @endswitch
+    <div class="tbp-dashboard-kpi-grid">
+        @foreach($dash['kpis'] as $kpi)
+            @php $sp = $scalePts($kpi['spark'], 96, 36); $chg = $kpi['change']; @endphp
+            <div class="tbp-dashboard-kpi-card">
+                <div class="tbp-dashboard-kpi-icon"><i class="bi {{ $kpi['icon'] }}"></i></div>
+                <div class="tbp-dashboard-kpi-body">
+                    <div class="tbp-dashboard-kpi-label">{{ $kpi['label'] }}</div>
+                    <div class="tbp-dashboard-kpi-value">{{ $kpi['value'] }}</div>
+                    <div class="tbp-dashboard-kpi-change {{ $chg === null || $chg > 0 ? 'is-up' : ($chg < 0 ? 'is-down' : 'is-flat') }}"
+                         title="Compared with the previous {{ $dash['from']->diffInDays($dash['to']) + 1 }} days">
+                        @if($chg === null)
+                            <i class="bi bi-arrow-up"></i> New
+                        @elseif($chg == 0)
+                            <i class="bi bi-dash"></i> 0%
+                        @else
+                            <i class="bi {{ $chg > 0 ? 'bi-arrow-up' : 'bi-arrow-down' }}"></i> {{ abs($chg) }}%
+                        @endif
+                        @isset($kpi['note'])<span class="tbp-dashboard-kpi-note">· {{ $kpi['note'] }}</span>@endisset
                     </div>
                 </div>
-                <div class="flex items-end justify-between gap-2">
-                    <div class="min-w-0">
-                        <span class="block text-lg font-bold text-novatext truncate">{{ $kpi['value'] }}+</span>
-                        <span class="inline-flex items-center gap-0.5 text-xs font-semibold text-novasuccess mt-0.5">
-                            <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15 12 9l-6 6"/></svg>
-                            +0.2%
-                        </span>
-                    </div>
-                    {{-- Decorative sparkline — visual rhythm only, not a claim
-                         about a specific time series (no per-metric daily
-                         breakdown exists yet to plot for real). --}}
-                    <svg class="w-12 h-6 flex-shrink-0" viewBox="0 0 60 28" preserveAspectRatio="none">
-                        <path d="{{ $kpi['spark'] }}" fill="none" stroke="currentColor" class="text-novaborder" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </div>
+                <svg class="tbp-dashboard-sparkline" viewBox="0 0 96 36" preserveAspectRatio="none" aria-hidden="true">
+                    <path d="{{ $smooth($sp) }} L96,36 L0,36 Z" class="tbp-dashboard-sparkline-area"/>
+                    <path d="{{ $smooth($sp) }}" class="tbp-dashboard-sparkline-line"/>
+                </svg>
             </div>
         @endforeach
     </div>
 
-    {{-- ============ SALES PERFORMANCE ============ --}}
-    <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5 mb-5" style="min-height:320px;">
-        <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
-            <div>
-                <h2 class="text-sm font-semibold text-novatext">Total Sales Performance</h2>
-                <p class="text-xs text-novamuted mt-1">{{ number_format($stats['confirmed_bookings'] ?? 0) }} of {{ number_format($stats['total_bookings'] ?? 0) }} bookings confirmed</p>
+    {{-- ============ SALES + BOOKINGS BY SERVICE ============ --}}
+    <div class="tbp-dashboard-analytics-grid tbp-dashboard-analytics-top">
+        <div class="tbp-dashboard-chart-card tbp-dashboard-sales">
+            <div class="tbp-dashboard-card-head">
+                <div>
+                    <h3 class="tbp-dashboard-card-title">Total Sales Performance</h3>
+                    <p class="tbp-dashboard-card-sub">Booking revenue ({{ $cur }}, confirmed) and bookings over time</p>
+                </div>
+                @include('admin-nova.dashboard._range-select')
             </div>
-            <button type="button" onclick="window.print()" class="tt-btn inline-flex items-center gap-1.5 rounded-full border border-novaborder px-3.5 py-1.5 text-xs font-semibold text-novatext hover:bg-novabg flex-shrink-0">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
-                Export
-            </button>
-        </div>
-
-        <div class="flex gap-3">
-            <div class="hidden sm:flex flex-col justify-between text-xs text-novamuted py-1 h-36 sm:h-44">
-                <span>60k</span><span>50k</span><span>40k</span><span>30k</span><span>20k</span><span>10k</span>
+            <div class="tbp-dashboard-legend">
+                <span><i style="background:#2563EB"></i> Bookings</span>
+                <span><i style="background:#38BDF8"></i> Revenue</span>
             </div>
-            <div class="flex-1 min-w-0">
-                <div class="h-36 sm:h-44">
-                    <svg viewBox="0 0 700 240" preserveAspectRatio="none" class="w-full h-full">
+            <div class="tbp-dashboard-line-chart">
+                <div class="tbp-dashboard-axis tbp-dashboard-axis-left">
+                    @for($i = 4; $i >= 0; $i--)<span>{{ $short($revMax * $i / 4) }}</span>@endfor
+                </div>
+                <div class="tbp-dashboard-plot" id="tbpSalesPlot">
+                    <svg viewBox="0 0 {{ $W }} {{ $H }}" preserveAspectRatio="none">
                         <defs>
-                            <linearGradient id="ttGradBlue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#2563EB" stop-opacity="0.16"/>
+                            <linearGradient id="tbpBkFill" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#2563EB" stop-opacity="0.14"/>
                                 <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
                             </linearGradient>
                         </defs>
-                        <g stroke="#F1F5F9" stroke-width="1">
-                            <line x1="0" y1="20" x2="700" y2="20"/>
-                            <line x1="0" y1="64" x2="700" y2="64"/>
-                            <line x1="0" y1="108" x2="700" y2="108"/>
-                            <line x1="0" y1="152" x2="700" y2="152"/>
-                            <line x1="0" y1="196" x2="700" y2="196"/>
-                        </g>
-                        <path d="M0,150 C60,100 120,80 180,110 C240,140 300,150 360,120 C420,90 480,60 540,90 C600,120 640,70 700,40 L700,240 L0,240 Z" fill="url(#ttGradBlue)"/>
-                        <path d="M0,150 C60,100 120,80 180,110 C240,140 300,150 360,120 C420,90 480,60 540,90 C600,120 640,70 700,40" fill="none" stroke="#06B6D4" stroke-width="2.5" stroke-linecap="round"/>
-                        <path d="M0,190 C60,170 120,175 180,150 C240,125 300,170 360,155 C420,140 480,150 540,110 C570,90 600,70 640,75 C660,78 680,60 700,55" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round"/>
-                        <circle cx="360" cy="155" r="4" fill="#2563EB"/>
-                        <circle cx="360" cy="155" r="8" fill="#2563EB" opacity="0.18"/>
+                        @for($i = 0; $i <= 4; $i++)<line x1="0" x2="{{ $W }}" y1="{{ $H * $i / 4 }}" y2="{{ $H * $i / 4 }}" class="tbp-dashboard-grid-line"/>@endfor
+                        <path d="{{ $smooth($bkPts) }} L{{ $W }},{{ $H }} L0,{{ $H }} Z" fill="url(#tbpBkFill)"/>
+                        <path d="{{ $smooth($revPts) }}" class="tbp-dashboard-line tbp-dashboard-line-revenue"/>
+                        <path d="{{ $smooth($bkPts) }}" class="tbp-dashboard-line tbp-dashboard-line-bookings"/>
+                        <line id="tbpSalesCursor" x1="0" x2="0" y1="0" y2="{{ $H }}" class="tbp-dashboard-cursor" visibility="hidden"/>
                     </svg>
+                    @foreach($series as $i => $s)
+                        <span class="tbp-dashboard-dot tbp-dashboard-dot-revenue" style="left:{{ $revPts[$i][0] / $W * 100 }}%;top:{{ $revPts[$i][1] / $H * 100 }}%" data-i="{{ $i }}"></span>
+                        <span class="tbp-dashboard-dot tbp-dashboard-dot-bookings" style="left:{{ $bkPts[$i][0] / $W * 100 }}%;top:{{ $bkPts[$i][1] / $H * 100 }}%" data-i="{{ $i }}"></span>
+                    @endforeach
+                    <div class="tbp-dashboard-tooltip" id="tbpSalesTip" hidden></div>
                 </div>
-                <div class="flex justify-between text-xs font-medium text-novamuted mt-2 px-1">
-                    <span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span>
+                <div class="tbp-dashboard-axis tbp-dashboard-axis-right">
+                    @for($i = 4; $i >= 0; $i--)<span>{{ $short($bkMax * $i / 4) }}</span>@endfor
                 </div>
+            </div>
+            <div class="tbp-dashboard-xlabels">
+                @foreach($series as $i => $s)
+                    @if($i % $labelStep === 0 || $i === count($series) - 1)
+                        <span style="left:{{ count($series) > 1 ? $i / (count($series) - 1) * 100 : 50 }}%">{{ $s['label'] }}</span>
+                    @endif
+                @endforeach
+            </div>
+            <div class="tbp-dashboard-axis-caption"><span>Revenue ({{ $cur }})</span><span>Bookings</span></div>
+        </div>
+
+        <div class="tbp-dashboard-chart-card tbp-dashboard-service-chart">
+            <div class="tbp-dashboard-card-head">
+                <h3 class="tbp-dashboard-card-title">Bookings by Service</h3>
+                @include('admin-nova.dashboard._range-select')
+            </div>
+            <div class="tbp-dashboard-donut-wrap">
+                <div class="tbp-dashboard-donut">
+                    <svg viewBox="0 0 42 42">
+                        <circle cx="21" cy="21" r="15.9155" class="tbp-dashboard-donut-track"/>
+                        @foreach($donut($serviceItems) as $seg)
+                            <circle cx="21" cy="21" r="15.9155" fill="none" stroke="{{ $seg['color'] }}" stroke-width="6" stroke-dasharray="{{ $seg['dash'] }}" stroke-dashoffset="{{ $seg['offset'] }}"/>
+                        @endforeach
+                    </svg>
+                    <div class="tbp-dashboard-donut-center"><strong>{{ number_format($dash['service_total']) }}</strong><span>Total Bookings</span></div>
+                </div>
+                <ul class="tbp-dashboard-donut-legend">
+                    @foreach($serviceItems as $k => $s)
+                        <li>
+                            <i style="background:{{ $s['color'] }}"></i>
+                            <span class="tbp-dashboard-legend-icon"><i class="bi {{ $serviceIcons[$k] }}"></i></span>
+                            <span class="tbp-dashboard-legend-name">{{ $s['label'] }}</span>
+                            <strong>{{ $s['count'] }}</strong>
+                            <span class="tbp-dashboard-legend-pct">({{ $dash['service_total'] ? round($s['count'] / $dash['service_total'] * 100, 1) : 0 }}%)</span>
+                        </li>
+                    @endforeach
+                </ul>
             </div>
         </div>
     </div>
 
-    {{-- ============ ALL BOOKINGS ============ --}}
-    <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <div class="flex items-center gap-2">
-                <h2 class="text-sm font-semibold text-novatext">All Bookings</h2>
-                <span class="text-xs text-novamuted">{{ $recent_bookings->count() }} shown</span>
+    {{-- ============ REVENUE / DESTINATIONS / STATUS ============ --}}
+    <div class="tbp-dashboard-analytics-grid tbp-dashboard-analytics-bottom">
+        <div class="tbp-dashboard-chart-card">
+            <div class="tbp-dashboard-card-head">
+                <h3 class="tbp-dashboard-card-title">Revenue by Service</h3>
+                @include('admin-nova.dashboard._range-select')
             </div>
-            <a href="{{ route('admin.bookings.all') }}" class="tt-btn inline-flex items-center gap-1.5 rounded-full bg-novablue hover:bg-blue-700 text-white px-3.5 py-1.5 text-xs font-semibold shadow-sm shadow-blue-200 flex-shrink-0">
-                View All Bookings
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            <ul class="tbp-dashboard-bars">
+                @foreach($revenueRows as $k => $s)
+                    <li>
+                        <span class="tbp-dashboard-legend-icon"><i class="bi {{ $serviceIcons[$k] }}"></i></span>
+                        <span class="tbp-dashboard-bars-name">{{ $s['label'] }}</span>
+                        <span class="tbp-dashboard-bar"><span style="width:{{ $s['revenue'] / $revenueTop * 100 }}%"></span></span>
+                        <strong>{{ $money($s['revenue']) }}</strong>
+                    </li>
+                @endforeach
+            </ul>
+            <p class="tbp-dashboard-card-foot">Confirmed bookings, converted to {{ $cur }}. Visa fees aren't included.</p>
         </div>
 
-        {{-- Real, working filters — client-side over the bookings already
-             rendered below (this is a dashboard summary, not a paginated
-             list, so there's no server route to filter against yet). --}}
-        <div class="flex flex-wrap gap-2 mb-4" id="ttFilters">
-            <div class="relative tt-dropdown" data-dropdown="type">
-                <button type="button" class="tt-pill tt-dd-trigger inline-flex items-center gap-2 rounded-full border border-novaborder bg-white shadow-sm px-4 py-2 text-xs font-semibold text-novatext hover:border-novablue hover:bg-blue-50 transition-colors">
-                    <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M7 12h10M10 19h4"/></svg>
-                    <span class="tt-dd-label">Booking Type</span>
-                    <svg class="w-3 h-3 tt-chev flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-                </button>
-                <div class="tt-dropdown-panel absolute z-20 top-full left-0 mt-2 w-40 bg-white rounded-2xl border border-novaborder shadow-lg py-1.5">
-                    <button type="button" class="tt-dd-opt w-full text-left px-4 py-2 text-xs text-novatext hover:bg-novabg" data-value="">All types</button>
-                    <button type="button" class="tt-dd-opt w-full text-left px-4 py-2 text-xs text-novatext hover:bg-novabg" data-value="flight">Flight</button>
-                    <button type="button" class="tt-dd-opt w-full text-left px-4 py-2 text-xs text-novatext hover:bg-novabg" data-value="hotel">Stay</button>
-                    <button type="button" class="tt-dd-opt w-full text-left px-4 py-2 text-xs text-novatext hover:bg-novabg" data-value="tour">Tour</button>
-                    <button type="button" class="tt-dd-opt w-full text-left px-4 py-2 text-xs text-novatext hover:bg-novabg" data-value="umrah">Umrah</button>
-                </div>
+        <div class="tbp-dashboard-chart-card tbp-dashboard-destination-card">
+            <div class="tbp-dashboard-card-head">
+                <h3 class="tbp-dashboard-card-title">Top Destinations</h3>
+                @include('admin-nova.dashboard._range-select')
             </div>
-
-            <div class="relative tt-dropdown" data-dropdown="status">
-                <button type="button" class="tt-pill tt-dd-trigger inline-flex items-center gap-2 rounded-full border border-novaborder bg-white shadow-sm px-4 py-2 text-xs font-semibold text-novatext hover:border-novablue hover:bg-blue-50 transition-colors">
-                    <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-                    <span class="tt-dd-label">Status</span>
-                    <svg class="w-3 h-3 tt-chev flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-                </button>
-                <div class="tt-dropdown-panel absolute z-20 top-full left-0 mt-2 w-40 bg-white rounded-2xl border border-novaborder shadow-lg py-1.5">
-                    <button type="button" class="tt-dd-opt w-full text-left px-4 py-2 text-xs text-novatext hover:bg-novabg" data-value="">All statuses</button>
-                    <button type="button" class="tt-dd-opt w-full text-left px-4 py-2 text-xs text-novatext hover:bg-novabg" data-value="confirmed">Confirmed</button>
-                    <button type="button" class="tt-dd-opt w-full text-left px-4 py-2 text-xs text-novatext hover:bg-novabg" data-value="pending">Pending</button>
-                    <button type="button" class="tt-dd-opt w-full text-left px-4 py-2 text-xs text-novatext hover:bg-novabg" data-value="cancelled">Cancelled</button>
-                </div>
-            </div>
-
-            <div class="relative tt-dropdown" data-dropdown="date">
-                <button type="button" class="tt-pill tt-dd-trigger inline-flex items-center gap-2 rounded-full border border-novaborder bg-white shadow-sm px-4 py-2 text-xs font-semibold text-novatext hover:border-novablue hover:bg-blue-50 transition-colors">
-                    <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/><path d="M3.5 9.5h17M8 3v3M16 3v3"/></svg>
-                    <span class="tt-dd-label">Date Range</span>
-                    <svg class="w-3 h-3 tt-chev flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-                </button>
-                <div class="tt-dropdown-panel absolute z-20 top-full left-0 mt-2 w-56 bg-white rounded-2xl border border-novaborder shadow-lg p-4">
-                    <label class="block text-xs font-semibold text-novamuted mb-1.5">From</label>
-                    <input type="date" id="ttDateFrom" class="w-full text-xs border border-novaborder rounded-full px-3 py-2 mb-3">
-                    <label class="block text-xs font-semibold text-novamuted mb-1.5">To</label>
-                    <input type="date" id="ttDateTo" class="w-full text-xs border border-novaborder rounded-full px-3 py-2 mb-4">
-                    <div class="flex gap-2">
-                        <button type="button" id="ttDateApply" class="flex-1 rounded-full bg-novablue text-white text-xs font-semibold py-2">Apply</button>
-                        <button type="button" id="ttDateClear" class="flex-1 rounded-full border border-novaborder text-novatext text-xs font-semibold py-2">Clear</button>
-                    </div>
-                </div>
-            </div>
-
-            <button type="button" id="ttFilterReset" class="hidden tt-btn inline-flex items-center gap-1 rounded-full border border-red-200 px-3.5 py-1.5 text-xs font-semibold text-novadanger hover:bg-red-50 transition-colors">
-                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-                Reset
-            </button>
-        </div>
-
-        {{-- Column headings — same widths/breakpoint as admin-nova/bookings
-             /_list.blade.php's heading row, so both pages line up visually. --}}
-        <div class="hidden lg:flex items-center gap-3 px-3.5 pb-2 mb-1">
-            <span class="w-10 flex-shrink-0"></span>
-            <span class="w-36 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Booking</span>
-            <span class="w-40 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Customer</span>
-            <span class="flex-1 min-w-0 px-3 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Details</span>
-            <span class="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Date / Stay</span>
-            <span class="w-16 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Pax</span>
-            <span class="w-24 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Phone</span>
-            <span class="w-20 flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted">Partner</span>
-            <span class="w-28 flex-shrink-0 text-right text-[10px] font-semibold uppercase tracking-wide text-novamuted">Amount / Status</span>
-            <span class="flex-shrink-0 text-[10px] font-semibold uppercase tracking-wide text-novamuted" style="width:112px;">Actions</span>
-        </div>
-
-        <div class="space-y-3 max-h-[460px] overflow-y-auto tt-scrollbar pr-1" id="ttBookingList">
-            @forelse($recent_bookings as $booking)
-                @php
-                    $tc = $ttTypeConfig[$booking->booking_type] ?? ['label' => ucfirst($booking->booking_type ?? ''), 'badge' => 'bg-slate-100 text-novamuted', 'icon' => 'bg-slate-100 text-novamuted'];
-                    $invoiceRoute = match($booking->booking_type) {
-                        'hotel' => route('hotel.invoice', $booking->booking_code_ref),
-                        'tour'  => route('tour.invoice',  $booking->booking_code_ref),
-                        'umrah' => route('umrah.invoice', $booking->booking_code_ref),
-                        default => route('flight.invoice', $booking->booking_code_ref),
-                    };
-                    $serviceName = match($booking->booking_type) {
-                        'hotel' => $booking->hotel_info['name'] ?? 'N/A',
-                        'tour'  => $booking->tour_info['name'] ?? 'N/A',
-                        'umrah' => $booking->umrah_info['name'] ?? 'N/A',
-                        default => $booking->flight_route['route'] ?? 'N/A',
-                    };
-                    $serviceLocation = match($booking->booking_type) {
-                        'hotel' => $booking->hotel_info['location'] ?? 'N/A',
-                        'tour'  => $booking->tour_info['location'] ?? 'N/A',
-                        default => $booking->flight_route['stops'] ?? 'N/A',
-                    };
-
-                    $isFlight = $booking->booking_type === 'flight';
-
-                    // Fare class (flight) / room type (hotel) — neither field
-                    // exists on the models yet either, so this is dummy data
-                    // too, per the same explicit request as $duration above.
-                    $fareBadge = null;
-                    if ($isFlight) {
-                        $classOptions = [
-                            ['label' => 'Economy', 'cls' => 'bg-blue-50 text-novablue'],
-                            ['label' => 'Business', 'cls' => 'bg-red-50 text-red-600'],
-                        ];
-                        $fareBadge = $classOptions[crc32(($booking->booking_code_ref ?? '').'-class') % count($classOptions)];
-                    } elseif ($booking->booking_type === 'hotel') {
-                        $roomOptions = [
-                            ['label' => 'Standard', 'cls' => 'bg-slate-100 text-novatext'],
-                            ['label' => 'Deluxe', 'cls' => 'bg-amber-50 text-amber-600'],
-                            ['label' => 'Suite', 'cls' => 'bg-violet-50 text-violet-600'],
-                        ];
-                        $fareBadge = $roomOptions[crc32(($booking->booking_code_ref ?? '').'-room') % count($roomOptions)];
-                    }
-
-                    $statusColor = match($booking->booking_status_flag) {
-                        'confirmed' => 'text-novasuccess',
-                        'cancelled' => 'text-novadanger',
-                        default => 'text-novawarning',
-                    };
-                    $paymentColor = match($booking->booking_payment_state) {
-                        'paid' => 'text-novasuccess',
-                        'refunded' => 'text-novablue',
-                        default => 'text-novawarning',
-                    };
-
-                    $paxCount = $booking->booking_type === 'hotel' ? ($booking->guest_count ?? 'N/A') : ($booking->passenger_count ?? 'N/A');
-
-                    $userData = is_string($booking->booking_user_data) ? json_decode($booking->booking_user_data, true) : $booking->booking_user_data;
-                    $phone = (is_array($userData) ? ($userData['user_phone'] ?? null) : ($userData->user_phone ?? null)) ?: 'No number';
-
-                    $ttInitials = collect(explode(' ', $booking->customer_name ?? ''))
-                        ->filter()->map(fn($n) => strtoupper(substr($n, 0, 1)))->take(2)->implode('') ?: '?';
-                    $ttAvatar = $ttAvatarPalette[crc32($booking->customer_name ?? 'guest') % count($ttAvatarPalette)];
-                @endphp
-                {{-- Same row-card structure as admin-nova/bookings/_list.blade.php
-                     (stacked on mobile/tablet, single line from lg: up) — the
-                     one deliberate difference is the flight row's dotted
-                     path/stop visualization below, kept exactly as-is instead
-                     of the plain "Details" line the bookings pages use. --}}
-                <div class="tt-row flex flex-col lg:flex-row lg:items-center gap-2.5 lg:gap-3 rounded-xl border border-novaborder p-3 lg:p-3.5"
-                     data-type="{{ $booking->booking_type }}" data-status="{{ $booking->booking_status_flag }}" data-date="{{ $booking->created_at->format('Y-m-d') }}">
-
-                    <div class="flex items-center gap-2.5 lg:gap-3">
-                        <div class="w-8 h-8 lg:w-10 lg:h-10 rounded-full {{ $tc['icon'] }} flex items-center justify-center flex-shrink-0">
-                            @switch($booking->booking_type)
-                                @case('hotel')
-                                    <svg class="w-4 h-4 lg:w-4.5 lg:h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4M9 7h1M9 11h1M14 7h1M14 11h1"/></svg>
-                                    @break
-                                @case('tour')
-                                    <svg class="w-4 h-4 lg:w-4.5 lg:h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8 6 6 9.5 6 13a6 6 0 0 0 12 0c0-3.5-2-7-6-11Z"/></svg>
-                                    @break
-                                @case('umrah')
-                                    <svg class="w-4 h-4 lg:w-4.5 lg:h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
-                                    @break
-                                @default
-                                    <svg class="w-4 h-4 lg:w-4.5 lg:h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 19.5 21 12 2.5 4.5 5 11l-2.5.5L5 12l-2.5.5Z"/></svg>
-                            @endswitch
-                        </div>
-
-                        <a href="{{ $invoiceRoute }}" target="_blank" class="min-w-0 flex-1 lg:flex-none lg:w-36">
-                            <p class="text-xs lg:text-sm font-semibold text-novatext truncate">{{ Str::limit($serviceName, 18) }}</p>
-                            <p class="text-[10px] lg:text-xs text-novamuted truncate mt-0.5">#{{ $booking->booking_code_ref }}</p>
-                            <div class="flex flex-wrap items-center gap-1 mt-1 lg:mt-1.5">
-                                <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $tc['badge'] }}">{{ $tc['label'] }}</span>
-                                @if($fareBadge)
-                                    <span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $fareBadge['cls'] }}">{{ $fareBadge['label'] }}</span>
-                                @endif
-                            </div>
-                        </a>
-
-                        <div class="lg:hidden text-right flex-shrink-0">
-                            <p class="text-xs font-bold text-novatext truncate">{{ $booking->formatted_amount }}</p>
-                            <p class="text-[10px] {{ $statusColor }} font-semibold mt-0.5 truncate">{{ ucfirst($booking->booking_status_flag) }}</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2 lg:w-40 lg:flex-shrink-0">
-                        <div class="w-7 h-7 lg:w-8 lg:h-8 rounded-full flex items-center justify-center text-[10px] lg:text-[11px] font-bold flex-shrink-0"
-                             style="background:{{ $ttAvatar['bg'] }}; color:{{ $ttAvatar['text'] }}">{{ $ttInitials }}</div>
-                        <div class="min-w-0">
-                            <p class="text-xs font-semibold text-novatext truncate">{{ $booking->customer_name ?? 'N/A' }}</p>
-                            <p class="text-[11px] text-novamuted truncate">{{ $booking->customer_email ?? 'N/A' }}</p>
-                        </div>
-                    </div>
-
-                    {{-- Details — same plain layout as admin-nova/bookings
-                         /_list.blade.php's Details column for every booking
-                         type, flights included (no more dotted flight-path
-                         visualization here, per explicit request). --}}
-                    <div class="lg:flex-1 min-w-0 lg:px-2">
-                        <p class="text-xs font-semibold text-novatext truncate">{{ Str::limit($serviceName, 28) }}</p>
-                        <p class="text-[11px] text-novamuted truncate mt-0.5">{{ $serviceLocation }}</p>
-                    </div>
-
-                    {{-- Date/Stay, Passengers, Phone, and Partner — wraps
-                         freely on mobile/tablet, one line from lg: up. --}}
-                    <div class="flex flex-wrap items-start gap-x-4 gap-y-1.5 lg:flex-nowrap lg:gap-4">
-                        <div class="w-20 lg:w-24 flex-shrink-0 lg:text-center">
-                            <p class="text-[9px] text-novamuted">Date / Stay</p>
-                            <p class="text-xs font-semibold text-novatext mt-0.5">{{ $booking->created_at->format('M j, Y') }}</p>
-                        </div>
-                        <div class="w-20 lg:w-16 flex-shrink-0 min-w-0">
-                            <p class="text-[9px] text-novamuted">{{ $booking->booking_type === 'hotel' ? 'Guests' : 'Passengers' }}</p>
-                            <p class="text-xs font-semibold text-novatext truncate mt-0.5">{{ $paxCount }}</p>
-                        </div>
-                        <div class="w-24 flex-shrink-0 min-w-0">
-                            <p class="text-[9px] text-novamuted">Phone</p>
-                            <p class="text-xs text-novatext truncate mt-0.5">{{ $phone }}</p>
-                        </div>
-                        <div class="w-20 flex-shrink-0 min-w-0">
-                            <p class="text-[9px] text-novamuted">Partner</p>
-                            <p class="text-xs text-novatext truncate mt-0.5">{{ ucfirst($booking->booking_supplier_name ?? 'Manual') }}</p>
-                        </div>
-                    </div>
-
-                    <div class="hidden lg:block w-28 flex-shrink-0 text-right lg:ml-auto">
-                        <p class="text-sm font-bold text-novatext truncate">{{ $booking->formatted_amount }}</p>
-                        <p class="text-[11px] {{ $statusColor }} font-semibold mt-0.5 truncate">{{ ucfirst($booking->booking_status_flag) }}</p>
-                        <p class="text-[10px] {{ $paymentColor }} font-medium">{{ ucfirst($booking->booking_payment_state) }}</p>
-                    </div>
-
-                    <div class="flex items-center gap-1 flex-shrink-0 self-end lg:self-auto">
-                        <a href="{{ route('admin.bookings.edit', ['type' => $booking->booking_type, 'id' => $booking->id]) }}"
-                           class="tt-btn w-7 h-7 lg:w-8 lg:h-8 rounded-full border border-novaborder flex items-center justify-center hover:bg-novabg" title="Edit booking">
-                            <svg class="w-3 h-3 lg:w-3.5 lg:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16.474 5.408 18.592 7.526M4 20l1.11-3.92a2 2 0 0 1 .53-.9l9.9-9.9a1.5 1.5 0 0 1 2.12 0l1.06 1.06a1.5 1.5 0 0 1 0 2.12l-9.9 9.9a2 2 0 0 1-.9.53L4 20Z"/></svg>
-                        </a>
-                        <a href="{{ $invoiceRoute }}" target="_blank"
-                           class="tt-btn w-7 h-7 lg:w-8 lg:h-8 rounded-full border border-novaborder flex items-center justify-center hover:bg-novabg" title="View invoice">
-                            <svg class="w-3 h-3 lg:w-3.5 lg:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
-                        </a>
-                        <button type="button"
-                                class="tt-btn dash-delete-btn w-7 h-7 lg:w-8 lg:h-8 rounded-full border border-red-200 flex items-center justify-center text-novadanger hover:bg-red-50"
-                                data-id="{{ $booking->id }}" data-type="{{ $booking->booking_type }}" data-ref="{{ $booking->booking_code_ref }}" title="Delete booking">
-                            <svg class="w-3 h-3 lg:w-3.5 lg:h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/></svg>
-                        </button>
-                    </div>
+            @forelse($dash['destinations'] as $i => $d)
+                <div class="tbp-dashboard-dest">
+                    <span class="tbp-dashboard-dest-rank">{{ $i + 1 }}</span>
+                    @if($d['iso2'])<span class="fi fi-{{ $d['iso2'] }} tbp-dashboard-dest-flag"></span>@else<span class="tbp-dashboard-dest-flag"></span>@endif
+                    <span class="tbp-dashboard-dest-name">{{ $d['city'] }} ({{ $d['code'] }})</span>
+                    <span class="tbp-dashboard-bar"><span style="width:{{ $d['count'] / $destTop * 100 }}%"></span></span>
+                    <span class="tbp-dashboard-dest-count">{{ $d['count'] }} {{ Str::plural('Booking', $d['count']) }}</span>
                 </div>
             @empty
-                <div class="text-center py-14">
-                    <svg class="w-8 h-8 text-novaborder mx-auto mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/></svg>
-                    <p class="text-sm text-novamuted">No recent bookings found</p>
-                </div>
+                <div class="tbp-dashboard-empty">No flight or Umrah destinations in this period.</div>
             @endforelse
+        </div>
 
-            <div id="ttNoMatches" class="hidden text-center py-14">
-                <svg class="w-8 h-8 text-novaborder mx-auto mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-                <p class="text-sm text-novamuted">No bookings match these filters</p>
+        <div class="tbp-dashboard-chart-card tbp-dashboard-booking-status">
+            <div class="tbp-dashboard-card-head">
+                <h3 class="tbp-dashboard-card-title">Booking Status</h3>
+                @include('admin-nova.dashboard._range-select')
             </div>
+            <div class="tbp-dashboard-donut-wrap">
+                <div class="tbp-dashboard-donut">
+                    <svg viewBox="0 0 42 42">
+                        <circle cx="21" cy="21" r="15.9155" class="tbp-dashboard-donut-track"/>
+                        @foreach($donut($statusItems) as $seg)
+                            <circle cx="21" cy="21" r="15.9155" fill="none" stroke="{{ $seg['color'] }}" stroke-width="6" stroke-dasharray="{{ $seg['dash'] }}" stroke-dashoffset="{{ $seg['offset'] }}"/>
+                        @endforeach
+                    </svg>
+                    <div class="tbp-dashboard-donut-center"><strong>{{ number_format($dash['status_total']) }}</strong><span>Total Bookings</span></div>
+                </div>
+                <ul class="tbp-dashboard-donut-legend">
+                    @foreach($statusItems as $s)
+                        <li>
+                            <i style="background:{{ $s['color'] }}"></i>
+                            <span class="tbp-dashboard-legend-name">{{ $s['label'] }}</span>
+                            <strong>{{ $s['count'] }}</strong>
+                            <span class="tbp-dashboard-legend-pct">({{ $dash['status_total'] ? round($s['count'] / $dash['status_total'] * 100, 1) : 0 }}%)</span>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {{-- ============ RECENT BOOKINGS ============ --}}
+    <div class="tbp-dashboard-chart-card tbp-dashboard-recent-bookings">
+        <div class="tbp-dashboard-card-head">
+            <h3 class="tbp-dashboard-card-title">Recent Bookings</h3>
+            <a href="{{ route('admin.bookings.all') }}" class="tbp-dashboard-primary-btn">View All Bookings <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <div class="tbp-dashboard-booking-tabs" role="tablist">
+            <button type="button" class="is-active" data-type="">All Bookings <span class="tbp-dashboard-tab-count" id="tbpShownCount">{{ $recent_bookings->count() }} shown</span></button>
+            @foreach($typeConfig as $type => $tc)
+                <button type="button" data-type="{{ $type }}"><i class="bi {{ $tc['icon'] }}"></i> {{ $tc['tab'] }}</button>
+            @endforeach
+        </div>
+
+        <div class="tbp-dashboard-filters">
+            <label class="tbp-dashboard-filter"><i class="bi bi-funnel"></i>
+                <select id="tbpFilterType">
+                    <option value="">Booking Type</option>
+                    @foreach($typeConfig as $type => $tc)<option value="{{ $type }}">{{ $tc['label'] }}</option>@endforeach
+                </select>
+            </label>
+            <label class="tbp-dashboard-filter"><i class="bi bi-check2-circle"></i>
+                <select id="tbpFilterStatus">
+                    <option value="">Status</option>
+                    @foreach($recent_bookings->pluck('booking_status_flag')->filter()->unique()->sort() as $st)
+                        <option value="{{ $st }}">{{ ucfirst($st) }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <div class="dropdown">
+                <button type="button" class="tbp-dashboard-filter" data-bs-toggle="dropdown" data-bs-auto-close="outside"><i class="bi bi-calendar3"></i> <span id="tbpDateLabel">Date Range</span> <i class="bi bi-chevron-down"></i></button>
+                <div class="dropdown-menu tbp-dashboard-range-menu">
+                    <div class="tbp-dashboard-range-custom">
+                        <input type="date" id="tbpDateFrom">
+                        <input type="date" id="tbpDateTo">
+                        <button type="button" id="tbpDateApply">Apply</button>
+                        <button type="button" id="tbpDateClear" class="is-ghost">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tbp-dashboard-table-wrap">
+            <table class="tbp-dashboard-booking-table">
+                <thead>
+                    <tr><th>Booking</th><th>Customer</th><th>Details</th><th>Date / Stay</th><th>Pax</th><th>Phone</th><th>Partner</th><th>Amount / Status</th><th>Actions</th></tr>
+                </thead>
+                <tbody id="tbpBookingRows">
+                    @forelse($recent_bookings as $booking)
+                        @php
+                            $tc = $typeConfig[$booking->booking_type] ?? ['label' => ucfirst($booking->booking_type), 'icon' => 'bi-bookmark'];
+                            $invoiceRoute = match($booking->booking_type) {
+                                'hotel' => route('hotel.invoice', $booking->booking_code_ref),
+                                'tour'  => route('tour.invoice', $booking->booking_code_ref),
+                                'umrah' => route('umrah.invoice', $booking->booking_code_ref),
+                                default => route('flight.invoice', $booking->booking_code_ref),
+                            };
+                            $serviceName = match($booking->booking_type) {
+                                'hotel' => $booking->hotel_info['name'] ?? 'N/A',
+                                'tour'  => $booking->tour_info['name'] ?? 'N/A',
+                                'umrah' => $booking->umrah_info['name'] ?? 'N/A',
+                                default => $booking->flight_route['route'] ?? 'N/A',
+                            };
+                            $serviceLocation = match($booking->booking_type) {
+                                'hotel' => $booking->hotel_info['location'] ?? 'N/A',
+                                'tour'  => $booking->tour_info['location'] ?? 'N/A',
+                                'umrah' => $booking->umrah_info['location'] ?? 'N/A',
+                                default => $booking->flight_route['stops'] ?? 'N/A',
+                            };
+                            $status = $booking->booking_status_flag;
+                            $statusCls = $status === 'confirmed' ? 'is-success' : ($status === 'cancelled' || $status === 'failed' ? 'is-danger' : 'is-warning');
+                            $payCls = $booking->booking_payment_state === 'paid' ? 'is-success' : ($booking->booking_payment_state === 'refunded' ? 'is-info' : 'is-warning');
+                            $paxCount = $booking->booking_type === 'hotel' ? ($booking->guest_count ?? 'N/A') : ($booking->passenger_count ?? 'N/A');
+                            $userData = is_string($booking->booking_user_data) ? json_decode($booking->booking_user_data, true) : $booking->booking_user_data;
+                            $phone = (is_array($userData) ? ($userData['user_phone'] ?? null) : ($userData->user_phone ?? null)) ?: 'No number';
+                            $initials = collect(explode(' ', $booking->customer_name ?? ''))->filter()->map(fn ($n) => strtoupper(substr($n, 0, 1)))->take(2)->implode('') ?: '?';
+                            [$avBg, $avFg] = $avatarPalette[crc32($booking->customer_name ?? 'guest') % count($avatarPalette)];
+                        @endphp
+                        <tr data-type="{{ $booking->booking_type }}" data-status="{{ $status }}" data-date="{{ $booking->created_at->format('Y-m-d') }}">
+                            <td>
+                                <a href="{{ $invoiceRoute }}" target="_blank" class="tbp-dashboard-booking-cell">
+                                    <span class="tbp-dashboard-type-icon"><i class="bi {{ $tc['icon'] }}"></i></span>
+                                    <span class="tbp-dashboard-cell-text">
+                                        <strong title="{{ $serviceName }}">{{ Str::limit($serviceName, 22) }}</strong>
+                                        <small>#{{ $booking->booking_code_ref }}</small>
+                                        <span class="tbp-dashboard-badge">{{ $tc['label'] }}</span>
+                                    </span>
+                                </a>
+                            </td>
+                            <td>
+                                <div class="tbp-dashboard-customer">
+                                    <span class="tbp-dashboard-avatar" style="background:{{ $avBg }};color:{{ $avFg }}">{{ $initials }}</span>
+                                    <span class="tbp-dashboard-cell-text"><strong>{{ $booking->customer_name ?? 'N/A' }}</strong><small>{{ $booking->customer_email ?? 'N/A' }}</small></span>
+                                </div>
+                            </td>
+                            <td><span class="tbp-dashboard-cell-text"><strong title="{{ $serviceName }}">{{ Str::limit($serviceName, 30) }}</strong><small>{{ Str::limit($serviceLocation, 32) }}</small></span></td>
+                            <td class="tbp-dashboard-nowrap">{{ $booking->created_at->format('M j, Y') }}</td>
+                            <td class="tbp-dashboard-nowrap">{{ $paxCount }}</td>
+                            <td class="tbp-dashboard-nowrap tbp-dashboard-muted">{{ $phone }}</td>
+                            <td class="tbp-dashboard-nowrap">{{ ucfirst($booking->booking_supplier_name ?? 'Manual') }}</td>
+                            <td class="tbp-dashboard-nowrap">
+                                <strong class="tbp-dashboard-amount">{{ $booking->formatted_amount }}</strong>
+                                <span class="tbp-dashboard-status {{ $statusCls }}">{{ ucfirst($status) }}</span>
+                                <span class="tbp-dashboard-status {{ $payCls }}">{{ ucfirst($booking->booking_payment_state) }}</span>
+                            </td>
+                            <td>
+                                <div class="tbp-dashboard-actions">
+                                    <a href="{{ $invoiceRoute }}" target="_blank" title="View invoice"><i class="bi bi-eye"></i></a>
+                                    <a href="{{ route('admin.bookings.edit', ['type' => $booking->booking_type, 'id' => $booking->id]) }}" title="Edit booking"><i class="bi bi-pencil"></i></a>
+                                    <button type="button" class="is-danger tbp-dashboard-delete" data-id="{{ $booking->id }}" data-type="{{ $booking->booking_type }}" data-ref="{{ $booking->booking_code_ref }}" title="Delete booking"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="9" class="tbp-dashboard-empty">No recent bookings found.</td></tr>
+                    @endforelse
+                    <tr id="tbpNoMatches" hidden><td colspan="9" class="tbp-dashboard-empty">No bookings match these filters.</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 @endsection
 
+@push('styles')
+<link rel="stylesheet" href="{{ url('public/assets/libs/flag-icons/css/flag-icons.min.css') }}">
+@endpush
+
 @push('scripts')
 <script>
-    (function () {
-        var root = document.getElementById('dashTT');
-        if (!root) return;
+(function () {
+    const root = document.getElementById('tbpDashboard');
+    if (!root) return;
 
-        var state = { type: '', status: '', dateFrom: '', dateTo: '' };
-        var rows = Array.prototype.slice.call(root.querySelectorAll('#ttBookingList .tt-row'));
-        var noMatches = document.getElementById('ttNoMatches');
-        var resetBtn = document.getElementById('ttFilterReset');
-
-        function closeAllDropdowns(except) {
-            root.querySelectorAll('.tt-dropdown.open').forEach(function (d) {
-                if (d !== except) d.classList.remove('open');
-            });
-        }
-
-        root.querySelectorAll('.tt-dd-trigger').forEach(function (trigger) {
-            trigger.addEventListener('click', function (e) {
-                e.stopPropagation();
-                var dd = trigger.closest('.tt-dropdown');
-                var isOpen = dd.classList.contains('open');
-                closeAllDropdowns();
-                dd.classList.toggle('open', !isOpen);
-            });
+    // ---- Sales chart tooltip ----
+    const series = @json($series);
+    const cur = @json($cur);
+    const plot = document.getElementById('tbpSalesPlot');
+    const tip = document.getElementById('tbpSalesTip');
+    const cursor = document.getElementById('tbpSalesCursor');
+    const W = {{ $W }};
+    if (plot && series.length) {
+        const show = i => {
+            const s = series[i];
+            const x = series.length > 1 ? i / (series.length - 1) : 0.5;
+            cursor.setAttribute('x1', x * W); cursor.setAttribute('x2', x * W); cursor.setAttribute('visibility', 'visible');
+            plot.querySelectorAll('.tbp-dashboard-dot').forEach(d => d.classList.toggle('is-active', +d.dataset.i === i));
+            tip.innerHTML = `<div class="tbp-dashboard-tooltip-date">${s.full}</div>
+                <div><i style="background:#2563EB"></i> Bookings <strong>${s.bookings}</strong></div>
+                <div><i style="background:#38BDF8"></i> Revenue <strong>${cur} ${Math.round(s.revenue).toLocaleString()}</strong></div>`;
+            tip.hidden = false;
+            const left = x * plot.clientWidth;
+            tip.style.left = Math.min(Math.max(left, 80), plot.clientWidth - 80) + 'px';
+        };
+        plot.addEventListener('mousemove', e => {
+            const r = plot.getBoundingClientRect();
+            const i = Math.round(((e.clientX - r.left) / r.width) * (series.length - 1));
+            show(Math.max(0, Math.min(series.length - 1, i)));
         });
-
-        document.addEventListener('click', function () { closeAllDropdowns(); });
-
-        function applyFilters() {
-            var anyActive = state.type || state.status || state.dateFrom || state.dateTo;
-            resetBtn.classList.toggle('hidden', !anyActive);
-
-            var visibleCount = 0;
-            rows.forEach(function (row) {
-                var matches = true;
-                if (state.type && row.dataset.type !== state.type) matches = false;
-                if (state.status && row.dataset.status !== state.status) matches = false;
-                if (matches && state.dateFrom && row.dataset.date < state.dateFrom) matches = false;
-                if (matches && state.dateTo && row.dataset.date > state.dateTo) matches = false;
-                row.classList.toggle('tt-hidden', !matches);
-                if (matches) visibleCount++;
-            });
-            if (noMatches) noMatches.classList.toggle('hidden', visibleCount !== 0 || rows.length === 0);
-        }
-
-        // Booking Type / Status option pickers
-        root.querySelectorAll('[data-dropdown="type"] .tt-dd-opt, [data-dropdown="status"] .tt-dd-opt').forEach(function (opt) {
-            opt.addEventListener('click', function (e) {
-                e.stopPropagation();
-                var dd = opt.closest('.tt-dropdown');
-                var key = dd.dataset.dropdown;
-                var value = opt.dataset.value;
-                var label = dd.querySelector('.tt-dd-label');
-                var trigger = dd.querySelector('.tt-dd-trigger');
-
-                state[key] = value;
-                label.textContent = value ? opt.textContent : (key === 'type' ? 'Booking Type' : 'Status');
-                trigger.classList.toggle('active', !!value);
-                dd.classList.remove('open');
-                applyFilters();
-            });
+        plot.addEventListener('mouseleave', () => {
+            tip.hidden = true; cursor.setAttribute('visibility', 'hidden');
+            plot.querySelectorAll('.tbp-dashboard-dot.is-active').forEach(d => d.classList.remove('is-active'));
         });
+    }
 
-        // Date range popover
-        var dateFromInput = document.getElementById('ttDateFrom');
-        var dateToInput = document.getElementById('ttDateTo');
-        var dateApply = document.getElementById('ttDateApply');
-        var dateClear = document.getElementById('ttDateClear');
-        var dateTrigger = root.querySelector('[data-dropdown="date"] .tt-dd-trigger');
-        var dateLabel = root.querySelector('[data-dropdown="date"] .tt-dd-label');
+    // ---- Range selects on the cards ----
+    root.querySelectorAll('.tbp-dashboard-range-select').forEach(sel => sel.addEventListener('change', () => { window.location = sel.value; }));
 
-        if (dateApply) {
-            dateApply.addEventListener('click', function (e) {
-                e.stopPropagation();
-                state.dateFrom = dateFromInput.value || '';
-                state.dateTo = dateToInput.value || '';
-                var active = state.dateFrom || state.dateTo;
-                dateLabel.textContent = active ? 'Date Range •' : 'Date Range';
-                dateTrigger.classList.toggle('active', !!active);
-                root.querySelector('[data-dropdown="date"]').classList.remove('open');
-                applyFilters();
-            });
-        }
-        if (dateClear) {
-            dateClear.addEventListener('click', function (e) {
-                e.stopPropagation();
-                dateFromInput.value = '';
-                dateToInput.value = '';
-                state.dateFrom = '';
-                state.dateTo = '';
-                dateLabel.textContent = 'Date Range';
-                dateTrigger.classList.remove('active');
-                applyFilters();
-            });
-        }
-
-        // Reset all
-        if (resetBtn) {
-            resetBtn.addEventListener('click', function () {
-                state = { type: '', status: '', dateFrom: '', dateTo: '' };
-                root.querySelectorAll('.tt-dd-label').forEach(function (l) {
-                    var dd = l.closest('.tt-dropdown');
-                    l.textContent = dd.dataset.dropdown === 'type' ? 'Booking Type' : (dd.dataset.dropdown === 'status' ? 'Status' : 'Date Range');
-                });
-                root.querySelectorAll('.tt-dd-trigger').forEach(function (t) { t.classList.remove('active'); });
-                if (dateFromInput) dateFromInput.value = '';
-                if (dateToInput) dateToInput.value = '';
-                applyFilters();
-            });
-        }
-
-        // Prevent clicks inside a panel from closing it
-        root.querySelectorAll('.tt-dropdown-panel').forEach(function (panel) {
-            panel.addEventListener('click', function (e) { e.stopPropagation(); });
+    // ---- Recent bookings: tabs + filters (client-side over the rows shown) ----
+    const state = { type: '', status: '', from: '', to: '' };
+    const rows = Array.from(root.querySelectorAll('#tbpBookingRows tr[data-type]'));
+    const tabs = Array.from(root.querySelectorAll('.tbp-dashboard-booking-tabs button'));
+    const typeSel = document.getElementById('tbpFilterType');
+    function apply() {
+        let visible = 0;
+        rows.forEach(r => {
+            const ok = (!state.type || r.dataset.type === state.type)
+                && (!state.status || r.dataset.status === state.status)
+                && (!state.from || r.dataset.date >= state.from)
+                && (!state.to || r.dataset.date <= state.to);
+            r.hidden = !ok;
+            if (ok) visible++;
         });
+        document.getElementById('tbpNoMatches').hidden = visible > 0 || !rows.length;
+        document.getElementById('tbpShownCount').textContent = visible + ' shown';
+        tabs.forEach(t => t.classList.toggle('is-active', t.dataset.type === state.type));
+        typeSel.value = state.type;
+    }
+    tabs.forEach(t => t.addEventListener('click', () => { state.type = t.dataset.type; apply(); }));
+    typeSel.addEventListener('change', () => { state.type = typeSel.value; apply(); });
+    document.getElementById('tbpFilterStatus').addEventListener('change', e => { state.status = e.target.value; apply(); });
+    document.getElementById('tbpDateApply').addEventListener('click', () => {
+        state.from = document.getElementById('tbpDateFrom').value;
+        state.to = document.getElementById('tbpDateTo').value;
+        document.getElementById('tbpDateLabel').textContent = state.from || state.to ? `${state.from || '…'} – ${state.to || '…'}` : 'Date Range';
+        apply();
+    });
+    document.getElementById('tbpDateClear').addEventListener('click', () => {
+        document.getElementById('tbpDateFrom').value = ''; document.getElementById('tbpDateTo').value = '';
+        state.from = state.to = '';
+        document.getElementById('tbpDateLabel').textContent = 'Date Range';
+        apply();
+    });
 
-        // Delete booking — same endpoint/payload as admin-nova/bookings
-        // /_scripts.blade.php's single-delete handler.
-        root.querySelectorAll('.dash-delete-btn').forEach(function (btn) {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-                var id = this.dataset.id, type = this.dataset.type, ref = this.dataset.ref;
-                if (confirm('Are you sure you want to delete booking #' + ref + '? This action cannot be undone.')) {
-                    var form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = '{{ url("admin/bookings") }}/' + type + '/' + id;
-
-                    var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                    var csrfInput = document.createElement('input');
-                    csrfInput.type = 'hidden'; csrfInput.name = '_token'; csrfInput.value = csrfToken;
-                    form.appendChild(csrfInput);
-
-                    var methodInput = document.createElement('input');
-                    methodInput.type = 'hidden'; methodInput.name = '_method'; methodInput.value = 'DELETE';
-                    form.appendChild(methodInput);
-
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
-        });
-    })();
+    // ---- Delete booking (same endpoint as the bookings pages) ----
+    root.querySelectorAll('.tbp-dashboard-delete').forEach(btn => btn.addEventListener('click', () => {
+        if (!confirm(`Are you sure you want to delete booking #${btn.dataset.ref}? This action cannot be undone.`)) return;
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `{{ url('admin/bookings') }}/${btn.dataset.type}/${btn.dataset.id}`;
+        form.innerHTML = `<input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').content}"><input type="hidden" name="_method" value="DELETE">`;
+        document.body.appendChild(form);
+        form.submit();
+    }));
+})();
 </script>
 @endpush
