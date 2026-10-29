@@ -325,57 +325,9 @@
             </div>
         </div>
 
-        {{-- Illustrative dashboard + phone (decorative; built in HTML/CSS, no real data) --}}
-        <div class="ap-devices" aria-hidden="true">
-            <div class="ap-laptop">
-                <div class="ap-laptop-screen">
-                    <div class="ap-dash">
-                        <div class="ap-dash-side">
-                            <span class="ap-dash-logo"></span>
-                            @foreach(['fa-gauge', 'fa-plane', 'fa-hotel', 'fa-umbrella-beach', 'fa-kaaba', 'fa-passport', 'fa-wallet'] as $i => $icon)
-                                <span class="ap-dash-nav {{ $i === 0 ? 'is-active' : '' }}"><i class="fas {{ $icon }}"></i><b></b></span>
-                            @endforeach
-                        </div>
-                        <div class="ap-dash-main">
-                            <div class="ap-dash-top"><b>Dashboard</b><span></span></div>
-                            <div class="ap-dash-cards">
-                                @foreach(['fa-ticket', 'fa-sack-dollar', 'fa-users', 'fa-chart-line'] as $icon)
-                                    <div class="ap-dash-card"><i class="fas {{ $icon }}"></i><b></b><span></span></div>
-                                @endforeach
-                            </div>
-                            <div class="ap-dash-row">
-                                <div class="ap-dash-chart">
-                                    <span class="ap-dash-label"></span>
-                                    <div class="ap-bars">
-                                        @for($b = 0; $b < 12; $b++)<i></i>@endfor
-                                    </div>
-                                </div>
-                                <div class="ap-dash-list">
-                                    <span class="ap-dash-label"></span>
-                                    @for($r = 0; $r < 5; $r++)
-                                        <div class="ap-dash-item"><i></i><b></b><span></span></div>
-                                    @endfor
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="ap-laptop-base"></div>
-            </div>
-            <div class="ap-phone">
-                <div class="ap-phone-screen">
-                    <div class="ap-phone-head"><span></span><b>{{ $apBusiness }}</b></div>
-                    <div class="ap-phone-search"><i class="fas fa-magnifying-glass"></i><span></span></div>
-                    <div class="ap-phone-grid">
-                        @foreach([['fa-plane', 'Flights'], ['fa-hotel', 'Hotels'], ['fa-umbrella-beach', 'Tours'], ['fa-kaaba', 'Umrah'], ['fa-passport', 'Visa'], ['fa-ticket', 'Bookings']] as [$icon, $label])
-                            <span><i class="fas {{ $icon }}"></i>{{ $label }}</span>
-                        @endforeach
-                    </div>
-                    <div class="ap-phone-card"><i></i><div><b></b><span></span></div></div>
-                    <div class="ap-phone-card"><i></i><div><b></b><span></span></div></div>
-                    <div class="ap-phone-btn">Book Now</div>
-                </div>
-            </div>
+        {{-- Dashboard + mobile app (part of the hero image; shown as its own picture on small screens) --}}
+        <div class="ap-devices">
+            <img src="{{ asset('public/assets/images/agents/page/agent-hero-bg.png') }}" alt="{{ $apBusiness }} agent dashboard and mobile app" class="ap-devices-img">
         </div>
     </div>
 

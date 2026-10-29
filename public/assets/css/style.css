@@ -12233,3 +12233,69 @@ a.fb-back {
     .ap-stats { margin-top: 24px; transform: none; }
     .ap-hero + .ap-sec { padding-top: 56px; }
 }
+
+
+/* Agent page: supplied hero and registration background images */
+.ap-hero {
+    padding: 72px 0 0;
+    background: #F5F9FE url('../images/agents/page/agent-hero-bg.png') right center / cover no-repeat;
+}
+
+.ap-hero-grid {
+    min-height: 420px;
+}
+
+/* the dashboard and phone are part of the background image on desktop */
+.ap-devices {
+    padding: 0;
+}
+
+.ap-devices-img {
+    display: none;
+}
+
+.ap-register {
+    background: #2563EB url('../images/agents/page/agent-form-bg.png') left center / cover no-repeat;
+}
+
+.ap-register-promo {
+    align-self: stretch;
+    background: rgba(37, 99, 235, 0.55);
+}
+
+.ap-register-promo h2,
+.ap-register-promo p,
+.ap-register-promo li {
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 1279px) {
+    .ap-hero {
+        background-position: 70% center;
+    }
+}
+
+@media (max-width: 1023px) {
+    /* text on the plain background, then the devices part of the image */
+    .ap-hero {
+        padding-top: 40px;
+        background-image: none;
+    }
+
+    .ap-hero-grid {
+        min-height: 0;
+    }
+
+    .ap-devices-img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        border-radius: 18px;
+        object-fit: cover;
+        object-position: 100% center;
+    }
+
+    .ap-register-promo {
+        background: rgba(37, 99, 235, 0.65);
+    }
+}
