@@ -7608,6 +7608,39 @@ footer {
     display: none;
 }
 
+#siteRedesign .home-flight-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+#siteRedesign .home-flight-card {
+    height: auto;
+    min-height: 190px;
+    border-radius: 10px;
+}
+
+#siteRedesign .home-flight-card .th-card-body {
+    gap: 8px;
+}
+
+#siteRedesign .home-flight-route-code {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #2563EB;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+#siteRedesign .home-flight-card .th-route {
+    margin-bottom: 0;
+}
+
+#siteRedesign .home-flight-card .th-footer {
+    margin-top: auto;
+}
+
 #siteRedesign .th-card {
     display: flex;
     flex-direction: column;
@@ -7935,6 +7968,10 @@ footer {
     #siteRedesign .hw-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    #siteRedesign .home-flight-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 639px) {
@@ -7952,6 +7989,11 @@ footer {
 
     #siteRedesign .th-track {
         grid-auto-columns: 100%;
+    }
+
+    #siteRedesign .home-flight-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
     }
 
     #siteRedesign .th-card {

@@ -454,6 +454,48 @@
     };
 @endphp
 
+    @if($flightModule)
+    <!-- FEATURED FLIGHTS SECTION -->
+    @php
+        [$thLead, $thAccent] = $thSplitTitle(t('flight.featured_flight_deals'));
+        $flightDealDate = date('d-m-Y', strtotime('+7 days'));
+    @endphp
+    <section class="th-section" id="featuredHomeFlights">
+        <div class="th-container">
+            <div class="th-header">
+                <div class="th-header-text">
+                    <span class="th-eyebrow">{{ t('flight.featured_flight_deals') }}</span>
+                    <h2 class="th-title">{{ $thLead }} @if($thAccent)<span class="th-title-accent">{{ $thAccent }}</span>@endif</h2>
+                </div>
+            </div>
+
+            <div class="home-flight-grid">
+                @foreach($featuredFlightDeals as [$fromCode, $fromCity, $toCode, $toCity, $airline, $usdPrice])
+                    @php $dealUrl = url('flights/' . strtolower($fromCode) . '/' . strtolower($toCode) . "/oneway/economy/{$flightDealDate}/1/0/0"); @endphp
+                    <article class="th-card is-compact home-flight-card">
+                        <div class="th-card-body">
+                            <span class="home-flight-route-code"><i class="fas fa-plane"></i> {{ $fromCode }} - {{ $toCode }}</span>
+                            <div class="th-route">
+                                <span class="th-route-city">{{ $fromCity }}</span>
+                                <span class="th-route-icon"><i class="fas fa-plane"></i></span>
+                                <span class="th-route-city">{{ $toCity }}</span>
+                            </div>
+                            <p class="th-location"><i class="fas fa-plane-departure"></i> <span>{{ $airline }}</span></p>
+                            <div class="th-footer">
+                                <div class="th-price-wrap">
+                                    <span class="th-price-label">{{ t('home.starting_from') }}</span>
+                                    <span class="th-price">{{ $active_currency->currency_name }} {{ convertCurrency($usdPrice, 'USD', $active_currency->currency_name) }}</span>
+                                </div>
+                                <a href="{{ $dealUrl }}" class="th-view-btn">{{ t('home.view') }} <i class="fas fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
     @if($hotelModule)
     <!-- FEATURED HOTELS SECTION -->
     @php [$thLead, $thAccent] = $thSplitTitle(t('home.trending_hotels')); @endphp
