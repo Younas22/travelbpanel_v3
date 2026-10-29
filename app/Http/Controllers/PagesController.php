@@ -18,7 +18,7 @@ class PagesController extends Controller
 {
     public function home() {
         $flightModule = getActiveModule('flight');
-        $featuredFlightDeals = $flightModule ? array_slice(FeaturedFlightDeals::all(), 0, 8) : [];
+        $featuredFlightDeals = $flightModule ? array_slice(FeaturedFlightDeals::all(), 0, 9) : [];
         // Airport names/cities for the deal cards, from the airports table
         $flightDealAirports = collect($featuredFlightDeals)->isEmpty() ? collect() : DB::table('flights_airports')
             ->whereIn('code', collect($featuredFlightDeals)->flatMap(fn($d) => [$d[0], $d[2]])->unique()->values())

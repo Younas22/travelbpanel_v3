@@ -7695,35 +7695,312 @@ footer {
 
 #siteRedesign .home-flight-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
 }
 
+/* Featured flight deal: horizontal airline ticket */
 #siteRedesign .home-flight-card {
-    height: auto;
-    min-height: 190px;
+    position: relative;
+    display: flex;
+    min-width: 0;
+    background: #FFFFFF;
+    border: 1px solid #E5EAF2;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+#siteRedesign .home-flight-card:hover {
+    border-color: #BFD3FB;
+    box-shadow: 0 10px 28px rgba(37, 99, 235, 0.12);
+}
+
+#siteRedesign .hfc-main {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+    padding: 16px 16px 14px;
+}
+
+#siteRedesign .hfc-airline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+#siteRedesign .hfc-logo {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 5px;
+    background: #FFFFFF;
+    border: 1px solid #E5EAF2;
     border-radius: 10px;
 }
 
-#siteRedesign .home-flight-card .th-card-body {
+#siteRedesign .hfc-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+#siteRedesign .hfc-airline-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.3;
+}
+
+#siteRedesign .hfc-airline-text b {
+    overflow: hidden;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#siteRedesign .hfc-airline-text small {
+    color: #6B7280;
+    font-size: 12px;
+}
+
+#siteRedesign .hfc-route {
+    display: flex;
+    align-items: flex-start;
     gap: 8px;
 }
 
-#siteRedesign .home-flight-route-code {
+#siteRedesign .hfc-point {
+    display: flex;
+    flex: 0 1 38%;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.3;
+}
+
+#siteRedesign .hfc-point.is-arrival {
+    align-items: flex-end;
+    text-align: right;
+}
+
+#siteRedesign .hfc-code {
+    color: #111827;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+#siteRedesign .hfc-city {
+    color: #111827;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+#siteRedesign .hfc-airport {
+    display: -webkit-box;
+    overflow: hidden;
+    margin-top: 2px;
+    color: #6B7280;
+    font-size: 11px;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+#siteRedesign .hfc-path {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 8px;
+    min-width: 36px;
+    padding-top: 12px;
+    color: #2563EB;
+}
+
+#siteRedesign .hfc-line {
+    flex: 1 1 auto;
+    border-top: 2px dotted #93B4F5;
+}
+
+#siteRedesign .hfc-path i {
+    font-size: 15px;
+}
+
+#siteRedesign .hfc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid #F1F4F9;
+    color: #4B5563;
+    font-size: 12px;
+}
+
+#siteRedesign .hfc-meta i {
+    margin-right: 4px;
+    color: #2563EB;
+}
+
+/* fare stub: dashed tear line with half-circle cutouts top and bottom */
+#siteRedesign .hfc-fare {
+    position: relative;
+    display: flex;
+    flex: 0 0 132px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 16px 12px;
+    border-left: 2px dashed #D6DEEA;
+    text-align: center;
+}
+
+#siteRedesign .hfc-fare::before,
+#siteRedesign .hfc-fare::after {
+    content: "";
+    position: absolute;
+    left: -12px;
+    width: 22px;
+    height: 22px;
+    background: #FFFFFF;
+    border: 1px solid #E5EAF2;
+    border-radius: 50%;
+}
+
+#siteRedesign .hfc-fare::before {
+    top: -12px;
+    clip-path: inset(50% 0 0 0);
+}
+
+#siteRedesign .hfc-fare::after {
+    bottom: -12px;
+    clip-path: inset(0 0 50% 0);
+}
+
+#siteRedesign .hfc-fare-label,
+#siteRedesign .hfc-per {
+    color: #6B7280;
+    font-size: 12px;
+}
+
+#siteRedesign .hfc-price {
+    color: #111827;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+#siteRedesign .hfc-price small {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#siteRedesign .hfc-barcode {
+    display: block;
+    width: 92px;
+    height: 24px;
+    margin: 10px 0 12px;
+    background: repeating-linear-gradient(90deg, #1F2937 0 2px, transparent 2px 4px, #1F2937 4px 5px, transparent 5px 8px, #1F2937 8px 11px, transparent 11px 13px);
+    opacity: 0.8;
+}
+
+#siteRedesign .hfc-view-btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 8px;
+    min-width: 100px;
+    height: 36px;
+    padding: 0 14px;
+    border: 1.5px solid #2563EB;
+    border-radius: 999px;
     color: #2563EB;
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
-#siteRedesign .home-flight-card .th-route {
-    margin-bottom: 0;
+#siteRedesign .hfc-view-btn:hover,
+#siteRedesign .hfc-view-btn:focus-visible {
+    background: #2563EB;
+    color: #FFFFFF;
 }
 
-#siteRedesign .home-flight-card .th-footer {
-    margin-top: auto;
+@media (max-width: 1279px) {
+    #siteRedesign .home-flight-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1023px) {
+    #siteRedesign .home-flight-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+}
+
+@media (max-width: 639px) {
+    /* the fare stub moves under the route, torn along a horizontal line */
+    #siteRedesign .home-flight-card {
+        flex-direction: column;
+    }
+
+    #siteRedesign .hfc-main {
+        padding: 16px;
+    }
+
+    #siteRedesign .hfc-code {
+        font-size: 22px;
+    }
+
+    #siteRedesign .hfc-fare {
+        display: grid;
+        flex: 0 0 auto;
+        grid-template-columns: 1fr auto;
+        grid-template-areas: "label btn" "price btn" "per btn";
+        align-items: center;
+        gap: 0 12px;
+        padding: 14px 16px;
+        border-left: 0;
+        border-top: 2px dashed #D6DEEA;
+        text-align: left;
+    }
+
+    #siteRedesign .hfc-fare::before,
+    #siteRedesign .hfc-fare::after {
+        top: -12px;
+        bottom: auto;
+    }
+
+    #siteRedesign .hfc-fare::before {
+        left: -12px;
+        clip-path: inset(0 0 0 50%);
+    }
+
+    #siteRedesign .hfc-fare::after {
+        right: -12px;
+        left: auto;
+        clip-path: inset(0 50% 0 0);
+    }
+
+    #siteRedesign .hfc-fare-label { grid-area: label; }
+    #siteRedesign .hfc-price { grid-area: price; }
+    #siteRedesign .hfc-per { grid-area: per; }
+    #siteRedesign .hfc-view-btn { grid-area: btn; }
+
+    #siteRedesign .hfc-barcode {
+        display: none;
+    }
 }
 
 #siteRedesign .th-card {
@@ -8054,9 +8331,6 @@ footer {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    #siteRedesign .home-flight-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
 
     #siteRedesign #popularTours .th-track {
         grid-auto-columns: calc((100% - 16px) / 2);
@@ -8080,10 +8354,6 @@ footer {
         grid-auto-columns: 100%;
     }
 
-    #siteRedesign .home-flight-grid {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 12px;
-    }
 
     #siteRedesign #popularTours .th-track {
         grid-auto-columns: 100%;
