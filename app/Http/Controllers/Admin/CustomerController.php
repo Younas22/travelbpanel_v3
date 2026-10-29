@@ -65,7 +65,8 @@ public function index(Request $request)
             'total_customers' => User::customers()->count(),
             'active_customers' => User::customers()->where('status', 'active')->count(),
             'vip_customers' => User::customers()->where('customer_tier', 'platinum')->count(),
-            'avg_customer_value' => User::customers()->avg('average_spending') ?? 0
+            'avg_customer_value' => User::customers()->avg('average_spending') ?? 0,
+            'new_this_month' => User::customers()->where('created_at', '>=', now()->startOfMonth())->count(),
         ];
         
         // Get customers with pagination
