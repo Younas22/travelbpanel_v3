@@ -73,6 +73,26 @@
         outline: none !important;
         box-shadow: none !important;
     }
+    /* Account / Sign Up menus open centred under their button; where the
+       button is close to the screen edge, the menu lines up with the
+       button's right edge instead so it never runs off-screen. */
+    @media (max-width: 1399px) {
+        .nav-dd-under { left: auto; right: 0; --tw-translate-x: 0; transform: none; }
+        [dir="rtl"] .nav-dd-under { right: auto; left: 0; }
+    }
+
+    /* Small desktops (1024–1279px): drop decorative icons and the Support
+       label so the whole bar fits without overflowing the screen. */
+    @media (min-width: 1024px) and (max-width: 1279px) {
+        .nav-shell .nav-item i.nav-ico:not(.nav-chevron),
+        .nav-shell .btn-signin-pill > i,
+        .nav-shell .btn-signup-solid > i:first-child,
+        .nav-shell .nav-sep { display: none; }
+        .nav-shell .nav-util-link span { display: none; }
+        .nav-shell .nav-item { padding: 0 10px; }
+        .nav-shell .btn-signin-pill,
+        .nav-shell .btn-signup-solid { padding: 0 14px; }
+    }
     .nav-util-pill-item:focus-within,
     .nav-util-pill-item:has(.select2-container--open) {
         border-color: #2563EB;
@@ -384,7 +404,7 @@
                         <span>{{ $navUserLabel }}</span>
                         <i class="fas fa-chevron-down text-xs"></i>
                     </button>
-                    <div class="absolute right-0 mt-0 pt-2 w-56 z-50 hidden group-hover:block group-focus-within:block">
+                    <div class="nav-dd-under absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 z-50 hidden group-hover:block group-focus-within:block">
                         <div class="nav-dd-panel">
                             @if($navUser->isAdmin())
                                 <a href="{{ route('admin.dashboard.index') }}" class="nav-menu-link"><i class="fas fa-gauge-high"></i> Dashboard</a>
@@ -422,7 +442,7 @@
                         <span>Sign Up</span>
                         <i class="fas fa-chevron-down text-xs"></i>
                     </button>
-                    <div class="absolute right-0 mt-0 pt-2 w-72 z-50 hidden group-hover:block group-focus-within:block">
+                    <div class="nav-dd-under absolute left-1/2 -translate-x-1/2 top-full pt-2 w-64 z-50 hidden group-hover:block group-focus-within:block">
                         <div class="nav-dd-panel">
                             <a href="{{ route('user.register') }}" class="nav-dd-item nav-signup-item">
                                 <span class="nav-dd-icon"><i class="fas fa-user"></i></span>

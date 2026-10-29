@@ -9222,7 +9222,7 @@ footer {
    Homepage mobile app showcase (home.blade.php, #appShowcase)
    ========================================================================== */
 #siteRedesign .app-showcase {
-    background: #FFFFFF;
+    background: #2563EB;
     padding: 40px 0 64px;
 }
 
@@ -9235,7 +9235,7 @@ footer {
 
 #siteRedesign .app-showcase-title {
     margin: 0 0 16px;
-    color: #000000;
+    color: #FFFFFF;
     font-size: clamp(28px, 3vw, 40px);
     font-weight: 700;
     line-height: 1.2;
@@ -9243,13 +9243,13 @@ footer {
 }
 
 #siteRedesign .app-showcase-accent {
-    color: #2563EB;
+    color: #FFFFFF;
 }
 
 #siteRedesign .app-showcase-desc {
     margin: 0 0 28px;
     max-width: 520px;
-    color: rgba(0, 0, 0, 0.65);
+    color: rgba(255, 255, 255, 0.88);
     font-size: 15px;
     line-height: 1.7;
 }
@@ -9267,7 +9267,7 @@ footer {
     display: flex;
     align-items: center;
     gap: 12px;
-    color: #000000;
+    color: #FFFFFF;
     font-size: 14px;
     font-weight: 500;
 }
@@ -9280,7 +9280,7 @@ footer {
     width: 38px;
     height: 38px;
     border-radius: 12px;
-    background: rgba(37, 99, 235, 0.1);
+    background: #FFFFFF;
     color: #2563EB;
     font-size: 15px;
 }
