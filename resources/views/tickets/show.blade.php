@@ -3,7 +3,7 @@
 
 <div class="max-w-3xl mx-auto px-4 py-10">
 
-    <a href="{{ route('ticket.track') }}" class="inline-flex items-center gap-1.5 text-sm font-medium mb-5" style="color:#0077BE; text-decoration:none;">
+    <a href="{{ route('ticket.track') }}" class="inline-flex items-center gap-1.5 text-sm font-medium mb-5" style="color:var(--site-primary); text-decoration:none;">
         <i class="fas fa-arrow-left"></i> Look up a different ticket
     </a>
 
@@ -43,7 +43,7 @@
         <div class="p-5 space-y-4">
 
             <div class="flex gap-3">
-                <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold" style="background:#e8f4fd; color:#0077BE;">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold" style="background:#e8f4fd; color:var(--site-primary);">
                     {{ strtoupper(substr($submitter->first_name ?? '?', 0, 1)) }}
                 </div>
                 <div class="flex-1 min-w-0">
@@ -53,7 +53,7 @@
                     </div>
                     <div class="bg-gray-50 rounded-lg p-3 text-sm text-gray-700 whitespace-pre-line">{{ $ticket->description }}</div>
                     @if($ticket->attachment)
-                        <a href="{{ url('public/assets/uploads/support/' . $ticket->attachment) }}" target="_blank" class="inline-flex items-center gap-1.5 mt-2 text-xs font-medium hover:underline" style="color:#0077BE;">
+                        <a href="{{ url('public/assets/uploads/support/' . $ticket->attachment) }}" target="_blank" class="inline-flex items-center gap-1.5 mt-2 text-xs font-medium hover:underline" style="color:var(--site-primary);">
                             <i class="fas fa-paperclip"></i> View attachment
                         </a>
                     @endif
@@ -63,7 +63,7 @@
             @foreach($ticket->replies as $reply)
                 @php $isAdmin = $reply->sender && $reply->sender->isAdmin(); @endphp
                 <div class="flex gap-3">
-                    <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold {{ $isAdmin ? 'bg-indigo-100 text-indigo-700' : '' }}" style="{{ $isAdmin ? '' : 'background:#e8f4fd; color:#0077BE;' }}">
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold {{ $isAdmin ? 'bg-indigo-100 text-indigo-700' : '' }}" style="{{ $isAdmin ? '' : 'background:#e8f4fd; color:var(--site-primary);' }}">
                         {{ strtoupper(substr($reply->sender->first_name ?? '?', 0, 1)) }}
                     </div>
                     <div class="flex-1 min-w-0">
@@ -90,7 +90,7 @@
                           class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400 bg-gray-50"></textarea>
                 @error('message')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 <div class="flex justify-end mt-3">
-                    <button type="submit" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white" style="background:#0077BE; border:none; cursor:pointer;">
+                    <button type="submit" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white" style="background:var(--site-primary); border:none; cursor:pointer;">
                         <i class="fas fa-paper-plane mr-1"></i> Send Reply
                     </button>
                 </div>

@@ -141,7 +141,7 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
 
                 <!-- Destination Card 1 -->
-                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 24px rgba(0, 119, 190, 0.15)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
+                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 24px color-mix(in srgb, var(--site-primary) 15%, transparent)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
                     <div style="position: relative; overflow: hidden; height: 200px;">
                         <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&h=300&fit=crop" alt="New York" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                         <div style="position: absolute; top: 12px; right: 12px; background: #FF6B35; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">{{ t('home.badge_popular') }}</div>
@@ -150,14 +150,14 @@
                         <h3 style="font-size: 18px; font-weight: bold; color: #003580; margin-bottom: 8px;">New York</h3>
                         <p style="font-size: 14px; color: #6B7280; margin-bottom: 12px;">2,450 {{ t('home.hotels_available') }}</p>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 14px; color: #0077BE; font-weight: bold;">{{ t('home.from') }} {{$active_currency->currency_name}} {{convertCurrency(85, "USD", $active_currency->currency_name)}}{{ t('home.per_night') }}</span>
+                            <span style="font-size: 14px; color: var(--site-primary); font-weight: bold;">{{ t('home.from') }} {{$active_currency->currency_name}} {{convertCurrency(85, "USD", $active_currency->currency_name)}}{{ t('home.per_night') }}</span>
                             <span style="font-size: 12px; color: #FF6B35;">→</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Destination Card 2 -->
-                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 24px rgba(0, 119, 190, 0.15)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
+                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 24px color-mix(in srgb, var(--site-primary) 15%, transparent)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
                     <div style="position: relative; overflow: hidden; height: 200px;">
                         <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&h=300&fit=crop" alt="Paris" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                         <div style="position: absolute; top: 12px; right: 12px; background: #FF6B35; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">{{ t('home.badge_popular') }}</div>
@@ -166,14 +166,14 @@
                         <h3 style="font-size: 18px; font-weight: bold; color: #003580; margin-bottom: 8px;">Paris</h3>
                         <p style="font-size: 14px; color: #6B7280; margin-bottom: 12px;">1,890 {{ t('home.hotels_available') }}</p>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 14px; color: #0077BE; font-weight: bold;">{{ t('home.from') }} {{$active_currency->currency_name}} {{convertCurrency(92, "USD", $active_currency->currency_name)}}{{ t('home.per_night') }}</span>
+                            <span style="font-size: 14px; color: var(--site-primary); font-weight: bold;">{{ t('home.from') }} {{$active_currency->currency_name}} {{convertCurrency(92, "USD", $active_currency->currency_name)}}{{ t('home.per_night') }}</span>
                             <span style="font-size: 12px; color: #FF6B35;">→</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Destination Card 3 -->
-                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 24px rgba(0, 119, 190, 0.15)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
+                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 24px color-mix(in srgb, var(--site-primary) 15%, transparent)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
                     <div style="position: relative; overflow: hidden; height: 200px;">
                         <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=400&h=300&fit=crop" alt="Dubai" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                         <div style="position: absolute; top: 12px; right: 12px; background: #FF6B35; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">{{ t('home.badge_sale') }}</div>
@@ -182,14 +182,14 @@
                         <h3 style="font-size: 18px; font-weight: bold; color: #003580; margin-bottom: 8px;">Dubai</h3>
                         <p style="font-size: 14px; color: #6B7280; margin-bottom: 12px;">1,650 {{ t('home.hotels_available') }}</p>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 14px; color: #0077BE; font-weight: bold;">{{ t('home.from') }} {{$active_currency->currency_name}} {{convertCurrency(75, "USD", $active_currency->currency_name)}}{{ t('home.per_night') }}</span>
+                            <span style="font-size: 14px; color: var(--site-primary); font-weight: bold;">{{ t('home.from') }} {{$active_currency->currency_name}} {{convertCurrency(75, "USD", $active_currency->currency_name)}}{{ t('home.per_night') }}</span>
                             <span style="font-size: 12px; color: #FF6B35;">→</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Destination Card 4 -->
-                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 24px rgba(0, 119, 190, 0.15)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
+                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 24px color-mix(in srgb, var(--site-primary) 15%, transparent)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
                     <div style="position: relative; overflow: hidden; height: 200px;">
                         <img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=300&fit=crop" alt="Tokyo" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                     </div>
@@ -197,14 +197,14 @@
                         <h3 style="font-size: 18px; font-weight: bold; color: #003580; margin-bottom: 8px;">Tokyo</h3>
                         <p style="font-size: 14px; color: #6B7280; margin-bottom: 12px;">2,120 {{ t('home.hotels_available') }}</p>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 14px; color: #0077BE; font-weight: bold;">{{ t('home.from') }} {{$active_currency->currency_name}} {{convertCurrency(96, "USD", $active_currency->currency_name)}}{{ t('home.per_night') }}</span>
+                            <span style="font-size: 14px; color: var(--site-primary); font-weight: bold;">{{ t('home.from') }} {{$active_currency->currency_name}} {{convertCurrency(96, "USD", $active_currency->currency_name)}}{{ t('home.per_night') }}</span>
                             <span style="font-size: 12px; color: #FF6B35;">→</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Destination Card 5 -->
-                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 24px rgba(0, 119, 190, 0.15)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
+                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 24px color-mix(in srgb, var(--site-primary) 15%, transparent)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
                     <div style="position: relative; overflow: hidden; height: 200px;">
                         <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop" alt="London" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                     </div>
@@ -212,14 +212,14 @@
                         <h3 style="font-size: 18px; font-weight: bold; color: #003580; margin-bottom: 8px;">London</h3>
                         <p style="font-size: 14px; color: #6B7280; margin-bottom: 12px;">1,750 {{ t('home.hotels_available') }}</p>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 14px; color: #0077BE; font-weight: bold;">{{ t('home.from') }} {{$active_currency->currency_name}} {{convertCurrency(88, "USD", $active_currency->currency_name)}}{{ t('home.per_night') }}</span>
+                            <span style="font-size: 14px; color: var(--site-primary); font-weight: bold;">{{ t('home.from') }} {{$active_currency->currency_name}} {{convertCurrency(88, "USD", $active_currency->currency_name)}}{{ t('home.per_night') }}</span>
                             <span style="font-size: 12px; color: #FF6B35;">→</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Destination Card 6 -->
-                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 24px rgba(0, 119, 190, 0.15)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
+                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 24px color-mix(in srgb, var(--site-primary) 15%, transparent)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
                     <div style="position: relative; overflow: hidden; height: 200px;">
                         <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop" alt="Sydney" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                     </div>
@@ -227,14 +227,14 @@
                         <h3 style="font-size: 18px; font-weight: bold; color: #003580; margin-bottom: 8px;">Sydney</h3>
                         <p style="font-size: 14px; color: #6B7280; margin-bottom: 12px;">980 {{ t('home.hotels_available') }}</p>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 14px; color: #0077BE; font-weight: bold;">{{ t('home.from') }} {{$active_currency->currency_name}} {{convertCurrency(105, "USD", $active_currency->currency_name)}}{{ t('home.per_night') }}</span>
+                            <span style="font-size: 14px; color: var(--site-primary); font-weight: bold;">{{ t('home.from') }} {{$active_currency->currency_name}} {{convertCurrency(105, "USD", $active_currency->currency_name)}}{{ t('home.per_night') }}</span>
                             <span style="font-size: 12px; color: #FF6B35;">→</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Destination Card 7 -->
-                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 24px rgba(0, 119, 190, 0.15)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
+                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 24px color-mix(in srgb, var(--site-primary) 15%, transparent)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
                     <div style="position: relative; overflow: hidden; height: 200px;">
                         <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&h=300&fit=crop" alt="Bangkok" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                     </div>
@@ -242,14 +242,14 @@
                         <h3 style="font-size: 18px; font-weight: bold; color: #003580; margin-bottom: 8px;">Bangkok</h3>
                         <p style="font-size: 14px; color: #6B7280; margin-bottom: 12px;">1,340 {{ t('home.hotels_available') }}</p>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 14px; color: #0077BE; font-weight: bold;">{{ t('home.from') }} {{$active_currency->currency_name}} {{convertCurrency(45, "USD", $active_currency->currency_name)}}{{ t('home.per_night') }}</span>
+                            <span style="font-size: 14px; color: var(--site-primary); font-weight: bold;">{{ t('home.from') }} {{$active_currency->currency_name}} {{convertCurrency(45, "USD", $active_currency->currency_name)}}{{ t('home.per_night') }}</span>
                             <span style="font-size: 12px; color: #FF6B35;">→</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Destination Card 8 -->
-                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 24px rgba(0, 119, 190, 0.15)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
+                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.boxShadow='0 8px 24px color-mix(in srgb, var(--site-primary) 15%, transparent)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.08)'; this.style.transform='translateY(0)'">
                     <div style="position: relative; overflow: hidden; height: 200px;">
                         <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=300&fit=crop" alt="Bali" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                     </div>
@@ -257,7 +257,7 @@
                         <h3 style="font-size: 18px; font-weight: bold; color: #003580; margin-bottom: 8px;">Bali</h3>
                         <p style="font-size: 14px; color: #6B7280; margin-bottom: 12px;">1,200 {{ t('home.hotels_available') }}</p>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 14px; color: #0077BE; font-weight: bold;">{{ t('home.from') }} {{$active_currency->currency_name}} {{convertCurrency(35, "USD", $active_currency->currency_name)}}{{ t('home.per_night') }}</span>
+                            <span style="font-size: 14px; color: var(--site-primary); font-weight: bold;">{{ t('home.from') }} {{$active_currency->currency_name}} {{convertCurrency(35, "USD", $active_currency->currency_name)}}{{ t('home.per_night') }}</span>
                             <span style="font-size: 12px; color: #FF6B35;">→</span>
                         </div>
                     </div>
@@ -267,7 +267,7 @@
 
             <!-- View All Button -->
             <!-- <div style="text-align: center; margin-top: 40px;">
-                <button style="background-color: #0077BE; color: white; border: none; padding: 12px 40px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0, 119, 190, 0.15);" onmouseover="this.style.backgroundColor='#0066A1'; this.style.boxShadow='0 4px 12px rgba(0, 119, 190, 0.3)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.backgroundColor='#0077BE'; this.style.boxShadow='0 2px 8px rgba(0, 119, 190, 0.15)'; this.style.transform='translateY(0)'">
+                <button style="background-color: var(--site-primary); color: white; border: none; padding: 12px 40px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px color-mix(in srgb, var(--site-primary) 15%, transparent);" onmouseover="this.style.backgroundColor='#0066A1'; this.style.boxShadow='0 4px 12px color-mix(in srgb, var(--site-primary) 30%, transparent)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.backgroundColor='var(--site-primary)'; this.style.boxShadow='0 2px 8px color-mix(in srgb, var(--site-primary) 15%, transparent)'; this.style.transform='translateY(0)'">
                     View All Destinations
                 </button>
             </div> -->

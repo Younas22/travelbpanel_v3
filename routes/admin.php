@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\TourPackageTypeController;
 use App\Http\Controllers\Admin\TourInclusionController;
 use App\Http\Controllers\Admin\TourExclusionController;
 use App\Http\Controllers\Admin\ThemeSettingController;
+use App\Http\Controllers\Admin\WebsiteThemeController;
 
 
 Route::get('/test-csrf', function() {
@@ -274,6 +275,8 @@ Route::prefix('modules')->name('admin.modules.')->group(function () {
         Route::get('/theme', [ThemeSettingController::class, 'edit'])->name('theme');
         Route::post('/theme', [ThemeSettingController::class, 'update'])->name('theme.update');
         Route::post('/theme/reset', [ThemeSettingController::class, 'reset'])->name('theme.reset');
+        // Public website theme (Website tab on the same page)
+        Route::post('/theme/website', [WebsiteThemeController::class, 'update'])->name('theme.website.update');
     });
 
 

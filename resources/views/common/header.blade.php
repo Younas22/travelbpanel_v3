@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="{{ app()->getLocale() }}" dir="{{ in_array(app()->getLocale(), ['ar']) ? 'rtl' : 'ltr' }}">
+{{-- style="…" carries the website theme colors/font (Admin > Settings > Theme > Website) --}}
+<html lang="{{ app()->getLocale() }}" dir="{{ in_array(app()->getLocale(), ['ar']) ? 'rtl' : 'ltr' }}" style="{{ \App\Support\WebsiteTheme::inlineVars() }}">
 
 <head>
     <meta charset="UTF-8">

@@ -23,8 +23,8 @@
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
             <!-- Step 1 -->
-            <div style="background: #F0F9FF; border: 2px solid #0077BE; border-radius: 10px; padding: 20px; text-align: center;">
-                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #0077BE 0%, #005A9C 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; color: white; font-size: 24px;">
+            <div style="background: #F0F9FF; border: 2px solid var(--site-primary); border-radius: 10px; padding: 20px; text-align: center;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--site-primary) 0%, var(--site-primary-dark) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; color: white; font-size: 24px;">
                     <i class="fas fa-file-alt"></i>
                 </div>
                 <h3 style="font-size: 16px; font-weight: 700; color: #003580; margin-bottom: 10px;">{{t('visa.documentReview')}}</h3>

@@ -125,8 +125,8 @@
                     <div class="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-52 z-50 hidden group-hover:block group-focus-within:block">
                         <div class="nav-dd-panel">
                             @foreach ($navModules as $mod)
-                                <a href="{{ $mod->nav_url }}" class="nav-dd-item {{ $mod->nav_active ? 'active' : '' }}">
-                                    <span class="nav-dd-icon"><i class="{{ $navModIconMap[$mod->slug] ?? 'fas fa-circle' }}"></i></span>
+                                <a href="{{ $mod->nav_url }}" class="nav-menu-link {{ $mod->nav_active ? 'active' : '' }}">
+                                    <i class="{{ $navModIconMap[$mod->slug] ?? 'fas fa-circle' }}"></i>
                                     <span>{{ t('header.' . $mod->name) }}</span>
                                 </a>
                             @endforeach

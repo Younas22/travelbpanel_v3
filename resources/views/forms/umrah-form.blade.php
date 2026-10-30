@@ -110,8 +110,8 @@
                                     <i class="fas fa-minus text-gray-600 text-[10px]"></i>
                                 </button>
                                 <span id="umrahAdultCount" class="w-6 text-center font-semibold text-[13px]">{{ isset($umrah_search['adult']) && $umrah_search['adult'] ? $umrah_search['adult'] : 1 }}</span>
-                                <button type="button" class="passenger-btn w-7 h-7 rounded-full border-2 border-[#0346FA] bg-[#E6F3FB] flex items-center justify-center" data-type="adult" data-action="plus">
-                                    <i class="fas fa-plus text-[#0346FA] text-[10px]"></i>
+                                <button type="button" class="passenger-btn w-7 h-7 rounded-full border-2 border-[color:var(--site-primary)] bg-[#E6F3FB] flex items-center justify-center" data-type="adult" data-action="plus">
+                                    <i class="fas fa-plus text-[color:var(--site-icon)] text-[10px]"></i>
                                 </button>
                             </div>
                         </div>
@@ -126,8 +126,8 @@
                                     <i class="fas fa-minus text-gray-600 text-[10px]"></i>
                                 </button>
                                 <span id="umrahChildCount" class="w-6 text-center font-semibold text-[13px]">{{ isset($umrah_search['children']) && $umrah_search['children'] ? $umrah_search['children'] : 0 }}</span>
-                                <button type="button" class="passenger-btn w-7 h-7 rounded-full border-2 border-[#0346FA] bg-[#E6F3FB] flex items-center justify-center" data-type="child" data-action="plus">
-                                    <i class="fas fa-plus text-[#0346FA] text-[10px]"></i>
+                                <button type="button" class="passenger-btn w-7 h-7 rounded-full border-2 border-[color:var(--site-primary)] bg-[#E6F3FB] flex items-center justify-center" data-type="child" data-action="plus">
+                                    <i class="fas fa-plus text-[color:var(--site-icon)] text-[10px]"></i>
                                 </button>
                             </div>
                         </div>
@@ -142,13 +142,13 @@
                                     <i class="fas fa-minus text-gray-600 text-[10px]"></i>
                                 </button>
                                 <span id="umrahInfantCount" class="w-6 text-center font-semibold text-[13px]">{{ isset($umrah_search['infants']) && $umrah_search['infants'] ? $umrah_search['infants'] : 0 }}</span>
-                                <button type="button" class="passenger-btn w-7 h-7 rounded-full border-2 border-[#0346FA] bg-[#E6F3FB] flex items-center justify-center" data-type="infant" data-action="plus">
-                                    <i class="fas fa-plus text-[#0346FA] text-[10px]"></i>
+                                <button type="button" class="passenger-btn w-7 h-7 rounded-full border-2 border-[color:var(--site-primary)] bg-[#E6F3FB] flex items-center justify-center" data-type="infant" data-action="plus">
+                                    <i class="fas fa-plus text-[color:var(--site-icon)] text-[10px]"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <button type="button" id="umrahApplyPassengerBtn" class="w-full py-2 bg-[#0346FA] text-white rounded-xl font-semibold text-[13px] hover:bg-[#005f99] transition-all">
+                        <button type="button" id="umrahApplyPassengerBtn" class="w-full py-2 bg-[color:var(--site-primary)] text-white rounded-xl font-semibold text-[13px] hover:bg-[#005f99] transition-all">
                             {{t('umrahform.apply')}}
                         </button>
                     </div>
@@ -166,7 +166,7 @@
                                 </button>
                                 <span class="nights-value" id="makkahNightsDisplay">{{ isset($umrah_search['makkah_nights']) && $umrah_search['makkah_nights'] ? $umrah_search['makkah_nights'] : 0 }}</span>
                                 <button type="button" class="nights-btn" id="makkahPlus">
-                                    <i class="fas fa-plus text-[10px] text-[#0346FA]"></i>
+                                    <i class="fas fa-plus text-[10px] text-[color:var(--site-icon)]"></i>
                                 </button>
                                 <input type="hidden" id="makkahNightsValue" value="{{ isset($umrah_search['makkah_nights']) && $umrah_search['makkah_nights'] ? $umrah_search['makkah_nights'] : 0 }}">
                             </div>
@@ -186,7 +186,7 @@
                                 </button>
                                 <span class="nights-value" id="madinaNightsDisplay">{{ isset($umrah_search['madina_nights']) && $umrah_search['madina_nights'] ? $umrah_search['madina_nights'] : 0 }}</span>
                                 <button type="button" class="nights-btn" id="madinaPlus">
-                                    <i class="fas fa-plus text-[10px] text-[#0346FA]"></i>
+                                    <i class="fas fa-plus text-[10px] text-[color:var(--site-icon)]"></i>
                                 </button>
                                 <input type="hidden" id="madinaNightsValue" value="{{ isset($umrah_search['madina_nights']) && $umrah_search['madina_nights'] ? $umrah_search['madina_nights'] : 0 }}">
                             </div>
@@ -196,7 +196,7 @@
             </div>
 
             <!-- Search Button -->
-            <button type="submit" id="umrahSearchBtn" class="ff-search-btn w-full px-6 py-2.5 bg-[#0346FA] text-white rounded-lg font-bold text-sm hover:bg-[#005f99] transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
+            <button type="submit" id="umrahSearchBtn" class="ff-search-btn w-full px-6 py-2.5 bg-[color:var(--site-primary)] text-white rounded-lg font-bold text-sm hover:bg-[#005f99] transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
                 <i class="fas fa-search text-xs"></i>
                 <span>{{t('umrahform.search_umrah')}}</span>
             </button>

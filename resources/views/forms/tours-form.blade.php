@@ -92,8 +92,8 @@
                                     <i class="fas fa-minus text-gray-600 text-[10px]"></i>
                                 </button>
                                 <span id="toursAdultCount" class="w-6 text-center font-semibold text-[13px]">{{ isset($tour_search['adult']) ? $tour_search['adult'] : 2 }}</span>
-                                <button type="button" class="tours-traveler-btn w-7 h-7 rounded-full border-2 border-[#0346FA] bg-[#E6F3FB] flex items-center justify-center" data-type="adult" data-action="plus">
-                                    <i class="fas fa-plus text-[#0346FA] text-[10px]"></i>
+                                <button type="button" class="tours-traveler-btn w-7 h-7 rounded-full border-2 border-[color:var(--site-primary)] bg-[#E6F3FB] flex items-center justify-center" data-type="adult" data-action="plus">
+                                    <i class="fas fa-plus text-[color:var(--site-icon)] text-[10px]"></i>
                                 </button>
                             </div>
                         </div>
@@ -108,13 +108,13 @@
                                     <i class="fas fa-minus text-gray-600 text-[10px]"></i>
                                 </button>
                                 <span id="toursChildCount" class="w-6 text-center font-semibold text-[13px]">{{ isset($tour_search['child']) ? $tour_search['child'] : 0 }}</span>
-                                <button type="button" class="tours-traveler-btn w-7 h-7 rounded-full border-2 border-[#0346FA] bg-[#E6F3FB] flex items-center justify-center" data-type="child" data-action="plus">
-                                    <i class="fas fa-plus text-[#0346FA] text-[10px]"></i>
+                                <button type="button" class="tours-traveler-btn w-7 h-7 rounded-full border-2 border-[color:var(--site-primary)] bg-[#E6F3FB] flex items-center justify-center" data-type="child" data-action="plus">
+                                    <i class="fas fa-plus text-[color:var(--site-icon)] text-[10px]"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <button type="button" id="toursApplyTravelerBtn" class="w-full py-2.5 bg-[#0346FA] text-white rounded-xl font-semibold text-[13px] hover:bg-[#005f99] transition-all">
+                        <button type="button" id="toursApplyTravelerBtn" class="w-full py-2.5 bg-[color:var(--site-primary)] text-white rounded-xl font-semibold text-[13px] hover:bg-[#005f99] transition-all">
                             {{t('tourform.apply')}}
                         </button>
                     </div>
@@ -122,7 +122,7 @@
             </div>
 
             <!-- Search Button -->
-            <button type="submit" id="toursSearchBtn" class="ff-search-btn w-full py-2.5 px-6 bg-[#0346FA] text-white rounded-lg font-bold text-sm hover:bg-[#005f99] transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
+            <button type="submit" id="toursSearchBtn" class="ff-search-btn w-full py-2.5 px-6 bg-[color:var(--site-primary)] text-white rounded-lg font-bold text-sm hover:bg-[#005f99] transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
                 <i class="fas fa-search text-xs"></i>
                 <span>{{t('tourform.search_tours')}}</span>
             </button>

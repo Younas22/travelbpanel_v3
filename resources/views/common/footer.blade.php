@@ -449,7 +449,7 @@
                 <div class="flex items-center justify-between gap-2">
                     <label class="text-[12px] text-gray-600 font-medium" for="hotelChildAge${i}">{{ t('hotel.child') }} ${i} {{ t('hotel.age') }}</label>
                     <select id="hotelChildAge${i}" data-child-age-index="${i}" required
-                            class="text-[13px] border border-gray-300 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-[#0077BE]">
+                            class="text-[13px] border border-gray-300 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-[color:var(--site-primary)]">
                         ${options}
                     </select>
                 </div>`;

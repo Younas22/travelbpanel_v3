@@ -53,6 +53,9 @@
 
 @section('content')
 <div class="content-area p-4">
+    @include('admin.settings.partials.theme-tabs')
+
+    <div data-theme-pane="admin" @if(request('tab') === 'website') hidden @endif>
     <div class="page-header">
         <div class="row align-items-center">
             <div class="col-md-7">
@@ -320,6 +323,9 @@
             </div>
         </form>
     </div>
+    </div>
+
+    @include('admin.settings.partials.website-theme')
 </div>
 
 <script id="theme-initial-state" type="application/json">{!! json_encode([
