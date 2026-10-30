@@ -239,9 +239,9 @@
                         <div class="flex-1">
                             <label class="text-[10px] text-gray-500 block mb-0.5 font-medium uppercase tracking-wide">{{t('flightform.from')}}</label>
                             <div class="text-gray-900 font-semibold text-[13px] cursor-pointer" id="flightFromBtn">
-                                <span id="flightFromDisplay">{{ isset($flight_search['origin_name']) && $flight_search['origin_name'] ? $flight_search['origin_name'] . ' (' . $flight_search['origin'] . ')' : t('flightform.from') }}</span>
+                                <span id="flightFromDisplay">{{ isset($flight_search['origin_name']) && $flight_search['origin_name'] ? $flight_search['origin_name'] . ' (' . $flight_search['origin'] . ')' : 'Dubai (DXB)' }}</span>
                             </div>
-                            <input type="hidden" id="flightFromValue" value="{{ isset($flight_search['origin']) && $flight_search['origin'] ? $flight_search['origin'] : 'lhe' }}">
+                            <input type="hidden" id="flightFromValue" value="{{ isset($flight_search['origin']) && $flight_search['origin'] ? $flight_search['origin'] : 'DXB' }}">
                         </div>
                     </div>
 
@@ -266,9 +266,9 @@
                         <div class="flex-1">
                             <label class="text-[10px] text-gray-500 block mb-0.5 font-medium uppercase tracking-wide">{{t('flightform.to')}}</label>
                             <div class="text-gray-900 font-semibold text-[13px] cursor-pointer" id="flightToBtn">
-                                <span id="flightToDisplay">{{ isset($flight_search['destination_name']) && $flight_search['destination_name'] ? $flight_search['destination_name'] . ' (' . $flight_search['destination'] . ')' : t('flightform.to') }}</span>
+                                <span id="flightToDisplay">{{ isset($flight_search['destination_name']) && $flight_search['destination_name'] ? $flight_search['destination_name'] . ' (' . $flight_search['destination'] . ')' : 'Lahore (LHE)' }}</span>
                             </div>
-                            <input type="hidden" id="flightToValue" value="{{ isset($flight_search['destination']) && $flight_search['destination'] ? $flight_search['destination'] : 'dxb' }}">
+                            <input type="hidden" id="flightToValue" value="{{ isset($flight_search['destination']) && $flight_search['destination'] ? $flight_search['destination'] : 'LHE' }}">
                         </div>
                     </div>
 
