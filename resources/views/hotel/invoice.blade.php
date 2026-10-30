@@ -6,16 +6,9 @@
     <title>Hotel Booking Invoice</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .btn-primary {
-            background-color: #0077BE;
-        }
-        .btn-primary:hover {
-            background-color: #005A9C;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{{ url('public/assets/css/style.css') }}?v={{ filemtime(public_path('assets/css/style.css')) }}">
 </head>
-<body class="bg-gray-50">
+<body class="view-standalone view-invoice bg-gray-50">
 
 <div class="max-w-4xl mx-auto p-4">
     <!-- Action Buttons -->

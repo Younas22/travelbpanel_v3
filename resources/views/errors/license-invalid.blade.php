@@ -4,55 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>License Invalid — TravelBookingPanel</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-        }
-        .card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 1rem;
-            max-width: 560px;
-            width: 100%;
-            padding: 3rem 2.5rem;
-            text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,.5);
-        }
-        .icon { font-size: 3.5rem; margin-bottom: 1.5rem; }
-        h1 { font-size: 1.6rem; font-weight: 700; color: #f1f5f9; margin-bottom: .5rem; }
-        .subtitle { color: #94a3b8; margin-bottom: 1.5rem; font-size: .95rem; line-height: 1.6; }
-        .reason-box {
-            background: rgba(239,68,68,.1);
-            border: 1px solid rgba(239,68,68,.3);
-            border-radius: .5rem;
-            padding: .75rem 1rem;
-            font-family: monospace;
-            font-size: .85rem;
-            color: #fca5a5;
-            margin-bottom: 1.5rem;
-            text-align: left;
-        }
-        .label { font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: #64748b; margin-bottom: .3rem; }
-        .steps { text-align: left; margin-bottom: 2rem; }
-        .steps h3 { font-size: .8rem; color: #64748b; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .75rem; }
-        .step { display: flex; gap: .75rem; margin-bottom: .6rem; }
-        .n { min-width: 22px; height: 22px; background: #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700; color: #94a3b8; flex-shrink: 0; margin-top: 1px; }
-        .step p { font-size: .87rem; color: #94a3b8; line-height: 1.5; }
-        code { background: #0f172a; padding: .1em .35em; border-radius: .25rem; font-size: .82em; color: #7dd3fc; }
-        hr { border-color: #334155; margin: 1.5rem 0; }
-        .contact { font-size: .82rem; color: #64748b; }
-        .contact a { color: #2563eb; text-decoration: none; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{{ url('public/assets/css/style.css') }}?v={{ filemtime(public_path('assets/css/style.css')) }}">
 </head>
-<body>
+<body class="view-standalone view-license-invalid">
 <div class="card">
     <div class="icon">🔒</div>
     <h1>License Validation Failed</h1>

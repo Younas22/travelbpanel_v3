@@ -31,49 +31,9 @@
             }
         }
     </script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-
-        .float-animation {
-            animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .pulse-ring {
-            animation: pulseRing 2s ease-out infinite;
-        }
-        @keyframes pulseRing {
-            0% { transform: scale(0.8); opacity: 1; }
-            100% { transform: scale(1.4); opacity: 0; }
-        }
-
-        .gradient-text {
-            background: linear-gradient(135deg, #0077BE, #00b4d8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .card-hover {
-            transition: all 0.3s ease;
-        }
-        .card-hover:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0, 119, 190, 0.15);
-        }
-
-        .bg-pattern {
-            background-image: radial-gradient(circle at 20% 50%, rgba(0, 119, 190, 0.05) 0%, transparent 50%),
-                              radial-gradient(circle at 80% 20%, rgba(0, 180, 216, 0.05) 0%, transparent 50%),
-                              radial-gradient(circle at 50% 80%, rgba(0, 119, 190, 0.03) 0%, transparent 50%);
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{{ url('public/assets/css/style.css') }}?v={{ filemtime(public_path('assets/css/style.css')) }}">
 </head>
-<body class="bg-gray-50 bg-pattern min-h-screen flex items-center justify-center p-4">
+<body class="view-standalone view-404 bg-gray-50 bg-pattern min-h-screen flex items-center justify-center p-4">
 
     <div class="max-w-3xl w-full text-center">
 

@@ -1,11 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
-* {
+*:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body {
+body:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
 }
 
@@ -50,11 +51,11 @@ body {
    The <nav> itself is transparent; .nav-shell is the visible white bar, so
    on the homepage the hero image shows around it (the hero is pulled up
    underneath by --nav-offset). */
-:root {
+:root:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
     --nav-offset: 76px;   /* nav top padding + shell height */
 }
 @media (min-width: 1024px) {
-    :root { --nav-offset: 88px; }
+    :root:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) { --nav-offset: 88px; }
 }
 
 .nav-bar {
@@ -461,7 +462,7 @@ img.nav-avatar-logo {
     transform: translateY(-4px);
 }
 
-.feature-icon {
+.feature-icon:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
     font-size: 48px;
     margin-bottom: 16px;
     display: inline-block;
@@ -2103,7 +2104,7 @@ footer {
             gap: 12px;
         }
 
-        .step {
+        .step:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -2505,18 +2506,18 @@ footer {
         
 
         
-        * {
+        *:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        body {
+        body:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
             /* background-color: #F5F7FA; */
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
         }
 
-        .container {
+        .container:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
             max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
@@ -4103,7 +4104,7 @@ footer {
         }
 
         /* Button Group */
-        .button-group {
+        .button-group:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
             display: flex;
             gap: 12px;
             justify-content: flex-end;
@@ -4112,7 +4113,7 @@ footer {
             border-top: 1px solid #E5E7EB;
         }
 
-        .btn {
+        .btn:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
             padding: 12px 28px;
             border: none;
             border-radius: 8px;
@@ -4177,12 +4178,12 @@ footer {
                 grid-template-columns: 1fr;
             }
 
-            .button-group {
+            .button-group:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
                 flex-direction: column;
                 justify-content: stretch;
             }
 
-            .btn {
+            .btn:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
                 justify-content: center;
             }
 
@@ -4319,7 +4320,7 @@ footer {
         }
 
         /* Card */
-        .card {
+        .card:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
             background: white;
             padding: 20px;
             border-radius: 10px;
@@ -4652,7 +4653,7 @@ footer {
         }
 
         /* Buttons */
-        .button-group {
+        .button-group:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
             display: flex;
             gap: 12px;
             margin-top: 24px;
@@ -4660,7 +4661,7 @@ footer {
             border-top: 1px solid #E5E7EB;
         }
 
-        .btn {
+        .btn:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
             padding: 12px 24px;
             border: none;
             border-radius: 6px;
@@ -4698,7 +4699,7 @@ footer {
 
         /* Responsive */
         @media (max-width: 1024px) {
-            .container {
+            .container:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
                 grid-template-columns: 1fr;
             }
 
@@ -4712,11 +4713,11 @@ footer {
                 grid-template-columns: 1fr;
             }
 
-            .button-group {
+            .button-group:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
                 flex-direction: column;
             }
 
-            .btn {
+            .btn:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
                 flex: 1;
             }
         }
@@ -7064,7 +7065,7 @@ footer {
     flex-wrap: wrap;
 }
 
-.feature-item {
+.feature-item:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
     font-size: 11px;
     color: #6B7280;
     display: flex;
@@ -7967,12 +7968,12 @@ footer {
     color: #FFFFFF;
 }
 
-#siteRedesign .th-nav-btn:hover:not(:disabled) {
+#siteRedesign .th-nav-btn:hover:not(:disabled):where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
     border-color: #2563EB;
     color: #2563EB;
 }
 
-#siteRedesign .th-nav-btn.th-nav-next:hover:not(:disabled) {
+#siteRedesign .th-nav-btn.th-nav-next:hover:not(:disabled):where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
     color: #FFFFFF;
 }
 
@@ -14605,7 +14606,7 @@ body:where(.view-hotel-list) .hlist-no-results { padding: 40px 20px; border: 1px
 body:where(.view-hotel-list) .hlist-pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 20px; }
 body:where(.view-hotel-list) .hlist-pages { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 body:where(.view-hotel-list) .hlist-page-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 38px; height: 38px; padding: 0 10px; border: 1px solid rgba(0,0,0,.12); border-radius: 10px; background: #fff; color: #000; font-size: 13px; cursor: pointer; }
-body:where(.view-hotel-list) .hlist-page-btn:hover:not(:disabled):not(.is-active) { border-color: var(--hl-blue); color: var(--hl-blue); }
+body:where(.view-hotel-list) .hlist-page-btn:hover:not(:disabled):not(.is-active):where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) { border-color: var(--hl-blue); color: var(--hl-blue); }
 body:where(.view-hotel-list) .hlist-page-btn.is-active { border-color: var(--hl-blue); background: var(--hl-blue); color: #fff; font-weight: 600; }
 body:where(.view-hotel-list) .hlist-page-btn:disabled { opacity: .4; cursor: default; }
 body:where(.view-hotel-list) .hlist-page-gap { padding: 0 4px; color: var(--hl-muted); }
@@ -16614,9 +16615,7 @@ body:where(.view-home, .view-hotels, .view-hotel-list) .flatpickr-input {
     cursor: pointer;
 }
 
-body:where(.view-home, .view-hotels, .view-hotel-list) .destination-dropdown,
-body:where(.view-home, .view-hotels, .view-hotel-list) .traveler-dropdown,
-body:where(.view-home, .view-hotels, .view-hotel-list) .country-dropdown {
+body:where(.view-home, .view-hotels, .view-hotel-list) .destination-dropdown, body:where(.view-home, .view-hotels, .view-hotel-list) .traveler-dropdown, body:where(.view-home, .view-hotels, .view-hotel-list) .country-dropdown {
     display: none;
     position: absolute;
     top: 100%;
@@ -16634,14 +16633,11 @@ body:where(.view-home, .view-hotels, .view-hotel-list) .country-dropdown {
     min-width: 280px;
 }
 
-body:where(.view-home, .view-hotels, .view-hotel-list) .destination-dropdown.active,
-body:where(.view-home, .view-hotels, .view-hotel-list) .traveler-dropdown.active,
-body:where(.view-home, .view-hotels, .view-hotel-list) .country-dropdown.active {
+body:where(.view-home, .view-hotels, .view-hotel-list) .destination-dropdown.active, body:where(.view-home, .view-hotels, .view-hotel-list) .traveler-dropdown.active, body:where(.view-home, .view-hotels, .view-hotel-list) .country-dropdown.active {
     display: block;
 }
 
-body:where(.view-home, .view-hotels, .view-hotel-list) .destination-search,
-body:where(.view-home, .view-hotels, .view-hotel-list) .country-search {
+body:where(.view-home, .view-hotels, .view-hotel-list) .destination-search, body:where(.view-home, .view-hotels, .view-hotel-list) .country-search {
     width: 100%;
     padding: 8px 12px;
     border: 2px solid #e5e7eb;
@@ -16652,13 +16648,11 @@ body:where(.view-home, .view-hotels, .view-hotel-list) .country-search {
     margin-bottom: 0.75rem;
 }
 
-body:where(.view-home, .view-hotels, .view-hotel-list) .destination-search:focus,
-body:where(.view-home, .view-hotels, .view-hotel-list) .country-search:focus {
+body:where(.view-home, .view-hotels, .view-hotel-list) .destination-search:focus, body:where(.view-home, .view-hotels, .view-hotel-list) .country-search:focus {
     border-color: #0346FA;
 }
 
-body:where(.view-home, .view-hotels, .view-hotel-list) .destination-item,
-body:where(.view-home, .view-hotels, .view-hotel-list) .country-item {
+body:where(.view-home, .view-hotels, .view-hotel-list) .destination-item, body:where(.view-home, .view-hotels, .view-hotel-list) .country-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -16668,13 +16662,11 @@ body:where(.view-home, .view-hotels, .view-hotel-list) .country-item {
     transition: background 0.2s;
 }
 
-body:where(.view-home, .view-hotels, .view-hotel-list) .destination-item:hover,
-body:where(.view-home, .view-hotels, .view-hotel-list) .country-item:hover {
+body:where(.view-home, .view-hotels, .view-hotel-list) .destination-item:hover, body:where(.view-home, .view-hotels, .view-hotel-list) .country-item:hover {
     background: #f3f4f6;
 }
 
-body:where(.view-home, .view-hotels, .view-hotel-list) .destination-icon,
-body:where(.view-home, .view-hotels, .view-hotel-list) .country-flag {
+body:where(.view-home, .view-hotels, .view-hotel-list) .destination-icon, body:where(.view-home, .view-hotels, .view-hotel-list) .country-flag {
     font-size: 18px;
     width: 24px;
     text-align: center;
@@ -16684,8 +16676,7 @@ body:where(.view-home, .view-hotels, .view-hotel-list) .destination-details {
     flex: 1;
 }
 
-body:where(.view-home, .view-hotels, .view-hotel-list) .destination-name,
-body:where(.view-home, .view-hotels, .view-hotel-list) .country-name {
+body:where(.view-home, .view-hotels, .view-hotel-list) .destination-name, body:where(.view-home, .view-hotels, .view-hotel-list) .country-name {
     font-weight: 600;
     color: #111827;
     margin-bottom: 0.15rem;
@@ -16733,8 +16724,7 @@ body:where(.view-home, .view-hotels, .view-hotel-list) .loading {
 }
 
 @media (max-width: 1024px) {
-    body:where(.view-home, .view-hotels, .view-hotel-list) .destination-dropdown,
-    body:where(.view-home, .view-hotels, .view-hotel-list) .country-dropdown {
+    body:where(.view-home, .view-hotels, .view-hotel-list) .destination-dropdown, body:where(.view-home, .view-hotels, .view-hotel-list) .country-dropdown {
         position: fixed;
         left: 50%;
         top: 50%;
@@ -16760,9 +16750,7 @@ body:where(.view-home, .view-flights, .view-flight-results) .flatpickr-input {
     cursor: pointer;
 }
 
-body:where(.view-home, .view-flights, .view-flight-results) .airport-dropdown,
-body:where(.view-home, .view-flights, .view-flight-results) .passenger-dropdown,
-body:where(.view-home, .view-flights, .view-flight-results) .class-dropdown {
+body:where(.view-home, .view-flights, .view-flight-results) .airport-dropdown, body:where(.view-home, .view-flights, .view-flight-results) .passenger-dropdown, body:where(.view-home, .view-flights, .view-flight-results) .class-dropdown {
     display: none;
     position: absolute;
     top: 100%;
@@ -16779,9 +16767,7 @@ body:where(.view-home, .view-flights, .view-flight-results) .class-dropdown {
     width: 100%;
 }
 
-body:where(.view-home, .view-flights, .view-flight-results) .airport-dropdown.active,
-body:where(.view-home, .view-flights, .view-flight-results) .passenger-dropdown.active,
-body:where(.view-home, .view-flights, .view-flight-results) .class-dropdown.active {
+body:where(.view-home, .view-flights, .view-flight-results) .airport-dropdown.active, body:where(.view-home, .view-flights, .view-flight-results) .passenger-dropdown.active, body:where(.view-home, .view-flights, .view-flight-results) .class-dropdown.active {
     display: block;
 }
 
@@ -16800,8 +16786,7 @@ body:where(.view-home, .view-flights, .view-flight-results) .airport-search:focu
     border-color: #0346FA;
 }
 
-body:where(.view-home, .view-flights, .view-flight-results) .airport-item,
-body:where(.view-home, .view-flights, .view-flight-results) .class-item {
+body:where(.view-home, .view-flights, .view-flight-results) .airport-item, body:where(.view-home, .view-flights, .view-flight-results) .class-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -16811,8 +16796,7 @@ body:where(.view-home, .view-flights, .view-flight-results) .class-item {
     transition: background 0.2s;
 }
 
-body:where(.view-home, .view-flights, .view-flight-results) .airport-item:hover,
-body:where(.view-home, .view-flights, .view-flight-results) .class-item:hover {
+body:where(.view-home, .view-flights, .view-flight-results) .airport-item:hover, body:where(.view-home, .view-flights, .view-flight-results) .class-item:hover {
     background: #f3f4f6;
 }
 
@@ -16827,8 +16811,7 @@ body:where(.view-home, .view-flights, .view-flight-results) .airport-details {
     flex: 1;
 }
 
-body:where(.view-home, .view-flights, .view-flight-results) .airport-name,
-body:where(.view-home, .view-flights, .view-flight-results) .class-name {
+body:where(.view-home, .view-flights, .view-flight-results) .airport-name, body:where(.view-home, .view-flights, .view-flight-results) .class-name {
     font-weight: 600;
     color: #111827;
     margin-bottom: 0.15rem;
@@ -16844,8 +16827,7 @@ body:where(.view-home, .view-flights, .view-flight-results) .location-wrapper {
     position: relative;
 }
 
-body:where(.view-home, .view-flights, .view-flight-results) .passenger-dropdown,
-body:where(.view-home, .view-flights, .view-flight-results) .class-dropdown {
+body:where(.view-home, .view-flights, .view-flight-results) .passenger-dropdown, body:where(.view-home, .view-flights, .view-flight-results) .class-dropdown {
     min-width: 320px;
 }
 
@@ -16865,8 +16847,7 @@ body:where(.view-home, .view-flights, .view-flight-results) .dropdown-overlay.ac
 }
 
 @media (max-width: 1024px) {
-    body:where(.view-home, .view-flights, .view-flight-results) .passenger-dropdown,
-    body:where(.view-home, .view-flights, .view-flight-results) .class-dropdown {
+    body:where(.view-home, .view-flights, .view-flight-results) .passenger-dropdown, body:where(.view-home, .view-flights, .view-flight-results) .class-dropdown {
         position: fixed;
         left: 50%;
         top: 50%;
@@ -16928,9 +16909,7 @@ body:where(.view-home, .view-tours, .view-tour-list) .flatpickr-input {
     cursor: pointer;
 }
 
-body:where(.view-home, .view-tours, .view-tour-list) .destination-dropdown,
-body:where(.view-home, .view-tours, .view-tour-list) .tour-type-dropdown,
-body:where(.view-home, .view-tours, .view-tour-list) .traveler-dropdown {
+body:where(.view-home, .view-tours, .view-tour-list) .destination-dropdown, body:where(.view-home, .view-tours, .view-tour-list) .tour-type-dropdown, body:where(.view-home, .view-tours, .view-tour-list) .traveler-dropdown {
     display: none;
     position: absolute;
     top: 100%;
@@ -16948,9 +16927,7 @@ body:where(.view-home, .view-tours, .view-tour-list) .traveler-dropdown {
     min-width: 280px;
 }
 
-body:where(.view-home, .view-tours, .view-tour-list) .destination-dropdown.active,
-body:where(.view-home, .view-tours, .view-tour-list) .tour-type-dropdown.active,
-body:where(.view-home, .view-tours, .view-tour-list) .traveler-dropdown.active {
+body:where(.view-home, .view-tours, .view-tour-list) .destination-dropdown.active, body:where(.view-home, .view-tours, .view-tour-list) .tour-type-dropdown.active, body:where(.view-home, .view-tours, .view-tour-list) .traveler-dropdown.active {
     display: block;
 }
 
@@ -16973,8 +16950,7 @@ body:where(.view-home, .view-tours, .view-tour-list) .destination-search:focus {
     border-color: #0346FA;
 }
 
-body:where(.view-home, .view-tours, .view-tour-list) .destination-item,
-body:where(.view-home, .view-tours, .view-tour-list) .tour-type-item {
+body:where(.view-home, .view-tours, .view-tour-list) .destination-item, body:where(.view-home, .view-tours, .view-tour-list) .tour-type-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -16984,8 +16960,7 @@ body:where(.view-home, .view-tours, .view-tour-list) .tour-type-item {
     transition: background 0.2s;
 }
 
-body:where(.view-home, .view-tours, .view-tour-list) .destination-item:hover,
-body:where(.view-home, .view-tours, .view-tour-list) .tour-type-item:hover {
+body:where(.view-home, .view-tours, .view-tour-list) .destination-item:hover, body:where(.view-home, .view-tours, .view-tour-list) .tour-type-item:hover {
     background: #f3f4f6;
 }
 
@@ -16999,8 +16974,7 @@ body:where(.view-home, .view-tours, .view-tour-list) .destination-details {
     flex: 1;
 }
 
-body:where(.view-home, .view-tours, .view-tour-list) .destination-name,
-body:where(.view-home, .view-tours, .view-tour-list) .tour-type-name {
+body:where(.view-home, .view-tours, .view-tour-list) .destination-name, body:where(.view-home, .view-tours, .view-tour-list) .tour-type-name {
     font-weight: 600;
     color: #111827;
     margin-bottom: 0.15rem;
@@ -17038,8 +17012,7 @@ body:where(.view-home, .view-tours, .view-tour-list) .loading {
 }
 
 @media (max-width: 1024px) {
-    body:where(.view-home, .view-tours, .view-tour-list) .destination-dropdown,
-    body:where(.view-home, .view-tours, .view-tour-list) .tour-type-dropdown {
+    body:where(.view-home, .view-tours, .view-tour-list) .destination-dropdown, body:where(.view-home, .view-tours, .view-tour-list) .tour-type-dropdown {
         position: fixed;
         left: 50%;
         top: 50%;
@@ -17080,8 +17053,7 @@ body:where(.view-home, .view-umrah, .view-umrah-list) .flatpickr-input {
     cursor: pointer;
 }
 
-body:where(.view-home, .view-umrah, .view-umrah-list) .airport-dropdown,
-body:where(.view-home, .view-umrah, .view-umrah-list) .passenger-dropdown {
+body:where(.view-home, .view-umrah, .view-umrah-list) .airport-dropdown, body:where(.view-home, .view-umrah, .view-umrah-list) .passenger-dropdown {
     display: none;
     position: absolute;
     top: 100%;
@@ -17099,8 +17071,7 @@ body:where(.view-home, .view-umrah, .view-umrah-list) .passenger-dropdown {
     border: 1px solid #e5e7eb;
 }
 
-body:where(.view-home, .view-umrah, .view-umrah-list) .airport-dropdown.active,
-body:where(.view-home, .view-umrah, .view-umrah-list) .passenger-dropdown.active {
+body:where(.view-home, .view-umrah, .view-umrah-list) .airport-dropdown.active, body:where(.view-home, .view-umrah, .view-umrah-list) .passenger-dropdown.active {
     display: block;
 }
 
@@ -17260,7 +17231,7 @@ body:where(.view-home, .view-umrah, .view-umrah-list) .nights-value {
 }
 
 /* ---------- from resources/views/common/footer.blade.php ---------- */
-* {
+*:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
     font-family: 'Poppins', sans-serif;
 }
 
@@ -17283,7 +17254,7 @@ body .hover-lift:hover {
     50% { transform: translateY(-10px); }
 }
 
-body .float-animation {
+body .float-animation:where(:not(.view-standalone, .view-standalone *, :has(> .view-standalone), :has(> #paypal-wrapper), :has(> #paypal-wrapper) *, :has(> * > #paypal-wrapper))) {
     animation: float 3s ease-in-out infinite;
 }
 
@@ -17787,3 +17758,724 @@ body .promo-modal.active ~ .promo-float-button {
     opacity: 0;
     pointer-events: none;
 }
+
+/* ==========================================================================
+   Standalone pages (invoices, booking message, error/404, license, PayPal)
+   These pages link style.css where their own <style> used to be; their rules
+   are scoped with :where() so specificity and order are unchanged.
+   ========================================================================== */
+
+/* ---------- from resources/views/hotel/invoice.blade.php, resources/views/tour/invoice.blade.php, resources/views/umrah/invoice.blade.php (scoped to body.view-invoice) ---------- */
+/* Styles for resources/views/{hotel,tour,umrah}/invoice.blade.php (moved out of the view) */
+:where(.view-invoice) .btn-primary {
+    background-color: #0077BE;
+}
+:where(.view-invoice) .btn-primary:hover {
+    background-color: #005A9C;
+}
+
+/* ---------- from resources/views/hotel/hotelbookingmsg.blade.php (scoped to body.view-hotel-booking-msg) ---------- */
+/* Styles for resources/views/hotel/hotelbookingmsg.blade.php (moved out of the view) */
+:where(html:has(> .view-hotel-booking-msg), .view-hotel-booking-msg, .view-hotel-booking-msg *) {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body:where(.view-hotel-booking-msg) {
+    background: linear-gradient(135deg, #F0F4FF 0%, #E8EFFF 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+:where(.view-hotel-booking-msg) .container {
+    max-width: 500px;
+    width: 100%;
+}
+
+:where(.view-hotel-booking-msg) .message-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 119, 190, 0.15);
+    overflow: hidden;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Header */
+:where(.view-hotel-booking-msg) .message-header {
+    background: linear-gradient(135deg, #0077BE 0%, #005A9C 100%);
+    padding: 30px 24px;
+    text-align: center;
+    color: white;
+}
+
+:where(.view-hotel-booking-msg) .message-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    display: inline-block;
+}
+
+:where(.view-hotel-booking-msg) .message-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+:where(.view-hotel-booking-msg) .message-header p {
+    font-size: 13px;
+    opacity: 0.9;
+    line-height: 1.5;
+}
+
+/* Content */
+:where(.view-hotel-booking-msg) .message-content {
+    padding: 32px 24px;
+    text-align: center;
+}
+
+:where(.view-hotel-booking-msg) .demo-badge {
+    display: inline-block;
+    background-color: #FEF3C7;
+    color: #92400E;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+}
+
+:where(.view-hotel-booking-msg) .message-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #003580;
+    margin-bottom: 12px;
+}
+
+:where(.view-hotel-booking-msg) .message-description {
+    font-size: 14px;
+    color: #6B7280;
+    line-height: 1.8;
+    margin-bottom: 24px;
+}
+
+:where(.view-hotel-booking-msg) .features-list {
+    background-color: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+:where(.view-hotel-booking-msg) .features-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #003580;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+:where(.view-hotel-booking-msg) .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #6B7280;
+    padding: 8px 0;
+    line-height: 1.5;
+}
+
+:where(.view-hotel-booking-msg) .feature-item:last-child {
+    padding-bottom: 0;
+}
+
+:where(.view-hotel-booking-msg) .feature-icon {
+    color: #10B981;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+:where(.view-hotel-booking-msg) .restriction-box {
+    background-color: #FEE2E2;
+    border: 1px solid #FECACA;
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+:where(.view-hotel-booking-msg) .restriction-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #DC2626;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+:where(.view-hotel-booking-msg) .restriction-text {
+    font-size: 12px;
+    color: #991B1B;
+    line-height: 1.6;
+}
+
+/* Buttons */
+:where(.view-hotel-booking-msg) .button-group {
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+}
+
+:where(.view-hotel-booking-msg) .btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+:where(.view-hotel-booking-msg) .btn-primary {
+    background: linear-gradient(135deg, #0077BE 0%, #005A9C 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 119, 190, 0.2);
+}
+
+:where(.view-hotel-booking-msg) .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 119, 190, 0.3);
+}
+
+:where(.view-hotel-booking-msg) .btn-secondary {
+    background-color: #F3F4F6;
+    color: #1F2937;
+    border: 1px solid #D1D5DB;
+}
+
+:where(.view-hotel-booking-msg) .btn-secondary:hover {
+    background-color: #E5E7EB;
+}
+
+/* Footer Info */
+:where(.view-hotel-booking-msg) .message-footer {
+    background-color: #F9FAFB;
+    padding: 20px 24px;
+    border-top: 1px solid #E5E7EB;
+    text-align: center;
+}
+
+:where(.view-hotel-booking-msg) .footer-text {
+    font-size: 11px;
+    color: #6B7280;
+    line-height: 1.8;
+}
+
+:where(.view-hotel-booking-msg) .footer-text strong {
+    color: #003580;
+    font-weight: 700;
+}
+
+/* Test Credentials */
+:where(.view-hotel-booking-msg) .credentials-box {
+    background-color: #F0F9FF;
+    border: 1px solid #BAE6FD;
+    border-radius: 8px;
+    padding: 14px;
+    margin-top: 12px;
+}
+
+:where(.view-hotel-booking-msg) .credentials-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #0077BE;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+:where(.view-hotel-booking-msg) .credential-item {
+    font-size: 11px;
+    color: #0077BE;
+    padding: 4px 0;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+}
+
+:where(.view-hotel-booking-msg) .copy-btn {
+    background: none;
+    border: none;
+    color: #0077BE;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    margin-left: 8px;
+    transition: all 0.2s ease;
+}
+
+:where(.view-hotel-booking-msg) .copy-btn:hover {
+    background-color: rgba(0, 119, 190, 0.1);
+    border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    :where(.view-hotel-booking-msg) .message-header {
+        padding: 24px 16px;
+    }
+
+    :where(.view-hotel-booking-msg) .message-content {
+        padding: 24px 16px;
+    }
+
+    :where(.view-hotel-booking-msg) .message-title {
+        font-size: 16px;
+    }
+
+    :where(.view-hotel-booking-msg) .message-description {
+        font-size: 13px;
+    }
+
+    :where(.view-hotel-booking-msg) .button-group {
+        flex-direction: column;
+    }
+
+    :where(.view-hotel-booking-msg) .btn {
+        width: 100%;
+    }
+}
+
+/* ---------- from resources/views/error.blade.php (scoped to body.view-flight-error) ---------- */
+/* Styles for resources/views/error.blade.php (moved out of the view) */
+:where(html:has(> .view-flight-error), .view-flight-error, .view-flight-error *) {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body:where(.view-flight-error) {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+:where(.view-flight-error) .error-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    padding: 40px;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+:where(.view-flight-error) .error-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+    border-radius: 20px 20px 0 0;
+}
+
+:where(.view-flight-error) .error-icon {
+    font-size: 4rem;
+    color: #ff6b6b;
+    margin-bottom: 20px;
+    animation: view-flight-error-pulse 2s infinite;
+}
+
+@keyframes view-flight-error-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+:where(.view-flight-error) .error-code {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+:where(.view-flight-error) .error-title {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+:where(.view-flight-error) .error-message {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+:where(.view-flight-error) .error-details {
+    background: #f8f9fa;
+    border-left: 4px solid #ff6b6b;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 0 8px 8px 0;
+    text-align: left;
+}
+
+:where(.view-flight-error) .error-details h4 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+:where(.view-flight-error) .error-list {
+    list-style: none;
+    padding: 0;
+}
+
+:where(.view-flight-error) .error-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    color: #666;
+    position: relative;
+    padding-left: 25px;
+}
+
+:where(.view-flight-error) .error-list li:before {
+    content: '⚠️';
+    position: absolute;
+    left: 0;
+    top: 8px;
+}
+
+:where(.view-flight-error) .error-list li:last-child {
+    border-bottom: none;
+}
+
+:where(.view-flight-error) .action-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+:where(.view-flight-error) .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 140px;
+    justify-content: center;
+}
+
+:where(.view-flight-error) .btn-primary {
+    background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+    color: white;
+}
+
+:where(.view-flight-error) .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(69, 183, 209, 0.3);
+}
+
+:where(.view-flight-error) .btn-secondary {
+    background: #f8f9fa;
+    color: #666;
+    border: 2px solid #dee2e6;
+}
+
+:where(.view-flight-error) .btn-secondary:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+:where(.view-flight-error) .btn-home {
+    background: linear-gradient(45deg, #96ceb4, #8bc34a);
+    color: white;
+}
+
+:where(.view-flight-error) .btn-home:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(150, 206, 180, 0.3);
+}
+
+:where(.view-flight-error) .search-tips {
+    background: #e8f5e8;
+    border: 1px solid #c3e6c3;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: left;
+}
+
+:where(.view-flight-error) .search-tips h4 {
+    color: #2e7d32;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+:where(.view-flight-error) .search-tips ul {
+    color: #4a5568;
+    margin-left: 20px;
+}
+
+:where(.view-flight-error) .search-tips li {
+    margin: 5px 0;
+}
+
+:where(.view-flight-error) .footer-info {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    color: #999;
+    font-size: 0.9rem;
+}
+
+:where(.view-flight-error) .loading {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    color: #666;
+}
+
+:where(.view-flight-error) .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #4ecdc4;
+    border-radius: 50%;
+    animation: view-flight-error-spin 1s linear infinite;
+}
+
+@keyframes view-flight-error-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    :where(.view-flight-error) .error-container {
+        padding: 30px 20px;
+        margin: 10px;
+    }
+
+    :where(.view-flight-error) .error-title {
+        font-size: 1.5rem;
+    }
+
+    :where(.view-flight-error) .action-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    :where(.view-flight-error) .btn {
+        width: 100%;
+        max-width: 280px;
+    }
+}
+
+/* ---------- from resources/views/errors/404.blade.php (scoped to body.view-404) ---------- */
+/* Styles for resources/views/errors/404.blade.php (moved out of the view) */
+body:where(.view-404) { font-family: 'Inter', sans-serif; }
+
+:where(.view-404) .float-animation {
+    animation: view-404-float 3s ease-in-out infinite;
+}
+@keyframes view-404-float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+:where(.view-404) .pulse-ring {
+    animation: pulseRing 2s ease-out infinite;
+}
+@keyframes pulseRing {
+    0% { transform: scale(0.8); opacity: 1; }
+    100% { transform: scale(1.4); opacity: 0; }
+}
+
+:where(.view-404) .gradient-text {
+    background: linear-gradient(135deg, #0077BE, #00b4d8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+:where(.view-404) .card-hover {
+    transition: all 0.3s ease;
+}
+:where(.view-404) .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 119, 190, 0.15);
+}
+
+.bg-pattern:where(.view-404), :where(.view-404) .bg-pattern {
+    background-image: radial-gradient(circle at 20% 50%, rgba(0, 119, 190, 0.05) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 20%, rgba(0, 180, 216, 0.05) 0%, transparent 50%),
+                      radial-gradient(circle at 50% 80%, rgba(0, 119, 190, 0.03) 0%, transparent 50%);
+}
+
+/* ---------- from resources/views/errors/license-invalid.blade.php (scoped to body.view-license-invalid) ---------- */
+/* Styles for resources/views/errors/license-invalid.blade.php (moved out of the view) */
+:where(html:has(> .view-license-invalid), .view-license-invalid, .view-license-invalid *) { box-sizing: border-box; margin: 0; padding: 0; }
+body:where(.view-license-invalid) {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+:where(.view-license-invalid) .card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 1rem;
+    max-width: 560px;
+    width: 100%;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    box-shadow: 0 25px 50px rgba(0,0,0,.5);
+}
+:where(.view-license-invalid) .icon { font-size: 3.5rem; margin-bottom: 1.5rem; }
+:where(.view-license-invalid) h1 { font-size: 1.6rem; font-weight: 700; color: #f1f5f9; margin-bottom: .5rem; }
+:where(.view-license-invalid) .subtitle { color: #94a3b8; margin-bottom: 1.5rem; font-size: .95rem; line-height: 1.6; }
+:where(.view-license-invalid) .reason-box {
+    background: rgba(239,68,68,.1);
+    border: 1px solid rgba(239,68,68,.3);
+    border-radius: .5rem;
+    padding: .75rem 1rem;
+    font-family: monospace;
+    font-size: .85rem;
+    color: #fca5a5;
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+:where(.view-license-invalid) .label { font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: #64748b; margin-bottom: .3rem; }
+:where(.view-license-invalid) .steps { text-align: left; margin-bottom: 2rem; }
+:where(.view-license-invalid) .steps h3 { font-size: .8rem; color: #64748b; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .75rem; }
+:where(.view-license-invalid) .step { display: flex; gap: .75rem; margin-bottom: .6rem; }
+:where(.view-license-invalid) .n { min-width: 22px; height: 22px; background: #334155; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700; color: #94a3b8; flex-shrink: 0; margin-top: 1px; }
+:where(.view-license-invalid) .step p { font-size: .87rem; color: #94a3b8; line-height: 1.5; }
+:where(.view-license-invalid) code { background: #0f172a; padding: .1em .35em; border-radius: .25rem; font-size: .82em; color: #7dd3fc; }
+:where(.view-license-invalid) hr { border-color: #334155; margin: 1.5rem 0; }
+:where(.view-license-invalid) .contact { font-size: .82rem; color: #64748b; }
+:where(.view-license-invalid) .contact a { color: #2563eb; text-decoration: none; }
+
+/* ---------- from resources/views/gateways/paypal.blade.php (scoped to #paypal-wrapper, #loading-overlay) ---------- */
+/* Styles for resources/views/gateways/paypal.blade.php (moved out of the view) */
+#paypal-wrapper {
+    max-width: 480px;
+    margin: 30px auto;
+    font-family: Arial, sans-serif;
+}
+
+/* Step 1: Order Summary Card */
+#order-summary {
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 20px;
+}
+#order-summary h3 {
+    margin: 0 0 16px;
+    font-size: 18px;
+    color: #333;
+}
+:where(#paypal-wrapper, #loading-overlay) .summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 15px;
+    color: #555;
+}
+:where(#paypal-wrapper, #loading-overlay) .summary-row:last-child { border-bottom: none; }
+:where(#paypal-wrapper, #loading-overlay) .summary-row.total {
+    font-weight: bold;
+    font-size: 17px;
+    color: #222;
+    margin-top: 8px;
+}
+
+/* Step 2: PayPal Button Area */
+#paypal-button-container {
+    margin-top: 10px;
+}
+
+/* Loading Overlay */
+#loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.85);
+    z-index: 9999;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    color: #333;
+}
+:where(#paypal-wrapper, #loading-overlay) .spinner {
+    width: 48px; height: 48px;
+    border: 5px solid #ddd;
+    border-top-color: #0070ba;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Status Messages */
+#payment-message {
+    display: none;
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 15px;
+}
+#payment-message.success { background: #e6f4ea; color: #2e7d32; border: 1px solid #a5d6a7; }
+#payment-message.error   { background: #fdecea; color: #c62828; border: 1px solid #ef9a9a; }
