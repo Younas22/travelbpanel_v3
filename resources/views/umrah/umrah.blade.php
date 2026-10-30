@@ -1,4 +1,5 @@
 @extends('common.layout')
+@section('page_class', 'view-umrah')
 @section('content')
     @php
         // Hero title with its last two words in brand blue, the same treatment
@@ -15,13 +16,6 @@
             return [implode(' ', $words), $accent];
         };
     @endphp
-    <style>
-        /* Hero layout and the search panel live in style.css (#siteRedesign);
-           only this page's cover image is set here. */
-        #siteRedesign .hero-section {
-            background-image: url('<?=url('public/assets/images/flight/umrah-golden-haram.png')?>');
-        }
-    </style>
 
 <div id="siteRedesign">
     <!-- Hero Section -->

@@ -1,4 +1,5 @@
 @extends('common.layout')
+@section('page_class', 'view-tours')
 @section('content')
     @php
         $active_currency = activeCurrency();
@@ -36,13 +37,6 @@
             ['Thailand', '110+', 'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=300&h=300&fit=crop'],
         ];
     @endphp
-    <style>
-        /* Hero layout and the search panel live in style.css (#siteRedesign);
-           only this page's cover image is set here. */
-        #siteRedesign .hero-section {
-            background-image: url('<?=url('public/assets/images/flight/tour-cappadocia-balloons.png')?>');
-        }
-    </style>
 
 <div id="siteRedesign">
     <!-- Hero Section -->

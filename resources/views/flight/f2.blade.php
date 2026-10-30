@@ -1,4 +1,5 @@
 @extends('common.layout')
+@section('page_class', 'view-flight-results')
 @section('content')
 <div class="tl-page fl-page">
     <!-- Search bar (the shared flight search form) -->

@@ -1,81 +1,3 @@
-<style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
-
-        * {
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        .hover-lift {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .hover-lift:hover {
-            transform: translateY(-5px);
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .float-animation {
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .social-icon {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .social-icon::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .social-icon:hover::before {
-            width: 200px;
-            height: 200px;
-        }
-
-        /* Logo Container Fix */
-        .logo-container {
-            background: white;
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 200px;
-            width: auto;
-        }
-
-        .logo-container img {
-            max-width: 100%;
-            max-height: 60px;
-            width: auto;
-            height: auto;
-            object-fit: contain;
-        }
-
-        .logo-fallback {
-            display: none;
-        }
-    </style>
 
 
 
@@ -2018,22 +1940,7 @@
             </button>
         `;
 
-        // Add animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes popupSlideIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(-20px) scale(0.95);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0) scale(1);
-                }
-            }
-        `;
-        document.head.appendChild(style);
-
+        // popupSlideIn keyframes live in style.css
         overlay.appendChild(popup);
         document.body.appendChild(overlay);
 

@@ -1,4 +1,5 @@
 @extends('common.layout')
+@section('page_class', 'view-flights')
 @section('content')
     @php
         $active_currency = activeCurrency();
@@ -20,13 +21,6 @@
         // Featured routes, shown with the same cards as the homepage
         $flightDeals = \App\Support\FeaturedFlightDeals::all();
     @endphp
-    <style>
-        /* Hero layout and the search panel live in style.css (#siteRedesign);
-           only this page's cover image is set here. */
-        #siteRedesign .hero-section {
-            background-image: url('<?=url('public/assets/images/flight/flight-sunset-islands.png')?>');
-        }
-    </style>
 
 <div id="siteRedesign">
     <!-- Hero Section -->

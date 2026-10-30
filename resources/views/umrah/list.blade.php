@@ -1,4 +1,5 @@
 @extends('common.layout')
+@section('page_class', 'view-umrah-list')
 @section('content')
 @php
     // Same layout and styles as the tour listing (.tl-* in style.css)

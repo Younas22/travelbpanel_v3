@@ -1,4 +1,5 @@
 @extends('common.layout')
+@section('page_class', 'view-visa')
 @section('content')
     @php
         // Hero title with its last two words in brand blue, the same treatment
@@ -8,13 +9,6 @@
         $heroTitleLead = implode(' ', array_slice($heroTitleWords, 0, count($heroTitleWords) - $heroAccentCount));
         $heroTitleAccent = implode(' ', array_slice($heroTitleWords, count($heroTitleWords) - $heroAccentCount));
     @endphp
-    <style>
-        /* Hero layout and the form panel live in style.css (#siteRedesign);
-           only this page's cover image is set here. */
-        #siteRedesign .hero-section {
-            background-image: url('<?=url('public/assets/images/flight/visa-dubai-skyline.png')?>');
-        }
-    </style>
 
 <div id="siteRedesign">
     <!-- Hero Section -->
@@ -271,25 +265,6 @@
     @include('common.mobile-app-showcase')
 </div>
 
-    <style>
-        .error-message {
-            color: #dc3545;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-            display: block;
-        }
-        .alert {
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border: 1px solid transparent;
-            border-radius: 0.25rem;
-        }
-        .alert-danger {
-            color: #721c24;
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-        }
-    </style>
 
     <script>
         // File upload preview

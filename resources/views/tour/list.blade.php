@@ -1,4 +1,5 @@
 @extends('common.layout')
+@section('page_class', 'view-tour-list')
 @section('content')
     @php
         $active_currency = activeCurrency();

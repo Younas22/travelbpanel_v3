@@ -1,11 +1,6 @@
 @extends('common.layout')
+@section('page_class', 'view-blog')
 @section('content')
-<style>
-    /* Hero layout lives in style.css (#siteRedesign); only the cover image is set here. */
-    #siteRedesign .hero-section {
-        background-image: url('<?=getSettingImage('cover_image', 'homepage')?>');
-    }
-</style>
 
 <div id="siteRedesign">
     <section class="hero-section is-compact">

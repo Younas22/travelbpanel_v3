@@ -1,4 +1,5 @@
 @extends('common.layout')
+@section('page_class', 'view-contact')
 @section('content')
 @php
     $socialLinks = getSetting('all', 'social');
@@ -11,12 +12,6 @@
         ['fa-envelope', 'Support Email', getSetting('support_email', 'contact'), 'mailto:'],
     ], fn($row) => trim((string) $row[2]) !== '');
 @endphp
-<style>
-    /* Hero layout lives in style.css (#siteRedesign); only the cover image is set here. */
-    #siteRedesign .hero-section {
-        background-image: url('<?=getSettingImage('cover_image', 'homepage')?>');
-    }
-</style>
 
 <div id="siteRedesign">
     <section class="hero-section is-compact">
