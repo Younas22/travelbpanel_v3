@@ -19,7 +19,7 @@
 
 <div id="siteRedesign">
     <!-- Hero Section -->
-    <section class="hero-section">
+    <section class="hero-section has-trust">
         <div class="hero-content">
             <h1 class="hero-title">
                 {{ $heroTitleLead }}@if($heroTitleAccent !== '') <span class="hero-title-accent">{{ $heroTitleAccent }}</span>@endif
@@ -33,6 +33,14 @@
                 @include('forms.umrah-form')
             </div>
         </div>
+
+        <!-- Trust cards along the bottom edge of the cover image -->
+        @include('common.hero-trust', ['items' => [
+            ['fa-kaaba', 'umrah.sacredAccommodations', 'umrah.sacredAccommodationsDesc'],
+            ['fa-user-tie', 'umrah.expertGuides', 'umrah.expertGuidesDesc'],
+            ['fa-plane-departure', 'umrah.hassleFreeTravel', 'umrah.hassleFreeTravelDesc'],
+            ['fa-headset', 'umrah.support247', 'umrah.support247Desc'],
+        ]])
     </section>
 
     <!-- Popular Umrah Packages Section -->

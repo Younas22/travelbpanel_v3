@@ -420,6 +420,14 @@
                     // Hover to open Select2 (Currency & Language)
                     var $selects = $('#currency-select, #language-select');
 
+                    // Select2 hands focus back to the pill when it closes, which
+                    // kept the pill's focus colour on after the mouse had left
+                    function closeOnLeave($el) {
+                        $el.select2('close');
+                        var s2 = $el.data('select2');
+                        if (s2 && s2.$selection) s2.$selection.trigger('blur');
+                    }
+
                     $selects.each(function() {
                         var $el = $(this);
                         $el.closest('.relative').on('mouseenter', function() {
@@ -431,7 +439,7 @@
                                 // Check if mouse is over this select2 dropdown
                                 var $drop = $el.data('select2').$dropdown;
                                 if (!$drop || !$drop.is(':hover')) {
-                                    $el.select2('close');
+                                    closeOnLeave($el);
                                 }
                             }, 150);
                         });
@@ -441,7 +449,7 @@
                             var $drop = $el.data('select2').$dropdown;
                             if ($drop) {
                                 $drop.on('mouseleave', function() {
-                                    $el.select2('close');
+                                    closeOnLeave($el);
                                 });
                             }
                         });

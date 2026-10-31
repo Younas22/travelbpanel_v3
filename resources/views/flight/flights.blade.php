@@ -24,7 +24,7 @@
 
 <div id="siteRedesign">
     <!-- Hero Section -->
-    <section class="hero-section">
+    <section class="hero-section has-trust">
         <div class="hero-content">
             <h1 class="hero-title">
                 {{ $heroTitleLead }}@if($heroTitleAccent !== '') <span class="hero-title-accent">{{ $heroTitleAccent }}</span>@endif
@@ -38,6 +38,14 @@
                 @include('forms.flight-form')
             </div>
         </div>
+
+        <!-- Trust cards along the bottom edge of the cover image -->
+        @include('common.hero-trust', ['items' => [
+            ['fa-magnifying-glass', 'flight.easy_search', 'flight.easy_search_desc'],
+            ['fa-tags', 'flight.best_prices', 'flight.best_prices_desc'],
+            ['fa-lock', 'flight.secure_booking', 'flight.secure_booking_desc'],
+            ['fa-headset', 'flight.support_24_7', 'flight.support_24_7_desc'],
+        ]])
     </section>
 
     <!-- Featured Flights Section -->

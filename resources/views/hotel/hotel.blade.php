@@ -21,7 +21,7 @@
 
 <div id="siteRedesign">
     <!-- Hero Section -->
-    <section class="hero-section">
+    <section class="hero-section has-trust">
         <div class="hero-content">
             <h1 class="hero-title">
                 {{ $heroTitleLead }}@if($heroTitleAccent !== '') <span class="hero-title-accent">{{ $heroTitleAccent }}</span>@endif
@@ -36,23 +36,13 @@
             </div>
         </div>
 
-        <!-- Trust cards, along the bottom edge of the cover image -->
-        <div class="hero-trust">
-            @foreach([
-                ['fa-magnifying-glass', 'hotel.easySearchTitle', 'hotel.easySearchDesc'],
-                ['fa-tags', 'hotel.bestPricesTitle', 'hotel.bestPricesDesc'],
-                ['fa-shield-halved', 'hotel.secureBookingTitle', 'hotel.secureBookingDesc'],
-                ['fa-headset', 'hotel.supportTitle', 'hotel.supportDesc'],
-            ] as [$trustIcon, $trustTitle, $trustDesc])
-                <div class="hero-trust-card">
-                    <span class="hero-trust-icon"><i class="fas {{ $trustIcon }}"></i></span>
-                    <span class="hero-trust-text">
-                        <b>{{ t($trustTitle) }}</b>
-                        <small>{{ t($trustDesc) }}</small>
-                    </span>
-                </div>
-            @endforeach
-        </div>
+        <!-- Trust cards along the bottom edge of the cover image -->
+        @include('common.hero-trust', ['items' => [
+            ['fa-magnifying-glass', 'hotel.easySearchTitle', 'hotel.easySearchDesc'],
+            ['fa-tags', 'hotel.bestPricesTitle', 'hotel.bestPricesDesc'],
+            ['fa-shield-halved', 'hotel.secureBookingTitle', 'hotel.secureBookingDesc'],
+            ['fa-headset', 'hotel.supportTitle', 'hotel.supportDesc'],
+        ]])
     </section>
 
     <!-- Featured Hotels Section -->

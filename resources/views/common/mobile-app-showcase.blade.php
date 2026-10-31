@@ -1,4 +1,4 @@
-<section class="app-showcase" id="appShowcase">
+<section class="app-showcase" id="appShowcase" style="margin-top: 4rem;">
     <div class="th-container app-showcase-inner">
         <div class="app-showcase-text">
             <span class="th-eyebrow">TravelBookingPanel Mobile App</span>

@@ -35,7 +35,7 @@
 @endphp
 
 <div id="siteRedesign" class="has-ai-search">
-<section class="hero-section">
+<section class="hero-section has-trust">
     <div class="hero-content">
         <h1 class="hero-title">
             {{ $heroTitleLead }}@if($heroTitleAccent !== '') <span class="hero-title-accent">{{ $heroTitleAccent }}</span>@endif
@@ -99,6 +99,14 @@
             </div>
         @endforeach
     </div>
+
+    <!-- Trust cards along the bottom edge of the cover image -->
+    @include('common.hero-trust', ['items' => [
+        ['fa-tags', 'home.best_price_guarantee', 'home.best_price_guarantee_desc'],
+        ['fa-lock', 'home.secure_payment', 'home.secure_payment_desc'],
+        ['fa-star', 'home.trusted_by_millions', 'home.trusted_by_millions_desc'],
+        ['fa-headset', 'hotel.supportTitle', 'hotel.supportDesc'],
+    ]])
 </section>
 
     <!-- TRUST & FEATURES SECTION -->

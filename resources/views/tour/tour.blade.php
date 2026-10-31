@@ -40,7 +40,7 @@
 
 <div id="siteRedesign">
     <!-- Hero Section -->
-    <section class="hero-section">
+    <section class="hero-section has-trust">
         <div class="hero-content">
             <h1 class="hero-title">
                 {{ $heroTitleLead }}@if($heroTitleAccent !== '') <span class="hero-title-accent">{{ $heroTitleAccent }}</span>@endif
@@ -54,6 +54,14 @@
                 @include('forms.tours-form')
             </div>
         </div>
+
+        <!-- Trust cards along the bottom edge of the cover image -->
+        @include('common.hero-trust', ['items' => [
+            ['fa-map-location-dot', 'tour.curated_tours', 'tour.curated_tours_desc'],
+            ['fa-users', 'tour.expert_guides', 'tour.expert_guides_desc'],
+            ['fa-shield-halved', 'tour.safe_travel', 'tour.safe_travel_desc'],
+            ['fa-headset', 'tour.support_24_7', 'tour.support_24_7_desc'],
+        ]])
     </section>
 
     <!-- Trending Destinations Section -->

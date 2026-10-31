@@ -108,7 +108,7 @@
                                 <form method="POST" action="{{ route('admin.hotels.approve', $hotel) }}">@csrf<button type="submit" class="tbp-hotels-chip is-approve"><i class="bi bi-check2"></i> Approve</button></form>
                                 <form method="POST" action="{{ route('admin.hotels.reject', $hotel) }}" onsubmit="return confirm('Reject {{ addslashes($hotel->name) }}?');">@csrf<button type="submit" class="tbp-hotels-chip is-reject"><i class="bi bi-x-lg"></i> Reject</button></form>
                             @endif
-                            <button type="button" class="tbp-hotels-chip is-featured js-toggle-featured {{ $hotel->is_featured ? 'is-on' : '' }}" data-id="{{ $hotel->id }}" data-featured="{{ $hotel->is_featured ? '1' : '0' }}"><i class="bi {{ $hotel->is_featured ? 'bi-star-fill' : 'bi-star' }}"></i> <span>{{ $hotel->is_featured ? 'Featured' : 'Feature' }}</span></button>
+                            <button type="button" class="tbp-hotels-chip is-featured js-toggle-featured {{ $hotel->featured == '1' ? 'is-on' : '' }}" data-id="{{ $hotel->id }}" data-featured="{{ $hotel->featured == '1' ? '1' : '0' }}"><i class="bi {{ $hotel->featured == '1' ? 'bi-star-fill' : 'bi-star' }}"></i> <span>{{ $hotel->featured == '1' ? 'Featured' : 'Feature' }}</span></button>
                         </div>
                         <footer class="tbp-hotels-tile-actions">
                             <a href="{{ route('admin.hotels.rooms.index', ['hotel_id' => $hotel->id]) }}" class="tbp-hotels-btn is-small"><i class="bi bi-door-closed"></i> View Rooms</a>

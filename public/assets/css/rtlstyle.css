@@ -15124,16 +15124,17 @@ body:where(.view-flights) #siteRedesign .hero-section {
 body:where(.view-hotels) #siteRedesign .hero-section {
     background-image: url('../images/flight/hotel-twilight-caldera.png');
 }
-/* Hotels hero: the whole cover image at its own proportions (2172 x 724, i.e.
-   3:1) instead of a zoomed/cropped "cover" box; it only grows taller when the
-   title + search form + trust cards need more room (small screens). */
-body:where(.view-hotels) #siteRedesign .hero-section {
+/* Heroes with trust cards (.hero-section.has-trust): one image proportion for
+   every page (1953 x 805, the flights / tours / umrah covers) instead of a fixed
+   720px box; it only grows taller when the title + search form + cards need
+   more room (small screens). */
+#siteRedesign .hero-section.has-trust {
     min-height: auto;
-    aspect-ratio: 2172 / 724;
+    aspect-ratio: 1953 / 805;
     padding-bottom: 24px;
     background-position: center top;
 }
-body:where(.view-hotels) #siteRedesign .hero-content {
+#siteRedesign .hero-section.has-trust .hero-content {
     margin-bottom: 24px;
 }
 
@@ -15186,11 +15187,13 @@ body:where(.view-hotels) #siteRedesign .hero-content {
     color: var(--site-text);
 }
 #siteRedesign .hero-trust-text small {
+    /* up to two lines */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
     overflow: hidden;
     font-size: 12px;
     color: color-mix(in srgb, var(--site-text) 62%, transparent);
-    white-space: nowrap;
-    text-overflow: ellipsis;
 }
 @media (max-width: 1023px) {
     #siteRedesign .hero-trust { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -15200,6 +15203,21 @@ body:where(.view-hotels) #siteRedesign .hero-content {
     #siteRedesign .hero-trust-card { padding: 10px; gap: 8px; }
     #siteRedesign .hero-trust-icon { width: 32px; height: 32px; border-radius: 10px; }
     #siteRedesign .hero-trust-text small { display: none; }
+}
+/* Trust cards straddle the bottom edge of the image: half on it, half below
+   (not on phones, where they stay inside the image). */
+@media (min-width: 481px) {
+    #siteRedesign .hero-section.has-trust {
+        padding-bottom: 0;
+        /* half the cards' height hangs below the image: leave room for it */
+        margin-bottom: 124px; /* 2 x 2 cards */
+    }
+    #siteRedesign .hero-section.has-trust .hero-trust {
+        transform: translateY(50%);
+    }
+}
+@media (min-width: 1024px) {
+    #siteRedesign .hero-section.has-trust { margin-bottom: 84px; } /* one row of cards */
 }
 
 /* ---------- from resources/views/hotel/list.blade.php (scoped to body.view-hotel-list) ---------- */
