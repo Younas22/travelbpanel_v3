@@ -2,35 +2,63 @@
 @section('page_class', 'view-blog')
 @section('content')
 
+@php
+    // Icon per category, matched on its name (categories come from admin)
+    $categoryIcon = fn($name) => match (true) {
+        str_contains(strtolower($name), 'flight') => 'fa-plane',
+        str_contains(strtolower($name), 'hotel') || str_contains(strtolower($name), 'stay') => 'fa-hotel',
+        str_contains(strtolower($name), 'visa') => 'fa-passport',
+        str_contains(strtolower($name), 'tour') => 'fa-suitcase',
+        str_contains(strtolower($name), 'umrah') => 'fa-kaaba',
+        str_contains(strtolower($name), 'tip') => 'fa-lightbulb',
+        str_contains(strtolower($name), 'guide') => 'fa-book-open',
+        str_contains(strtolower($name), 'news') => 'fa-newspaper',
+        str_contains(strtolower($name), 'destination') => 'fa-location-dot',
+        default => 'fa-tag',
+    };
+@endphp
+
 <div id="siteRedesign">
-    <section class="hero-section is-compact">
+    <section class="hero-section is-compact pg-blog-hero">
         <div class="hero-content">
-            <h1 class="hero-title">{{ t('blog.title') }}</h1>
-            <p class="hero-subtitle">{{ t('blog.subtitle') }}</p>
+            <span class="pg-blog-eyebrow">{{ t('blog.title') }}</span>
+            <h1 class="hero-title">{{ t('blog.heroTitle') }}</h1>
+            <p class="hero-subtitle">{{ t('blog.heroSubtitle') }}</p>
+
+            <!-- Search: filters every published post, results keep the chosen category -->
+            <form class="pg-blog-search" action="{{ route('blog.index') }}" method="GET" role="search">
+                <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+                <input type="search" name="q" id="blogSearch" value="{{ $search }}" placeholder="{{ t('blog.searchHint') }}" aria-label="{{ t('blog.search') }}">
+                @if($categoryId)
+                    <input type="hidden" name="category" value="{{ $categoryId }}">
+                @endif
+                <button type="submit" class="pg-blog-search-btn">{{ t('blog.search') }}</button>
+            </form>
         </div>
     </section>
 
-    <!-- Search + categories (filter the articles on this page) -->
-    <div class="form-container is-overlap pg-panel pg-blog-tools">
-        <div class="tl-input-icon pg-blog-search">
-            <i class="fas fa-magnifying-glass"></i>
-            <input type="search" id="blogSearch" class="tl-name-search" placeholder="{{ t('blog.searchPlaceholder') }}" aria-label="{{ t('blog.search') }}">
-        </div>
-        @if($categories->count())
-            <div class="pg-chips" role="group" aria-label="{{ t('blog.category') }}">
-                <button type="button" class="pg-chip is-active" data-category="">All</button>
+    <!-- Categories (only ones that have published posts) -->
+    @if($categories->count())
+        <nav class="pg-blog-cats" aria-label="{{ t('blog.category') }}">
+            <div class="pg-chips">
+                <a href="{{ route('blog.index', array_filter(['q' => $search])) }}" class="pg-chip {{ $categoryId ? '' : 'is-active' }}" @unless($categoryId) aria-current="page" @endunless>
+                    <i class="fas fa-border-all"></i> {{ t('blog.allPosts') }}
+                </a>
                 @foreach($categories as $category)
-                    <button type="button" class="pg-chip" data-category="{{ $category->id }}">{{ $category->name }}</button>
+                    @php $isActive = (string) $categoryId === (string) $category->id; @endphp
+                    <a href="{{ route('blog.index', array_filter(['category' => $category->id, 'q' => $search])) }}" class="pg-chip {{ $isActive ? 'is-active' : '' }}" @if($isActive) aria-current="page" @endif>
+                        <i class="fas {{ $categoryIcon($category->name) }}"></i> {{ $category->name }}
+                    </a>
                 @endforeach
             </div>
-        @endif
-    </div>
+        </nav>
+    @endif
 
     <div class="pg-blog">
         <div class="pg-blog-grid" id="blogGrid">
             @forelse($blogs as $blog)
                 @php $url = route('blog.detail', $blog->slug); @endphp
-                <article class="pg-post" data-category="{{ $blog->category_id }}" data-text="{{ strtolower($blog->title . ' ' . $blog->excerpt) }}">
+                <article class="pg-post">
                     <a href="{{ $url }}" class="pg-post-media">
                         @if($blog->featured_image)
                             <img src="{{ asset('public/' . $blog->featured_image) }}" alt="{{ $blog->title }}" loading="lazy" onerror="this.onerror=null;this.parentNode.classList.add('is-broken');this.remove()">
@@ -38,29 +66,21 @@
                             <span class="pg-post-placeholder"><i class="fas fa-image"></i></span>
                         @endif
                         @if($blog->category)
-                            <span class="th-chip">{{ $blog->category->name }}</span>
+                            <span class="pg-post-badge"><i class="fas {{ $categoryIcon($blog->category->name) }}"></i> {{ $blog->category->name }}</span>
                         @endif
                     </a>
                     <div class="pg-post-body">
                         <div class="pg-post-meta">
-                            <span><i class="fas fa-calendar"></i> {{ $blog->created_at->format('d M Y') }}</span>
-                            <span><i class="fas fa-clock"></i> {{ $blog->reading_time }} {{ t('blog.minRead') }}</span>
+                            <span><i class="far fa-calendar"></i> {{ ($blog->published_at ?? $blog->created_at)->format('d M Y') }}</span>
+                            @if($blog->reading_time)
+                                <span><i class="far fa-clock"></i> {{ $blog->reading_time }} {{ t('blog.minRead') }}</span>
+                            @endif
                         </div>
                         <h2 class="pg-post-title" dir="auto"><a href="{{ $url }}">{{ $blog->title }}</a></h2>
                         @if($blog->excerpt)
-                            <p class="pg-post-excerpt">{{ Str::limit($blog->excerpt, 120) }}</p>
+                            <p class="pg-post-excerpt">{{ $blog->excerpt }}</p>
                         @endif
                         <div class="pg-post-foot">
-                            <span class="pg-author">
-                                <span class="pg-avatar">
-                                    @if($blog->author && $blog->author->profile_image)
-                                        <img src="{{ asset('public/' . $blog->author->profile_image) }}" alt="">
-                                    @else
-                                        {{ $blog->author ? $blog->author->initials : 'AU' }}
-                                    @endif
-                                </span>
-                                {{ $blog->author ? $blog->author->full_name : 'Admin' }}
-                            </span>
                             <a href="{{ $url }}" class="pg-read">{{ t('blog.readMore') }} <i class="fas fa-arrow-right"></i></a>
                         </div>
                     </div>
@@ -68,16 +88,15 @@
             @empty
                 <div class="tl-empty pg-wide"><i class="fas fa-inbox"></i><h3>{{ t('blog.noBlogsFound') }}</h3></div>
             @endforelse
-            <div class="tl-empty pg-wide" id="blogNoMatch" hidden><i class="fas fa-magnifying-glass"></i><h3>{{ t('blog.noBlogsFound') }}</h3></div>
         </div>
 
         @if($blogs->hasPages())
             <nav class="tl-pagination pg-pagination" aria-label="Pagination">
                 <div class="tl-pages">
                     @if($blogs->onFirstPage())
-                        <span class="tl-page-btn is-disabled" aria-hidden="true"><i class="fas fa-chevron-left"></i></span>
+                        <span class="tl-page-btn pg-page-step is-disabled" aria-hidden="true"><i class="fas fa-chevron-left"></i> {{ t('blog.previousPage') }}</span>
                     @else
-                        <a class="tl-page-btn" href="{{ $blogs->previousPageUrl() }}" aria-label="{{ t('blog.previousPage') }}"><i class="fas fa-chevron-left"></i></a>
+                        <a class="tl-page-btn pg-page-step" href="{{ $blogs->previousPageUrl() }}"><i class="fas fa-chevron-left"></i> {{ t('blog.previousPage') }}</a>
                     @endif
                     @for($n = 1; $n <= $blogs->lastPage(); $n++)
                         @if($n == $blogs->currentPage())
@@ -87,44 +106,13 @@
                         @endif
                     @endfor
                     @if($blogs->hasMorePages())
-                        <a class="tl-page-btn" href="{{ $blogs->nextPageUrl() }}" aria-label="{{ t('blog.nextPage') }}"><i class="fas fa-chevron-right"></i></a>
+                        <a class="tl-page-btn pg-page-step" href="{{ $blogs->nextPageUrl() }}">{{ t('blog.nextPage') }} <i class="fas fa-chevron-right"></i></a>
                     @else
-                        <span class="tl-page-btn is-disabled" aria-hidden="true"><i class="fas fa-chevron-right"></i></span>
+                        <span class="tl-page-btn pg-page-step is-disabled" aria-hidden="true">{{ t('blog.nextPage') }} <i class="fas fa-chevron-right"></i></span>
                     @endif
                 </div>
-                <div class="tl-page-summary">{{ t('blog.page') }} {{ $blogs->currentPage() }} {{ t('blog.of') }} {{ $blogs->lastPage() }}</div>
             </nav>
         @endif
     </div>
 </div>
-
-<script>
-    (function () {
-        const search = document.getElementById('blogSearch');
-        const chips = Array.from(document.querySelectorAll('.pg-chip'));
-        const posts = Array.from(document.querySelectorAll('.pg-post'));
-        const noMatch = document.getElementById('blogNoMatch');
-        let category = '';
-
-        function apply() {
-            const q = search.value.trim().toLowerCase();
-            let visible = 0;
-            posts.forEach(function (post) {
-                const ok = (category === '' || post.dataset.category === category) && (q === '' || post.dataset.text.includes(q));
-                post.hidden = !ok;
-                if (ok) visible++;
-            });
-            noMatch.hidden = !(posts.length && visible === 0);
-        }
-
-        search.addEventListener('input', apply);
-        chips.forEach(function (chip) {
-            chip.addEventListener('click', function () {
-                category = chip.dataset.category;
-                chips.forEach(c => c.classList.toggle('is-active', c === chip));
-                apply();
-            });
-        });
-    })();
-</script>
 @endsection

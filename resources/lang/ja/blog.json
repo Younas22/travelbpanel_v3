@@ -28,5 +28,9 @@
     "shareFacebook": "Facebook",
     "shareTwitter": "Twitter",
     "shareLinkedin": "LinkedIn",
-    "shareWhatsapp": "WhatsApp"
-  }
+    "shareWhatsapp": "WhatsApp",
+    "heroTitle": "旅のヒントとストーリー",
+    "heroSubtitle": "旅行の専門家による旅行ガイド、ヒント、旅先のストーリーをご覧ください。",
+    "allPosts": "すべての記事",
+    "searchHint": "ブログ記事、旅行ガイド、旅先を検索..."
+}

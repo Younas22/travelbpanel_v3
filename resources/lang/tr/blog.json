@@ -28,5 +28,9 @@
     "shareFacebook": "Facebook",
     "shareTwitter": "Twitter",
     "shareLinkedin": "LinkedIn",
-    "shareWhatsapp": "WhatsApp"
-  }
+    "shareWhatsapp": "WhatsApp",
+    "heroTitle": "Seyahat İçgörüleri ve Hikâyeleri",
+    "heroSubtitle": "Seyahat uzmanlarımızdan rehberler, ipuçları ve destinasyon hikâyeleri keşfedin.",
+    "allPosts": "Tüm Yazılar",
+    "searchHint": "Blog yazıları, seyahat rehberleri, destinasyonlar ara..."
+}

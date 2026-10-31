@@ -28,5 +28,9 @@
     "shareFacebook": "Facebook",
     "shareTwitter": "Twitter",
     "shareLinkedin": "LinkedIn",
-    "shareWhatsapp": "WhatsApp"
-  }
+    "shareWhatsapp": "WhatsApp",
+    "heroTitle": "Travel Insights & Stories",
+    "heroSubtitle": "Explore travel guides, tips, and destination stories from our travel experts.",
+    "allPosts": "All Posts",
+    "searchHint": "Search blog articles, travel guides, destinations..."
+}

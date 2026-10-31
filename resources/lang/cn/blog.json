@@ -28,5 +28,9 @@
     "shareFacebook": "脸书",
     "shareTwitter": "推特",
     "shareLinkedin": "领英",
-    "shareWhatsapp": "WhatsApp"
-  }
+    "shareWhatsapp": "WhatsApp",
+    "heroTitle": "旅行见解与故事",
+    "heroSubtitle": "探索我们旅行专家的旅行指南、技巧和目的地故事。",
+    "allPosts": "全部文章",
+    "searchHint": "搜索博客文章、旅行指南、目的地..."
+}

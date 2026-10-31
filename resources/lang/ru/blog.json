@@ -28,5 +28,9 @@
     "shareFacebook": "Facebook",
     "shareTwitter": "Twitter",
     "shareLinkedin": "LinkedIn",
-    "shareWhatsapp": "WhatsApp"
-  }
+    "shareWhatsapp": "WhatsApp",
+    "heroTitle": "Идеи и истории путешествий",
+    "heroSubtitle": "Путеводители, советы и истории о направлениях от наших экспертов по путешествиям.",
+    "allPosts": "Все статьи",
+    "searchHint": "Поиск статей, путеводителей, направлений..."
+}

@@ -28,5 +28,9 @@
     "shareFacebook": "Facebook",
     "shareTwitter": "Twitter",
     "shareLinkedin": "LinkedIn",
-    "shareWhatsapp": "WhatsApp"
-  }
+    "shareWhatsapp": "WhatsApp",
+    "heroTitle": "Reisinzichten & verhalen",
+    "heroSubtitle": "Ontdek reisgidsen, tips en bestemmingsverhalen van onze reisexperts.",
+    "allPosts": "Alle berichten",
+    "searchHint": "Zoek blogartikelen, reisgidsen, bestemmingen..."
+}

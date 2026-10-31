@@ -28,5 +28,9 @@
     "shareFacebook": "Facebook",
     "shareTwitter": "Twitter",
     "shareLinkedin": "LinkedIn",
-    "shareWhatsapp": "WhatsApp"
-  }
+    "shareWhatsapp": "WhatsApp",
+    "heroTitle": "Conseils et récits de voyage",
+    "heroSubtitle": "Découvrez des guides, des astuces et des récits de destinations par nos experts du voyage.",
+    "allPosts": "Tous les articles",
+    "searchHint": "Rechercher des articles, guides de voyage, destinations..."
+}

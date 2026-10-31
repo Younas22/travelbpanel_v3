@@ -172,11 +172,25 @@ class PagesController extends Controller
 
 
 
-    public function index() {
+    public function index(Request $request) {
+        // Search (?q=) and category (?category=) filter the whole list, not just
+        // the current page; pagination keeps them in its links. 8 posts = 2 rows of 4.
+        $search = trim((string) $request->query('q', ''));
+        $categoryId = $request->query('category');
+
         $blogs = BlogPost::with('category')
                         ->where('status', 'published')
+                        ->when($search !== '', function ($query) use ($search) {
+                            $query->where(function ($q) use ($search) {
+                                $q->where('title', 'like', "%{$search}%")
+                                  ->orWhere('excerpt', 'like', "%{$search}%")
+                                  ->orWhere('content', 'like', "%{$search}%");
+                            });
+                        })
+                        ->when($categoryId, fn ($query) => $query->where('category_id', $categoryId))
                         ->latest()
-                        ->paginate(10);
+                        ->paginate(8)
+                        ->withQueryString();
         
         // Get all active categories that have blog posts
         $categories = BlogCategory::has('posts')
@@ -185,7 +199,7 @@ class PagesController extends Controller
                             })
                             ->get();
         
-        return view('pages.blog', compact('blogs', 'categories'));
+        return view('pages.blog', compact('blogs', 'categories', 'search', 'categoryId'));
     }
 
 

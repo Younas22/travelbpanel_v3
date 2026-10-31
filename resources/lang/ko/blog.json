@@ -28,5 +28,9 @@
     "shareFacebook": "페이스북",
     "shareTwitter": "트위터",
     "shareLinkedin": "링크드인",
-    "shareWhatsapp": "왓츠앱"
-  }
+    "shareWhatsapp": "왓츠앱",
+    "heroTitle": "여행 인사이트 & 이야기",
+    "heroSubtitle": "여행 전문가가 전하는 여행 가이드, 팁, 여행지 이야기를 만나보세요.",
+    "allPosts": "전체 글",
+    "searchHint": "블로그 글, 여행 가이드, 여행지 검색..."
+}
