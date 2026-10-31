@@ -49,7 +49,7 @@
     <!-- Page Loader -->
     <div id="pageLoader">
         <div style="text-align: center;">
-            <img id="loaderImage" src="{{ url('public/assets/images/loader/global.gif') }}" alt="Loading...">
+            <img id="loaderImage" src="{{ url('public/assets/images/loader/travel-compass-loader.gif') }}" alt="Loading...">
             <!-- <p class="loader-text">Loading...</p> -->
         </div>
     </div>

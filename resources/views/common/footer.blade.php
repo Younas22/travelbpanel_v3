@@ -1746,20 +1746,11 @@
     // ========== PAGE LOADER FUNCTIONS ==========
     function showPageLoader(loaderType = null) {
         const loader = document.getElementById('pageLoader');
-        const loaderImage = document.getElementById('loaderImage');
 
         if (loader) {
             loader.classList.remove('hidden');
 
-            // Change loader image based on type
-            if (loaderImage && loaderType) {
-                const baseUrl = API_BASE_URL;
-                if (loaderType === 'flight') {
-                    loaderImage.src = baseUrl + '/public/assets/images/settings/flight-loader.gif';
-                } else if (loaderType === 'hotel') {
-                    loaderImage.src = baseUrl + '/public/assets/images/settings/hotel-loader.gif';
-                }
-            }
+            // One loader (travel compass) everywhere; loaderType is kept for existing callers
         }
     }
 
