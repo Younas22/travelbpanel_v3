@@ -12961,6 +12961,18 @@ a.tl-page-btn:hover { border-color: var(--tl-blue); color: var(--tl-blue); }
     padding-left: 40px;
 }
 
+/* Native selects (traveller gender): same chevron as the select2 country field */
+.hb-checkout select.hb-select {
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 38px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 12px;
+    cursor: pointer;
+}
+
 .hb-checkout .fb-input {
     height: 48px;
     border-radius: 12px;

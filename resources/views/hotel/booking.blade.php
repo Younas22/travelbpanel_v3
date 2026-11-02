@@ -190,22 +190,28 @@
                         <div class="fb-grid is-3">
                             <label class="hb-field">
                                 <span>{{ t('hotelbooking.gender') }} <em>*</em></span>
-                                <select class="fb-input" name="travellers[{{ $i }}][gender]" required>
-                                    <option value="">{{ t('hotelbooking.select_gender') }}</option>
-                                    @foreach(['male', 'female', 'other'] as $g)
-                                        <option value="{{ $g }}" @selected(($t['gender'] ?? '') === $g)>{{ t('hotelbooking.' . $g) }}</option>
-                                    @endforeach
-                                </select>
+                                <span class="hb-input-wrap"><i class="fas fa-venus-mars"></i>
+                                    <select class="fb-input hb-select" name="travellers[{{ $i }}][gender]" required>
+                                        <option value="">{{ t('hotelbooking.select_gender') }}</option>
+                                        @foreach(['male', 'female', 'other'] as $g)
+                                            <option value="{{ $g }}" @selected(($t['gender'] ?? '') === $g)>{{ t('hotelbooking.' . $g) }}</option>
+                                        @endforeach
+                                    </select>
+                                </span>
                                 <small class="hb-error" data-error-for="travellers[{{ $i }}][gender]"></small>
                             </label>
                             <label class="hb-field">
                                 <span>{{ t('hotelbooking.first_name') }} <em>*</em></span>
-                                <input type="text" class="fb-input" name="travellers[{{ $i }}][first_name]" value="{{ $t['first_name'] ?? '' }}" placeholder="{{ t('hotelbooking.enter_first_name') }}" maxlength="50" required>
+                                <span class="hb-input-wrap"><i class="far fa-user"></i>
+                                    <input type="text" class="fb-input" name="travellers[{{ $i }}][first_name]" value="{{ $t['first_name'] ?? '' }}" placeholder="{{ t('hotelbooking.enter_first_name') }}" maxlength="50" required>
+                                </span>
                                 <small class="hb-error" data-error-for="travellers[{{ $i }}][first_name]"></small>
                             </label>
                             <label class="hb-field">
                                 <span>{{ t('hotelbooking.last_name') }} <em>*</em></span>
-                                <input type="text" class="fb-input" name="travellers[{{ $i }}][last_name]" value="{{ $t['last_name'] ?? '' }}" placeholder="{{ t('hotelbooking.enter_last_name') }}" maxlength="50" required>
+                                <span class="hb-input-wrap"><i class="far fa-user"></i>
+                                    <input type="text" class="fb-input" name="travellers[{{ $i }}][last_name]" value="{{ $t['last_name'] ?? '' }}" placeholder="{{ t('hotelbooking.enter_last_name') }}" maxlength="50" required>
+                                </span>
                                 <small class="hb-error" data-error-for="travellers[{{ $i }}][last_name]"></small>
                             </label>
                         </div>
