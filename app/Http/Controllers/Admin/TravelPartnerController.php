@@ -504,7 +504,11 @@ class TravelPartnerController extends Controller
             }
         }
 
-        $supplierSlug = strtolower(trim($partner->company_name));
+        // Environment for suppliers that have separate test/live hosts (e.g. AQC): Development mode = test API.
+        $payload['env'] = $partner->development_mode ? 'dev' : 'pro';
+
+        // API route slug: the name without a display suffix, e.g. "amadeus_quick_connect _(AQC)" → "amadeus_quick_connect"
+        $supplierSlug = strtolower(trim(preg_replace('/[\s_]*\(.*\)\s*$/', '', $partner->company_name)));
         $endpoint = rtrim(url(''), '/') . '/api/' . rawurlencode($supplierSlug) . '/test_credentials';
 
         try {

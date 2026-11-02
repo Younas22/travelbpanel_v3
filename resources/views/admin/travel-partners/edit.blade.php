@@ -169,7 +169,12 @@
                                 </div>
 
                                 <div class="tbp-partner-edit-cred-grid" id="credentialGrid">
-                                    @for($i = 1; $i <= 6; $i++)
+                                    @php
+                                        // AQC needs only the API key + secret (grant_type is fixed in the API controller); both are always shown
+                                        $isAqc = str_starts_with($supplierSlug, 'amadeus_quick_connect');
+                                        $credSlots = $isAqc ? 2 : 6;
+                                    @endphp
+                                    @for($i = 1; $i <= $credSlots; $i++)
                                         @php
                                             // Only the encrypted value is ever sent to the browser; the real
                                             // secret stays server-side. An unchanged value is never re-saved.
@@ -177,8 +182,12 @@
                                             $credVal = old("api_credential_{$i}", $rawStored);
                                             $hasVal = $credVal !== null && $credVal !== '';
                                         @endphp
-                                        <div class="tbp-partner-edit-field tbp-partner-edit-cred-slot" data-cred-index="{{ $i }}" @unless($hasVal) hidden @endunless>
-                                            @php $credLabels = $supplierSlug === 'webbeds' ? [1 => 'Username', 2 => 'Password', 3 => 'ID'] : []; @endphp
+                                        <div class="tbp-partner-edit-field tbp-partner-edit-cred-slot" data-cred-index="{{ $i }}" @unless($hasVal || $isAqc) hidden @endunless>
+                                            @php $credLabels = match (true) {
+                                                $supplierSlug === 'webbeds' => [1 => 'Username', 2 => 'Password', 3 => 'ID'],
+                                                $isAqc => [1 => 'API Key', 2 => 'API Secret'],
+                                                default => [],
+                                            }; @endphp
                                             <label>{{ $credLabels[$i] ?? 'API Credential '.$i }}</label>
                                             <div class="tbp-partner-edit-input-wrap">
                                                 <input type="password" name="api_credential_{{ $i }}"
