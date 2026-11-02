@@ -99,7 +99,7 @@
                                 $modTheme = $themeMap[$modIcon] ?? $themeMap['bi-puzzle'];
                             @endphp
                             <div class="tp-pinfo">
-                                <div class="tp-pname">{{ $isManual ? $module->name : ucwords(str_replace('_',' ',$partner->company_name)) }}</div>
+                                <div class="tp-pname">{{ $isManual && $partner->company_name !== \App\Models\FeaturedFlight::PARTNER_NAME ? $module->name : ucwords(str_replace('_',' ',$partner->company_name)) }}</div>
                                 <div class="tp-ptype">
                                     {{ $isManual ? 'manual_entry' : ucwords(str_replace('_',' ',$partner->company_name)).' API' }}
                                     @if($isManual)
@@ -120,7 +120,7 @@
                                     <span class="tp-switch-slider"></span>
                                 </label>
                                 @if($module->id != '3')
-                                    <a href="{{ route('admin.travel-partners.edit', $partner->id) }}" class="tp-edit-btn" title="Edit">
+                                    <a href="{{ $partner->company_name === \App\Models\FeaturedFlight::PARTNER_NAME ? route('admin.featured-flights.index') : route('admin.travel-partners.edit', $partner->id) }}" class="tp-edit-btn" title="Edit">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                 @endif
@@ -193,7 +193,7 @@
                         @endif
 
                         <div class="tp-pinfo">
-                            <div class="tp-pname">{{ $isManual ? $module->name : $partner->company_name }}</div>
+                            <div class="tp-pname">{{ $isManual && $partner->company_name !== \App\Models\FeaturedFlight::PARTNER_NAME ? $module->name : $partner->company_name }}</div>
                             <div class="tp-ptype">
                                 {{ $isManual ? 'manual_entry' : 'API' }}
                                 @if($isManual)
@@ -210,7 +210,7 @@
                                 <span class="tp-switch-slider"></span>
                             </label>
                             @if($module->id != '3')
-                                <a href="{{ route('admin.travel-partners.edit', $partner->id) }}" class="tp-edit-btn" title="Edit">
+                                <a href="{{ $partner->company_name === \App\Models\FeaturedFlight::PARTNER_NAME ? route('admin.featured-flights.index') : route('admin.travel-partners.edit', $partner->id) }}" class="tp-edit-btn" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                             @endif

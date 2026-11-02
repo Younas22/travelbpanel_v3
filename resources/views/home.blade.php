@@ -295,7 +295,7 @@
     };
 @endphp
 
-    @if($flightModule)
+    @if($featuredFlightDeals->isNotEmpty())
     <!-- FEATURED FLIGHTS SECTION -->
     @include('common.flight-deals', ['deals' => $featuredFlightDeals, 'sectionId' => 'featuredHomeFlights'])
     @endif

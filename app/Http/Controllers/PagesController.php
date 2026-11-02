@@ -10,7 +10,7 @@ use App\Models\Tour;
 use App\Models\TourInclusion;
 use App\Models\Umrah;
 use App\Models\UmrahInclusion;
-use App\Support\FeaturedFlightDeals;
+use App\Models\FeaturedFlight;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,7 +18,7 @@ class PagesController extends Controller
 {
     public function home() {
         $flightModule = getActiveModule('flight');
-        $featuredFlightDeals = $flightModule ? array_slice(FeaturedFlightDeals::all(), 0, 6) : [];
+        $featuredFlightDeals = FeaturedFlight::forSite(6);
 
         // Fetch featured tours if tours module is active
         $tours = collect();

@@ -100,7 +100,17 @@
             $umrahModule  = $sidebarModule('umrah');
             $toursModule  = $sidebarModule('tours');
             $hotelsModule = $sidebarModule('hotel');
+            $featuredFlightsOn = \App\Models\TravelPartner::where('company_name', \App\Models\FeaturedFlight::PARTNER_NAME)->where('supplier_type', 'manual')->where('status', 'active')->exists();
         @endphp
+
+        {{-- Featured flights (manual entries under Suppliers → Flight) --}}
+        @if($featuredFlightsOn)
+            <a href="{{ route('admin.featured-flights.index') }}"
+               class="sb-row {{ request()->routeIs('admin.featured-flights*') ? 'sb-on' : '' }}">
+                <i class="bi bi-airplane sb-ico"></i>
+                <span>Featured flights</span>
+            </a>
+        @endif
 
         {{-- Hotels --}}
         @if($hotelsModule)

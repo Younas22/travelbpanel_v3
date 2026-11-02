@@ -19,7 +19,7 @@
         };
 
         // Featured routes, shown with the same cards as the homepage
-        $flightDeals = \App\Support\FeaturedFlightDeals::all();
+        $flightDeals = \App\Models\FeaturedFlight::forSite();
     @endphp
 
 <div id="siteRedesign">
@@ -49,7 +49,9 @@
     </section>
 
     <!-- Featured Flights Section -->
+    @if($flightDeals->isNotEmpty())
     @include('common.flight-deals', ['deals' => $flightDeals, 'sectionId' => 'featuredFlights'])
+    @endif
 
     <!-- Why Choose Us Section -->
     @php [$thLead, $thAccent] = $thSplitTitle(t('flight.why_book_with_us')); @endphp

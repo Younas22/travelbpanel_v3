@@ -29,6 +29,7 @@ use App\Http\Controllers\Admin\TourInclusionController;
 use App\Http\Controllers\Admin\TourExclusionController;
 use App\Http\Controllers\Admin\ThemeSettingController;
 use App\Http\Controllers\Admin\WebsiteThemeController;
+use App\Http\Controllers\Admin\FeaturedFlightController;
 
 
 Route::get('/test-csrf', function() {
@@ -107,6 +108,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/export/{format}', [CustomerController::class, 'export'])->name('export');
     });
 
+
+    // Featured Flight Deals (manual entries under Suppliers → Flight)
+    Route::patch('featured-flights/{featuredFlight}/toggle-status', [FeaturedFlightController::class, 'toggleStatus'])->name('admin.featured-flights.toggle-status');
+    Route::resource('featured-flights', FeaturedFlightController::class)->except('show')->names('admin.featured-flights');
 
     // Travel Partners Management
 Route::prefix('travel-partners')->name('admin.travel-partners.')->group(function () {

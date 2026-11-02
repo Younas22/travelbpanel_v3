@@ -1,12 +1,12 @@
-{{-- Featured flight deals grid (home + /flights). Pass $deals (rows from
-     FeaturedFlightDeals::all()) and optionally $sectionId. Each card opens a
-     one-way economy search for 1 adult, a week from today. --}}
+{{-- Featured flight deals grid (home + /flights). Pass $deals (FeaturedFlight
+     models, managed in admin → Featured Flights) and optionally $sectionId. Each
+     card opens a one-way search for 1 adult in the deal's cabin, departing the
+     deal's "days ahead" from today. --}}
 @php
-    $flightDealDate = date('d-m-Y', strtotime('+7 days'));
     $dealCurrency = activeCurrency();
     // Airport names/cities for the cards, from the airports table
     $flightDealAirports = empty($deals) ? collect() : DB::table('flights_airports')
-        ->whereIn('code', collect($deals)->flatMap(fn($d) => [$d[0], $d[2]])->unique()->values())
+        ->whereIn('code', collect($deals)->flatMap(fn($d) => [$d->from_code, $d->to_code])->unique()->values())
         ->get(['code', 'airport', 'city'])
         ->keyBy('code');
     $dealTitleWords = preg_split('/\s+/u', trim(t('flight.featured_flight_deals')));
@@ -23,9 +23,12 @@
         </div>
 
         <div class="home-flight-grid">
-            @foreach($deals as [$fromCode, $fromCity, $toCode, $toCity, $airline, $usdPrice, $dealImage, $airlineCode])
+            @foreach($deals as $deal)
                 @php
-                    $dealUrl = url('flights/' . strtolower($fromCode) . '/' . strtolower($toCode) . "/oneway/economy/{$flightDealDate}/1/0/0");
+                    [$fromCode, $fromCity, $toCode, $toCity, $airline, $usdPrice, $airlineCode] = [$deal->from_code, $deal->from_city, $deal->to_code, $deal->to_city, $deal->airline, (float) $deal->price, $deal->airline_code];
+                    $flightDealDate = date('d-m-Y', strtotime('+' . max(0, (int) $deal->days_ahead) . ' days'));
+                    $dealCabin = array_key_exists($deal->cabin, \App\Models\FeaturedFlight::CABINS) ? $deal->cabin : 'economy';
+                    $dealUrl = url('flights/' . strtolower($fromCode) . '/' . strtolower($toCode) . "/oneway/{$dealCabin}/{$flightDealDate}/1/0/0");
                     $fromAirport = $flightDealAirports[$fromCode] ?? null;
                     $toAirport = $flightDealAirports[$toCode] ?? null;
                 @endphp
@@ -66,7 +69,7 @@
 
                     <div class="hfc-fare">
                         <div class="hfc-fare-info">
-                            <span class="hfc-fare-type">{{ t('flightform.economy') }}</span>
+                            <span class="hfc-fare-type">{{ t('flightform.' . $dealCabin) }}</span>
                             <span class="hfc-fare-label">{{ t('home.starting_from') }}</span>
                             <span class="hfc-price"><small>{{ $dealCurrency->currency_name }}</small> {{ convertCurrency($usdPrice, 'USD', $dealCurrency->currency_name) }}</span>
                             <span class="hfc-per">{{ t('home.per_adult') }}</span>
