@@ -26,6 +26,7 @@ class HotelBooking extends Model
         'booking_code_ref',
         'booking_status_flag',
         'booking_hotel_pnr',
+        'booking_pnr',
         'booking_fare_base',
         'booking_adult_count',
         'booking_child_count',

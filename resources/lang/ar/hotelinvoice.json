@@ -15,6 +15,7 @@
   "starHotel": "نجوم فندق",
   "bookingRef": "رقم الحجز",
   "bookingPnr": "رقم الحجز PNR",
+  "hotelPnr": "رقم حجز الفندق PNR",
   "checkIn": "تسجيل الوصول",
   "checkOut": "تسجيل المغادرة",
   "nights": "ليالٍ",

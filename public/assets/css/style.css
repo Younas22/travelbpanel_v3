@@ -14063,6 +14063,23 @@ html:has(> body.view-invoice) {
     background: #FFFFFF;
 }
 
+/* Fifth item (Hotel PNR) once the supplier has confirmed the booking: every
+   column is at least as wide as its content, the spare width is shared */
+.inv-status:has(> .inv-status-item:nth-child(5)) {
+    grid-template-columns: repeat(5, minmax(max-content, 1fr));
+}
+
+.inv-status:has(> .inv-status-item:nth-child(5)) .inv-status-item {
+    gap: 6px;
+    padding: 10px 8px;
+}
+
+.inv-status:has(> .inv-status-item:nth-child(5)) .inv-status-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+}
+
 .inv-status-item {
     display: flex;
     align-items: center;
@@ -14099,6 +14116,7 @@ html:has(> body.view-invoice) {
 .inv-status-item small {
     color: rgba(0, 0, 0, 0.55);
     font-size: 10.5px;
+    white-space: nowrap;
 }
 
 .inv-status-item b {

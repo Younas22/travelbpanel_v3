@@ -15,6 +15,7 @@
   "starHotel": "성급 호텔",
   "bookingRef": "예약 참조번호",
   "bookingPnr": "예약 PNR",
+  "hotelPnr": "호텔 PNR",
   "checkIn": "체크인",
   "checkOut": "체크아웃",
   "nights": "박",

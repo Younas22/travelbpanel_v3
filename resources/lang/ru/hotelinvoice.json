@@ -15,6 +15,7 @@
   "starHotel": "звёздный отель",
   "bookingRef": "Номер бронирования",
   "bookingPnr": "PNR бронирования",
+  "hotelPnr": "PNR отеля",
   "checkIn": "Заезд",
   "checkOut": "Выезд",
   "nights": "Ночей",

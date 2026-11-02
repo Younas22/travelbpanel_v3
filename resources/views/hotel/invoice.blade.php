@@ -145,6 +145,12 @@
             <span class="inv-status-icon"><i class="fas fa-file-invoice"></i></span>
             <div><small>{{ t('hotelinvoice.invoiceNumber') }}</small><b dir="ltr">#INV-{{ $booking->booking_code_ref }}</b></div>
         </div>
+        @if($booking->booking_hotel_pnr)
+            <div class="inv-status-item">
+                <span class="inv-status-icon"><i class="fas fa-hotel"></i></span>
+                <div><small>{{ t('hotelinvoice.hotelPnr') }}</small><b dir="ltr">{{ $booking->booking_hotel_pnr }}</b></div>
+            </div>
+        @endif
         <div class="inv-status-item">
             <span class="inv-status-icon"><i class="far fa-calendar"></i></span>
             <div><small>{{ t('hotelinvoice.invoiceDate') }}</small><b dir="ltr">{{ $booking->created_at->format('d M Y') }}</b></div>
@@ -173,7 +179,7 @@
         @endforeach
     </ol>
 
-    @if(empty($booking->booking_pnr) && $isPaid && !empty($booking->booking_response_error))
+    @if($booking->booking_status_flag !== 'confirmed' && $isPaid && !empty($booking->booking_response_error))
         <div class="inv-alert"><i class="fas fa-triangle-exclamation"></i> <span>{{ is_string($booking->booking_response_error) ? $booking->booking_response_error : json_encode($booking->booking_response_error) }}</span></div>
     @endif
 
@@ -264,7 +270,10 @@
                     </div>
 
                     <div class="inv-rows">
-                        @if($booking->booking_pnr)
+                        @if($booking->booking_hotel_pnr)
+                            <div class="inv-row"><span><i class="fas fa-hotel"></i> {{ t('hotelinvoice.hotelPnr') }}</span><b dir="ltr">{{ $booking->booking_hotel_pnr }}</b></div>
+                        @endif
+                        @if($booking->booking_pnr && $booking->booking_pnr !== $booking->booking_hotel_pnr)
                             <div class="inv-row"><span><i class="fas fa-hashtag"></i> {{ t('hotelinvoice.bookingPnr') }}</span><b dir="ltr">{{ $booking->booking_pnr }}</b></div>
                         @endif
                         <div class="inv-row"><span><i class="fas fa-bed"></i> {{ t('hotelinvoice.roomType') }}</span><b dir="auto">{{ $room->name ?? '' }}</b></div>

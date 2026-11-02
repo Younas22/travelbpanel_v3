@@ -1372,23 +1372,30 @@ class HotelController extends Controller
                         'Accept' => 'application/json',
                     ])->post($endpoint, $params);
 
-                    $rep = $response->json();
+                    $rep = $response->json() ?? [];
+                    $confirmed = ($rep['success'] ?? false) === true && !empty($rep['booking_pnr']);
 
-                    $params = [
-                        "booking_status_flag" => "confirmed",
-                        "booking_payment_state" => "paid",
-                        "booking_payment_gateway" => request()->get('gateway'),
-                        "booking_pnr" => $rep['booking_pnr'],
-                        "booking_response_json" => $rep['response'],
-                        "booking_response_error" => $rep['response'],
-                    ];
-                    DB::table('hotels_booking')->where('booking_code_ref', request()->get('token'))->update($params);
-                    $invoice_url = route('hotel.invoice', ['booking_ref' => request()->get('token')]);
-                    return redirect($invoice_url);
-
+                    // Through the model so the array response is stored as JSON (casts).
+                    // booking_pnr / booking_hotel_pnr = the booking code the supplier API returns (WebBeds bookingCode).
+                    HotelBooking::where('booking_code_ref', request()->get('token'))->first()?->update([
+                        'booking_status_flag'     => $confirmed ? 'confirmed' : 'pending',
+                        'booking_payment_state'   => 'paid',
+                        'booking_payment_gateway' => request()->get('gateway'),
+                        'booking_pnr'             => $rep['booking_pnr'] ?? null,
+                        'booking_hotel_pnr'       => $confirmed ? (string) $rep['booking_pnr'] : null,
+                        'booking_response_json'   => $rep['response'] ?? $rep,
+                        'booking_response_error'  => $confirmed ? null : (string) ($rep['message'] ?? 'The supplier could not confirm this booking.'),
+                    ]);
                 } catch (\Exception $e) {
-                    dd($e->getMessage());
+                    // Payment went through but the supplier call failed: keep the booking pending with the reason
+                    HotelBooking::where('booking_code_ref', request()->get('token'))->first()?->update([
+                        'booking_payment_state'   => 'paid',
+                        'booking_payment_gateway' => request()->get('gateway'),
+                        'booking_response_error'  => 'Supplier booking failed: ' . $e->getMessage(),
+                    ]);
                 }
+
+                return redirect(route('hotel.invoice', ['booking_ref' => request()->get('token')]));
 
             }
         }else{

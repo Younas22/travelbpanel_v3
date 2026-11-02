@@ -15,6 +15,7 @@
   "starHotel": "Star Hotel",
   "bookingRef": "Booking Ref",
   "bookingPnr": "Booking PNR",
+  "hotelPnr": "Hotel PNR",
   "checkIn": "Check-in",
   "checkOut": "Check-out",
   "nights": "Nights",

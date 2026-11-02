@@ -15,6 +15,7 @@
   "starHotel": "星级酒店",
   "bookingRef": "预订参考号",
   "bookingPnr": "预订PNR",
+  "hotelPnr": "酒店PNR",
   "checkIn": "入住",
   "checkOut": "退房",
   "nights": "晚",
