@@ -108,8 +108,13 @@ Route::controller(HotelController::class)->prefix('hotel')->group(function () {
     Route::get('/search', 'search')->name('hotel.search');
     Route::get('/details/{hotel_id}/{hotel_name}/{checkin}/{checkout}/{adults}/{chlids}/{rooms}/{supplier_name}', 'details')->name('hotel.details');
     Route::post('/hotel_booking', 'hotel_booking')->name('hotel_booking');
+    // Checkout draft: resume the latest one, open one, save a step (AJAX)
+    Route::get('/hotel_booking', 'hotel_booking')->name('hotel_booking.resume');
+    Route::get('/hotel_booking/{token}', 'checkout')->where('token', '[A-Za-z0-9]{64}')->name('hotel.checkout');
+    Route::post('/hotel_booking/{token}/save', 'saveCheckoutStep')->where('token', '[A-Za-z0-9]{64}')->middleware('throttle:120,1')->name('hotel.checkout.save');
     Route::post('booking',  'booking')->name('booking');
     Route::get('/invoice/{booking_ref}', 'invoice')->name('hotel.invoice');
+    Route::post('/invoice/{booking_ref}/email', 'sendInvoiceEmail')->middleware('throttle:3,1')->name('hotel.invoice.email');
     Route::get('/demomsg/{booking_ref}', 'hotelbooking')->name('hotel.hotelbooking');
     Route::get('/payment/success',  [HotelController::class, 'payment_success'])->name('payment_success');
 });

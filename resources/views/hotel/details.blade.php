@@ -374,6 +374,8 @@
                                     'address' => $hotel['address'],
                                     'agent_id' => $hotel['agent_id'],
                                     'stars' => $hotel['stars'],
+                                    'image' => $hdImages[0] ?? '',
+                                    'rating' => $hotel['rating'] ?? 0,
                                     'checkin' => (isset($hotel_search['checkin']) && $hotel_search['checkin'] ? $hotel_search['checkin'] : ""),
                                     'checkout' => (isset($hotel_search['checkout']) && $hotel_search['checkout'] ? $hotel_search['checkout'] : ""),
                                     'adults' => isset($hotel_search['adults']) && $hotel_search['adults'] ? $hotel_search['adults'] : "0",
