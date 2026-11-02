@@ -144,16 +144,27 @@ class HotelController extends Controller
                         ->where('status', 1)
                         ->with([
                             'images'    => fn($q) => $q->orderBy('sort_order')->limit(1),
-                            'roomTypes' => fn($q) => $q->where('status', 1)->orderBy('price_per_night'),
+                            'roomTypes' => fn($q) => $q->where('status', 1)->orderBy('price_per_night')->with(['rates' => fn($r) => $r->whereBetween('date', [$payload['checkin'], $payload['checkout']])]),
                             'amenities',
                         ])
+                        ->withCount('images')
                         ->get();
 
                     foreach ($manualHotels as $hotel) {
-                        $minRate      = $hotel->roomTypes->min('price_per_night') ?? 0;
+                        if ($hotel->roomTypes->isEmpty()) {
+                            continue;
+                        }
+
+                        // Cheapest stay total (all nights × rooms) across room types and both rate plans,
+                        // like supplier rows — the list view divides minRate by the nights.
+                        $cheapest = $hotel->roomTypes
+                            ->map(fn($rt) => ['rt' => $rt, 'total' => min(array_filter($this->manualStayPrices($rt, $payload['checkin'], $payload['checkout'], (int) $room), fn($v) => $v !== null))])
+                            ->sortBy('total')
+                            ->first();
+                        $minRate      = $cheapest['total'];
                         $firstImage   = $hotel->images->first();
                         $imageUrl     = $firstImage ? asset('public/assets/images/' . $firstImage->image_path) : '';
-                        $firstRoom    = $hotel->roomTypes->first();
+                        $firstRoom    = $cheapest['rt'];
 
                         $all_hotels[] = [
                             'hotel_id'      => $hotel->id,
@@ -169,8 +180,9 @@ class HotelController extends Controller
                             'redirect'      => null,
                             'room_name'     => $firstRoom ? $firstRoom->name : '',
                             'minRate'       => $minRate,
+                            'all_images'    => array_fill(0, (int) $hotel->images_count, $imageUrl),
                             'categoryCode'  => 'MANUAL',
-                            'categoryName'  => ucfirst($hotel->type),
+                            'categoryName'  => ucfirst((string) $hotel->type),
                             'amenities'     => $hotel->amenities->map(fn($a) => [
                                 'name' => $a->name,
                                 'icon' => $a->icon ?? '',
@@ -239,6 +251,7 @@ class HotelController extends Controller
                     'amenities',
                     'location',
                 ])->find($hotel_id);
+                $hotel?->roomTypes->load(['rates' => fn($r) => $r->whereBetween('date', [date('Y-m-d', strtotime($checkin)), date('Y-m-d', strtotime($checkout))])]);
 
                 if (!$hotel) {
                     return view('hotel.details', ['error' => 'Hotel not found.']);
@@ -253,22 +266,80 @@ class HotelController extends Controller
                     ->map(fn($img) => asset('public/assets/images/' . $img->image_path))
                     ->toArray();
 
-                $roomsData = $hotel->roomTypes->map(function ($roomType) use ($adults, $childs, $nights, $currency, $checkinDate) {
+                $roomsData = $hotel->roomTypes->map(function ($roomType) use ($hotel, $adults, $childs, $rooms, $nights, $currency, $checkinDate, $checkoutDate) {
                     $roomImages = $roomType->images
                         ->map(fn($img) => asset('public/assets/images/' . $img->image_path))
                         ->toArray();
                     $amenities  = $roomType->amenities->pluck('name')->toArray();
-                    $price      = round($roomType->price_per_night * $nights, 2);
 
-                    // Refund policy set on the room type (admin → Room Types)
-                    $fee          = $roomType->cancellationFeeFor($price);
-                    $freeUntil    = $roomType->freeCancellationUntil($checkinDate);
-                    $isRefundable = $freeUntil !== null && $freeUntil->isFuture();
-                    $refundDate   = $isRefundable ? $freeUntil->format('Y-m-d H:i:s') : null;
-                    $cancelRules  = $isRefundable
-                        ? [['type' => 'free', 'from_date' => null, 'to_date' => $refundDate, 'cancel_charge' => 0, 'amend_charge' => null, 'description' => 'Free cancellation', 'cancel_restricted' => false, 'amend_restricted' => false],
-                           ['type' => $fee > 0 ? 'penalty' : 'free', 'from_date' => $refundDate, 'to_date' => null, 'cancel_charge' => $fee, 'amend_charge' => null, 'description' => 'Cancellation charge', 'cancel_restricted' => false, 'amend_restricted' => false]]
-                        : [['type' => $fee > 0 ? 'penalty' : 'free', 'from_date' => null, 'to_date' => null, 'cancel_charge' => $fee, 'amend_charge' => null, 'description' => $fee > 0 ? 'Non-refundable — cancellation charge: ' . number_format($fee, 2) . ' ' . $currency->currency_name : 'Non-refundable', 'cancel_restricted' => false, 'amend_restricted' => false]];
+                    // Stay totals from the rate calendar (refundable / non-refundable plans)
+                    [$refPrice, $nonRefPrice] = $this->manualStayPrices($roomType, $checkinDate, $checkoutDate, (int) $rooms);
+                    $perNight = fn($total) => round($total / $nights / max(1, (int) $rooms), 2);
+
+                    // Room type policy → refundable plan; the non-refundable price → its own plan
+                    $plans = [];
+                    if ($roomType->isRefundable()) {
+                        $plans[] = ['refundable', $refPrice];
+                        if ($nonRefPrice !== null) {
+                            $plans[] = ['non_refundable', $nonRefPrice];
+                        }
+                    } else {
+                        $plans[] = ['non_refundable', $nonRefPrice ?? $refPrice];
+                    }
+
+                    $options = array_map(function ($plan) use ($roomType, $adults, $childs, $currency, $checkinDate, $perNight) {
+                        [$kind, $price] = $plan;
+                        $fee          = $roomType->cancellationFeeFor($price);
+                        $freeUntil    = $kind === 'refundable' ? $roomType->freeCancellationUntil($checkinDate) : null;
+                        $isRefundable = $freeUntil !== null && $freeUntil->isFuture();
+                        $refundDate   = $isRefundable ? $freeUntil->format('Y-m-d H:i:s') : null;
+                        if ($kind === 'non_refundable') {
+                            $fee = $price; // nothing back on a non-refundable rate
+                        }
+                        $cancelRules  = $isRefundable
+                            ? [['type' => 'free', 'from_date' => null, 'to_date' => $refundDate, 'cancel_charge' => 0, 'amend_charge' => null, 'description' => 'Free cancellation', 'cancel_restricted' => false, 'amend_restricted' => false],
+                               ['type' => $fee > 0 ? 'penalty' : 'free', 'from_date' => $refundDate, 'to_date' => null, 'cancel_charge' => $fee, 'amend_charge' => null, 'description' => 'Cancellation charge', 'cancel_restricted' => false, 'amend_restricted' => false]]
+                            : [['type' => 'penalty', 'from_date' => null, 'to_date' => null, 'cancel_charge' => $fee, 'amend_charge' => null, 'description' => 'Non-refundable — cancellation charge: ' . number_format($fee, 2) . ' ' . $currency->currency_name, 'cancel_restricted' => false, 'amend_restricted' => false]];
+
+                        return [
+                            'id'                  => 'RT-' . $roomType->id . '-' . $kind . '-' . $adults . '-' . $childs,
+                            'rate_basis_id'       => (string) $roomType->id,
+                            'rate_plan'           => $kind,
+                            'description'         => $kind === 'refundable' ? 'Refundable rate' : 'Non-refundable rate',
+                            'allocation_details'  => '',
+                            'adults'              => (int) $adults,
+                            'child'               => (int) $childs,
+                            'children_ages'       => session('hotel_search.child_age', []),
+                            'price'               => $price,
+                            'actual_price'        => $price,
+                            'per_day'             => $perNight($price),
+                            'actual_per_day'      => $perNight($price),
+                            'currency_id'         => $currency->currency_name,
+                            'passengers_required' => (int) $adults + (int) $childs,
+                            // Cancellation policy from the room type, in the same shape as WebBeds
+                            'is_refundable'       => $isRefundable,
+                            'non_refundable'      => !$isRefundable,
+                            'refundable'          => $fee,
+                            'refund_date'         => $refundDate,
+                            'cancellation_rules'  => $cancelRules,
+                            'meal_included'       => false,
+                            'left_to_sell'        => 0,
+                            'on_request'          => 0,
+                            'min_stay'            => '',
+                            'date_apply_min_stay' => '',
+                            'tariff_notes'        => '',
+                            'taxes_fees'          => [],
+                            'taxes_included'      => [],
+                            'taxes_at_property'   => [],
+                            'changed_occupancy'   => false,
+                            'cancel_restricted'      => false,
+                            'amend_restricted'       => false,
+                            'cancel_restricted_note' => null,
+                            'specials'            => [],
+                        ];
+                    }, $plans);
+
+                    $first = $options[0];
 
                     return [
                         'id'        => (string) $roomType->id,
@@ -276,50 +347,30 @@ class HotelController extends Controller
                         'images'    => $roomImages,
                         'amenities' => $amenities,
                         'currency'  => $currency->currency_name,
-                        "price"       => $price,
-                        "actual_price"  => $price,
-                        "per_day"  => round($roomType->price_per_night, 2),
-                        "actual_per_day"  => round($roomType->price_per_night, 2),
+                        "price"       => $first['price'],
+                        "actual_price"  => $first['price'],
+                        "per_day"  => $first['per_day'],
+                        "actual_per_day"  => $first['per_day'],
                         "original_currency" =>  $currency->currency_name,
-                        "refundable"  =>  $fee,
-                        "refund_date" => $refundDate,
-                        'options'   => [
-                            [
-                                'id'                  => 'RT-' . $roomType->id . '-' . $adults . '-' . $childs,
-                                'rate_basis_id'       => (string) $roomType->id,
-                                'allocation_details'  => '',
-                                'adults'              => (int) $adults,
-                                'child'               => (int) $childs,
-                                'children_ages'       => [],
-                                'price'               => $price,
-                                'actual_price'        => $price,
-                                'per_day'             => round($roomType->price_per_night, 2),
-                                'actual_per_day'      => round($roomType->price_per_night, 2),
-                                'currency_id'         => $currency->currency_name,
-                                'passengers_required' => (int) $adults + (int) $childs,
-                                // Cancellation policy from the room type, in the same shape as WebBeds
-                                'is_refundable'       => $isRefundable,
-                                'non_refundable'      => !$isRefundable,
-                                'refundable'          => $fee,
-                                'refund_date'         => $refundDate,
-                                'cancellation_rules'  => $cancelRules,
-                                'meal_included'       => false,
-                                'left_to_sell'        => 0,
-                                'on_request'          => 0,
-                                'min_stay'            => '',
-                                'date_apply_min_stay' => '',
-                                'tariff_notes'        => '',
-                                'taxes_fees'          => [],
-                                'taxes_included'      => [],
-                                'taxes_at_property'   => [],
-                                'changed_occupancy'   => false,
-                                'cancel_restricted'      => false,
-                                'amend_restricted'       => false,
-                                'cancel_restricted_note' => null,
-                                'specials'            => [],
-                            ],
+                        "refundable"  =>  $first['refundable'],
+                        "refund_date" => $first['refund_date'],
+                        'options'   => $options,
+                        // Same role as a supplier's room_data: what the booking needs to identify the stay
+                        "room_data" => [
+                            'supplier_name'  => 'manual',
+                            'product_id'     => (string) $hotel->id,
+                            'hotel_id'       => (string) $hotel->id,
+                            'room_type_id'   => (string) $roomType->id,
+                            'room_type_code' => (string) $roomType->id,
+                            'checkin'        => $checkinDate,
+                            'checkout'       => $checkoutDate,
+                            'nights'         => $nights,
+                            'adults'         => (int) $adults,
+                            'childs'         => (int) $childs,
+                            'children'       => session('hotel_search.child_age', []),
+                            'rooms'          => (int) $rooms,
+                            'currency'       => $currency->currency_name,
                         ],
-                        "room_data" =>[]
                     ];
                 })->values()->toArray();
 
@@ -331,7 +382,7 @@ class HotelController extends Controller
                     'rating'     => $hotel->total_rating ?? 0,
                     'desc'       => $hotel->description ?? '',
                     'imgs'       => $hotelImages ?: ['https://placehold.co/800x400'],
-                    'refundable' => false,
+                    'refundable' => collect($roomsData)->flatMap(fn($r) => $r['options'])->contains('is_refundable', true),
                     'rooms'      => $roomsData,
                     'amenities'  => $hotel->amenities->pluck('name')->toArray(),
                     'lat'        => $hotel->location->latitude ?? '',
@@ -634,6 +685,37 @@ class HotelController extends Controller
      * @param array $params
      * @return array
      */
+    /**
+     * Manual hotel stay totals for a room type from the rate calendar: every night
+     * from check-in up to (not including) check-out, times the number of rooms.
+     * Expects the room type's rates for the stay loaded on `rates`.
+     *
+     * @return array{0: float, 1: float|null} [refundable total, non-refundable total or null when not offered]
+     */
+    private function manualStayPrices($roomType, string $checkin, string $checkout, int $rooms = 1): array
+    {
+        $rates  = $roomType->rates->keyBy(fn($r) => $r->date->toDateString());
+        $nights = max(1, (int) ((strtotime($checkout) - strtotime($checkin)) / 86400));
+        $ref = 0.0;
+        $nonRef = 0.0;
+        $hasNonRef = true;
+
+        for ($i = 0; $i < $nights; $i++) {
+            $rate = $rates->get(date('Y-m-d', strtotime($checkin . " +$i day")));
+            $ref += (float) ($rate?->price ?? $roomType->price_per_night);
+            $n = $rate?->non_refundable_price ?? $roomType->non_refundable_price;
+            if ($n === null) {
+                $hasNonRef = false;
+            } else {
+                $nonRef += (float) $n;
+            }
+        }
+
+        $rooms = max(1, $rooms);
+
+        return [round($ref * $rooms, 2), $hasNonRef ? round($nonRef * $rooms, 2) : null];
+    }
+
     /**
      * Sanitize the child ages picked on the search form into a clean array
      * of valid ages (2-11), one per child in order — so `child_age[0]` is

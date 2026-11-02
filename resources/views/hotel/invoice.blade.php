@@ -177,7 +177,7 @@
                             <p class="text-xs text-gray-600">{{$days}} {{t('hotelinvoice.nights')}}</p>
                         </div>
                         <div class="text-right">
-                            <div class="text-sm font-bold text-blue-900">{{$data->room->price}} {{$booking->booking_currency_origin}}</div>
+                            <div class="text-sm font-bold text-blue-900">{{ $data->option->price ?? $data->room->price }} {{$booking->booking_currency_origin}}</div>
                             <div class="text-xs text-gray-600">{{t('hotelinvoice.perStay')}}</div>
                         </div>
                     </div>
@@ -270,7 +270,7 @@
                     <div class="bg-blue-50 border-2 border-blue-600 rounded-lg p-3" style="border-color: #0077BE;">
                         <div class="flex justify-between items-center text-xs mb-2 pb-2 border-b border-gray-300">
                             <span class="text-gray-700 font-medium">{{t('hotelinvoice.roomCharges')}} ({{$days}} {{t('hotelinvoice.nights')}})</span>
-                            <span class="font-semibold text-gray-800">{{$data->room->price}} {{$booking->booking_currency_origin}}</span>
+                            <span class="font-semibold text-gray-800">{{ $data->option->price ?? $data->room->price }} {{$booking->booking_currency_origin}}</span>
                         </div>
                         <div class="flex justify-between items-center text-xs mb-2 pb-2 border-b border-gray-300">
                             <span class="text-gray-700 font-medium">{{t('hotelinvoice.taxesFees')}}</span>
@@ -278,7 +278,7 @@
                         </div>
                         <div class="flex justify-between items-center pt-2 border-t-2 border-blue-600" style="border-color: #0077BE;">
                             <span class="text-sm font-bold text-blue-900">{{t('hotelinvoice.totalAmount')}}</span>
-                            <span class="text-lg font-bold text-blue-900">{{$data->room->price}} {{$booking->booking_currency_origin}}</span>
+                            <span class="text-lg font-bold text-blue-900">{{ $data->option->price ?? $data->room->price }} {{$booking->booking_currency_origin}}</span>
                         </div>
                     </div>
                 </div>
