@@ -158,7 +158,7 @@ class HotelController extends Controller
                         // Cheapest stay total (all nights × rooms) across room types and both rate plans,
                         // like supplier rows — the list view divides minRate by the nights.
                         $cheapest = $hotel->roomTypes
-                            ->map(fn($rt) => ['rt' => $rt, 'total' => min(array_filter($this->manualStayPrices($rt, $payload['checkin'], $payload['checkout'], (int) $room), fn($v) => $v !== null))])
+                            ->map(fn($rt) => ['rt' => $rt, 'total' => min(array_filter(array_slice($this->manualStayPrices($rt, $payload['checkin'], $payload['checkout'], (int) $room), 0, 2), fn($v) => $v !== null))])
                             ->sortBy('total')
                             ->first();
                         $minRate      = $cheapest['total'];
@@ -273,7 +273,7 @@ class HotelController extends Controller
                     $amenities  = $roomType->amenities->pluck('name')->toArray();
 
                     // Stay totals from the rate calendar (refundable / non-refundable plans)
-                    [$refPrice, $nonRefPrice] = $this->manualStayPrices($roomType, $checkinDate, $checkoutDate, (int) $rooms);
+                    [$refPrice, $nonRefPrice, $nonRefFromCalendar] = $this->manualStayPrices($roomType, $checkinDate, $checkoutDate, (int) $rooms);
                     $perNight = fn($total) => round($total / $nights / max(1, (int) $rooms), 2);
 
                     // Room type policy → refundable plan; the non-refundable price → its own plan
@@ -284,22 +284,24 @@ class HotelController extends Controller
                             $plans[] = ['non_refundable', $nonRefPrice];
                         }
                     } else {
-                        $plans[] = ['non_refundable', $nonRefPrice ?? $refPrice];
+                        $plans[] = ['non_refundable', $nonRefPrice];
                     }
 
-                    $options = array_map(function ($plan) use ($roomType, $adults, $childs, $currency, $checkinDate, $perNight) {
+                    $options = array_map(function ($plan) use ($roomType, $adults, $childs, $currency, $checkinDate, $perNight, $nonRefFromCalendar) {
                         [$kind, $price] = $plan;
                         $fee          = $roomType->cancellationFeeFor($price);
                         $freeUntil    = $kind === 'refundable' ? $roomType->freeCancellationUntil($checkinDate) : null;
                         $isRefundable = $freeUntil !== null && $freeUntil->isFuture();
                         $refundDate   = $isRefundable ? $freeUntil->format('Y-m-d H:i:s') : null;
-                        if ($kind === 'non_refundable') {
-                            $fee = $price; // nothing back on a non-refundable rate
+                        // Non-refundable charge: the calendar's non-refundable price when set for these dates,
+                        // otherwise the room type's cancellation fee (percent / fixed)
+                        if ($kind === 'non_refundable' && $nonRefFromCalendar > 0) {
+                            $fee = round(min($nonRefFromCalendar, $price), 2);
                         }
                         $cancelRules  = $isRefundable
                             ? [['type' => 'free', 'from_date' => null, 'to_date' => $refundDate, 'cancel_charge' => 0, 'amend_charge' => null, 'description' => 'Free cancellation', 'cancel_restricted' => false, 'amend_restricted' => false],
                                ['type' => $fee > 0 ? 'penalty' : 'free', 'from_date' => $refundDate, 'to_date' => null, 'cancel_charge' => $fee, 'amend_charge' => null, 'description' => 'Cancellation charge', 'cancel_restricted' => false, 'amend_restricted' => false]]
-                            : [['type' => 'penalty', 'from_date' => null, 'to_date' => null, 'cancel_charge' => $fee, 'amend_charge' => null, 'description' => 'Non-refundable — cancellation charge: ' . number_format($fee, 2) . ' ' . $currency->currency_name, 'cancel_restricted' => false, 'amend_restricted' => false]];
+                            : [['type' => $fee > 0 ? 'penalty' : 'free', 'from_date' => null, 'to_date' => null, 'cancel_charge' => $fee, 'amend_charge' => null, 'description' => $fee > 0 ? 'Non-refundable — cancellation charge: ' . number_format($fee, 2) . ' ' . $currency->currency_name : 'Non-refundable', 'cancel_restricted' => false, 'amend_restricted' => false]];
 
                         return [
                             'id'                  => 'RT-' . $roomType->id . '-' . $kind . '-' . $adults . '-' . $childs,
@@ -690,30 +692,47 @@ class HotelController extends Controller
      * from check-in up to (not including) check-out, times the number of rooms.
      * Expects the room type's rates for the stay loaded on `rates`.
      *
-     * @return array{0: float, 1: float|null} [refundable total, non-refundable total or null when not offered]
+     * Non-refundable room type: its price is the normal price, and the calendar's
+     * non-refundable prices are the cancellation charge for those nights.
+     * Refundable room type: the optional non-refundable plan is priced per night
+     * from the calendar non-refundable price, else the base non-refundable price
+     * (not offered when a night has neither).
+     *
+     * @return array{0: float, 1: float|null, 2: float} [normal total, non-refundable plan total or null,
+     *         sum of the calendar non-refundable prices for the stay]
      */
     private function manualStayPrices($roomType, string $checkin, string $checkout, int $rooms = 1): array
     {
         $rates  = $roomType->rates->keyBy(fn($r) => $r->date->toDateString());
         $nights = max(1, (int) ((strtotime($checkout) - strtotime($checkin)) / 86400));
-        $ref = 0.0;
-        $nonRef = 0.0;
+        $ref = $nonRef = $fromCalendar = 0.0;
         $hasNonRef = true;
 
         for ($i = 0; $i < $nights; $i++) {
-            $rate = $rates->get(date('Y-m-d', strtotime($checkin . " +$i day")));
-            $ref += (float) ($rate?->price ?? $roomType->price_per_night);
-            $n = $rate?->non_refundable_price ?? $roomType->non_refundable_price;
-            if ($n === null) {
-                $hasNonRef = false;
-            } else {
+            $rate  = $rates->get(date('Y-m-d', strtotime($checkin . " +$i day")));
+            $night = (float) ($rate?->price ?? $roomType->price_per_night);
+            $ref  += $night;
+
+            if ($rate?->non_refundable_price !== null) {
+                $fromCalendar += (float) $rate->non_refundable_price;
+            }
+
+            if (!$roomType->isRefundable()) {
+                $nonRef += $night;
+            } elseif (($n = $rate?->non_refundable_price ?? $roomType->non_refundable_price) !== null) {
                 $nonRef += (float) $n;
+            } else {
+                $hasNonRef = false;
             }
         }
 
         $rooms = max(1, $rooms);
 
-        return [round($ref * $rooms, 2), $hasNonRef ? round($nonRef * $rooms, 2) : null];
+        return [
+            round($ref * $rooms, 2),
+            $hasNonRef ? round($nonRef * $rooms, 2) : null,
+            round($fromCalendar * $rooms, 2),
+        ];
     }
 
     /**
