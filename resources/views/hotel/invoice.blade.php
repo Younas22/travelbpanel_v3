@@ -43,10 +43,10 @@
     // Header message follows the real state, never "confirmed" before it is
     [$headState, $headIcon, $headMsg] = match (true) {
         $isCancelled => ['is-cancelled', 'fa-circle-xmark', t('hotelinvoice.msgCancelled')],
-        $isConfirmed => ['is-confirmed', 'fa-circle-check', t('hotelinvoice.msgConfirmed')],
-        $isPaid => ['is-pending', 'fa-hourglass-half', t('hotelinvoice.msgPaidPending')],
-        $gateway === 'after_pay' => ['is-pending', 'fa-file-circle-check', t('hotelinvoice.msgPayLater')],
-        default => ['is-pending', 'fa-file-circle-check', t('hotelinvoice.msgCreated')],
+        $isConfirmed => ['is-confirmed', 'fa-check', t('hotelinvoice.msgConfirmed')],
+        $isPaid => ['is-pending', 'fa-check', t('hotelinvoice.msgPaidPending')],
+        $gateway === 'after_pay' => ['is-pending', 'fa-check', t('hotelinvoice.msgPayLater')],
+        default => ['is-pending', 'fa-check', t('hotelinvoice.msgCreated')],
     };
 
     // Progress: booking + guests exist; payment only when the gateway marked it paid
@@ -179,36 +179,12 @@
 
     <div class="inv-layout">
         <div class="inv-main">
-            <!-- Hotel information -->
-            <section class="inv-card">
-                <h2 class="inv-card-title"><i class="fas fa-hotel"></i> {{ t('hotelinvoice.hotelInformation') }}</h2>
-                <div class="inv-hotel">
-                    <div class="inv-hotel-img">
-                        <i class="fas fa-hotel"></i>
-                        @if($image)<img src="{{ $image }}" alt="{{ $bookingData->hotel_name ?? '' }}" onerror="this.remove()">@endif
-                    </div>
-                    <div class="inv-hotel-info">
-                        <span class="inv-chip">{{ $category }}</span>
-                        <h3 dir="auto">{{ $bookingData->hotel_name ?? '' }}</h3>
-                        @if($stars)
-                            <span class="inv-stars" aria-label="{{ $stars }} {{ t('hotelinvoice.starHotel') }}">@for($s = 1; $s <= 5; $s++)<i class="fas fa-star {{ $s <= $stars ? 'is-on' : '' }}"></i>@endfor</span>
-                        @endif
-                        @if(!empty($bookingData->address))
-                            <p dir="auto"><i class="fas fa-location-dot"></i> {{ $bookingData->address }}</p>
-                        @endif
-                        @if($booking->booking_pnr)
-                            <p><i class="fas fa-hashtag"></i> {{ t('hotelinvoice.bookingPnr') }}: <b>{{ $booking->booking_pnr }}</b></p>
-                        @endif
-                    </div>
-                </div>
-            </section>
-
-            <!-- Stay details -->
+            <!-- Stay details (hotel name/photo/address are in the booking summary) -->
             <section class="inv-card">
                 <h2 class="inv-card-title"><i class="far fa-calendar-check"></i> {{ t('hotelinvoice.stayDetails') }}</h2>
                 <div class="inv-stay">
-                    <div class="inv-stay-item"><i class="far fa-calendar"></i><small>{{ t('hotelinvoice.checkIn') }}</small><b dir="ltr">{{ \Carbon\Carbon::parse($bookingData->checkin)->format('D, d M Y') }}</b>@if($checkinTime)<em>{{ str_replace(':time', $checkinTime, t('hotelinvoice.checkInFrom')) }}</em>@endif</div>
-                    <div class="inv-stay-item"><i class="far fa-calendar"></i><small>{{ t('hotelinvoice.checkOut') }}</small><b dir="ltr">{{ \Carbon\Carbon::parse($bookingData->checkout)->format('D, d M Y') }}</b>@if($checkoutTime)<em>{{ str_replace(':time', $checkoutTime, t('hotelinvoice.checkOutUntil')) }}</em>@endif</div>
+                    <div class="inv-stay-item"><i class="far fa-calendar"></i><small>{{ t('hotelinvoice.checkIn') }}</small><b dir="ltr">{{ \Carbon\Carbon::parse($bookingData->checkin)->format('d M Y') }}</b>@if($checkinTime)<em>{{ str_replace(':time', $checkinTime, t('hotelinvoice.checkInFrom')) }}</em>@endif</div>
+                    <div class="inv-stay-item"><i class="far fa-calendar"></i><small>{{ t('hotelinvoice.checkOut') }}</small><b dir="ltr">{{ \Carbon\Carbon::parse($bookingData->checkout)->format('d M Y') }}</b>@if($checkoutTime)<em>{{ str_replace(':time', $checkoutTime, t('hotelinvoice.checkOutUntil')) }}</em>@endif</div>
                     <div class="inv-stay-item"><i class="far fa-moon"></i><small>{{ t('hotelinvoice.nights') }}</small><b>{{ $days }}</b></div>
                     <div class="inv-stay-item"><i class="fas fa-user-group"></i><small>{{ t('hotelinvoice.guests') }}</small><b>{{ $adultCount }} {{ t('hotelinvoice.adultsLabel') }}@if($childCount), {{ $childCount }} {{ t('hotelinvoice.childrenLabel') }}@endif</b><em>{{ $roomCount }} {{ t('hotelinvoice.rooms') }}</em></div>
                     <div class="inv-stay-item"><i class="fas fa-bed"></i><small>{{ t('hotelinvoice.roomType') }}</small><b dir="auto">{{ $room->name ?? '' }}</b></div>
@@ -258,50 +234,6 @@
                 </section>
             @endif
 
-            <!-- Policies: only what the hotel record or the booked rate actually says -->
-            <section class="inv-card">
-                <h2 class="inv-card-title"><i class="fas fa-shield-halved"></i> {{ t('hotelinvoice.hotelPolicies') }}</h2>
-                <div class="inv-policies">
-                    @if($checkinTime || $checkoutTime)
-                        <div class="inv-policy">
-                            <i class="far fa-clock"></i>
-                            <div>
-                                <b>{{ t('hotelinvoice.checkIn') }} / {{ t('hotelinvoice.checkOut') }}</b>
-                                @if($checkinTime)<p>{{ str_replace(':time', $checkinTime, t('hotelinvoice.checkInFrom')) }}</p>@endif
-                                @if($checkoutTime)<p>{{ str_replace(':time', $checkoutTime, t('hotelinvoice.checkOutUntil')) }}</p>@endif
-                            </div>
-                        </div>
-                    @endif
-                    <div class="inv-policy">
-                        <i class="far fa-credit-card"></i>
-                        <div>
-                            <b>{{ t('hotelinvoice.payment') }}</b>
-                            <p>{{ $isPaid ? str_replace(':method', $gatewayName, t('hotelinvoice.paidVia')) : ($gateway === 'after_pay' ? t('hotelinvoice.payLaterPolicy') : str_replace(':method', $gatewayName, t('hotelinvoice.paymentDueVia'))) }}</p>
-                            @if($hotelPaymentPolicy)<p dir="auto">{{ $hotelPaymentPolicy }}</p>@endif
-                        </div>
-                    </div>
-                    @if($cancelLines || $hotelCancelPolicy)
-                        <div class="inv-policy">
-                            <i class="far fa-calendar-xmark"></i>
-                            <div>
-                                <b>{{ t('hotelinvoice.cancellation') }}</b>
-                                @foreach($cancelLines as $line)<p>{{ $line }}</p>@endforeach
-                                @if($hotelCancelPolicy)<p dir="auto">{{ $hotelCancelPolicy }}</p>@endif
-                            </div>
-                        </div>
-                    @endif
-                    @if($services)
-                        <div class="inv-policy">
-                            <i class="fas fa-concierge-bell"></i>
-                            <div>
-                                <b>{{ t('hotelinvoice.services') }}</b>
-                                <p>{{ implode(', ', $services) }}</p>
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            </section>
-
             <!-- Important information (existing notes) -->
             <section class="inv-card inv-notes">
                 <h2 class="inv-card-title"><i class="fas fa-circle-info"></i> {{ t('hotelinvoice.importantInfo') }}</h2>
@@ -332,6 +264,9 @@
                     </div>
 
                     <div class="inv-rows">
+                        @if($booking->booking_pnr)
+                            <div class="inv-row"><span><i class="fas fa-hashtag"></i> {{ t('hotelinvoice.bookingPnr') }}</span><b dir="ltr">{{ $booking->booking_pnr }}</b></div>
+                        @endif
                         <div class="inv-row"><span><i class="fas fa-bed"></i> {{ t('hotelinvoice.roomType') }}</span><b dir="auto">{{ $room->name ?? '' }}</b></div>
                         <div class="inv-row"><span><i class="far fa-calendar"></i> {{ t('hotelinvoice.checkIn') }}</span><b dir="ltr">{{ \Carbon\Carbon::parse($bookingData->checkin)->format('d M Y') }}</b></div>
                         <div class="inv-row"><span><i class="far fa-calendar"></i> {{ t('hotelinvoice.checkOut') }}</span><b dir="ltr">{{ \Carbon\Carbon::parse($bookingData->checkout)->format('d M Y') }}</b></div>
@@ -372,6 +307,52 @@
         </aside>
     </div>
 
+    <div class="inv-wide">
+        <!-- Policies: only what the hotel record or the booked rate actually says -->
+        <section class="inv-card">
+            <h2 class="inv-card-title"><i class="fas fa-shield-halved"></i> {{ t('hotelinvoice.hotelPolicies') }}</h2>
+            <div class="inv-policies">
+                @if($checkinTime || $checkoutTime)
+                    <div class="inv-policy">
+                        <i class="far fa-clock"></i>
+                        <div>
+                            <b>{{ t('hotelinvoice.checkIn') }} / {{ t('hotelinvoice.checkOut') }}</b>
+                            @if($checkinTime)<p>{{ str_replace(':time', $checkinTime, t('hotelinvoice.checkInFrom')) }}</p>@endif
+                            @if($checkoutTime)<p>{{ str_replace(':time', $checkoutTime, t('hotelinvoice.checkOutUntil')) }}</p>@endif
+                        </div>
+                    </div>
+                @endif
+                <div class="inv-policy">
+                    <i class="far fa-credit-card"></i>
+                    <div>
+                        <b>{{ t('hotelinvoice.payment') }}</b>
+                        <p>{{ $isPaid ? str_replace(':method', $gatewayName, t('hotelinvoice.paidVia')) : ($gateway === 'after_pay' ? t('hotelinvoice.payLaterPolicy') : str_replace(':method', $gatewayName, t('hotelinvoice.paymentDueVia'))) }}</p>
+                        @if($hotelPaymentPolicy)<p dir="auto">{{ $hotelPaymentPolicy }}</p>@endif
+                    </div>
+                </div>
+                @if($cancelLines || $hotelCancelPolicy)
+                    <div class="inv-policy">
+                        <i class="far fa-calendar-xmark"></i>
+                        <div>
+                            <b>{{ t('hotelinvoice.cancellation') }}</b>
+                            @foreach($cancelLines as $line)<p>{{ $line }}</p>@endforeach
+                            @if($hotelCancelPolicy)<p dir="auto">{{ $hotelCancelPolicy }}</p>@endif
+                        </div>
+                    </div>
+                @endif
+                @if($services)
+                    <div class="inv-policy">
+                        <i class="fas fa-concierge-bell"></i>
+                        <div>
+                            <b>{{ t('hotelinvoice.services') }}</b>
+                            <p>{{ implode(', ', $services) }}</p>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </section>
+    </div>
+
     <!-- Document footer strip (this page only) -->
     <footer class="inv-foot">
         <div><b>{{ $businessName }}</b> · {{ t('hotelinvoice.generated') }}</div>
@@ -401,36 +382,70 @@
         btn.classList.toggle('is-loading', on);
     }
 
+    // A4 sheet = 794 x 1123 px. Slightly taller content is scaled to fit one
+    // page (not below 80%); longer content flows onto more A4 pages.
+    const A4_W = 794, A4_H = 1123, MIN_FIT = 0.8;
+    function sheetFit(height) {
+        const fit = A4_H / height;
+        return fit >= 1 || fit < MIN_FIT ? 1 : fit;
+    }
+
+    // Print: measure the sheet as printed (logo shown, Pay Now hidden)
+    window.addEventListener('beforeprint', () => {
+        document.body.classList.add('is-pdf');
+        const pay = document.querySelector('.inv-pay');
+        const height = document.getElementById('invDoc').offsetHeight - (pay ? pay.offsetHeight : 0);
+        document.body.classList.remove('is-pdf');
+        document.documentElement.style.setProperty('--inv-fit', sheetFit(height));
+    });
+    window.addEventListener('afterprint', () => document.documentElement.style.removeProperty('--inv-fit'));
     document.getElementById('invPrint').addEventListener('click', () => window.print());
 
-    // PDF of the document area (action bar and Pay Now are left out); the
-    // generator is only downloaded when someone asks for a PDF
+    // PDF: capture the sheet (action bar and Pay Now are skipped) and place it
+    // on A4 pages. The libraries are only downloaded when someone asks for a PDF.
     const pdfBtn = document.getElementById('invPdf');
-    function loadPdfLib() {
-        if (window.html2pdf) return Promise.resolve();
+    function loadScript(src, ready) {
+        if (ready()) return Promise.resolve();
         return new Promise((resolve, reject) => {
             const s = document.createElement('script');
-            s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+            s.src = src;
             s.onload = resolve;
             s.onerror = reject;
             document.head.appendChild(s);
         });
+    }
+    async function buildPdf() {
+        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', () => window.html2canvas);
+        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', () => window.jspdf);
+        const canvas = await html2canvas(document.getElementById('invDoc'), { scale: 2, useCORS: true, backgroundColor: '#FFFFFF', windowWidth: 1100 });
+        const pdf = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+        const pageW = 210, pageH = 297;
+        const imgH = canvas.height * pageW / canvas.width;
+        const fit = sheetFit(imgH * A4_H / pageH);
+        if (imgH * fit <= pageH + 0.5) {
+            // one page, scaled down a little when needed and centred
+            const w = pageW * fit;
+            pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', (pageW - w) / 2, 0, w, Math.min(imgH * fit, pageH));
+        } else {
+            // longer documents: one A4 slice per page
+            const slicePx = Math.floor(canvas.width * pageH / pageW);
+            for (let y = 0, page = 0; y < canvas.height; y += slicePx, page++) {
+                const part = document.createElement('canvas');
+                part.width = canvas.width;
+                part.height = Math.min(slicePx, canvas.height - y);
+                part.getContext('2d').drawImage(canvas, 0, -y);
+                if (page) pdf.addPage();
+                pdf.addImage(part.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, pageW, part.height * pageW / canvas.width);
+            }
+        }
+        return pdf;
     }
     pdfBtn.addEventListener('click', async () => {
         if (pdfBtn.disabled) return;
         busy(pdfBtn, true, @json(t('hotelinvoice.preparingPdf')));
         document.body.classList.add('is-pdf');
         try {
-            await loadPdfLib();
-            await html2pdf().set({
-                // A4 proportions in px, wide enough for the two-column layout
-                margin: [20, 20, 20, 20],
-                filename: 'invoice-{{ $booking->booking_code_ref }}.pdf',
-                image: { type: 'jpeg', quality: 0.95 },
-                html2canvas: { scale: 2, useCORS: true, windowWidth: 1140 },
-                jsPDF: { unit: 'px', format: [1140, 1612], orientation: 'portrait', hotfixes: ['px_scaling'] },
-                pagebreak: { mode: ['css'], avoid: ['.inv-card', '.inv-summary', '.inv-status', '.inv-steps'] },
-            }).from(document.getElementById('invDoc')).save();
+            (await buildPdf()).save('invoice-{{ $booking->booking_code_ref }}.pdf');
         } catch (e) {
             notify(@json(t('hotelinvoice.pdfFailed')), true);
         } finally {
@@ -438,6 +453,7 @@
             busy(pdfBtn, false);
         }
     });
+    window.invBuildPdf = buildPdf;
 
     // Email the invoice link to the booking contact (once at a time)
     const emailBtn = document.getElementById('invEmail');
