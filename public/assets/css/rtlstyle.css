@@ -15476,7 +15476,7 @@ html:has(> body.view-invoice) {
     }
 
     /* summary (with Pay Now) right after the progress */
-    .inv-side {
+    .view-invoice:not(.is-measure) .inv-side {
         order: -1;
     }
 
@@ -15515,7 +15515,7 @@ html:has(> body.view-invoice) {
     }
 
     /* guests table becomes labelled rows */
-    .inv-table thead {
+    .view-invoice:not(.is-measure) .inv-table thead {
         display: none;
     }
 
