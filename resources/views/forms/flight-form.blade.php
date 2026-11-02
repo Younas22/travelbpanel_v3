@@ -54,6 +54,31 @@
                     </div>
                 </div>
 
+                <!-- Fare types (all on by default; sent with the search as ?fare_types=) -->
+                @php
+                    $fareTypeOptions = ['PUB_NEG' => 'PUB/NEG', 'NET' => 'NET', 'TOP' => 'TOP', 'LOW_CHA' => 'LOW/CHA', 'VFR' => 'VFR'];
+                    $selectedFareTypes = array_filter(explode(',', (string) request('fare_types')));
+                    $selectedFareTypes = array_intersect($selectedFareTypes, array_keys($fareTypeOptions)) ?: array_keys($fareTypeOptions);
+                @endphp
+                <div class="ff-cabin ff-fare">
+                    <button type="button" class="ff-cabin-btn" id="flightFareBtn" aria-haspopup="true" aria-label="{{ t('flightform.fare_types') }}">
+                        <span class="ff-fare-text">
+                            <small>{{ t('flightform.fare_types') }}</small>
+                            <span id="flightFareDisplay">{{ implode(', ', array_intersect_key($fareTypeOptions, array_flip($selectedFareTypes))) }}</span>
+                        </span>
+                        <i class="fas fa-chevron-down ff-cabin-caret"></i>
+                    </button>
+
+                    <div id="flightFareDropdown" class="class-dropdown ff-fare-dropdown">
+                        @foreach($fareTypeOptions as $fareCode => $fareLabel)
+                            <label class="ff-fare-option">
+                                <input type="checkbox" class="flight-fare-type" value="{{ $fareCode }}" data-label="{{ $fareLabel }}" @checked(in_array($fareCode, $selectedFareTypes))>
+                                <span>{{ $fareLabel }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
                 <!-- AI search entry point (homepage only), locked for now -->
                 <button type="button" id="aiSearchBtn" class="ai-search-btn is-locked" disabled aria-disabled="true" title="{{ t('flightform.coming_soon') }}" aria-label="Search with AI ({{ t('flightform.coming_soon') }})">
                     <i class="fas fa-wand-magic-sparkles"></i>

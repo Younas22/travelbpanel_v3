@@ -7612,6 +7612,56 @@ footer {
     }
 }
 
+/* Fare types: multi-select pill with a small label, like the cabin class */
+#siteRedesign .form-container .ff-fare .ff-cabin-btn {
+    max-width: 230px;
+    text-align: left;
+}
+
+#siteRedesign .form-container .ff-fare-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.15;
+}
+
+#siteRedesign .form-container .ff-fare-text small {
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 10px;
+}
+
+#siteRedesign .form-container .ff-fare-text > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#siteRedesign .form-container .ff-fare-dropdown {
+    padding: 6px;
+}
+
+#siteRedesign .form-container .ff-fare-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    color: #000000;
+    font-size: 13.5px;
+    cursor: pointer;
+}
+
+#siteRedesign .form-container .ff-fare-option:hover {
+    background: rgba(37, 99, 235, 0.06);
+}
+
+#siteRedesign .form-container .ff-fare-option input {
+    width: 17px;
+    height: 17px;
+    accent-color: #2563EB;
+    cursor: pointer;
+}
+
 /* the AI button sits in the far right corner */
 #siteRedesign .form-container .ff-top .ai-search-btn {
     margin-left: auto;

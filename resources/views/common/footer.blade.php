@@ -242,6 +242,8 @@
         if (flightToDropdown) flightToDropdown.classList.remove('active');
         if (flightPassengerDropdown) flightPassengerDropdown.classList.remove('active');
         if (flightClassDropdown) flightClassDropdown.classList.remove('active');
+        const flightFareDropdown = document.getElementById('flightFareDropdown');
+        if (flightFareDropdown) flightFareDropdown.classList.remove('active');
         if (flightDropdownOverlay) flightDropdownOverlay.classList.remove('active');
     }
 
@@ -964,6 +966,27 @@
         }
 
         // Flight Class
+        // Fare types: multi-select, at least one stays ticked
+        const flightFareBtn = document.getElementById('flightFareBtn');
+        const flightFareDropdown = document.getElementById('flightFareDropdown');
+        if (flightFareBtn) {
+            const fareBoxes = flightFareDropdown.querySelectorAll('.flight-fare-type');
+            flightFareBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const wasOpen = flightFareDropdown.classList.contains('active');
+                closeAllFlightDropdowns();
+                if (!wasOpen) {
+                    flightFareDropdown.classList.add('active');
+                    showOverlay('flightDropdownOverlay');
+                }
+            });
+            fareBoxes.forEach(box => box.addEventListener('change', () => {
+                const checked = [...fareBoxes].filter(b => b.checked);
+                if (!checked.length) { box.checked = true; return; }
+                document.getElementById('flightFareDisplay').textContent = checked.map(b => b.dataset.label).join(', ');
+            }));
+        }
+
         const flightClassBtn = document.getElementById('flightClassBtn');
         const flightClassDropdown = document.getElementById('flightClassDropdown');
         const flightClassDisplay = document.getElementById('flightClassDisplay');
@@ -1034,6 +1057,13 @@
         }
 
         url += `/${adult}/${child}/${infant}`;
+
+        // fare types ride along as a query parameter when not all are selected
+        const fareBoxes = [...document.querySelectorAll('#flightFareDropdown .flight-fare-type')];
+        const fareTypes = fareBoxes.filter(b => b.checked).map(b => b.value);
+        if (fareBoxes.length && fareTypes.length < fareBoxes.length) {
+            url += `?fare_types=${fareTypes.join(',')}`;
+        }
 
         window.location.href = url;
         return false;

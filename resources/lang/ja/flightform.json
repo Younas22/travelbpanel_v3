@@ -22,5 +22,6 @@
     "modify_search": "検索条件を変更",
     "date": "日付",
     "multi_city": "複数都市",
-    "coming_soon": "近日公開"
+    "coming_soon": "近日公開",
+    "fare_types": "運賃タイプ"
 }
