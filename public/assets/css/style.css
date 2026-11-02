@@ -13831,6 +13831,12 @@ img.hb-profile-avatar {
     color: #000000;
 }
 
+/* no mobile font boosting: keeps the A4 sheet's type sizes predictable */
+html:has(> body.view-invoice) {
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+}
+
 /* action bar (not part of the document) */
 .inv-bar {
     position: sticky;
@@ -14784,11 +14790,11 @@ img.hb-profile-avatar {
 
 /* narrower than the sheet: let it fill the screen */
 @media screen and (max-width: 860px) {
-    .inv-bar-inner {
+    .view-invoice:not(.is-measure) .inv-bar-inner {
         padding: 10px 16px;
     }
 
-    .inv-page {
+    .view-invoice:not(.is-measure) .inv-page {
         width: auto;
         min-height: 0;
         margin: 0;
@@ -14796,28 +14802,28 @@ img.hb-profile-avatar {
         box-shadow: none;
     }
 
-    .inv-foot {
+    .view-invoice:not(.is-measure) .inv-foot {
         margin: auto -16px 0;
         padding: 11px 16px;
     }
 
-    .inv-toast {
+    .view-invoice:not(.is-measure) .inv-toast {
         right: 16px;
     }
 }
 
 @media screen and (max-width: 639px) {
-    .inv-bar-inner {
+    .view-invoice:not(.is-measure) .inv-bar-inner {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .inv-bar-actions {
+    .view-invoice:not(.is-measure) .inv-bar-actions {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .inv-bar-actions .inv-btn {
+    .view-invoice:not(.is-measure) .inv-bar-actions .inv-btn {
         flex-direction: column;
         gap: 3px;
         height: 50px;
@@ -14827,29 +14833,29 @@ img.hb-profile-avatar {
         text-align: center;
     }
 
-    .inv-head {
+    .view-invoice:not(.is-measure) .inv-head {
         align-items: flex-start;
     }
 
-    .inv-head-route {
+    .view-invoice:not(.is-measure) .inv-head-route {
         display: none;
     }
 
-    .inv-status {
+    .view-invoice:not(.is-measure) .inv-status {
         grid-template-columns: minmax(0, 1fr);
     }
 
-    .inv-status-item + .inv-status-item {
+    .view-invoice:not(.is-measure) .inv-status-item + .inv-status-item {
         border-top: 1px solid rgba(0, 0, 0, 0.08);
         border-left: 0;
         border-right: 0;
     }
 
-    .inv-step-label {
+    .view-invoice:not(.is-measure) .inv-step-label {
         font-size: 10.5px;
     }
 
-    .inv-layout {
+    .view-invoice:not(.is-measure) .inv-layout {
         grid-template-columns: minmax(0, 1fr);
     }
 
@@ -14858,37 +14864,37 @@ img.hb-profile-avatar {
         order: -1;
     }
 
-    .inv-summary-img {
+    .view-invoice:not(.is-measure) .inv-summary-img {
         height: 150px;
     }
 
-    .inv-hotel {
+    .view-invoice:not(.is-measure) .inv-hotel {
         flex-direction: column;
     }
 
-    .inv-hotel-img {
+    .view-invoice:not(.is-measure) .inv-hotel-img {
         width: 100%;
         height: 140px;
     }
 
-    .inv-stay {
+    .view-invoice:not(.is-measure) .inv-stay {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         row-gap: 10px;
     }
 
-    .inv-stay-item + .inv-stay-item {
+    .view-invoice:not(.is-measure) .inv-stay-item + .inv-stay-item {
         border-left: 0;
     }
 
-    .inv-stay-item:nth-child(odd) {
+    .view-invoice:not(.is-measure) .inv-stay-item:nth-child(odd) {
         padding-left: 0;
     }
 
-    .inv-stay-item:nth-child(even) {
+    .view-invoice:not(.is-measure) .inv-stay-item:nth-child(even) {
         border-left: 1px solid rgba(0, 0, 0, 0.08);
     }
 
-    .inv-stay-item:last-child {
+    .view-invoice:not(.is-measure) .inv-stay-item:last-child {
         grid-column: 1 / -1;
     }
 
@@ -14897,17 +14903,16 @@ img.hb-profile-avatar {
         display: none;
     }
 
-    .inv-table tr {
+    .view-invoice:not(.is-measure) .inv-table tr {
         display: block;
         padding: 4px 0;
     }
 
-    .inv-table tr + tr {
+    .view-invoice:not(.is-measure) .inv-table tr + tr {
         border-top: 1px solid rgba(0, 0, 0, 0.08);
     }
 
-    .inv-table td,
-    .inv-table td:first-child {
+    .view-invoice:not(.is-measure) .inv-table td, .view-invoice:not(.is-measure) .inv-table td:first-child {
         display: flex;
         justify-content: space-between;
         gap: 10px;
@@ -14916,20 +14921,20 @@ img.hb-profile-avatar {
         border-top: 0;
     }
 
-    .inv-table td::before {
+    .view-invoice:not(.is-measure) .inv-table td::before {
         content: attr(data-label);
         color: rgba(0, 0, 0, 0.55);
     }
 
-    .inv-pay-method {
+    .view-invoice:not(.is-measure) .inv-pay-method {
         flex-wrap: wrap;
     }
 
-    .inv-pay-text {
+    .view-invoice:not(.is-measure) .inv-pay-text {
         flex-basis: calc(100% - 60px);
     }
 
-    .inv-policies {
+    .view-invoice:not(.is-measure) .inv-policies {
         grid-template-columns: minmax(0, 1fr);
     }
 
@@ -14944,6 +14949,15 @@ img.hb-profile-avatar {
 .is-pdf .inv-doc-logo {
     display: block;
     margin-bottom: 12px;
+}
+
+/* measuring the sheet as it prints: natural height, no Pay Now */
+.is-measure .inv-page {
+    min-height: 0;
+}
+
+.is-measure .inv-pay {
+    display: none;
 }
 
 /* html2canvas draws text in pills ~3px lower than the browser: compensate */
@@ -14975,12 +14989,19 @@ img.hb-profile-avatar {
     }
 
     /* --inv-fit is set just before printing (see the page script) */
+    /* height follows the content, so a full sheet never spills a blank page */
+    html,
+    body {
+        height: auto;
+    }
+
     .inv-page {
         width: 210mm;
-        min-height: 297mm;
+        min-height: 0;
         margin: 0 auto;
         box-shadow: none;
         zoom: var(--inv-fit, 1);
+        break-after: avoid;
     }
 
     .inv-doc-logo {
@@ -14993,6 +15014,7 @@ img.hb-profile-avatar {
     .inv-status,
     .inv-steps {
         break-inside: avoid;
+        box-shadow: none;
     }
 }
 

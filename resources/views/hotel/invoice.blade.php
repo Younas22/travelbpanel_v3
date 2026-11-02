@@ -386,16 +386,16 @@
     // page (not below 80%); longer content flows onto more A4 pages.
     const A4_W = 794, A4_H = 1123, MIN_FIT = 0.8;
     function sheetFit(height) {
-        const fit = A4_H / height;
+        // a few px of headroom so rounding never pushes the sheet onto page 2
+        const fit = (A4_H - 8) / height;
         return fit >= 1 || fit < MIN_FIT ? 1 : fit;
     }
 
     // Print: measure the sheet as printed (logo shown, Pay Now hidden)
     window.addEventListener('beforeprint', () => {
-        document.body.classList.add('is-pdf');
-        const pay = document.querySelector('.inv-pay');
-        const height = document.getElementById('invDoc').offsetHeight - (pay ? pay.offsetHeight : 0);
-        document.body.classList.remove('is-pdf');
+        document.body.classList.add('is-pdf', 'is-measure');
+        const height = document.getElementById('invDoc').offsetHeight;
+        document.body.classList.remove('is-pdf', 'is-measure');
         document.documentElement.style.setProperty('--inv-fit', sheetFit(height));
     });
     window.addEventListener('afterprint', () => document.documentElement.style.removeProperty('--inv-fit'));
