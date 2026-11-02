@@ -9,11 +9,11 @@
         corePlugins: { preflight: false },
         theme: {
             extend: {
-                fontFamily: { jakarta: ['Plus Jakarta Sans', 'sans-serif'] },
+                fontFamily: { jakarta: ['var(--font-family)'] },
                 colors: {
-                    novabg: '#F7F8FC', novablue: '#2563EB', novacyan: '#06B6D4',
-                    novatext: '#000000', novamuted: '#000000', novaborder: '#E5E7EB',
-                    novasuccess: '#22C55E', novawarning: '#F59E0B', novadanger: '#EF4444',
+                    novabg: 'var(--body-bg)', novablue: 'var(--primary-color)', novacyan: 'var(--info-color)',
+                    novatext: 'var(--text-color)', novamuted: 'var(--text-color)', novaborder: 'var(--border-color)', novacard: 'var(--card-bg)',
+                    novasuccess: 'var(--success-color)', novawarning: 'var(--warning-color)', novadanger: 'var(--danger-color)',
                 },
             },
         },
@@ -21,7 +21,7 @@
 </script>
 <style>
     #vrPage, #vrPage *, #vrPage *::before, #vrPage *::after { box-sizing: border-box; }
-    #vrPage { font-family: 'Plus Jakarta Sans', sans-serif; }
+    #vrPage { font-family: var(--font-family); }
     #vrPage h1, #vrPage h2, #vrPage p { margin: 0; padding: 0; }
     #vrPage a { text-decoration: none; color: inherit; }
     #vrPage button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; padding: 0; }
@@ -31,23 +31,23 @@
     @keyframes vrFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
     #vrPage .tt-row { transition: background .2s ease, border-color .2s ease, transform .2s ease; }
-    #vrPage .tt-row:hover { background: #F7F8FC; border-color: #DBEAFE; transform: translateX(2px); }
+    #vrPage .tt-row:hover { background: var(--body-bg); border-color: color-mix(in srgb, var(--primary-color) 16%, var(--card-bg)); transform: translateX(2px); }
 
     #vrPage .vr-btn-nova {
         display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-        border: 1px solid #E5E7EB; border-radius: 9999px; color: #000; background: #fff;
+        border: 1px solid var(--border-color); border-radius: 9999px; color: var(--text-color); background: var(--card-bg);
         white-space: nowrap; transition: background .2s ease, border-color .2s ease;
     }
-    #vrPage .vr-btn-nova:hover { background: #F7F8FC; }
-    #vrPage .vr-btn-primary { background: #2563EB; color: #fff; border-color: #2563EB; }
-    #vrPage .vr-btn-primary:hover { background: #1D4ED8; border-color: #1D4ED8; }
+    #vrPage .vr-btn-nova:hover { background: var(--body-bg); }
+    #vrPage .vr-btn-primary { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+    #vrPage .vr-btn-primary:hover { background: color-mix(in srgb, var(--primary-color) 85%, #000); border-color: color-mix(in srgb, var(--primary-color) 85%, #000); }
     #vrPage .vr-icon-btn {
-        width: 30px; height: 30px; border-radius: 9999px; border: 1px solid #E5E7EB;
-        display: inline-flex; align-items: center; justify-content: center; background: #fff;
+        width: 30px; height: 30px; border-radius: 9999px; border: 1px solid var(--border-color);
+        display: inline-flex; align-items: center; justify-content: center; background: var(--card-bg);
         transition: background .2s ease, border-color .2s ease;
     }
     #vrPage .vr-icon-btn.has-label { width: auto; height: 30px; padding: 0 12px; gap: 6px; font-size: 11px; font-weight: 600; }
-    #vrPage .vr-icon-btn:hover { background: #F7F8FC; }
+    #vrPage .vr-icon-btn:hover { background: var(--body-bg); }
 
     #vrPage [data-tooltip] { position: relative; }
     #vrPage [data-tooltip]::after {
@@ -70,9 +70,9 @@
 @section('content')
 @php
     $avatarPalette = [
-        ['bg' => '#DBEAFE', 'text' => '#1D4ED8'],
-        ['bg' => '#DCFCE7', 'text' => '#15803D'],
-        ['bg' => '#FEF3C7', 'text' => '#B45309'],
+        ['bg' => 'color-mix(in srgb, var(--primary-color) 16%, var(--card-bg))', 'text' => 'color-mix(in srgb, var(--primary-color) 85%, #000)'],
+        ['bg' => 'color-mix(in srgb, var(--success-color) 14%, var(--card-bg))', 'text' => 'color-mix(in srgb, var(--success-color) 70%, #000)'],
+        ['bg' => 'color-mix(in srgb, var(--warning-color) 14%, var(--card-bg))', 'text' => 'color-mix(in srgb, var(--warning-color) 70%, #000)'],
         ['bg' => '#FCE7F3', 'text' => '#BE185D'],
         ['bg' => '#EDE9FE', 'text' => '#6D28D9'],
     ];
@@ -90,7 +90,7 @@
 
     {{-- ============ KPI CARDS ============ --}}
     <div class="grid grid-cols-3 gap-3 mb-5">
-        <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-3">
+        <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-3">
             <div class="flex items-center justify-between mb-2">
                 <p class="text-xs font-medium text-novamuted">Total</p>
                 <div class="w-7 h-7 rounded-full bg-novablue text-white flex items-center justify-center flex-shrink-0">
@@ -99,7 +99,7 @@
             </div>
             <span class="block text-lg font-bold text-novatext">{{ number_format($stats['total'] ?? 0) }}</span>
         </div>
-        <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-3">
+        <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-3">
             <div class="flex items-center justify-between mb-2">
                 <p class="text-xs font-medium text-novamuted">UAE Visas</p>
                 <div class="w-7 h-7 rounded-full bg-novasuccess text-white flex items-center justify-center flex-shrink-0">
@@ -108,7 +108,7 @@
             </div>
             <span class="block text-lg font-bold text-novatext">{{ number_format($stats['uae'] ?? 0) }}</span>
         </div>
-        <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-3">
+        <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-3">
             <div class="flex items-center justify-between mb-2">
                 <p class="text-xs font-medium text-novamuted">Other Visas</p>
                 <div class="w-7 h-7 rounded-full bg-novawarning text-white flex items-center justify-center flex-shrink-0">
@@ -120,7 +120,7 @@
     </div>
 
     {{-- ============ FILTERS ============ --}}
-    <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5 mb-5">
+    <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5 mb-5">
         <form method="GET" action="{{ route('admin.visa-requests.visaindex') }}">
             <div class="flex flex-wrap items-end gap-3">
                 <div class="flex-1 min-w-[220px]">
@@ -161,7 +161,7 @@
     </div>
 
     {{-- ============ VISA REQUEST LIST ============ --}}
-    <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
+    <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
         <div class="flex items-center gap-2 mb-4">
             <h2 class="text-sm font-semibold text-novatext">Visa Requests</h2>
             <span class="text-xs text-novamuted">{{ number_format($visaRequests->total()) }} total</span>
@@ -191,7 +191,7 @@
                         <div class="min-w-0 lg:w-44 lg:flex-shrink-0">
                             <p class="text-sm font-semibold text-novatext truncate">{{ $fullName }}</p>
                             <p class="text-[11px] text-novamuted truncate mt-0.5">{{ $request->gender }} &middot; {{ $request->marital_status }}</p>
-                            <span class="inline-flex mt-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-novamuted">#VR{{ str_pad($request->id, 6, '0', STR_PAD_LEFT) }}</span>
+                            <span class="inline-flex mt-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-novabg text-novamuted">#VR{{ str_pad($request->id, 6, '0', STR_PAD_LEFT) }}</span>
                         </div>
                     </div>
 
@@ -212,15 +212,15 @@
 
                     <div class="lg:w-24 lg:flex-shrink-0">
                         <p class="text-[9px] text-novamuted lg:hidden">Nationality</p>
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-slate-100 text-novamuted">{{ ucfirst($request->nationality) }}</span>
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-novabg text-novamuted">{{ ucfirst($request->nationality) }}</span>
                     </div>
 
                     <div class="lg:w-32 lg:flex-shrink-0">
                         <p class="text-[9px] text-novamuted lg:hidden">Documents</p>
                         <div class="flex items-center flex-wrap gap-1">
-                            @if($request->passport_front)<span class="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-50 text-emerald-600">Passport</span>@endif
+                            @if($request->passport_front)<span class="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-50 text-novasuccess">Passport</span>@endif
                             @if($request->passport_photo)<span class="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-blue-50 text-novablue">Photo</span>@endif
-                            @if($request->other_document)<span class="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-slate-100 text-novamuted">Other</span>@endif
+                            @if($request->other_document)<span class="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-novabg text-novamuted">Other</span>@endif
                             @if(!$request->passport_front && !$request->passport_photo && !$request->other_document)<span class="text-[11px] text-novamuted">—</span>@endif
                         </div>
                     </div>

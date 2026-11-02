@@ -8,11 +8,11 @@
         corePlugins: { preflight: false },
         theme: {
             extend: {
-                fontFamily: { jakarta: ['Plus Jakarta Sans', 'sans-serif'] },
+                fontFamily: { jakarta: ['var(--font-family)'] },
                 colors: {
-                    novabg: '#F7F8FC', novablue: '#2563EB', novacyan: '#06B6D4',
-                    novatext: '#000000', novamuted: '#000000', novaborder: '#E5E7EB',
-                    novasuccess: '#22C55E', novawarning: '#F59E0B', novadanger: '#EF4444',
+                    novabg: 'var(--body-bg)', novablue: 'var(--primary-color)', novacyan: 'var(--info-color)',
+                    novatext: 'var(--text-color)', novamuted: 'var(--text-color)', novaborder: 'var(--border-color)', novacard: 'var(--card-bg)',
+                    novasuccess: 'var(--success-color)', novawarning: 'var(--warning-color)', novadanger: 'var(--danger-color)',
                 },
             },
         },
@@ -20,39 +20,39 @@
 </script>
 <style>
     #uxPage, #uxPage *, #uxPage *::before, #uxPage *::after { box-sizing: border-box; }
-    #uxPage { font-family: 'Plus Jakarta Sans', sans-serif; }
+    #uxPage { font-family: var(--font-family); }
     #uxPage h1, #uxPage h2, #uxPage h5, #uxPage p { margin: 0; padding: 0; }
     #uxPage a { text-decoration: none; color: inherit; }
     #uxPage button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; padding: 0; }
     #uxPage svg { display: block; }
     #uxPage .tt-fade-in { animation: uxFadeIn .5s ease both; }
     @keyframes uxFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-    #uxPage .tt-row:hover { background: #F7F8FC; }
+    #uxPage .tt-row:hover { background: var(--body-bg); }
 
     #uxPage .ux-btn-nova {
         display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-        border: 1px solid #E5E7EB; border-radius: 9999px; color: #000; background: #fff;
+        border: 1px solid var(--border-color); border-radius: 9999px; color: var(--text-color); background: var(--card-bg);
         white-space: nowrap; transition: background .2s ease, border-color .2s ease;
     }
-    #uxPage .ux-btn-nova:hover { background: #F7F8FC; }
-    #uxPage .ux-btn-primary { background: #2563EB; color: #fff; border-color: #2563EB; }
-    #uxPage .ux-btn-primary:hover { background: #1D4ED8; border-color: #1D4ED8; }
+    #uxPage .ux-btn-nova:hover { background: var(--body-bg); }
+    #uxPage .ux-btn-primary { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+    #uxPage .ux-btn-primary:hover { background: color-mix(in srgb, var(--primary-color) 85%, #000); border-color: color-mix(in srgb, var(--primary-color) 85%, #000); }
     #uxPage .ux-icon-btn {
-        width: 30px; height: 30px; border-radius: 9999px; border: 1px solid #E5E7EB;
-        display: inline-flex; align-items: center; justify-content: center; background: #fff;
+        width: 30px; height: 30px; border-radius: 9999px; border: 1px solid var(--border-color);
+        display: inline-flex; align-items: center; justify-content: center; background: var(--card-bg);
         transition: background .2s ease, border-color .2s ease;
     }
-    #uxPage .ux-icon-btn:hover { background: #F7F8FC; }
-    #uxPage .ux-icon-warn:hover { background: #FFFBEB; border-color: #F59E0B; color: #F59E0B; }
-    #uxPage .ux-icon-success:hover { background: #ECFDF5; border-color: #22C55E; color: #22C55E; }
-    #uxPage .ux-icon-danger:hover { background: #FEF2F2; border-color: #EF4444; color: #EF4444; }
+    #uxPage .ux-icon-btn:hover { background: var(--body-bg); }
+    #uxPage .ux-icon-warn:hover { background: color-mix(in srgb, var(--warning-color) 8%, var(--card-bg)); border-color: var(--warning-color); color: var(--warning-color); }
+    #uxPage .ux-icon-success:hover { background: color-mix(in srgb, var(--success-color) 8%, var(--card-bg)); border-color: var(--success-color); color: var(--success-color); }
+    #uxPage .ux-icon-danger:hover { background: color-mix(in srgb, var(--danger-color) 8%, var(--card-bg)); border-color: var(--danger-color); color: var(--danger-color); }
 
     #uxPage .ux-input, #uxPage select.ux-input {
-        width: 100%; border: 1px solid #E5E7EB; border-radius: 14px; padding: 10px 14px;
-        font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif; color: #000; background: #fff;
+        width: 100%; border: 1px solid var(--border-color); border-radius: 14px; padding: 10px 14px;
+        font-size: 13px; font-family: var(--font-family); color: var(--text-color); background: var(--card-bg);
     }
-    #uxPage .ux-input:focus { outline: none; border-color: #2563EB; }
-    #uxPage .ux-label { display: block; font-size: 11px; font-weight: 600; color: #000; margin-bottom: 6px; }
+    #uxPage .ux-input:focus { outline: none; border-color: var(--primary-color); }
+    #uxPage .ux-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-color); margin-bottom: 6px; }
 
     /* Modal overlay — plain CSS, not Bootstrap (matches Classic's own
        openModal()/closeModal() JS exactly; only the visuals are Nova-ified). */
@@ -61,11 +61,11 @@
         display: flex; align-items: center; justify-content: center; padding: 20px;
     }
     #uxPage .ux-modal-overlay.hidden { display: none; }
-    #uxPage .ux-modal { background: #fff; border-radius: 1.5rem; width: 100%; max-width: 420px; overflow: hidden; }
-    #uxPage .ux-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid #E5E7EB; }
+    #uxPage .ux-modal { background: var(--card-bg); border-radius: 1.5rem; width: 100%; max-width: 420px; overflow: hidden; }
+    #uxPage .ux-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid var(--border-color); }
     #uxPage .ux-modal-body { padding: 22px; }
-    #uxPage .ux-modal-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 18px 22px; border-top: 1px solid #E5E7EB; }
-    #uxPage .ux-modal-close { font-size: 22px; line-height: 1; color: #6B7280; cursor: pointer; }
+    #uxPage .ux-modal-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 18px 22px; border-top: 1px solid var(--border-color); }
+    #uxPage .ux-modal-close { font-size: 22px; line-height: 1; color: var(--secondary-color); cursor: pointer; }
 
     /* Material-style hover tooltip (see agents module for the same pattern). */
     #uxPage [data-tooltip] { position: relative; }
@@ -100,7 +100,7 @@
         </button>
     </div>
 
-    <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
+    <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
@@ -119,9 +119,9 @@
                         <td class="py-3 px-3 font-semibold text-novatext">{{ ucfirst($type->packege_type) }}</td>
                         <td class="py-3 px-3">
                             @if($type->status == '1')
-                                <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-600">Active</span>
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-50 text-novasuccess">Active</span>
                             @else
-                                <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-slate-100 text-novamuted">Inactive</span>
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-novabg text-novamuted">Inactive</span>
                             @endif
                         </td>
                         <td class="py-3 px-3 text-novamuted">{{ $type->created_at->format('d M Y') }}</td>

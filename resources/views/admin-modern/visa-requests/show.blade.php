@@ -17,7 +17,7 @@
                 <p class="text-muted mb-0">Request ID: #VR{{ str_pad($visaRequest->id, 6, '0', STR_PAD_LEFT) }}</p>
             </div>
             <div class="col-md-4 text-end">
-                <span class="badge bg-primary">{{ ucfirst($visaRequest->visa_category) }} Visa</span>
+                <span class="badge bg-primary">{{ ucfirst((string) $visaRequest->visa_category) }} Visa</span>
                 <div class="text-muted mt-1">Applied: {{ $visaRequest->created_at->format('M j, Y g:i A') }}</div>
             </div>
         </div>
@@ -56,17 +56,17 @@
 
                 <div class="detail-row">
                     <span class="detail-label">Gender:</span>
-                    <span class="detail-value">{{ ucfirst($visaRequest->gender) }}</span>
+                    <span class="detail-value">{{ ucfirst((string) $visaRequest->gender) }}</span>
                 </div>
 
                 <div class="detail-row">
                     <span class="detail-label">Marital Status:</span>
-                    <span class="detail-value">{{ ucfirst($visaRequest->marital_status) }}</span>
+                    <span class="detail-value">{{ ucfirst((string) $visaRequest->marital_status) }}</span>
                 </div>
 
                 <div class="detail-row">
                     <span class="detail-label">Religion:</span>
-                    <span class="detail-value">{{ ucfirst($visaRequest->religion) }}</span>
+                    <span class="detail-value">{{ ucfirst((string) $visaRequest->religion) }}</span>
                 </div>
 
                 <div class="detail-row">
@@ -77,7 +77,7 @@
                 <div class="detail-row">
                     <span class="detail-label">Nationality:</span>
                     <span class="detail-value">
-                        <span class="badge bg-light text-dark">{{ ucfirst($visaRequest->nationality) }}</span>
+                        <span class="badge bg-light text-dark">{{ ucfirst((string) $visaRequest->nationality) }}</span>
                     </span>
                 </div>
             </div>
@@ -94,21 +94,21 @@
                 <div class="detail-row">
                     <span class="detail-label">Visa Category:</span>
                     <span class="detail-value">
-                        <span class="badge bg-primary">{{ ucfirst($visaRequest->visa_category) }}</span>
+                        <span class="badge bg-primary">{{ ucfirst((string) $visaRequest->visa_category) }}</span>
                     </span>
                 </div>
 
                 @if($visaRequest->visa_type)
                 <div class="detail-row">
                     <span class="detail-label">Visa Type:</span>
-                    <span class="detail-value">{{ ucfirst($visaRequest->visa_type) }}</span>
+                    <span class="detail-value">{{ ucfirst((string) $visaRequest->visa_type) }}</span>
                 </div>
                 @endif
 
                 @if($visaRequest->visa_plan)
                 <div class="detail-row">
                     <span class="detail-label">Visa Plan:</span>
-                    <span class="detail-value">{{ ucfirst($visaRequest->visa_plan) }}</span>
+                    <span class="detail-value">{{ ucfirst((string) $visaRequest->visa_plan) }}</span>
                 </div>
                 @endif
 

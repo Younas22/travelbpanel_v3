@@ -9,11 +9,11 @@
         corePlugins: { preflight: false },
         theme: {
             extend: {
-                fontFamily: { jakarta: ['Plus Jakarta Sans', 'sans-serif'] },
+                fontFamily: { jakarta: ['var(--font-family)'] },
                 colors: {
-                    novabg: '#F7F8FC', novablue: '#2563EB', novacyan: '#06B6D4',
-                    novatext: '#000000', novamuted: '#000000', novaborder: '#E5E7EB',
-                    novasuccess: '#22C55E', novawarning: '#F59E0B', novadanger: '#EF4444',
+                    novabg: 'var(--body-bg)', novablue: 'var(--primary-color)', novacyan: 'var(--info-color)',
+                    novatext: 'var(--text-color)', novamuted: 'var(--text-color)', novaborder: 'var(--border-color)', novacard: 'var(--card-bg)',
+                    novasuccess: 'var(--success-color)', novawarning: 'var(--warning-color)', novadanger: 'var(--danger-color)',
                 },
             },
         },
@@ -21,7 +21,7 @@
 </script>
 <style>
     #umPage, #umPage *, #umPage *::before, #umPage *::after { box-sizing: border-box; }
-    #umPage { font-family: 'Plus Jakarta Sans', sans-serif; }
+    #umPage { font-family: var(--font-family); }
     #umPage h1, #umPage h2, #umPage h3, #umPage p { margin: 0; padding: 0; }
     #umPage a { text-decoration: none; color: inherit; }
     #umPage button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; padding: 0; }
@@ -30,53 +30,53 @@
     @keyframes umFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
     #umPage .um-card { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
-    #umPage .um-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -14px rgba(37,99,235,.2); border-color: #DBEAFE; }
+    #umPage .um-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -14px rgba(37,99,235,.2); border-color: color-mix(in srgb, var(--primary-color) 16%, var(--card-bg)); }
     #umPage .um-card-img img { transition: transform .4s ease; }
     #umPage .um-card:hover .um-card-img img { transform: scale(1.06); }
     #umPage .um-card-img::after {
         content: ''; position: absolute; inset: 0; pointer-events: none;
         background: linear-gradient(180deg, rgba(0,0,0,.28) 0%, rgba(0,0,0,0) 32%, rgba(0,0,0,0) 68%, rgba(0,0,0,.16) 100%);
     }
-    #umPage .um-price-row { background: linear-gradient(135deg, #EFF6FF 0%, #F7F8FC 100%); border: 1px solid #DBEAFE; }
+    #umPage .um-price-row { background: linear-gradient(135deg, color-mix(in srgb, var(--primary-color) 8%, var(--card-bg)) 0%, var(--body-bg) 100%); border: 1px solid color-mix(in srgb, var(--primary-color) 16%, var(--card-bg)); }
 
     #umPage .um-btn-nova {
         display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-        border: 1px solid #E5E7EB; border-radius: 9999px; color: #000; background: #fff;
+        border: 1px solid var(--border-color); border-radius: 9999px; color: var(--text-color); background: var(--card-bg);
         white-space: nowrap; transition: background .2s ease, border-color .2s ease;
     }
-    #umPage .um-btn-nova:hover { background: #F7F8FC; }
-    #umPage .um-btn-primary { background: #2563EB; color: #fff; border-color: #2563EB; }
-    #umPage .um-btn-primary:hover { background: #1D4ED8; border-color: #1D4ED8; }
+    #umPage .um-btn-nova:hover { background: var(--body-bg); }
+    #umPage .um-btn-primary { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+    #umPage .um-btn-primary:hover { background: color-mix(in srgb, var(--primary-color) 85%, #000); border-color: color-mix(in srgb, var(--primary-color) 85%, #000); }
     #umPage .um-icon-btn {
-        width: 30px; height: 30px; border-radius: 9999px; border: 1px solid #E5E7EB;
-        display: inline-flex; align-items: center; justify-content: center; background: #fff;
+        width: 30px; height: 30px; border-radius: 9999px; border: 1px solid var(--border-color);
+        display: inline-flex; align-items: center; justify-content: center; background: var(--card-bg);
         transition: background .2s ease, border-color .2s ease;
     }
-    #umPage .um-icon-btn:hover { background: #F7F8FC; }
-    #umPage .um-icon-warn:hover { background: #FFFBEB; border-color: #F59E0B; color: #F59E0B; }
-    #umPage .um-icon-success:hover { background: #ECFDF5; border-color: #22C55E; color: #22C55E; }
-    #umPage .um-icon-danger:hover { background: #FEF2F2; border-color: #EF4444; color: #EF4444; }
+    #umPage .um-icon-btn:hover { background: var(--body-bg); }
+    #umPage .um-icon-warn:hover { background: color-mix(in srgb, var(--warning-color) 8%, var(--card-bg)); border-color: var(--warning-color); color: var(--warning-color); }
+    #umPage .um-icon-success:hover { background: color-mix(in srgb, var(--success-color) 8%, var(--card-bg)); border-color: var(--success-color); color: var(--success-color); }
+    #umPage .um-icon-danger:hover { background: color-mix(in srgb, var(--danger-color) 8%, var(--card-bg)); border-color: var(--danger-color); color: var(--danger-color); }
 
     /* Labeled variant: same pill, but wide enough to show text next to the
        icon so status/featured is legible without hovering for the tooltip. */
     #umPage .um-icon-btn.has-label { width: auto; height: 30px; padding: 0 12px; gap: 6px; font-size: 11px; font-weight: 600; }
-    #umPage .um-icon-warn.has-label { border-color: #FDE68A; color: #B45309; }
-    #umPage .um-icon-success.has-label { border-color: #BBF7D0; color: #15803D; }
-    #umPage .um-icon-danger.has-label { border-color: #FECACA; color: #DC2626; }
-    #umPage .um-icon-featured.has-label { border-color: #FDE68A; color: #B45309; background: #FFFBEB; }
+    #umPage .um-icon-warn.has-label { border-color: color-mix(in srgb, var(--warning-color) 30%, var(--card-bg)); color: color-mix(in srgb, var(--warning-color) 70%, #000); }
+    #umPage .um-icon-success.has-label { border-color: color-mix(in srgb, var(--success-color) 30%, var(--card-bg)); color: color-mix(in srgb, var(--success-color) 70%, #000); }
+    #umPage .um-icon-danger.has-label { border-color: color-mix(in srgb, var(--danger-color) 30%, var(--card-bg)); color: color-mix(in srgb, var(--danger-color) 85%, #000); }
+    #umPage .um-icon-featured.has-label { border-color: color-mix(in srgb, var(--warning-color) 30%, var(--card-bg)); color: color-mix(in srgb, var(--warning-color) 70%, #000); background: color-mix(in srgb, var(--warning-color) 8%, var(--card-bg)); }
 
-    #umPage .um-star-btn { color: #E5E7EB; transition: color .2s ease, transform .2s ease; }
+    #umPage .um-star-btn { color: var(--border-color); transition: color .2s ease, transform .2s ease; }
     #umPage .um-star-btn:hover { transform: scale(1.15); }
-    #umPage .um-star-btn.um-star-active { color: #F59E0B; }
+    #umPage .um-star-btn.um-star-active { color: var(--warning-color); }
 
     /* List / Grid view switch */
-    #umPage .um-view-switch { display: inline-flex; align-items: center; background: #F7F8FC; border: 1px solid #E5E7EB; border-radius: 9999px; padding: 3px; gap: 2px; }
-    #umPage .um-view-switch button { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 9999px; font-size: 12px; font-weight: 600; color: #000; opacity: .55; transition: background .2s ease, opacity .2s ease; }
-    #umPage .um-view-switch button.active { background: #fff; opacity: 1; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    #umPage .um-view-switch { display: inline-flex; align-items: center; background: var(--body-bg); border: 1px solid var(--border-color); border-radius: 9999px; padding: 3px; gap: 2px; }
+    #umPage .um-view-switch button { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 9999px; font-size: 12px; font-weight: 600; color: var(--text-color); opacity: .55; transition: background .2s ease, opacity .2s ease; }
+    #umPage .um-view-switch button.active { background: var(--card-bg); opacity: 1; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
 
     /* List view row */
     #umPage .um-list-row { transition: background .2s ease, border-color .2s ease; }
-    #umPage .um-list-row:hover { background: #F7F8FC; border-color: #DBEAFE; }
+    #umPage .um-list-row:hover { background: var(--body-bg); border-color: color-mix(in srgb, var(--primary-color) 16%, var(--card-bg)); }
 
     #umPage .um-details-panel { display: none; }
     #umPage .um-details-panel.um-open { display: block; }
@@ -130,7 +130,7 @@
 
     {{-- ============ KPI CARDS ============ --}}
     <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-5">
-        <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-3">
+        <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-3">
             <div class="flex items-center justify-between mb-2">
                 <p class="text-xs font-medium text-novamuted">Total</p>
                 <div class="w-7 h-7 rounded-full bg-novablue text-white flex items-center justify-center flex-shrink-0">
@@ -139,7 +139,7 @@
             </div>
             <span class="block text-lg font-bold text-novatext">{{ number_format($stats['total']) }}</span>
         </div>
-        <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-3">
+        <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-3">
             <div class="flex items-center justify-between mb-2">
                 <p class="text-xs font-medium text-novamuted">Active</p>
                 <div class="w-7 h-7 rounded-full bg-novasuccess text-white flex items-center justify-center flex-shrink-0">
@@ -148,7 +148,7 @@
             </div>
             <span class="block text-lg font-bold text-novatext">{{ number_format($stats['active']) }}</span>
         </div>
-        <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-3">
+        <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-3">
             <div class="flex items-center justify-between mb-2">
                 <p class="text-xs font-medium text-novamuted">Inactive</p>
                 <div class="w-7 h-7 rounded-full bg-novadanger text-white flex items-center justify-center flex-shrink-0">
@@ -157,7 +157,7 @@
             </div>
             <span class="block text-lg font-bold text-novatext">{{ number_format($stats['inactive']) }}</span>
         </div>
-        <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-3">
+        <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-3">
             <div class="flex items-center justify-between mb-2">
                 <p class="text-xs font-medium text-novamuted">Featured</p>
                 <div class="w-7 h-7 rounded-full bg-novawarning text-white flex items-center justify-center flex-shrink-0">
@@ -166,7 +166,7 @@
             </div>
             <span class="block text-lg font-bold text-novatext">{{ number_format($stats['featured']) }}</span>
         </div>
-        <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-3">
+        <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-3">
             <div class="flex items-center justify-between mb-2">
                 <p class="text-xs font-medium text-novamuted">Pending</p>
                 <div class="w-7 h-7 rounded-full bg-novacyan text-white flex items-center justify-center flex-shrink-0">
@@ -178,7 +178,7 @@
     </div>
 
     {{-- ============ FILTERS ============ --}}
-    <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5 mb-5">
+    <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5 mb-5">
         <form method="GET" action="{{ route('admin.umrah.packages.index') }}">
             <div class="flex flex-wrap items-end gap-3">
                 <div class="flex-1 min-w-[220px]">
@@ -225,7 +225,7 @@
                 $approval = $package->approval_status ?? 'approved';
                 $hasDetails = !empty($package->inclusions) || !empty($package->exclusions);
             @endphp
-            <div class="um-card bg-white rounded-2xl border border-novaborder shadow-sm overflow-hidden">
+            <div class="um-card bg-novacard rounded-2xl border border-novaborder shadow-sm overflow-hidden">
                 <div class="um-card-img relative h-44 bg-novabg overflow-hidden">
                     @if($package->images->first())
                         <img src="{{ asset('public/assets/images/' . $package->images->first()->image) }}" alt="" class="w-full h-full object-cover" style="object-fit:cover; object-position:center; width:100%; height:100%;">
@@ -235,18 +235,18 @@
                         </div>
                     @endif
                     <div class="absolute top-2 left-2 flex items-center gap-1.5 z-10">
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold js-status-badge {{ $package->status == '1' ? 'bg-emerald-500 text-white' : 'bg-slate-500 text-white' }}"
-                              data-id="{{ $package->id }}" data-active-class="bg-emerald-500 text-white" data-inactive-class="bg-slate-500 text-white">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold js-status-badge {{ $package->status == '1' ? 'bg-novasuccess text-white' : 'bg-slate-500 text-white' }}"
+                              data-id="{{ $package->id }}" data-active-class="bg-novasuccess text-white" data-inactive-class="bg-slate-500 text-white">
                             {{ $package->status == '1' ? 'Active' : 'Inactive' }}
                         </span>
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-amber-500 text-white js-featured-badge" data-id="{{ $package->id }}" style="{{ $package->featured == '1' ? '' : 'display:none;' }}">Featured</span>
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-novawarning text-white js-featured-badge" data-id="{{ $package->id }}" style="{{ $package->featured == '1' ? '' : 'display:none;' }}">Featured</span>
                         @if($approval === 'pending')
-                            <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-amber-500 text-white">Pending</span>
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-novawarning text-white">Pending</span>
                         @elseif($approval === 'rejected')
-                            <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-red-500 text-white">Rejected</span>
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-novadanger text-white">Rejected</span>
                         @endif
                     </div>
-                    <button type="button" class="um-star-btn js-toggle-featured w-8 h-8 rounded-full bg-white/90 flex items-center justify-center absolute top-2 right-2 z-10 {{ $package->featured == '1' ? 'um-star-active' : '' }}"
+                    <button type="button" class="um-star-btn js-toggle-featured w-8 h-8 rounded-full bg-novacard/90 flex items-center justify-center absolute top-2 right-2 z-10 {{ $package->featured == '1' ? 'um-star-active' : '' }}"
                             data-id="{{ $package->id }}" data-featured="{{ $package->featured == '1' ? '1' : '0' }}"
                             data-tooltip="{{ $package->featured == '1' ? 'Remove from featured' : 'Mark as featured' }}">
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="{{ $package->featured == '1' ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2.5 3 6.5 7 .8-5.2 4.8L18.2 21 12 17.3 5.8 21l1.4-6.4L2 9.8 9 9l3-6.5Z"/></svg>
@@ -262,7 +262,7 @@
 
                     <div class="flex items-center flex-wrap gap-1.5 mt-3">
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-blue-50 text-novablue">{{ ucfirst($package->packege_type) }}</span>
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-slate-100 text-novamuted flex items-center gap-1">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-novabg text-novamuted flex items-center gap-1">
                             <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
                             {{ $package->duration }}
                         </span>
@@ -288,14 +288,14 @@
                         <div class="flex items-center gap-1.5 mt-3">
                             <form action="{{ route('admin.umrah.packages.approve', $package->id) }}" method="POST" class="flex-1">
                                 @csrf
-                                <button type="submit" class="um-btn-nova w-full py-1.5 text-[11px] font-semibold" style="background:#22C55E; color:#fff; border-color:#22C55E;">
+                                <button type="submit" class="um-btn-nova w-full py-1.5 text-[11px] font-semibold" style="background:var(--success-color); color:#fff; border-color:var(--success-color);">
                                     <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                                     Approve
                                 </button>
                             </form>
                             <form action="{{ route('admin.umrah.packages.reject', $package->id) }}" method="POST" class="flex-1">
                                 @csrf
-                                <button type="submit" class="um-btn-nova w-full py-1.5 text-[11px] font-semibold" style="color:#EF4444; border-color:#EF4444;">
+                                <button type="submit" class="um-btn-nova w-full py-1.5 text-[11px] font-semibold" style="color:var(--danger-color); border-color:var(--danger-color);">
                                     <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
                                     Reject
                                 </button>
@@ -315,7 +315,7 @@
                                     <div class="flex flex-wrap gap-1">
                                         @foreach($package->inclusions as $incId)
                                             @if(isset($allInclusions[$incId]))
-                                                <span class="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-50 text-emerald-600">{{ $allInclusions[$incId]->name }}</span>
+                                                <span class="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-50 text-novasuccess">{{ $allInclusions[$incId]->name }}</span>
                                             @endif
                                         @endforeach
                                     </div>
@@ -374,7 +374,7 @@
     </div>
 
     {{-- ============ PACKAGES LIST (alternate view) ============ --}}
-    <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5" id="umListView" style="display:none;">
+    <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5" id="umListView" style="display:none;">
         <div class="hidden lg:flex lg:items-center lg:gap-3 lg:px-4 pb-2 mb-1">
             <span class="w-14 flex-shrink-0"></span>
             <span class="lg:flex-[2] text-[10px] font-semibold uppercase tracking-wide text-novamuted">Package</span>
@@ -417,8 +417,8 @@
                         </div>
 
                         <div class="lg:flex-1">
-                            <span class="js-status-badge px-2.5 py-1 rounded-full text-[10px] font-semibold {{ $package->status == '1' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-novamuted' }}"
-                                  data-id="{{ $package->id }}" data-active-class="bg-emerald-50 text-emerald-600" data-inactive-class="bg-slate-100 text-novamuted">{{ $package->status == '1' ? 'Active' : 'Inactive' }}</span>
+                            <span class="js-status-badge px-2.5 py-1 rounded-full text-[10px] font-semibold {{ $package->status == '1' ? 'bg-emerald-50 text-novasuccess' : 'bg-novabg text-novamuted' }}"
+                                  data-id="{{ $package->id }}" data-active-class="bg-emerald-50 text-novasuccess" data-inactive-class="bg-novabg text-novamuted">{{ $package->status == '1' ? 'Active' : 'Inactive' }}</span>
                         </div>
                     </div>
 
@@ -459,7 +459,7 @@
     </div>
 
     @if($packages->hasPages())
-        <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5 mt-5">
+        <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5 mt-5">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <p class="text-xs text-novamuted">Showing {{ $packages->firstItem() }} to {{ $packages->lastItem() }} of {{ number_format($packages->total()) }} entries</p>
                 {{ $packages->withQueryString()->links() }}

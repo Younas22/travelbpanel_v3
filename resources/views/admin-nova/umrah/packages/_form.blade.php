@@ -18,7 +18,7 @@
     <div class="lg:col-span-2 space-y-5">
 
         {{-- ===== BASIC INFORMATION ===== --}}
-        <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
+        <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
             <h2 class="text-sm font-semibold text-novatext mb-4">Basic Information</h2>
             <div class="space-y-4">
                 <div>
@@ -80,7 +80,7 @@
         </div>
 
         {{-- ===== STAY DETAILS ===== --}}
-        <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
+        <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
             <h2 class="text-sm font-semibold text-novatext mb-4">Stay Details</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -121,7 +121,7 @@
         </div>
 
         {{-- ===== GUEST DETAILS ===== --}}
-        <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
+        <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
             <h2 class="text-sm font-semibold text-novatext mb-4">Guest Details</h2>
             <div class="grid grid-cols-3 gap-4">
                 <div>
@@ -140,7 +140,7 @@
         </div>
 
         {{-- ===== DESCRIPTION & POLICY ===== --}}
-        <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
+        <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
             <h2 class="text-sm font-semibold text-novatext mb-4">Description &amp; Policy</h2>
             <div class="space-y-4">
                 <div>
@@ -155,7 +155,7 @@
         </div>
 
         {{-- ===== INCLUSIONS & EXCLUSIONS ===== --}}
-        <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
+        <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
             <h2 class="text-sm font-semibold text-novatext mb-4">Inclusions &amp; Exclusions</h2>
             <div class="space-y-4">
                 <div>
@@ -188,7 +188,7 @@
 
     {{-- ===== SIDEBAR ===== --}}
     <div class="space-y-5">
-        <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
+        <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
             <h2 class="text-sm font-semibold text-novatext mb-4">Status &amp; Visibility</h2>
             <div class="space-y-4">
                 <div>
@@ -213,7 +213,7 @@
         </div>
 
         @if($umrah && $umrah->images->count() > 0)
-            <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
+            <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
                 <h2 class="text-sm font-semibold text-novatext mb-4">Current Images</h2>
                 <div class="grid grid-cols-2 gap-2">
                     @foreach($umrah->images as $image)
@@ -230,7 +230,7 @@
             </div>
         @endif
 
-        <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
+        <div class="tt-card bg-novacard rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
             <h2 class="text-sm font-semibold text-novatext mb-4">{{ $umrah ? 'Add More Images' : 'Images' }}</h2>
             <label class="umf-label">Upload Images</label>
             <input type="file" name="images[]" class="umf-input" multiple accept="image/*">
