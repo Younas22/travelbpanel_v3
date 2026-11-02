@@ -1,394 +1,475 @@
+@php
+    // booking_data holds the snapshot taken at checkout: room_data, room, option, booking_data
+    if (is_string($booking->booking_data)) {
+        $data = json_decode($booking->booking_data);
+    } else {
+        $data = json_decode(json_encode($booking->booking_data));
+    }
+    $bookingData = is_object($data->booking_data) ? $data->booking_data : (object) $data->booking_data;
+    $room = $data->room ?? (object) [];
+    $option = $data->option ?? (object) [];
+    $roomData = $data->room_data ?? (object) [];
+    $days = (new DateTime($bookingData->checkin))->diff(new DateTime($bookingData->checkout))->days;
+
+    $guestData = [];
+    if (!empty($booking->booking_guest)) {
+        $guestData = is_string($booking->booking_guest) ? json_decode($booking->booking_guest, true) : $booking->booking_guest;
+    }
+    $guestData = is_array($guestData) ? array_values($guestData) : [];
+    $adultCount = (int) ($bookingData->adults ?? 0);
+    $childCount = (int) ($bookingData->child ?? 0);
+    $roomCount = max(1, (int) ($roomData->rooms ?? 1));
+
+    $status = $booking->booking_status_flag ?: 'pending';
+    $payState = $booking->booking_payment_state ?: 'unpaid';
+    $gateway = strtolower((string) $booking->booking_payment_gateway);
+    $isPaid = $payState === 'paid';
+    $isCancelled = $status === 'cancelled';
+    $isConfirmed = $status === 'confirmed';
+
+    $currency = $room->currency ?? $booking->booking_currency_origin;
+    $price = (float) ($option->price ?? $room->price ?? 0);
+    $money = fn($v, $c = null) => number_format((float) $v, 2) . ' ' . ($c ?? $currency);
+    $taxesIncluded = json_decode(json_encode($option->taxes_included ?? []), true);
+    $taxesAtProperty = json_decode(json_encode($option->taxes_at_property ?? []), true);
+
+    $stars = max(0, min(5, (int) filter_var($bookingData->stars ?? 0, FILTER_SANITIZE_NUMBER_INT)));
+    $image = ($bookingData->image ?? null) ?: ($room->images[0] ?? null);
+    $category = $hotelRecord?->type ? ucwords($hotelRecord->type) : ($stars ? $stars . ' ' . t('hotelinvoice.starHotel') : t('hotelinvoice.hotel'));
+    $timeOf = fn($t) => $t ? \Carbon\Carbon::parse($t)->format('g:i A') : null;
+    $checkinTime = $timeOf($hotelRecord?->check_in_time);
+    $checkoutTime = $timeOf($hotelRecord?->check_out_time);
+
+    // Header message follows the real state, never "confirmed" before it is
+    [$headState, $headIcon, $headMsg] = match (true) {
+        $isCancelled => ['is-cancelled', 'fa-circle-xmark', t('hotelinvoice.msgCancelled')],
+        $isConfirmed => ['is-confirmed', 'fa-circle-check', t('hotelinvoice.msgConfirmed')],
+        $isPaid => ['is-pending', 'fa-hourglass-half', t('hotelinvoice.msgPaidPending')],
+        $gateway === 'after_pay' => ['is-pending', 'fa-file-circle-check', t('hotelinvoice.msgPayLater')],
+        default => ['is-pending', 'fa-file-circle-check', t('hotelinvoice.msgCreated')],
+    };
+
+    // Progress: booking + guests exist; payment only when the gateway marked it paid
+    $steps = [
+        ['icon' => 'fa-hotel', 'label' => t('hotelinvoice.stepHotel'), 'state' => 'is-done'],
+        ['icon' => 'fa-users', 'label' => t('hotelinvoice.stepGuests'), 'state' => count($guestData) ? 'is-done' : 'is-current'],
+        ['icon' => 'fa-credit-card', 'label' => t('hotelinvoice.stepPayment'), 'state' => $isPaid ? 'is-done' : ($isCancelled ? '' : 'is-current')],
+        ['icon' => 'fa-circle-check', 'label' => t('hotelinvoice.stepConfirmation'), 'state' => $isConfirmed ? 'is-done' : ($isCancelled ? 'is-cancelled' : ($isPaid ? 'is-current' : ''))],
+    ];
+
+    $badge = fn($value) => match ($value) {
+        'confirmed', 'paid' => 'is-success',
+        'cancelled' => 'is-danger',
+        'refunded' => 'is-info',
+        default => 'is-warning',
+    };
+    $gatewayName = $gateway === 'agent_wallet' ? t('hotelinvoice.agentWallet') : ucwords(str_replace('_', ' ', $gateway));
+    $gatewayLogo = $gateway && file_exists(public_path('assets/images/settings/payment/' . $gateway . '.png'))
+        ? url('public/assets/images/settings/payment/' . $gateway . '.png') : null;
+    $gatewayDesc = t('hotelinvoice.gw_' . $gateway);
+    $gatewayDesc = $gatewayDesc === 'hotelinvoice.gw_' . $gateway ? null : $gatewayDesc;
+
+    // Cancellation terms of the booked rate (from the supplier / rate calendar)
+    $cancelLines = [];
+    if (!empty($option->cancel_restricted)) {
+        $cancelLines[] = $option->cancel_restricted_note ?? t('hotelinvoice.nonRefundable');
+    } elseif (!empty($option->non_refundable)) {
+        $cancelLines[] = t('hotelinvoice.nonRefundable');
+    } elseif (!empty($option->refund_date)) {
+        $cancelLines[] = str_replace(':date', \Carbon\Carbon::parse($option->refund_date)->format('d M Y, g:i A'), t('hotelinvoice.freeCancellationUntil'));
+    }
+    foreach ($option->cancellation_rules ?? [] as $rule) {
+        if ((float) ($rule->cancel_charge ?? 0) > 0) {
+            $cancelLines[] = str_replace(':amount', $money($rule->cancel_charge), t('hotelinvoice.cancellationCharge'));
+            break;
+        }
+    }
+    $hotelCancelPolicy = $hotelPolicies->get('cancellation')?->description;
+    $hotelPaymentPolicy = $hotelPolicies->get('payment')?->description;
+    $services = array_values(array_filter(array_merge(
+        !empty($option->meal_included) ? [t('hotelinvoice.mealsIncluded')] : [],
+        (array) ($room->amenities ?? [])
+    )));
+
+    $logo = getSettingImage('business_logo', 'branding');
+    $businessName = getSetting('business_name', 'main', 'Travel Booking Panel');
+    $contactEmail = getSetting('contact_email', 'contact', '');
+    $contactPhone = getSetting('contact_phone', 'contact', '');
+    $isRtl = app()->getLocale() === 'ar';
+    $siteCss = $isRtl ? 'rtlstyle.css' : 'style.css';
+@endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Booking Invoice</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="{{ url('public/assets/css/style.css') }}?v={{ filemtime(public_path('assets/css/style.css')) }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ t('hotelinvoice.title') }} #INV-{{ $booking->booking_code_ref }}</title>
+    <link rel="icon" href="{{ getSettingImage('favicon', 'branding') }}" type="image/png">
+    <script src="{{ url('public/assets/libs/tailwind/tailwind.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url('public/assets/libs/font-awesome/css/all.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url('public/assets/css/' . $siteCss) }}?v={{ filemtime(public_path('assets/css/' . $siteCss)) }}">
 </head>
-<body class="view-standalone view-invoice bg-gray-50">
+<body class="view-standalone view-invoice">
 
-<div class="max-w-4xl mx-auto p-4">
-    <!-- Action Buttons -->
-    <div class="flex gap-2 mb-4 justify-end print:hidden">
-        <button onclick="window.print()" class="px-3 py-2 border border-gray-300 bg-white text-gray-800 rounded-lg font-semibold text-xs hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600 transition flex items-center gap-1.5">
-            <i class="fas fa-print"></i> {{t('hotelinvoice.print')}}
-        </button>
-        <button onclick="downloadPDF()" class="px-3 py-2 border border-gray-300 bg-white text-gray-800 rounded-lg font-semibold text-xs hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600 transition flex items-center gap-1.5">
-            <i class="fas fa-download"></i> {{t('hotelinvoice.downloadPdf')}}
-        </button>
-        <button onclick="sendEmail()" class="px-3 py-2 text-white rounded-lg font-semibold text-xs transition shadow-lg flex items-center gap-1.5 btn-primary">
-            <i class="fas fa-envelope"></i> {{t('hotelinvoice.sendEmail')}}
-        </button>
+<!-- Top action bar (not printed / not in the PDF) -->
+<header class="inv-bar" data-html2canvas-ignore>
+    <div class="inv-bar-inner">
+        <a href="{{ url('/') }}" class="inv-bar-logo"><img src="{{ $logo }}" alt="{{ $businessName }}"></a>
+        <div class="inv-bar-actions">
+            <button type="button" class="inv-btn" id="invPrint"><i class="fas fa-print"></i> <span>{{ t('hotelinvoice.print') }}</span></button>
+            <button type="button" class="inv-btn" id="invPdf"><i class="fas fa-download"></i> <span>{{ t('hotelinvoice.downloadPdf') }}</span></button>
+            <button type="button" class="inv-btn is-primary" id="invEmail" data-url="{{ route('hotel.invoice.email', $booking->booking_code_ref) }}"><i class="fas fa-envelope"></i> <span>{{ t('hotelinvoice.sendEmail') }}</span></button>
+        </div>
     </div>
+    <div class="inv-toast" id="invToast" role="status" aria-live="polite" hidden></div>
+</header>
 
-    @php
-        // Decode booking_data if it's a string, otherwise use as-is
-        if (is_string($booking->booking_data)) {
-            $data = json_decode($booking->booking_data);
-        } else {
-            $data = json_decode(json_encode($booking->booking_data));
-        }
+<main class="inv-page" id="invDoc">
+    <!-- Document logo (print / PDF only) -->
+    <div class="inv-doc-logo"><img src="{{ $logo }}" alt="{{ $businessName }}"></div>
 
-        // Calculate days between check-in and check-out
-        $bookingData = is_object($data->booking_data) ? $data->booking_data : (object)$data->booking_data;
-        $days = (new DateTime($bookingData->checkin))->diff(new DateTime($bookingData->checkout))->days;
-
-        // Get guest data from booking_guest field
-        $guestData = [];
-        if (!empty($booking->booking_guest)) {
-            if (is_string($booking->booking_guest)) {
-                $guestData = json_decode($booking->booking_guest, true);
-            } else {
-                $guestData = $booking->booking_guest;
-            }
-        }
-    @endphp
-
-    <!-- Invoice -->
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <!-- Header -->
-        <div class="bg-white border-b-4 border-blue-600 p-5" style="border-color: #0077BE;">
-            <div class="flex justify-between items-start mb-4">
-                <div class="flex items-center gap-3">
-                    <a href={{url('/')}}>
-                    <img src="{{ getSettingImage('business_logo','branding') }}"
-                         alt="FlightHub Logo"
-                         class="h-16 w-auto object-contain">
-                    </a>
-                </div>
-
-                <div class="text-right">
-                    <p class="text-xs text-gray-600 uppercase">{{t('hotelinvoice.invoice')}}</p>
-                    <strong class="text-base font-bold text-gray-800 block">#INV-{{ $booking->booking_code_ref }}</strong>
-                    <p class="text-xs text-gray-600">{{ $booking->created_at->format('d M Y') }}</p>
-                </div>
-            </div>
-
-            <!-- Status Badges -->
-            <div class="flex items-center justify-between pt-3 border-t border-gray-200">
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-semibold text-gray-700">{{t('hotelinvoice.bookingStatus')}}:</span>
-                    @if($booking->booking_status_flag == 'confirmed')
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-800 border border-green-300 rounded font-bold text-xs">
-                        <i class="fas fa-check-circle"></i>
-                        {{t('hotelinvoice.confirmed')}}
-                    </span>
-                    @elseif($booking->booking_status_flag == 'cancelled')
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-100 text-red-800 border border-red-300 rounded font-bold text-xs">
-                        <i class="fas fa-times-circle"></i>
-                        {{t('hotelinvoice.cancelled')}}
-                    </span>
-                    @else
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-yellow-100 text-yellow-800 border border-yellow-300 rounded font-bold text-xs">
-                        <i class="fas fa-clock"></i>
-                        {{t('hotelinvoice.pending')}}
-                    </span>
-                    @endif
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-semibold text-gray-700">{{t('hotelinvoice.paymentStatus')}}:</span>
-                    @if($booking->booking_payment_state == 'paid')
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-800 border border-green-300 rounded font-bold text-xs">
-                        <i class="fas fa-check-circle"></i>
-                        {{t('hotelinvoice.paid')}}
-                    </span>
-                    @elseif($booking->booking_payment_state == 'refunded')
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-100 text-blue-800 border border-blue-300 rounded font-bold text-xs">
-                        <i class="fas fa-undo"></i>
-                        {{t('hotelinvoice.refunded')}}
-                    </span>
-                    @else
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-yellow-100 text-yellow-800 border border-yellow-300 rounded font-bold text-xs">
-                        <i class="fas fa-clock"></i>
-                        {{t('hotelinvoice.pending')}}
-                    </span>
-                    @endif
-                </div>
-            </div>
+    <!-- Heading: reflects the real booking state -->
+    <section class="inv-head {{ $headState }}">
+        <span class="inv-head-icon"><i class="fas {{ $headIcon }}"></i></span>
+        <div class="inv-head-text">
+            <h1>{{ t('hotelinvoice.confirmationTitle') }}</h1>
+            <p>{{ $headMsg }}</p>
         </div>
+        <div class="inv-head-route" aria-hidden="true"><span></span><i class="fas fa-plane"></i></div>
+    </section>
 
-@if(empty( $booking->booking_pnr) && $booking->booking_payment_state == 'paid')
-
-        <div class="bg-red-50 border-l-4 border-red-400 p-4 mt-4">
-            <div class="flex items-start gap-2">
-                <i class="fas fa-exclamation-triangle text-yellow-600 mt-0.5"></i>
-                <div class="text-xs text-red-800">
-                    {{$booking->booking_response_error}}
-                </div>
-            </div>
+    <!-- Invoice no. / date / statuses -->
+    <section class="inv-status">
+        <div class="inv-status-item">
+            <span class="inv-status-icon"><i class="fas fa-file-invoice"></i></span>
+            <div><small>{{ t('hotelinvoice.invoiceNumber') }}</small><b dir="ltr">#INV-{{ $booking->booking_code_ref }}</b></div>
         </div>
-        @endif
+        <div class="inv-status-item">
+            <span class="inv-status-icon"><i class="far fa-calendar"></i></span>
+            <div><small>{{ t('hotelinvoice.invoiceDate') }}</small><b dir="ltr">{{ $booking->created_at->format('d M Y') }}</b></div>
+        </div>
+        <div class="inv-status-item">
+            <span class="inv-status-icon"><i class="fas fa-clipboard-check"></i></span>
+            <div><small>{{ t('hotelinvoice.bookingStatus') }}</small><b class="inv-badge {{ $badge($status) }}">{{ t('hotelinvoice.' . $status) }}</b></div>
+        </div>
+        <div class="inv-status-item">
+            <span class="inv-status-icon"><i class="fas fa-wallet"></i></span>
+            <div><small>{{ t('hotelinvoice.paymentStatus') }}</small><b class="inv-badge {{ $badge($payState) }}">{{ t('hotelinvoice.' . $payState) }}</b></div>
+        </div>
+    </section>
 
-        <!-- Body -->
-        <div class="p-5">
+    <!-- Progress -->
+    <ol class="inv-steps">
+        @foreach($steps as $i => $step)
+            <li class="inv-step {{ $step['state'] }}">
+                <span class="inv-step-icon">
+                    @if($step['state'] === 'is-done')<i class="fas fa-check"></i>
+                    @elseif($step['state'] === 'is-cancelled')<i class="fas fa-xmark"></i>
+                    @else<i class="fas {{ $step['icon'] }}"></i>@endif
+                </span>
+                <span class="inv-step-label">{{ $step['state'] === 'is-cancelled' ? t('hotelinvoice.cancelled') : $step['label'] }}</span>
+            </li>
+        @endforeach
+    </ol>
 
-            <!-- Hotel Information -->
-            <div class="mb-4">
-                <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider mb-2 pb-1 border-b border-gray-200">{{t('hotelinvoice.hotelInformation')}}</h3>
-                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                    <h4 class="font-bold text-gray-900 text-sm mb-1">{{$bookingData->hotel_name ?? 'N/A'}}</h4>
-                    <p class="text-xs text-gray-600 flex items-center gap-1 mb-1">
-                        <i class="fas fa-map-marker-alt text-blue-600"></i>
-                        {{$bookingData->address ?? 'N/A'}}
-                    </p>
-                    <div class="flex items-center gap-2 mt-2">
-                        <span class="text-yellow-500 text-sm">{!! str_repeat('★', $bookingData->stars ?? 5) !!}</span>
-                        <span class="text-xs text-gray-600">{{$bookingData->stars ?? 5}} {{t('hotelinvoice.starHotel')}}</span>
+    @if(empty($booking->booking_pnr) && $isPaid && !empty($booking->booking_response_error))
+        <div class="inv-alert"><i class="fas fa-triangle-exclamation"></i> <span>{{ is_string($booking->booking_response_error) ? $booking->booking_response_error : json_encode($booking->booking_response_error) }}</span></div>
+    @endif
+
+    <div class="inv-layout">
+        <div class="inv-main">
+            <!-- Hotel information -->
+            <section class="inv-card">
+                <h2 class="inv-card-title"><i class="fas fa-hotel"></i> {{ t('hotelinvoice.hotelInformation') }}</h2>
+                <div class="inv-hotel">
+                    <div class="inv-hotel-img">
+                        <i class="fas fa-hotel"></i>
+                        @if($image)<img src="{{ $image }}" alt="{{ $bookingData->hotel_name ?? '' }}" onerror="this.remove()">@endif
+                    </div>
+                    <div class="inv-hotel-info">
+                        <span class="inv-chip">{{ $category }}</span>
+                        <h3 dir="auto">{{ $bookingData->hotel_name ?? '' }}</h3>
+                        @if($stars)
+                            <span class="inv-stars" aria-label="{{ $stars }} {{ t('hotelinvoice.starHotel') }}">@for($s = 1; $s <= 5; $s++)<i class="fas fa-star {{ $s <= $stars ? 'is-on' : '' }}"></i>@endfor</span>
+                        @endif
+                        @if(!empty($bookingData->address))
+                            <p dir="auto"><i class="fas fa-location-dot"></i> {{ $bookingData->address }}</p>
+                        @endif
+                        @if($booking->booking_pnr)
+                            <p><i class="fas fa-hashtag"></i> {{ t('hotelinvoice.bookingPnr') }}: <b>{{ $booking->booking_pnr }}</b></p>
+                        @endif
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Booking Details -->
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 mb-4">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-                    <div>
-                        <div class="text-gray-600 font-semibold mb-0.5">{{t('hotelinvoice.bookingRef')}}</div>
-                        <div class="font-bold text-gray-800">{{$booking->booking_code_ref}}</div>
-                    </div>
-                    <div>
-                        <div class="text-gray-600 font-semibold mb-0.5">{{t('hotelinvoice.bookingPnr')}}</div>
-                        <div class="font-bold text-gray-800">{{ $booking->booking_pnr }}</div>
-                    </div>
-                    <div>
-                        <div class="text-gray-600 font-semibold mb-0.5">{{t('hotelinvoice.checkIn')}}</div>
-                        <div class="font-bold text-gray-800">{{\Carbon\Carbon::parse($bookingData->checkin)->format('d M Y')}}</div>
-                    </div>
-                    <div>
-                        <div class="text-gray-600 font-semibold mb-0.5">{{t('hotelinvoice.checkOut')}}</div>
-                        <div class="font-bold text-gray-800">{{\Carbon\Carbon::parse($bookingData->checkout)->format('d M Y')}}</div>
-                    </div>
-                    <div>
-                        <div class="text-gray-600 font-semibold mb-0.5">{{t('hotelinvoice.nights')}}</div>
-                        <div class="font-bold text-gray-800">{{$days}}</div>
-                    </div>
+            <!-- Stay details -->
+            <section class="inv-card">
+                <h2 class="inv-card-title"><i class="far fa-calendar-check"></i> {{ t('hotelinvoice.stayDetails') }}</h2>
+                <div class="inv-stay">
+                    <div class="inv-stay-item"><i class="far fa-calendar"></i><small>{{ t('hotelinvoice.checkIn') }}</small><b dir="ltr">{{ \Carbon\Carbon::parse($bookingData->checkin)->format('D, d M Y') }}</b>@if($checkinTime)<em>{{ str_replace(':time', $checkinTime, t('hotelinvoice.checkInFrom')) }}</em>@endif</div>
+                    <div class="inv-stay-item"><i class="far fa-calendar"></i><small>{{ t('hotelinvoice.checkOut') }}</small><b dir="ltr">{{ \Carbon\Carbon::parse($bookingData->checkout)->format('D, d M Y') }}</b>@if($checkoutTime)<em>{{ str_replace(':time', $checkoutTime, t('hotelinvoice.checkOutUntil')) }}</em>@endif</div>
+                    <div class="inv-stay-item"><i class="far fa-moon"></i><small>{{ t('hotelinvoice.nights') }}</small><b>{{ $days }}</b></div>
+                    <div class="inv-stay-item"><i class="fas fa-user-group"></i><small>{{ t('hotelinvoice.guests') }}</small><b>{{ $adultCount }} {{ t('hotelinvoice.adultsLabel') }}@if($childCount), {{ $childCount }} {{ t('hotelinvoice.childrenLabel') }}@endif</b><em>{{ $roomCount }} {{ t('hotelinvoice.rooms') }}</em></div>
+                    <div class="inv-stay-item"><i class="fas fa-bed"></i><small>{{ t('hotelinvoice.roomType') }}</small><b dir="auto">{{ $room->name ?? '' }}</b></div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Room Details -->
-            <div class="mb-4">
-                <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider mb-2 pb-1 border-b border-gray-200">{{t('hotelinvoice.roomDetails')}}</h3>
-                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h4 class="font-bold text-gray-900 text-sm mb-1">{{$data->room->name}}</h4>
-                            <p class="text-xs text-gray-600">{{$days}} {{t('hotelinvoice.nights')}}</p>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-sm font-bold text-blue-900">{{ $data->option->price ?? $data->room->price }} {{$booking->booking_currency_origin}}</div>
-                            <div class="text-xs text-gray-600">{{t('hotelinvoice.perStay')}}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Guest Details Table -->
-            <div class="mb-4">
-                <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider mb-2 pb-1 border-b border-gray-200">{{t('hotelinvoice.guestInformation')}}</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-[10px] border-collapse">
+            <!-- Guests -->
+            <section class="inv-card">
+                <h2 class="inv-card-title"><i class="fas fa-users"></i> {{ t('hotelinvoice.guestInformation') }}</h2>
+                @if(count($guestData))
+                    <table class="inv-table">
                         <thead>
-                            <tr class="bg-blue-50 border border-gray-300">
-                                <th class="border border-gray-300 px-2 py-1.5 text-left font-bold text-blue-900">{{t('hotelinvoice.no')}}</th>
-                                <th class="border border-gray-300 px-2 py-1.5 text-left font-bold text-blue-900">{{t('hotelinvoice.guestType')}}</th>
-                                <th class="border border-gray-300 px-2 py-1.5 text-left font-bold text-blue-900">{{t('hotelinvoice.name')}}</th>
-                                <th class="border border-gray-300 px-2 py-1.5 text-left font-bold text-blue-900">{{t('hotelinvoice.gender')}}</th>
-                            </tr>
+                            <tr><th>{{ t('hotelinvoice.no') }}</th><th>{{ t('hotelinvoice.guestType') }}</th><th>{{ t('hotelinvoice.name') }}</th><th>{{ t('hotelinvoice.gender') }}</th></tr>
                         </thead>
                         <tbody>
-                            @if(!empty($guestData) && is_array($guestData))
-                                @foreach($guestData as $index => $guest)
-                            <tr class="border border-gray-300 hover:bg-gray-50">
-                                <td class="border border-gray-300 px-2 py-1.5 font-semibold">{{ $index + 1 }}</td>
-                                <td class="border border-gray-300 px-2 py-1.5">
-                                    @if(isset($guest['traveller_type']) && $guest['traveller_type'] === 'child')
-                                        <span class="inline-block px-2 py-0.5 bg-green-100 text-green-800 rounded text-[9px] font-semibold">{{t('hotelinvoice.child')}}</span>
-                                    @else
-                                        <span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-[9px] font-semibold">{{t('hotelinvoice.adult')}}</span>
-                                    @endif
-                                </td>
-                                <td class="border border-gray-300 px-2 py-1.5 font-semibold">
-                                    {{ $guest['first_name'] ?? 'N/A' }} {{ $guest['last_name'] ?? 'N/A' }}
-                                </td>
-                                <td class="border border-gray-300 px-2 py-1.5">
-                                    {{ ucfirst($guest['title'] ?? 'N/A') }}
-                                </td>
-                            </tr>
-                                @endforeach
-                            @else
-                            <!-- Sample Data -->
-                            <tr class="border border-gray-300 hover:bg-gray-50">
-                                <td class="border border-gray-300 px-2 py-1.5 font-semibold">1</td>
-                                <td class="border border-gray-300 px-2 py-1.5">
-                                    <span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-[9px] font-semibold">{{t('hotelinvoice.adult')}}</span>
-                                </td>
-                                <td class="border border-gray-300 px-2 py-1.5 font-semibold">Ahmed Khan</td>
-                                <td class="border border-gray-300 px-2 py-1.5">Male</td>
-                            </tr>
-                            <tr class="border border-gray-300 hover:bg-gray-50">
-                                <td class="border border-gray-300 px-2 py-1.5 font-semibold">2</td>
-                                <td class="border border-gray-300 px-2 py-1.5">
-                                    <span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-[9px] font-semibold">{{t('hotelinvoice.adult')}}</span>
-                                </td>
-                                <td class="border border-gray-300 px-2 py-1.5 font-semibold">Sarah Khan</td>
-                                <td class="border border-gray-300 px-2 py-1.5">Female</td>
-                            </tr>
-                            @endif
+                            @foreach($guestData as $index => $guest)
+                                @php $isChildGuest = ($guest['traveller_type'] ?? '') === 'child'; @endphp
+                                <tr>
+                                    <td data-label="{{ t('hotelinvoice.no') }}">{{ $index + 1 }}</td>
+                                    <td data-label="{{ t('hotelinvoice.guestType') }}"><span class="inv-chip {{ $isChildGuest ? 'is-muted' : '' }}">{{ $isChildGuest ? t('hotelinvoice.child') : t('hotelinvoice.adult') }}</span></td>
+                                    <td data-label="{{ t('hotelinvoice.name') }}" dir="auto"><b>{{ trim(($guest['first_name'] ?? '') . ' ' . ($guest['last_name'] ?? '')) ?: '—' }}</b></td>
+                                    <td data-label="{{ t('hotelinvoice.gender') }}">{{ !empty($guest['title']) ? (t('hotelbooking.' . strtolower($guest['title'])) !== 'hotelbooking.' . strtolower($guest['title']) ? t('hotelbooking.' . strtolower($guest['title'])) : ucfirst($guest['title'])) : '—' }}</td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
-                </div>
-            </div>
-
-            <!-- Payment Method & Price Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-                <!-- Payment Method Dropdown -->
-                @if($booking->booking_status_flag != "confirmed" && $booking->booking_payment_state != "paid" && $booking->booking_payment_gateway !="after_pay")
-                    <!-- Payment Method Dropdown -->
-                    <div>
-                        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider mb-2 pb-1 border-b border-gray-200">{{t('hotelinvoice.selectPaymentMethod')}}</h3>
-                        <select id="paymentMethod" class="w-full px-3 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-medium text-gray-700">
-                            <option value="stripe" {{ $booking->booking_payment_gateway == "stripe" ? 'selected' : 'hidden' }}>{{t('hotelinvoice.stripe')}}</option>
-                            <option value="payone" {{ $booking->booking_payment_gateway == "payone" ? 'selected' : 'hidden' }}>{{t('hotelinvoice.payone')}}</option>
-                            <option value="payone" {{ $booking->booking_payment_gateway == "paypal" ? 'selected' : 'hidden' }}>{{t('hotelinvoice.paypal')}}</option>
-                        </select>
-
-                        <div id="paymentError" class="hidden mt-2 text-xs text-red-600 font-semibold">
-                            <i class="fas fa-exclamation-circle"></i> {{t('hotelinvoice.paymentError')}}
-                        </div>
-                    </div>
                 @else
-                    <div>
-                        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider mb-2 pb-1 border-b border-gray-200"></h3>
-                    </div>
+                    <p class="inv-empty">—</p>
                 @endif
+            </section>
 
-                <!-- Price Summary -->
-                <div>
-                    <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider mb-2 pb-1 border-b border-gray-200">{{t('hotelinvoice.priceSummary')}}</h3>
-                    <div class="bg-blue-50 border-2 border-blue-600 rounded-lg p-3" style="border-color: #0077BE;">
-                        <div class="flex justify-between items-center text-xs mb-2 pb-2 border-b border-gray-300">
-                            <span class="text-gray-700 font-medium">{{t('hotelinvoice.roomCharges')}} ({{$days}} {{t('hotelinvoice.nights')}})</span>
-                            <span class="font-semibold text-gray-800">{{ $data->option->price ?? $data->room->price }} {{$booking->booking_currency_origin}}</span>
+            <!-- Payment method -->
+            @if($gateway)
+                <section class="inv-card">
+                    <h2 class="inv-card-title"><i class="far fa-credit-card"></i> {{ t('hotelinvoice.paymentMethod') }}</h2>
+                    <div class="inv-pay-method">
+                        <span class="inv-pay-logo">
+                            @if($gatewayLogo)<img src="{{ $gatewayLogo }}" alt="">@else<i class="fas fa-wallet"></i>@endif
+                        </span>
+                        <div class="inv-pay-text">
+                            <b>{{ $gatewayName }}</b>
+                            @if($gatewayDesc)<small>{{ $gatewayDesc }}</small>@endif
+                            @if($booking->booking_txn_id)<small>{{ t('hotelinvoice.transactionId') }}: <span dir="ltr">{{ $booking->booking_txn_id }}</span></small>@endif
                         </div>
-                        <div class="flex justify-between items-center text-xs mb-2 pb-2 border-b border-gray-300">
-                            <span class="text-gray-700 font-medium">{{t('hotelinvoice.taxesFees')}}</span>
-                            <span class="font-semibold text-gray-800">{{$booking->booking_currency_origin}} 0.00</span>
-                        </div>
-                        <div class="flex justify-between items-center pt-2 border-t-2 border-blue-600" style="border-color: #0077BE;">
-                            <span class="text-sm font-bold text-blue-900">{{t('hotelinvoice.totalAmount')}}</span>
-                            <span class="text-lg font-bold text-blue-900">{{ $data->option->price ?? $data->room->price }} {{$booking->booking_currency_origin}}</span>
-                        </div>
+                        <span class="inv-badge {{ $badge($payState) }}">{{ $isPaid ? t('hotelinvoice.paymentReceived') : ($payState === 'refunded' ? t('hotelinvoice.refunded') : t('hotelinvoice.awaitingPayment')) }}</span>
                     </div>
-                </div>
-            </div>
-
-            @if($booking->booking_status_flag != "confirmed" && $booking->booking_payment_state != "paid"  && $booking->booking_payment_gateway !="after_pay")
-                <form method="get" action="{{ route('payment.hotel', ['gateway_name' => strtolower($booking->booking_payment_gateway), 'booking_ref' => $booking->booking_code_ref]) }}">
-                    <!-- Pay Now Button -->
-                    <button onclick="processPayment()" style="background-color: #0077BE;" class="w-full px-4 py-3 text-white font-bold rounded-lg transition shadow-lg flex items-center justify-center gap-2 text-sm hover:opacity-90">
-                        <i class="fas fa-lock"></i>
-                        {{t('hotelinvoice.payNow')}}
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                </form>
+                </section>
             @endif
-            <div class="mt-2 text-center print:hidden">
-                <span class="inline-flex items-center gap-1.5 text-xs text-green-700 bg-green-100 px-2 py-1 rounded-full font-semibold">
-                    <i class="fas fa-shield-alt"></i>
-                    {{t('hotelinvoice.securePayment')}}
-                </span>
-            </div>
 
+            <!-- Policies: only what the hotel record or the booked rate actually says -->
+            <section class="inv-card">
+                <h2 class="inv-card-title"><i class="fas fa-shield-halved"></i> {{ t('hotelinvoice.hotelPolicies') }}</h2>
+                <div class="inv-policies">
+                    @if($checkinTime || $checkoutTime)
+                        <div class="inv-policy">
+                            <i class="far fa-clock"></i>
+                            <div>
+                                <b>{{ t('hotelinvoice.checkIn') }} / {{ t('hotelinvoice.checkOut') }}</b>
+                                @if($checkinTime)<p>{{ str_replace(':time', $checkinTime, t('hotelinvoice.checkInFrom')) }}</p>@endif
+                                @if($checkoutTime)<p>{{ str_replace(':time', $checkoutTime, t('hotelinvoice.checkOutUntil')) }}</p>@endif
+                            </div>
+                        </div>
+                    @endif
+                    <div class="inv-policy">
+                        <i class="far fa-credit-card"></i>
+                        <div>
+                            <b>{{ t('hotelinvoice.payment') }}</b>
+                            <p>{{ $isPaid ? str_replace(':method', $gatewayName, t('hotelinvoice.paidVia')) : ($gateway === 'after_pay' ? t('hotelinvoice.payLaterPolicy') : str_replace(':method', $gatewayName, t('hotelinvoice.paymentDueVia'))) }}</p>
+                            @if($hotelPaymentPolicy)<p dir="auto">{{ $hotelPaymentPolicy }}</p>@endif
+                        </div>
+                    </div>
+                    @if($cancelLines || $hotelCancelPolicy)
+                        <div class="inv-policy">
+                            <i class="far fa-calendar-xmark"></i>
+                            <div>
+                                <b>{{ t('hotelinvoice.cancellation') }}</b>
+                                @foreach($cancelLines as $line)<p>{{ $line }}</p>@endforeach
+                                @if($hotelCancelPolicy)<p dir="auto">{{ $hotelCancelPolicy }}</p>@endif
+                            </div>
+                        </div>
+                    @endif
+                    @if($services)
+                        <div class="inv-policy">
+                            <i class="fas fa-concierge-bell"></i>
+                            <div>
+                                <b>{{ t('hotelinvoice.services') }}</b>
+                                <p>{{ implode(', ', $services) }}</p>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </section>
 
-            <!-- Hotel Policies -->
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4 mt-4">
-                <div class="text-xs font-bold text-blue-900 uppercase tracking-wider mb-2">{{t('hotelinvoice.hotelPolicies')}}</div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-[10px] text-gray-700">
-                    <div class="flex items-start gap-2">
-                        <i class="fas fa-clock text-blue-600 mt-0.5"></i>
-                        <div>
-                            <strong>{{t('hotelinvoice.checkIn')}}:</strong> 2:00 PM<br>
-                            <strong>{{t('hotelinvoice.checkOut')}}:</strong> 11:00 AM
+            <!-- Important information (existing notes) -->
+            <section class="inv-card inv-notes">
+                <h2 class="inv-card-title"><i class="fas fa-circle-info"></i> {{ t('hotelinvoice.importantInfo') }}</h2>
+                <ul>
+                    @foreach(['info1', 'info2', 'info3', 'info4', 'info5'] as $info)
+                        <li>{{ t('hotelinvoice.' . $info) }}</li>
+                    @endforeach
+                </ul>
+            </section>
+        </div>
+
+        <!-- Booking summary -->
+        <aside class="inv-side">
+            <div class="inv-summary">
+                <div class="inv-summary-img">
+                    <i class="fas fa-hotel"></i>
+                    @if($image)<img src="{{ $image }}" alt="" onerror="this.remove()">@endif
+                </div>
+                <div class="inv-summary-body">
+                    <h2 class="inv-card-title"><i class="fas fa-bookmark"></i> {{ t('hotelinvoice.bookingSummary') }}</h2>
+                    <div class="inv-summary-hotel">
+                        <h3 dir="auto">{{ $bookingData->hotel_name ?? '' }}</h3>
+                        <div class="inv-summary-meta">
+                            @if($stars)<span class="inv-stars">@for($s = 1; $s <= 5; $s++)<i class="fas fa-star {{ $s <= $stars ? 'is-on' : '' }}"></i>@endfor</span>@endif
+                            <span class="inv-chip">{{ $category }}</span>
                         </div>
+                        @if(!empty($bookingData->address))<p dir="auto"><i class="fas fa-location-dot"></i> {{ $bookingData->address }}</p>@endif
                     </div>
-                    <div class="flex items-start gap-2">
-                        <i class="fas fa-times-circle text-red-600 mt-0.5"></i>
-                        <div>
-                            <strong>{{t('hotelinvoice.cancellation')}}:</strong> {{t('hotelinvoice.cancellationPolicy')}}
-                        </div>
+
+                    <div class="inv-rows">
+                        <div class="inv-row"><span><i class="fas fa-bed"></i> {{ t('hotelinvoice.roomType') }}</span><b dir="auto">{{ $room->name ?? '' }}</b></div>
+                        <div class="inv-row"><span><i class="far fa-calendar"></i> {{ t('hotelinvoice.checkIn') }}</span><b dir="ltr">{{ \Carbon\Carbon::parse($bookingData->checkin)->format('d M Y') }}</b></div>
+                        <div class="inv-row"><span><i class="far fa-calendar"></i> {{ t('hotelinvoice.checkOut') }}</span><b dir="ltr">{{ \Carbon\Carbon::parse($bookingData->checkout)->format('d M Y') }}</b></div>
+                        <div class="inv-row"><span><i class="far fa-moon"></i> {{ t('hotelinvoice.nights') }}</span><b>{{ $days }}</b></div>
+                        <div class="inv-row"><span><i class="fas fa-user-group"></i> {{ t('hotelinvoice.guests') }}</span><b>{{ $adultCount + $childCount }}</b></div>
                     </div>
-                    <div class="flex items-start gap-2">
-                        <i class="fas fa-credit-card text-green-600 mt-0.5"></i>
-                        <div>
-                            <strong>{{t('hotelinvoice.payment')}}:</strong> {{t('hotelinvoice.paymentPolicy')}}
-                        </div>
+
+                    <div class="inv-rows is-price">
+                        <div class="inv-row"><span>{{ t('hotelinvoice.roomCharges') }} ({{ $days }} {{ t('hotelinvoice.nights') }})</span><b>{{ $money($price) }}</b></div>
+                        @foreach($taxesIncluded as $tax)
+                            <div class="inv-row is-sub"><span>{{ ($tax['description'] ?? '') ?: ($tax['name'] ?? $tax['type'] ?? t('hotelinvoice.taxesFees')) }} <em>({{ t('hoteldetails.included_in_price') }})</em></span><b>{{ $money($tax['amount'] ?? 0, $tax['currency'] ?? null) }}</b></div>
+                        @endforeach
+                        @foreach($taxesAtProperty as $tax)
+                            <div class="inv-row is-sub"><span>{{ ($tax['description'] ?? '') ?: ($tax['name'] ?? $tax['type'] ?? t('hotelinvoice.taxesFees')) }} <em>({{ t('hoteldetails.payable_at_property') }})</em></span><b>{{ $money($tax['amount'] ?? 0, $tax['currency'] ?? null) }}</b></div>
+                        @endforeach
                     </div>
-                    <div class="flex items-start gap-2">
-                        <i class="fas fa-concierge-bell text-blue-600 mt-0.5"></i>
-                        <div>
-                            <strong>{{t('hotelinvoice.services')}}:</strong> {{t('hotelinvoice.servicesPolicy')}}
-                        </div>
+
+                    <div class="inv-total">
+                        <span>{{ t('hotelinvoice.totalAmount') }}</span>
+                        <b>{{ $money($price) }}</b>
+                    </div>
+
+                    <!-- Pay Now only while the booking can still be paid through its gateway -->
+                    <div class="inv-pay" data-html2canvas-ignore>
+                        @if($canPay)
+                            <form method="get" action="{{ route('payment.hotel', ['gateway_name' => $gateway, 'booking_ref' => $booking->booking_code_ref]) }}" id="invPayForm">
+                                <button type="submit" class="inv-pay-btn"><i class="fas fa-lock"></i> <span>{{ t('hotelinvoice.payNow') }}</span></button>
+                            </form>
+                            <p class="inv-secure"><i class="fas fa-shield-halved"></i> {{ t('hotelinvoice.securePayment') }} · {{ $gatewayName }}</p>
+                        @elseif($isPaid)
+                            <div class="inv-paid"><i class="fas fa-circle-check"></i> {{ t('hotelinvoice.paymentCompleted') }}</div>
+                        @elseif($isCancelled)
+                            <div class="inv-paid is-muted"><i class="fas fa-ban"></i> {{ t('hotelinvoice.payUnavailable') }}</div>
+                        @endif
                     </div>
                 </div>
             </div>
-
-            <!-- Important Information -->
-            <div class="bg-gray-50 border-t border-gray-200 rounded-lg p-3">
-                <div class="text-xs font-bold text-blue-900 uppercase tracking-wider mb-1">{{t('hotelinvoice.importantInfo')}}</div>
-                <div class="text-[10px] text-gray-700 leading-relaxed space-y-0.5">
-                    <p>• {{t('hotelinvoice.info1')}}</p>
-                    <p>• {{t('hotelinvoice.info2')}}</p>
-                    <p>• {{t('hotelinvoice.info3')}}</p>
-                    <p>• {{t('hotelinvoice.info4')}}</p>
-                    <p>• {{t('hotelinvoice.info5')}}</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="bg-gray-50 border-t border-gray-200 p-3 text-center">
-            <p class="text-[10px] text-gray-500">© 2025 {{t('hotelinvoice.footer')}}</p>
-            <p class="text-[10px] text-gray-500">{{t('hotelinvoice.support')}}: support@travelbooox.com | +92 (21) 1234-5678</p>
-        </div>
+        </aside>
     </div>
-</div>
+
+    <!-- Document footer strip (this page only) -->
+    <footer class="inv-foot">
+        <div><b>{{ $businessName }}</b> · {{ t('hotelinvoice.generated') }}</div>
+        <div>
+            @if($contactEmail)<span><i class="far fa-envelope"></i> {{ $contactEmail }}</span>@endif
+            @if($contactPhone)<span><i class="fas fa-phone"></i> <span dir="ltr">{{ $contactPhone }}</span></span>@endif
+        </div>
+    </footer>
+</main>
 
 <script>
-    function downloadPDF() {
-        alert('PDF download functionality would be implemented');
+(function () {
+    const toast = document.getElementById('invToast');
+    let toastTimer;
+    function notify(message, isError) {
+        toast.textContent = message;
+        toast.classList.toggle('is-error', !!isError);
+        toast.hidden = false;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.hidden = true, 5000);
+    }
+    function busy(btn, on, label) {
+        const text = btn.querySelector('span');
+        if (on) { btn.dataset.label = text.textContent; text.textContent = label; }
+        else if (btn.dataset.label) { text.textContent = btn.dataset.label; }
+        btn.disabled = on;
+        btn.classList.toggle('is-loading', on);
     }
 
-    function sendEmail() {
-        alert('Invoice sent to your email');
+    document.getElementById('invPrint').addEventListener('click', () => window.print());
+
+    // PDF of the document area (action bar and Pay Now are left out); the
+    // generator is only downloaded when someone asks for a PDF
+    const pdfBtn = document.getElementById('invPdf');
+    function loadPdfLib() {
+        if (window.html2pdf) return Promise.resolve();
+        return new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+            s.onload = resolve;
+            s.onerror = reject;
+            document.head.appendChild(s);
+        });
     }
-
-    function processPayment() {
-        const paymentMethod = document.getElementById('paymentMethod').value;
-        const errorDiv = document.getElementById('paymentError');
-
-        if (!paymentMethod) {
-            errorDiv.classList.remove('hidden');
-            document.getElementById('paymentMethod').classList.add('border-red-500', 'ring-2', 'ring-red-500');
-            return;
-        }
-
-        errorDiv.classList.add('hidden');
-        document.getElementById('paymentMethod').classList.remove('border-red-500', 'ring-2', 'ring-red-500');
-
-        alert('Processing payment via: ' + paymentMethod.toUpperCase().replace('_', ' ') + '...');
-        // Add your payment processing logic here
-    }
-
-    // Remove error styling when user selects a payment method
-    document.getElementById('paymentMethod').addEventListener('change', function() {
-        if (this.value) {
-            document.getElementById('paymentError').classList.add('hidden');
-            this.classList.remove('border-red-500', 'ring-2', 'ring-red-500');
+    pdfBtn.addEventListener('click', async () => {
+        if (pdfBtn.disabled) return;
+        busy(pdfBtn, true, @json(t('hotelinvoice.preparingPdf')));
+        document.body.classList.add('is-pdf');
+        try {
+            await loadPdfLib();
+            await html2pdf().set({
+                // A4 proportions in px, wide enough for the two-column layout
+                margin: [20, 20, 20, 20],
+                filename: 'invoice-{{ $booking->booking_code_ref }}.pdf',
+                image: { type: 'jpeg', quality: 0.95 },
+                html2canvas: { scale: 2, useCORS: true, windowWidth: 1140 },
+                jsPDF: { unit: 'px', format: [1140, 1612], orientation: 'portrait', hotfixes: ['px_scaling'] },
+                pagebreak: { mode: ['css'], avoid: ['.inv-card', '.inv-summary', '.inv-status', '.inv-steps'] },
+            }).from(document.getElementById('invDoc')).save();
+        } catch (e) {
+            notify(@json(t('hotelinvoice.pdfFailed')), true);
+        } finally {
+            document.body.classList.remove('is-pdf');
+            busy(pdfBtn, false);
         }
     });
-</script>
 
+    // Email the invoice link to the booking contact (once at a time)
+    const emailBtn = document.getElementById('invEmail');
+    emailBtn.addEventListener('click', async () => {
+        if (emailBtn.disabled) return;
+        busy(emailBtn, true, @json(t('hotelinvoice.sending')));
+        try {
+            const res = await fetch(emailBtn.dataset.url, {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                credentials: 'same-origin',
+            });
+            const json = await res.json().catch(() => ({}));
+            notify(json.message || @json(t('hotelinvoice.emailFailed')), !res.ok || !json.success);
+        } catch (e) {
+            notify(@json(t('hotelinvoice.emailFailed')), true);
+        } finally {
+            busy(emailBtn, false);
+        }
+    });
+
+    // Pay Now: one submission only
+    const payForm = document.getElementById('invPayForm');
+    if (payForm) payForm.addEventListener('submit', (e) => {
+        const btn = payForm.querySelector('button');
+        if (btn.disabled) { e.preventDefault(); return; }
+        busy(btn, true, @json(t('hotelinvoice.processing')));
+    });
+    window.addEventListener('pageshow', (e) => {
+        if (e.persisted && payForm) busy(payForm.querySelector('button'), false);
+    });
+})();
+</script>
 </body>
 </html>
