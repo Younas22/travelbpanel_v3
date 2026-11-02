@@ -88,7 +88,7 @@ class AmadeusSelfController extends BaseController
     /**
      * Build route data for the search
      */
-    private function route_data(array $input): array
+    protected function route_data(array $input): array
     {
         $routeData = [];
 
@@ -122,7 +122,7 @@ class AmadeusSelfController extends BaseController
     /**
      * Build travelers data
      */
-    private function travelers_data(array $input): array
+    protected function travelers_data(array $input): array
     {
         $travelers = [];
         $id = 1;
@@ -166,7 +166,7 @@ class AmadeusSelfController extends BaseController
     /**
      * Build search data payload
      */
-    private function search_data(array $input, array $routeData, array $travelers): array
+    protected function search_data(array $input, array $routeData, array $travelers): array
     {
         return [
             'currencyCode' => strtoupper($input['currency']),
@@ -191,7 +191,7 @@ class AmadeusSelfController extends BaseController
     /**
      * Search flights
      */
-    private function search_flights(string $endpoint, array $searchData, string $token): ?array
+    protected function search_flights(string $endpoint, array $searchData, string $token): ?array
     {
 
 
@@ -225,7 +225,7 @@ class AmadeusSelfController extends BaseController
     /**
      * Get OAuth token
      */
-    private function get_token(string $endpoint, array $input)
+    protected function get_token(string $endpoint, array $input)
     {
         try {
             $response = Http::asForm()->post($endpoint . 'security/oauth2/token', [
@@ -248,7 +248,7 @@ class AmadeusSelfController extends BaseController
     /**
      * Get API endpoints based on environment
      */
-    private function get_endpoints(string $env): array
+    protected function get_endpoints(string $env): array
     {
         $baseUrl = $env === 'dev'
             ? 'https://test.api.amadeus.com/'
@@ -264,7 +264,7 @@ class AmadeusSelfController extends BaseController
     /**
      * Process flight results into formatted array
      */
-    private function process_flight_results(array $results, array $input): array
+    protected function process_flight_results(array $results, array $input): array
     {
         $mainArray = [];
 
@@ -359,7 +359,7 @@ class AmadeusSelfController extends BaseController
         return $mainArray;
     }
 
-    private function commission($price,$commission,$discount) {
+    protected function commission($price,$commission,$discount) {
         $commission = $price * ($commission/ 100);
         $priceWithCommission = $price + $commission;
         // Apply discount
@@ -372,7 +372,7 @@ class AmadeusSelfController extends BaseController
     /**
      * Extract pricing information from traveler pricings
      */
-    private function pricing(array $traveler_pricings): array
+    protected function pricing(array $traveler_pricings): array
     {
         $adultPrice = 0;
         $childPrice = 0;
@@ -414,7 +414,7 @@ class AmadeusSelfController extends BaseController
     /**
      * Get airline information
      */
-    private function airline_info(string $carrierCode): array
+    protected function airline_info(string $carrierCode): array
     {
         $airline = DB::table('flights_airlines')->where('code', $carrierCode)->first();
         return [
@@ -426,7 +426,7 @@ class AmadeusSelfController extends BaseController
     /**
      * Get detailed airport information
      */
-    private function airport_details(string $airportCode): array
+    protected function airport_details(string $airportCode): array
     {
         $airport = DB::table('flights_airports')->where('code', $airportCode)->first();
         return [
@@ -439,7 +439,7 @@ class AmadeusSelfController extends BaseController
     /**
      * Get airport information
      */
-    private function airport_info(string $departureCode, string $arrivalCode): array
+    protected function airport_info(string $departureCode, string $arrivalCode): array
     {
         $departureAirport = DB::table('flights_airports')->where('code', $departureCode)->first();
         $arrivalAirport = DB::table('flights_airports')->where('code', $arrivalCode)->first();
@@ -453,7 +453,7 @@ class AmadeusSelfController extends BaseController
     /**
      * Format duration from ISO 8601 format
      */
-    private function duration(string $duration): string
+    protected function duration(string $duration): string
     {
         try {
             $start = new \DateTime('@0');
@@ -467,7 +467,7 @@ class AmadeusSelfController extends BaseController
     /**
      * Calculate total duration for all segments
      */
-    private function total_duration(array $segments): string
+    protected function total_duration(array $segments): string
     {
         try {
             $totalDuration = new \DateTime('@0');
