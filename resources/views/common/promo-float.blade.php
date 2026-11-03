@@ -19,91 +19,109 @@
 </div>
 
 <!-- Promo Modal -->
-<div id="promoModal" class="promo-modal">
+@php
+    $pt = fn($key, $fallback) => $promoTrans[$key] ?? $fallback;
+    $promoSuppliers = [
+        ['Amadeus', 'partners/amadeus_enterprise.png', false],
+        ['Sabre', 'promo/sabre-logo.png', true],
+        ['Hotelbeds', 'partners/hotelbeds.png', false],
+        ['WebBeds', 'partners/webbeds.png', false],
+        ['Agoda', 'partners/agoda.png', true],
+        ['Duffel', 'partners/duffel.png', true],
+    ];
+    $promoExperts = [
+        ['label' => $pt('ceo', 'CEO'), 'phone' => '+92 320 7560200', 'wa' => '923207560200'],
+        ['label' => $pt('ota_expert', 'OTA Expert'), 'phone' => '+92 346 0820722', 'wa' => '923460820722'],
+    ];
+@endphp
+<div id="promoModal" class="promo-modal" role="dialog" aria-modal="true" aria-labelledby="promoModalTitle">
     <div class="promo-modal-overlay"></div>
     <div class="promo-modal-content">
-        <button class="promo-modal-close" id="promoModalClose">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        </button>
-
-        <div class="promo-modal-header">
-            <div class="promo-modal-badge">
-                <span class="promo-modal-badge-pulse"></span>
-                {{ $promoTrans['limited_offer'] ?? 'Limited Time Offer' }}
-            </div>
-            <h2 class="promo-modal-title">{{ $promoTrans['modal_title'] ?? 'Start Your Travel Business Today!' }}</h2>
-            <p class="promo-modal-subtitle">{{ $promoTrans['modal_subtitle'] ?? 'Complete white-label solution for your travel agency' }}</p>
+        <!-- Branding + close -->
+        <div class="promo-top">
+            <img src="{{ getSettingImage('business_logo', 'branding') }}" alt="TravelBookingPanel" class="promo-logo">
+            <button type="button" class="promo-modal-close" id="promoModalClose" aria-label="{{ $pt('close', 'Close') }}">
+                <i class="fas fa-xmark"></i>
+            </button>
         </div>
 
-        <div class="promo-modal-body">
-            <!-- Features -->
-            <div class="promo-features">
-                <div class="promo-feature">
-                    <div class="promo-feature-icon">✓</div>
-                    <span>{{ $promoTrans['feature_1'] ?? 'Hotels, Flights, Tours, Visa & Umrah' }}</span>
-                </div>
-                <div class="promo-feature">
-                    <div class="promo-feature-icon">✓</div>
-                    <span>{{ $promoTrans['feature_2'] ?? 'White Label Solution' }}</span>
-                </div>
-                <div class="promo-feature">
-                    <div class="promo-feature-icon">✓</div>
-                    <span>{{ $promoTrans['feature_3'] ?? 'Setup in 15 Minutes' }}</span>
-                </div>
-                <div class="promo-feature">
-                    <div class="promo-feature-icon">✓</div>
-                    <span>{{ $promoTrans['feature_4'] ?? 'Full Admin Panel' }}</span>
-                </div>
-            </div>
+        <div class="promo-hero">
+            <!-- Offer -->
+            <div class="promo-hero-text">
+                <span class="promo-modal-badge"><i class="fas fa-tag"></i> {{ $pt('limited_offer', 'Limited Time Offer') }}</span>
+                <h2 class="promo-modal-title" id="promoModalTitle">
+                    {{ $pt('title_lead', 'Start Your') }} <span>{{ $pt('title_highlight', 'Travel Business Today!') }}</span>
+                </h2>
+                <p class="promo-modal-subtitle">{{ $pt('modal_subtitle', 'Complete white-label solution for your travel agency') }}</p>
 
-            <!-- Price -->
-            <div class="promo-price-card">
-                <div class="promo-price-label">{{ $promoTrans['starting_from'] ?? 'Starting <b>Starter Plan</b> from just' }}</div>
-                <div class="promo-price-value">$1599</div>
-                <div class="promo-price-desc">{{ $promoTrans['one_time_payment'] ?? 'One-time payment, no monthly fees' }}</div>
-            </div>
-
-            <!-- CTA Buttons -->
-            <div class="promo-cta-group">
-                <a href="https://travelbookingpanel.com/pricing" target="_blank" class="promo-btn promo-btn-primary">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                    </svg>
-                    {{ $promoTrans['view_pricing'] ?? 'View Pricing Plans' }}
-                </a>
-                <a href="https://demo.travelbookingpanel.com/" target="_blank" class="promo-btn promo-btn-secondary">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                    </svg>
-                    {{ $promoTrans['explore_demo'] ?? 'Explore Demo' }}
-                </a>
-            </div>
-
-            <!-- Contact -->
-            <div class="promo-contact">
-                <p>{{ $promoTrans['questions'] ?? 'Have questions?' }}</p>
-                <div class="promo-contact-links">
-                    <a href="https://wa.me/923207560200" target="_blank" class="promo-whatsapp">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                        </svg>
-                        +92 320 7560200
+                <div class="promo-portals">
+                    <a href="{{ route('agent.dashboard') }}" class="promo-portal">
+                        <i class="fas fa-users"></i>
+                        <span><b>{{ $pt('b2b', 'B2B') }}</b><small>{{ $pt('agent_portal', 'Agent Portal') }}</small></span>
                     </a>
-                    <a href="mailto:contact@travelbookingpanel.com" class="promo-email">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                            <polyline points="22,6 12,13 2,6"></polyline>
-                        </svg>
-                        contact@travelbookingpanel.com
+                    <a href="{{ route('user.dashboard') }}" class="promo-portal">
+                        <i class="fas fa-user"></i>
+                        <span><b>{{ $pt('b2c', 'B2C') }}</b><small>{{ $pt('customer_portal', 'Customer Portal') }}</small></span>
+                    </a>
+                </div>
+
+                <ul class="promo-features">
+                    @foreach([
+                        $pt('feature_1', 'Hotels, Flights, Tours, Visa & Umrah'),
+                        $pt('feature_2', 'White Label Solution'),
+                        $pt('feature_3', 'Setup in 15 Minutes'),
+                        $pt('feature_4', 'Full Admin Panel'),
+                        $pt('feature_5', 'B2B & B2C Portals'),
+                    ] as $feature)
+                        <li class="promo-feature"><i class="fas fa-circle-check"></i> <span>{{ $feature }}</span></li>
+                    @endforeach
+                </ul>
+            </div>
+
+            <!-- Product visual + price -->
+            <div class="promo-hero-side">
+                <img src="{{ asset('public/assets/images/promo/promo-mockup.jpg') }}" alt="" class="promo-mockup" loading="lazy">
+                <div class="promo-price-card">
+                    <div class="promo-price-label">{{ $pt('starting_from', 'Starting from just') }}</div>
+                    <div class="promo-price-value">$1599</div>
+                    <div class="promo-price-desc">{{ $pt('one_time_payment', 'One-time payment, no monthly fees') }}</div>
+                </div>
+                <div class="promo-cta-group">
+                    <a href="https://travelbookingpanel.com/pricing" target="_blank" rel="noopener" class="promo-btn promo-btn-primary">
+                        <i class="fas fa-layer-group"></i> {{ $pt('view_pricing', 'View Pricing Plans') }}
+                    </a>
+                    <a href="https://demo.travelbookingpanel.com/" target="_blank" rel="noopener" class="promo-btn promo-btn-secondary">
+                        <i class="far fa-eye"></i> {{ $pt('explore_demo', 'Explore Demo') }}
                     </a>
                 </div>
             </div>
         </div>
+
+        <!-- Supplier integrations -->
+        <div class="promo-suppliers">
+            <h3 class="promo-section-title"><span>{{ $pt('trusted_suppliers', 'Trusted Supplier Integrations') }}</span></h3>
+            <div class="promo-supplier-grid">
+                @foreach($promoSuppliers as [$name, $logo, $padded])
+                    <div class="promo-supplier"><img src="{{ asset('public/assets/images/' . $logo) }}" alt="{{ $name }}" loading="lazy" @class(['is-padded' => $padded])></div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- WhatsApp experts -->
+        <div class="promo-contact">
+            <div class="promo-contact-title"><i class="fas fa-headset"></i> <b>{{ $pt('talk_experts', 'Talk to Our Experts') }}</b></div>
+            <div class="promo-contact-links">
+                @foreach($promoExperts as $expert)
+                    <a href="https://wa.me/{{ $expert['wa'] }}" target="_blank" rel="noopener" class="promo-whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                        <span><b>{{ $expert['label'] }}</b><small dir="ltr">{{ $expert['phone'] }}</small></span>
+                        <i class="fas fa-arrow-right promo-whatsapp-arrow"></i>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+
+        <div class="promo-waves" aria-hidden="true"></div>
     </div>
 </div>
 
@@ -132,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
     floatButton.addEventListener('click', function() {
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
+        modalClose.focus();
     });
 
     // Close modal functions
