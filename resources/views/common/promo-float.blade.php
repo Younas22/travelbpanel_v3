@@ -75,7 +75,7 @@
 
             <!-- Product visual + price -->
             <div class="promo-hero-side">
-                <img src="{{ asset('public/assets/images/promo/promo-mockup.jpg') }}" alt="" class="promo-mockup" loading="lazy">
+                <img src="{{ asset('public/assets/images/promo/promo-mockup.jpg') }}?v={{ filemtime(public_path('assets/images/promo/promo-mockup.jpg')) }}" alt="" class="promo-mockup" loading="lazy">
                 <div class="promo-price-card">
                     <div class="promo-price-label">{{ $pt('starting_from', 'Starting from just') }}</div>
                     <div class="promo-price-value">$1599</div>
