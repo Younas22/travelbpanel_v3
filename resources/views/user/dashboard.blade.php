@@ -10,8 +10,8 @@
         <p class="text-sm text-gray-400 mt-0.5">Your Travel Overview</p>
     </div>
     <a href="{{ route('user.profile.index') }}"
-       class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition"
-       style="background:#e8f4fd; color:#0077BE; text-decoration:none;">
+       class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ap-chip-link"
+      >
         <i class="fas fa-user-pen"></i> Edit Profile
     </a>
 </div>
@@ -19,8 +19,8 @@
 {{-- Stats --}}
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:#e8f4fd;">
-            <i class="fas fa-calendar-check" style="color:#0077BE;"></i>
+        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ap-tint-bg">
+            <i class="fas fa-calendar-check ap-accent"></i>
         </div>
         <div>
             <p class="text-xs text-gray-400">Total Bookings</p>
@@ -64,8 +64,8 @@
             <p class="text-xs text-gray-400 mt-0.5">Total: {{ $totalBookings }} records</p>
         </div>
         <a href="{{ route('user.bookings.index') }}"
-           class="text-xs font-semibold px-3 py-1.5 rounded-lg transition"
-           style="background:#e8f4fd; color:#0077BE; text-decoration:none;">
+           class="text-xs font-semibold px-3 py-1.5 rounded-lg transition ap-chip-link"
+          >
             View All
         </a>
     </div>
@@ -103,7 +103,7 @@
                     <td class="px-5 py-3 font-mono font-semibold text-gray-700">{{ $b['booking_code'] }}</td>
                     <td class="px-5 py-3">
                         <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full">
-                            <i class="fas {{ $typeIcons[$b['booking_type']] ?? 'fa-circle' }} text-xs" style="color:#0077BE;"></i>
+                            <i class="fas {{ $typeIcons[$b['booking_type']] ?? 'fa-circle' }} text-xs ap-accent"></i>
                             {{ ucfirst($b['booking_type']) }}
                         </span>
                     </td>
@@ -120,7 +120,7 @@
                     <td class="px-5 py-3 font-semibold text-gray-700">{{ $b['price'] }}</td>
                     <td class="px-5 py-3 text-gray-500 text-xs">{{ \Carbon\Carbon::parse($b['created_at'])->format('M d, Y') }}</td>
                     <td class="px-5 py-3">
-                        <a href="{{ route('user.bookings.index') }}" class="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg hover:bg-blue-50 transition" style="color:#0077BE; text-decoration:none;">
+                        <a href="{{ route('user.bookings.index') }}" class="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg hover:bg-blue-50 transition ap-accent-link">
                             <i class="fas fa-eye"></i>
                         </a>
                     </td>

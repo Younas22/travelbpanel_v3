@@ -96,7 +96,7 @@
         {{-- Floating reopen button - shown when sidebar is closed/collapsed --}}
         <button id="sidebarReopenBtn" onclick="toggleSidebar()"
                 class="fixed left-0 z-40 flex-col gap-1 justify-center items-center w-6 h-14 rounded-r-lg shadow-md transition"
-                style="display:none; top: 50%; transform: translateY(-50%); background:#0077BE;" title="Open Sidebar">
+                style="display:none; top: 50%; transform: translateY(-50%); background:var(--primary-color);" title="Open Sidebar">
             <span class="w-3 h-px rounded bg-white"></span>
             <span class="w-3 h-px rounded bg-white"></span>
             <span class="w-3 h-px rounded bg-white"></span>

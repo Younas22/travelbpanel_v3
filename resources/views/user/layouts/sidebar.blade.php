@@ -8,9 +8,9 @@
         <div class="flex items-center gap-3 min-w-0 flex-1">
             @if($user->profile_image)
                 <img src="{{ url('public/assets/images/avatars/' . $user->profile_image) }}"
-                     class="w-10 h-10 rounded-full object-cover border-2 flex-shrink-0" style="border-color:#0077BE;">
+                     class="w-10 h-10 rounded-full object-cover border-2 flex-shrink-0" style="border-color:var(--primary-color);">
             @else
-                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style="background:#0077BE;">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 ap-solid-accent">
                     {{ $user->initials ?? strtoupper(substr($user->first_name,0,1).substr($user->last_name,0,1)) }}
                 </div>
             @endif

@@ -25,6 +25,8 @@ class ThemeSettingController extends Controller
     public function update(UpdateThemeSettingRequest $request)
     {
         $data = $request->validated();
+        // the agent panel has one design (Classic)
+        $data['design_style'] = 'classic';
         $data['layout_options'] = array_merge(
             ThemeSetting::defaultLayoutOptions(),
             $data['layout_options'] ?? []

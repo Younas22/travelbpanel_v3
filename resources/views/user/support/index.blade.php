@@ -5,7 +5,7 @@
 
 {{-- Breadcrumb --}}
 <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
-    <a href="{{ route('user.dashboard') }}" style="color:#0077BE; text-decoration:none;">Dashboard</a>
+    <a class="ap-accent-link" href="{{ route('user.dashboard') }}">Dashboard</a>
     <i class="fas fa-chevron-right text-gray-300"></i>
     <span class="text-gray-600">Support Tickets</span>
 </div>
@@ -13,8 +13,8 @@
 {{-- Page Header --}}
 <div class="flex items-center justify-between mb-5">
     <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#e8f4fd;">
-            <i class="fas fa-headset" style="color:#0077BE;"></i>
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center ap-tint-bg">
+            <i class="fas fa-headset ap-accent"></i>
         </div>
         <div>
             <h4 class="text-lg font-bold text-gray-800">Support Tickets</h4>
@@ -22,8 +22,8 @@
         </div>
     </div>
     <button onclick="openTicketModal()"
-            class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition"
-            style="background:#0077BE; color:#fff; border:none; cursor:pointer;">
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ap-solid-accent-btn text-white"
+           >
         <i class="fas fa-plus"></i> Create Ticket
     </button>
 </div>
@@ -32,14 +32,14 @@
 <div class="bg-white rounded-xl border border-gray-100 shadow-sm">
     @if($tickets->isEmpty())
         <div class="py-16 text-center text-gray-400">
-            <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style="background:#e8f4fd;">
-                <i class="fas fa-ticket text-2xl" style="color:#0077BE;"></i>
+            <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ap-tint-bg">
+                <i class="fas fa-ticket text-2xl ap-accent"></i>
             </div>
             <p class="text-sm font-semibold text-gray-600 mb-1">No Tickets found</p>
             <p class="text-xs mb-4">Create your First Support Ticket</p>
             <button onclick="openTicketModal()"
-                    class="px-5 py-2.5 rounded-lg text-sm font-semibold"
-                    style="background:#0077BE; color:#fff; border:none; cursor:pointer;">
+                    class="px-5 py-2.5 rounded-lg text-sm font-semibold ap-solid-accent-btn text-white"
+                   >
                 <i class="fas fa-plus mr-1"></i> Create Ticket
             </button>
         </div>
@@ -69,7 +69,7 @@
                 <tr class="hover:bg-gray-50 transition">
                     <td class="px-5 py-3 text-gray-500 text-xs">{{ $i+1 }}</td>
                     <td class="px-5 py-3 font-medium text-gray-700">
-                        <a href="{{ route('user.support.show', $ticket) }}" class="hover:underline" style="color:#0077BE;">{{ $ticket->subject }}</a>
+                        <a href="{{ route('user.support.show', $ticket) }}" class="hover:underline ap-accent">{{ $ticket->subject }}</a>
                         <div class="text-xs text-gray-400 font-mono mt-0.5">{{ $ticket->ticket_number }}</div>
                     </td>
                     <td class="px-5 py-3">
@@ -80,7 +80,7 @@
                     </td>
                     <td class="px-5 py-3 text-xs text-gray-500">{{ $ticket->created_at->format('M d, Y') }}</td>
                     <td class="px-5 py-3">
-                        <a href="{{ route('user.support.show', $ticket) }}" class="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg hover:bg-blue-50 transition" style="color:#0077BE;">
+                        <a href="{{ route('user.support.show', $ticket) }}" class="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg hover:bg-blue-50 transition ap-accent">
                             <i class="fas fa-eye"></i>
                         </a>
                     </td>
@@ -96,7 +96,7 @@
 <div id="ticketModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:9999; align-items:center; justify-content:center; padding:16px; backdrop-filter:blur(4px);">
     <div style="background:#fff; border-radius:16px; width:100%; max-width:520px; max-height:90vh; overflow-y:auto; box-shadow:0 24px 64px rgba(0,0,0,.18); animation:mIn .25s ease;">
 
-        <div style="background:linear-gradient(135deg,#0077BE,#005a8f); padding:20px 24px; border-radius:16px 16px 0 0; display:flex; align-items:center; justify-content:space-between;">
+        <div style="background:var(--primary-color); padding:20px 24px; border-radius:16px 16px 0 0; display:flex; align-items:center; justify-content:space-between;">
             <div>
                 <h5 style="color:#fff; font-size:.95rem; font-weight:800; margin:0 0 2px;">Create New Ticket</h5>
             </div>
@@ -111,7 +111,7 @@
 
                 <div style="margin-bottom:16px;">
                     <label style="display:block; font-size:.78rem; font-weight:600; color:#374151; margin-bottom:4px;">
-                        Subject <span style="color:#0077BE;">*</span>
+                        Subject <span class="ap-accent">*</span>
                     </label>
                     <input type="text" name="subject" required placeholder="Enter Ticket Subject"
                            value="{{ old('subject') }}"
@@ -131,7 +131,7 @@
 
                 <div style="margin-bottom:16px;">
                     <label style="display:block; font-size:.78rem; font-weight:600; color:#374151; margin-bottom:4px;">
-                        Description <span style="color:#0077BE;">*</span>
+                        Description <span class="ap-accent">*</span>
                     </label>
                     <textarea name="description" required rows="4" placeholder="Describe your Issue..."
                               style="width:100%; border:1.5px solid #d1d5db; border-radius:8px; padding:9px 12px; font-size:.85rem; font-family:inherit; background:#fafafa; box-sizing:border-box; resize:vertical;">{{ old('description') }}</textarea>
@@ -149,7 +149,7 @@
 
                 <div style="display:flex; gap:10px;">
                     <button type="submit"
-                            style="flex:1; background:#0077BE; color:#fff; border:none; border-radius:9px; padding:11px; font-size:.88rem; font-weight:700; cursor:pointer; font-family:inherit;">
+                            style="flex:1; background:var(--primary-color); color:#fff; border:none; border-radius:9px; padding:11px; font-size:.88rem; font-weight:700; cursor:pointer; font-family:inherit;">
                         <i class="fas fa-paper-plane mr-1"></i> Create Ticket
                     </button>
                     <button type="button" onclick="closeTicketModal()"

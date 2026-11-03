@@ -16759,7 +16759,7 @@ a.fb-back {
 /* Hero */
 .ap-hero { padding: 48px 0 0; background: #F5F9FE; }
 .ap-hero-grid { display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); align-items: center; gap: 40px; }
-.ap-badge {
+.ap-page .ap-badge {
     display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px; padding: 6px 14px;
     border: 1px solid color-mix(in srgb, var(--site-primary) 20%, transparent); border-radius: 9999px;
     background: var(--site-bg); color: var(--site-primary); font-size: 13px; font-weight: 500;
@@ -16857,12 +16857,12 @@ a.fb-back {
 .ap-title span { color: var(--site-primary); }
 .ap-sub { max-width: 560px; margin: 0 0 22px; color: color-mix(in srgb, var(--site-text) 60%, transparent); font-size: 15px; line-height: 1.7; }
 
-.ap-card { padding: 22px; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 16px; background: var(--site-bg); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03); }
-.ap-card.is-center { text-align: center; }
-.ap-card.is-center .ap-ico { margin: 0 auto 14px; }
-.ap-card h3 { margin: 0 0 6px; color: var(--site-text); font-size: calc(16px * var(--site-heading-scale, 1)); font-weight: var(--site-heading-weight, 700); }
-.ap-card p { margin: 0; color: color-mix(in srgb, var(--site-text) 60%, transparent); font-size: 13.5px; line-height: 1.6; }
-.ap-card.is-row { display: flex; align-items: flex-start; gap: 14px; }
+.ap-page .ap-card { padding: 22px; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 16px; background: var(--site-bg); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03); }
+.ap-page .ap-card.is-center { text-align: center; }
+.ap-page .ap-card.is-center .ap-ico { margin: 0 auto 14px; }
+.ap-page .ap-card h3 { margin: 0 0 6px; color: var(--site-text); font-size: calc(16px * var(--site-heading-scale, 1)); font-weight: var(--site-heading-weight, 700); }
+.ap-page .ap-card p { margin: 0; color: color-mix(in srgb, var(--site-text) 60%, transparent); font-size: 13.5px; line-height: 1.6; }
+.ap-page .ap-card.is-row { display: flex; align-items: flex-start; gap: 14px; }
 
 .ap-services { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
 .ap-why { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); align-items: center; gap: 40px; }

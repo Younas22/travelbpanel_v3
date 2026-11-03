@@ -5,15 +5,15 @@
 
 {{-- Breadcrumb --}}
 <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
-    <a href="{{ route('user.dashboard') }}" style="color:#0077BE; text-decoration:none;">Dashboard</a>
+    <a class="ap-accent-link" href="{{ route('user.dashboard') }}">Dashboard</a>
     <i class="fas fa-chevron-right text-gray-300"></i>
     <span class="text-gray-600">My Bookings</span>
 </div>
 
 {{-- Page Header --}}
 <div class="flex items-center gap-3 mb-5">
-    <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#e8f4fd;">
-        <i class="fas fa-calendar-check" style="color:#0077BE;"></i>
+    <div class="w-9 h-9 rounded-lg flex items-center justify-center ap-tint-bg">
+        <i class="fas fa-calendar-check ap-accent"></i>
     </div>
     <div>
         <h4 class="text-lg font-bold text-gray-800">My Bookings</h4>
@@ -28,8 +28,8 @@
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <div class="flex items-center justify-between mb-4">
             <p class="text-sm font-semibold text-gray-500">Total Bookings</p>
-            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:#e8f4fd;">
-                <i class="fas fa-calendar-check" style="color:#0077BE;"></i>
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center ap-tint-bg">
+                <i class="fas fa-calendar-check ap-accent"></i>
             </div>
         </div>
         <p class="text-3xl font-bold text-gray-800 mb-1">{{ $stats['total'] }}</p>
@@ -40,8 +40,8 @@
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <div class="flex items-center justify-between mb-4">
             <p class="text-sm font-semibold text-gray-500">Booking Status</p>
-            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:#e8f4fd;">
-                <i class="fas fa-circle-dot" style="color:#0077BE;"></i>
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center ap-tint-bg">
+                <i class="fas fa-circle-dot ap-accent"></i>
             </div>
         </div>
         <div class="space-y-2">
@@ -70,8 +70,8 @@
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
         <div class="flex items-center justify-between mb-4">
             <p class="text-sm font-semibold text-gray-500">Payment Status</p>
-            <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:#e8f4fd;">
-                <i class="fas fa-wallet" style="color:#0077BE;"></i>
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center ap-tint-bg">
+                <i class="fas fa-wallet ap-accent"></i>
             </div>
         </div>
         <div class="space-y-2">
@@ -113,7 +113,7 @@
         @foreach($tabs as $key => $tab)
         <a href="{{ route('user.bookings.index', $key === 'all' ? [] : ['type' => $key]) }}"
            class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition"
-           style="text-decoration:none; {{ $type === $key || ($key === 'all' && $type === 'all') ? 'background:#e8f4fd; color:#0077BE;' : 'color:#6b7280;' }}">
+           style="text-decoration:none; {{ $type === $key || ($key === 'all' && $type === 'all') ? 'background:var(--primary-tint-10); color:var(--primary-color);' : 'color:#6b7280;' }}">
             <i class="fas {{ $tab['icon'] }}"></i> {{ $tab['label'] }}
         </a>
         @endforeach
@@ -170,14 +170,14 @@
                                 default  => url('flight/invoice', $b['booking_code']),
                             };
                         @endphp
-                        <a href="{{ $userInvoiceRoute }}" target="_blank" style="text-decoration:none; color:#0077BE;">
+                        <a class="ap-accent-link" href="{{ $userInvoiceRoute }}" target="_blank">
                             <span class="font-mono font-semibold text-xs">#{{ $b['booking_code'] }}</span>
                             <i class="fas fa-arrow-up-right-from-square text-xs ml-1"></i>
                         </a>
                     </td>
                     <td class="px-5 py-3">
                         <span class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full">
-                            <i class="fas {{ $typeIcons[$b['booking_type']] ?? 'fa-circle' }} text-xs" style="color:#0077BE;"></i>
+                            <i class="fas {{ $typeIcons[$b['booking_type']] ?? 'fa-circle' }} text-xs ap-accent"></i>
                             {{ ucfirst($b['booking_type']) }}
                         </span>
                     </td>
@@ -196,8 +196,8 @@
                     <td class="px-5 py-3 text-xs text-gray-500">{{ \Carbon\Carbon::parse($b['created_at'])->format('M d, Y') }}</td>
                     <td class="px-5 py-3">
                         <a href="{{ $userInvoiceRoute }}" target="_blank"
-                           class="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg hover:bg-blue-50 transition"
-                           style="color:#0077BE; text-decoration:none;">
+                           class="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg hover:bg-blue-50 transition ap-accent-link"
+                          >
                             <i class="fas fa-file-invoice"></i> Invoice
                         </a>
                     </td>
