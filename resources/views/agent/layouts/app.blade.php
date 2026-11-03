@@ -14,11 +14,11 @@
     <link rel="stylesheet" href="{{ url('public/assets/libs/flag-icons/css/flag-icons.min.css') }}">
     <link rel="stylesheet" href="{{ url('public/assets/libs/toastify/toastify.min.css') }}">
     @if(in_array(app()->getLocale(), ['ar']))
-        <link rel="stylesheet" href="{{ url('public/assets/css/rtlstyle.css') }}">
+        <link rel="stylesheet" href="{{ url('public/assets/css/rtlstyle.css') }}?v={{ @filemtime(public_path('assets/css/rtlstyle.css')) ?: 1 }}">
     @else
-        <link rel="stylesheet" href="{{ url('public/assets/css/style.css') }}">
+        <link rel="stylesheet" href="{{ url('public/assets/css/style.css') }}?v={{ @filemtime(public_path('assets/css/style.css')) ?: 1 }}">
     @endif
-    <link href="{{ asset('public/assets/css/admin.css') }}" rel="stylesheet">
+    <link href="{{ asset('public/assets/css/admin.css') }}?v={{ @filemtime(public_path('assets/css/admin.css')) ?: 1 }}" rel="stylesheet">
     @if($__activeTheme->font_family && !in_array(strtolower($__activeTheme->font_family), ['system font', 'system', 'system-ui']))
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link href="https://fonts.googleapis.com/css2?family={{ str_replace(' ', '+', $__activeTheme->font_family) }}:wght@400;500;600;700&display=swap" rel="stylesheet">

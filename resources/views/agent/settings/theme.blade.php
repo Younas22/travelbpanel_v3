@@ -296,7 +296,7 @@
         'input_focus_color', 'font_family', 'font_size', 'border_radius',
     ]),
     'design_stylesheets' => [
-        'classic' => asset('public/assets/css/style.css'),
+        'classic' => asset('public/assets/css/style.css') . '?v=' . (@filemtime(public_path('assets/css/style.css')) ?: 1),
         'modern' => asset('public/assets/css/agent-modern.css') . '?v=' . (@filemtime(public_path('assets/css/agent-modern.css')) ?: 1),
     ],
     'layout_options' => $layoutOptions,
