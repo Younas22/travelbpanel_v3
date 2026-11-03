@@ -54,16 +54,12 @@
                 </h2>
                 <p class="promo-modal-subtitle">{{ $pt('modal_subtitle', 'Complete white-label solution for your travel agency') }}</p>
 
-                <div class="promo-portals">
-                    <a href="{{ route('agent.dashboard') }}" class="promo-portal">
-                        <i class="fas fa-users"></i>
-                        <span><b>{{ $pt('b2b', 'B2B') }}</b><small>{{ $pt('agent_portal', 'Agent Portal') }}</small></span>
-                    </a>
-                    <a href="{{ route('user.dashboard') }}" class="promo-portal">
-                        <i class="fas fa-user"></i>
-                        <span><b>{{ $pt('b2c', 'B2C') }}</b><small>{{ $pt('customer_portal', 'Customer Portal') }}</small></span>
-                    </a>
-                </div>
+                <!-- Portals it supports (information only) -->
+                <p class="promo-supports">
+                    <span class="promo-supports-label">{{ $pt('supports', 'Supports') }}</span>
+                    <span class="promo-support"><i class="fas fa-users"></i> <b>{{ $pt('b2b', 'B2B') }}</b> {{ $pt('agent_portal', 'Agent Portal') }}</span>
+                    <span class="promo-support"><i class="fas fa-user"></i> <b>{{ $pt('b2c', 'B2C') }}</b> {{ $pt('customer_portal', 'Customer Portal') }}</span>
+                </p>
 
                 <ul class="promo-features">
                     @foreach([
@@ -71,7 +67,6 @@
                         $pt('feature_2', 'White Label Solution'),
                         $pt('feature_3', 'Setup in 15 Minutes'),
                         $pt('feature_4', 'Full Admin Panel'),
-                        $pt('feature_5', 'B2B & B2C Portals'),
                     ] as $feature)
                         <li class="promo-feature"><i class="fas fa-circle-check"></i> <span>{{ $feature }}</span></li>
                     @endforeach
@@ -104,6 +99,7 @@
                 @foreach($promoSuppliers as [$name, $logo, $padded])
                     <div class="promo-supplier"><img src="{{ asset('public/assets/images/' . $logo) }}" alt="{{ $name }}" loading="lazy" @class(['is-padded' => $padded])></div>
                 @endforeach
+                <div class="promo-supplier is-more"><i class="fas fa-plus"></i> {{ $pt('much_more', '& Much More') }}</div>
             </div>
         </div>
 

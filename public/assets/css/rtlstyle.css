@@ -20866,7 +20866,7 @@ body .promo-float-text {
     }
 }
 
-/* Modal Styles: wide two-column offer (resources/views/common/promo-float.blade.php) */
+/* Modal Styles: compact two-column offer (resources/views/common/promo-float.blade.php) */
 body .promo-modal {
     display: none;
     position: fixed;
@@ -20890,14 +20890,14 @@ body .promo-modal-overlay {
 
 body .promo-modal-content {
     position: relative;
-    width: 96vw;
-    max-width: 1180px;
-    max-height: 96vh;
+    width: 94vw;
+    max-width: 900px;
+    max-height: 94vh;
     overflow-x: hidden;
     overflow-y: auto;
-    padding: 18px 34px 0;
+    padding: 14px 26px 0;
     border: 1px solid rgba(255, 255, 255, 0.6);
-    border-radius: 30px;
+    border-radius: 24px;
     background: #FFFFFF;
     color: #000000;
     box-shadow: 0 30px 80px rgba(2, 6, 23, 0.35);
@@ -20922,14 +20922,14 @@ body .promo-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 6px;
+    gap: 12px;
+    margin-bottom: 4px;
 }
 
 body .promo-logo {
     display: block;
     width: auto;
-    height: 46px;
+    height: 36px;
     object-fit: contain;
 }
 
@@ -20938,13 +20938,13 @@ body .promo-modal-close {
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     border: 0;
     border-radius: 9999px;
     background: #F1F5F9;
     color: #000000;
-    font-size: 18px;
+    font-size: 15px;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.2s ease;
@@ -20959,7 +20959,6 @@ body .promo-modal-close:active {
 }
 
 body .promo-modal-close:focus-visible,
-body .promo-portal:focus-visible,
 body .promo-btn:focus-visible,
 body .promo-whatsapp:focus-visible {
     outline: 2px solid #2563EB;
@@ -20970,35 +20969,35 @@ body .promo-whatsapp:focus-visible {
 body .promo-hero {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 28px;
+    gap: 22px;
     align-items: start;
 }
 
 body .promo-hero-text {
     min-width: 0;
-    padding-top: 8px;
+    padding-top: 4px;
 }
 
 body .promo-modal-badge {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 7px 16px;
+    gap: 6px;
+    padding: 5px 12px;
     border-radius: 9999px;
     background: #2563EB;
     color: #FFFFFF;
-    font-size: 12px;
+    font-size: 10.5px;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
 
 body .promo-modal-title {
-    margin: 14px 0 8px;
+    margin: 10px 0 6px;
     color: #000000;
-    font-size: calc(clamp(28px, 3.2vw, 42px) * var(--site-heading-scale, 1));
+    font-size: calc(clamp(22px, 2.6vw, 30px) * var(--site-heading-scale, 1));
     font-weight: 800;
-    line-height: 1.12;
+    line-height: 1.15;
 }
 
 body .promo-modal-title span {
@@ -21008,72 +21007,52 @@ body .promo-modal-title span {
 body .promo-modal-subtitle {
     margin: 0;
     color: rgba(0, 0, 0, 0.6);
-    font-size: 16px;
+    font-size: 13.5px;
 }
 
-/* B2B / B2C */
-body .promo-portals {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    margin: 18px 0 14px;
-}
-
-body .promo-portal {
+/* B2B / B2C: shown as what the system supports (not links) */
+body .promo-supports {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 12px;
-    min-height: 54px;
-    padding: 6px 18px;
-    border: 2px solid #2563EB;
+    gap: 6px 8px;
+    margin: 14px 0 10px;
+}
+
+body .promo-supports-label {
+    color: rgba(0, 0, 0, 0.55);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+body .promo-support {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px;
+    border: 1px solid #BFDBFE;
     border-radius: 9999px;
     background: #FFFFFF;
     color: #000000;
-    text-decoration: none;
-    transition: background-color 0.2s ease;
-}
-
-body .promo-portal:hover {
-    background: #EFF6FF;
-    color: #000000;
-}
-
-body .promo-portal > i {
-    display: inline-flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 9999px;
-    background: #EFF6FF;
-    color: #2563EB;
-    font-size: 16px;
-}
-
-body .promo-portal span {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.2;
-}
-
-body .promo-portal b {
-    color: #2563EB;
-    font-size: 17px;
-    font-weight: 800;
-}
-
-body .promo-portal small {
-    color: #000000;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
+}
+
+body .promo-support i {
+    color: #2563EB;
+    font-size: 11px;
+}
+
+body .promo-support b {
+    color: #2563EB;
+    font-weight: 800;
 }
 
 /* features */
 body .promo-features {
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 6px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -21082,78 +21061,79 @@ body .promo-features {
 body .promo-feature {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 8px 16px;
+    gap: 9px;
+    padding: 7px 13px;
     border-radius: 9999px;
     background: #EFF6FF;
     color: #000000;
-    font-size: 14.5px;
+    font-size: 12.5px;
     font-weight: 600;
 }
 
 body .promo-feature i {
     color: #2563EB;
-    font-size: 18px;
+    font-size: 14px;
 }
 
 body .promo-hero-side {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 9px;
     min-width: 0;
 }
 
 body .promo-mockup {
     display: block;
     width: 100%;
-    max-width: 430px;
+    max-width: 300px;
     height: auto;
-    margin: -10px auto -8px;
+    margin: -6px auto -6px;
 }
 
 /* price */
 body .promo-price-card {
-    padding: 13px 20px;
-    border-radius: 22px;
+    padding: 10px 16px;
+    border-radius: 16px;
     background: #2563EB;
     color: #FFFFFF;
     text-align: center;
 }
 
 body .promo-price-label {
-    font-size: 14px;
+    font-size: 12px;
     opacity: 0.9;
 }
 
 body .promo-price-value {
-    margin: 1px 0;
-    font-size: 40px;
+    margin: 0;
+    font-size: 30px;
     font-weight: 800;
-    line-height: 1.05;
+    line-height: 1.1;
 }
 
 body .promo-price-desc {
-    font-size: 13.5px;
+    font-size: 11.5px;
     opacity: 0.9;
 }
 
 body .promo-cta-group {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: 9px;
 }
 
 body .promo-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 9px;
-    height: 48px;
-    padding: 0 18px;
+    gap: 7px;
+    height: 40px;
+    padding: 0 12px;
     border: 2px solid #2563EB;
     border-radius: 9999px;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 700;
+    white-space: nowrap;
     text-decoration: none;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
@@ -21181,16 +21161,16 @@ body .promo-btn-secondary:hover {
 
 /* supplier logos */
 body .promo-suppliers {
-    margin-top: 18px;
+    margin-top: 14px;
 }
 
 body .promo-section-title {
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin: 0 0 12px;
+    gap: 12px;
+    margin: 0 0 9px;
     color: #000000;
-    font-size: 16px;
+    font-size: 13.5px;
     font-weight: 800;
 }
 
@@ -21205,26 +21185,26 @@ body .promo-section-title::after {
 
 body .promo-supplier-grid {
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px;
 }
 
 body .promo-supplier {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 62px;
-    padding: 6px 14px;
+    height: 46px;
+    padding: 4px 10px;
     overflow: hidden;
     border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 16px;
+    border-radius: 12px;
     background: #FFFFFF;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05);
 }
 
 body .promo-supplier img {
     max-width: 100%;
-    max-height: 48px;
+    max-height: 34px;
     object-fit: contain;
 }
 
@@ -21233,14 +21213,30 @@ body .promo-supplier img.is-padded {
     transform: scale(1.9);
 }
 
+body .promo-supplier.is-more {
+    gap: 5px;
+    border-style: dashed;
+    border-color: #93C5FD;
+    background: #EFF6FF;
+    color: #2563EB;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: none;
+}
+
+body .promo-supplier.is-more i {
+    font-size: 10px;
+}
+
 /* WhatsApp experts */
 body .promo-contact {
     display: flex;
     align-items: center;
-    gap: 22px;
-    margin-top: 14px;
-    padding: 12px 20px;
-    border-radius: 22px;
+    gap: 16px;
+    margin-top: 11px;
+    padding: 9px 14px;
+    border-radius: 16px;
     background: #EFF6FF;
 }
 
@@ -21248,31 +21244,31 @@ body .promo-contact-title {
     display: flex;
     flex-shrink: 0;
     align-items: center;
-    gap: 12px;
-    padding-right: 22px;
+    gap: 9px;
+    padding-right: 16px;
     border-right: 1px solid #BFDBFE;
     color: #000000;
-    font-size: 16px;
+    font-size: 13.5px;
 }
 
 body .promo-contact-title i {
     color: #2563EB;
-    font-size: 26px;
+    font-size: 19px;
 }
 
 body .promo-contact-links {
     display: grid;
     flex: 1;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: 9px;
 }
 
 body .promo-whatsapp {
     display: flex;
     align-items: center;
-    gap: 12px;
-    min-height: 52px;
-    padding: 6px 18px;
+    gap: 9px;
+    min-height: 42px;
+    padding: 4px 14px;
     border: 2px solid #25D366;
     border-radius: 9999px;
     background: #FFFFFF;
@@ -21288,7 +21284,7 @@ body .promo-whatsapp:hover {
 
 body .promo-whatsapp > .fa-whatsapp {
     color: #25D366;
-    font-size: 28px;
+    font-size: 21px;
 }
 
 body .promo-whatsapp span {
@@ -21296,29 +21292,29 @@ body .promo-whatsapp span {
     flex: 1;
     flex-direction: column;
     min-width: 0;
-    line-height: 1.25;
+    line-height: 1.2;
 }
 
 body .promo-whatsapp b {
-    font-size: 15px;
+    font-size: 12.5px;
     font-weight: 800;
 }
 
 body .promo-whatsapp small {
     color: rgba(0, 0, 0, 0.7);
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
 }
 
 body .promo-whatsapp-arrow {
     color: #25D366;
-    font-size: 15px;
+    font-size: 12px;
 }
 
 /* waves along the bottom edge (from the supplied artwork) */
 body .promo-waves {
-    height: 54px;
-    margin: 6px -34px 0;
+    height: 40px;
+    margin: 6px -26px 0;
     background: url("../images/promo/promo-waves.jpg") center bottom / 100% 100% no-repeat;
 }
 
@@ -21338,54 +21334,8 @@ body .promo-modal-content::-webkit-scrollbar-thumb {
 
 /* tablet */
 @media (max-width: 1023px) {
-    body .promo-modal-content {
-        padding: 18px 24px 0;
-    }
-
-    body .promo-hero {
-        gap: 20px;
-    }
-
-    body .promo-portal {
-        gap: 9px;
-        padding: 6px 12px;
-    }
-
-    body .promo-portal > i {
-        width: 32px;
-        height: 32px;
-        font-size: 14px;
-    }
-
-    body .promo-portal small,
-    body .promo-btn {
-        white-space: nowrap;
-    }
-
-    body .promo-btn {
-        gap: 7px;
-        padding: 0 10px;
-        font-size: 13.5px;
-    }
-
     body .promo-supplier-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    body .promo-contact {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-    }
-
-    body .promo-contact-title {
-        padding: 0 0 10px;
-        border-right: 0;
-        border-bottom: 1px solid #BFDBFE;
-    }
-
-    body .promo-waves {
-        margin: 6px -24px 0;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
 
@@ -21410,38 +21360,39 @@ body .promo-modal-content::-webkit-scrollbar-thumb {
 
     body .promo-modal-content {
         width: 100%;
+        max-width: 460px;
         max-height: calc(100vh - 20px);
-        padding: 14px 16px 0;
-        border-radius: 22px;
+        padding: 12px 16px 0;
+        border-radius: 20px;
     }
 
     body .promo-logo {
-        height: 36px;
-    }
-
-    body .promo-modal-close {
-        width: 40px;
-        height: 40px;
+        height: 32px;
     }
 
     body .promo-hero {
         grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
     }
 
     body .promo-modal-title {
-        font-size: calc(28px * var(--site-heading-scale, 1));
-    }
-
-    body .promo-modal-subtitle {
-        font-size: 14.5px;
+        font-size: calc(24px * var(--site-heading-scale, 1));
     }
 
     body .promo-mockup {
-        max-width: 380px;
+        max-width: 260px;
     }
 
-    body .promo-price-value {
-        font-size: 38px;
+    body .promo-contact {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 9px;
+    }
+
+    body .promo-contact-title {
+        padding: 0 0 8px;
+        border-right: 0;
+        border-bottom: 1px solid #BFDBFE;
     }
 
     body .promo-contact-links {
@@ -21449,19 +21400,19 @@ body .promo-modal-content::-webkit-scrollbar-thumb {
     }
 
     body .promo-waves {
-        height: 44px;
+        height: 34px;
         margin: 6px -16px 0;
     }
 }
 
 @media (max-width: 480px) {
-    body .promo-portals,
-    body .promo-cta-group {
-        grid-template-columns: minmax(0, 1fr);
+    body .promo-supplier-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    body .promo-supplier-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+    body .promo-supplier.is-more {
+        grid-column: 1 / -1;
+        height: 36px;
     }
 }
 
@@ -21472,8 +21423,10 @@ body .promo-modal.active ~ .promo-float-button {
 }
 
 /* promo popup: right-to-left */
-body .promo-contact-title { padding-right: 0; padding-left: 22px; border-right: 0; border-left: 1px solid #BFDBFE; }
+body .promo-contact-title { padding-right: 0; padding-left: 16px; border-right: 0; border-left: 1px solid #BFDBFE; }
 body .promo-whatsapp-arrow { transform: scaleX(-1); }
-@media (max-width: 1023px) {
-    body .promo-contact-title { padding: 0 0 10px; border-left: 0; }
+@media (max-width: 768px) {
+    body .promo-contact-title { padding: 0 0 8px; border-left: 0; }
 }
+/* end promo popup rtl */
+
