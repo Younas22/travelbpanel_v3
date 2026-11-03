@@ -5,7 +5,7 @@
 <div id="siteRedesign">
     <section class="hero-section is-compact">
         <div class="hero-content">
-            <h1 class="hero-title">{{ t('footer.' . $page->name) }}</h1>
+            <h1 class="hero-title">{{ $page->translation('title', null, false) ?: t('footer.' . $page->name) }}</h1>
             <p class="hero-subtitle"><i class="fas fa-calendar"></i> Last Updated: {{ date('F j, Y', strtotime($page->updated_at)) }}</p>
         </div>
     </section>

@@ -1,9 +1,4 @@
-{{-- Expects: $page (Page|null — null on create, the model on edit).
-     Note: Classic's create.blade.php named the Dutch content textarea
-     "ln_content" while PageController's store() validates "nl_content" (the
-     same name edit.blade.php already used correctly) — Dutch content was
-     silently dropped on create. Fixed here to "nl_content" consistently so
-     the field actually saves; no controller/validation changes involved. --}}
+{{-- Expects: $page (Page|null — null on create, the model on edit), $languages (active languages). --}}
 @php $isEdit = (bool) $page; @endphp
 
 <form action="{{ $isEdit ? route('admin.pages.update', $page) : route('admin.pages.store') }}" method="POST" id="pageForm">
@@ -37,58 +32,60 @@
                     @error('slug') <p class="pg-error">{{ $message }}</p> @enderror
                 </div>
 
-                {{-- ===== LANGUAGE TABS (Bootstrap tab JS kept, pills restyled) ===== --}}
+                {{-- ===== LANGUAGE TABS: one per active language (Bootstrap tab JS kept, pills restyled) ===== --}}
                 <div>
                     <label class="pg-label mb-3">Content &amp; SEO (Multi-language)</label>
-                    <div class="flex items-center gap-2 mb-4" id="languageTabs" role="tablist">
-                        <button class="pg-tab active" id="en-tab" data-bs-toggle="tab" data-bs-target="#en-content" type="button" role="tab">🇬🇧 English</button>
-                        <button class="pg-tab" id="ln-tab" data-bs-toggle="tab" data-bs-target="#ln-content" type="button" role="tab">🇳🇱 Dutch</button>
+                    <div class="flex flex-wrap items-center gap-2 mb-4" id="languageTabs" role="tablist">
+                        @foreach($languages as $language)
+                            <button class="pg-tab {{ $loop->first ? 'active' : '' }}" id="{{ $language->code }}-tab" data-lang="{{ $language->code }}"
+                                    data-bs-toggle="tab" data-bs-target="#{{ $language->code }}-content" type="button" role="tab"
+                                    @if($language->is_default) data-tooltip="Default language" @endif>
+                                {{ $language->native_name ?: $language->name }}
+                                <span class="opacity-60">{{ strtoupper($language->code) }}</span>
+                            </button>
+                        @endforeach
                     </div>
 
                     <div class="tab-content" id="languageTabsContent">
-                        <div class="tab-pane fade show active" id="en-content" role="tabpanel">
-                            <div class="mb-4">
-                                <label class="pg-label">Page Content</label>
-                                <textarea name="en_content" id="en_content" class="hidden">{{ old('en_content', $page->en_content ?? '') }}</textarea>
+                        @foreach($languages as $language)
+                            @php
+                                $code = $language->code;
+                                $value = fn ($field) => old("translations.$code.$field", $page ? $page->translation($field, $code, false) : '');
+                            @endphp
+                            <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="{{ $code }}-content" role="tabpanel">
+                                @if(!$language->is_default)
+                                    <p class="pg-help mb-4">Leave empty to show the {{ $languages->firstWhere('is_default', true)?->name ?? 'default' }} version in {{ $language->name }}.</p>
+                                @endif
+                                <div class="mb-4">
+                                    <label class="pg-label" for="title_{{ $code }}">Page Title</label>
+                                    <input type="text" name="translations[{{ $code }}][title]" id="title_{{ $code }}" dir="{{ $language->direction }}"
+                                           class="pg-input @error("translations.$code.title") is-invalid @enderror" value="{{ $value('title') }}" placeholder="Heading shown on the page">
+                                    @error("translations.$code.title") <p class="pg-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="mb-4">
+                                    <label class="pg-label">Page Content</label>
+                                    <textarea name="translations[{{ $code }}][content]" id="content_{{ $code }}" data-lang="{{ $code }}" class="hidden">{{ $value('content') }}</textarea>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="pg-label" for="meta_title_{{ $code }}">Meta Title</label>
+                                    <input type="text" name="translations[{{ $code }}][meta_title]" id="meta_title_{{ $code }}" dir="{{ $language->direction }}"
+                                           class="pg-input @error("translations.$code.meta_title") is-invalid @enderror" value="{{ $value('meta_title') }}" placeholder="SEO optimized title">
+                                    @error("translations.$code.meta_title") <p class="pg-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="mb-4">
+                                    <label class="pg-label" for="meta_description_{{ $code }}">Meta Description</label>
+                                    <textarea name="translations[{{ $code }}][meta_description]" id="meta_description_{{ $code }}" dir="{{ $language->direction }}"
+                                              class="pg-input @error("translations.$code.meta_description") is-invalid @enderror" rows="3" placeholder="Brief description for search engines">{{ $value('meta_description') }}</textarea>
+                                    @error("translations.$code.meta_description") <p class="pg-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label class="pg-label" for="meta_keywords_{{ $code }}">Meta Keywords</label>
+                                    <input type="text" name="translations[{{ $code }}][meta_keywords]" id="meta_keywords_{{ $code }}" dir="{{ $language->direction }}"
+                                           class="pg-input @error("translations.$code.meta_keywords") is-invalid @enderror" value="{{ $value('meta_keywords') }}" placeholder="keyword1, keyword2, keyword3">
+                                    @error("translations.$code.meta_keywords") <p class="pg-error">{{ $message }}</p> @enderror
+                                </div>
                             </div>
-                            <div class="mb-4">
-                                <label class="pg-label">Meta Title</label>
-                                <input type="text" name="en_meta_title" id="en_meta_title" class="pg-input"
-                                       value="{{ old('en_meta_title', $page->en_meta_title ?? '') }}" placeholder="SEO optimized title">
-                            </div>
-                            <div class="mb-4">
-                                <label class="pg-label">Meta Description</label>
-                                <textarea name="en_meta_description" id="en_meta_description" class="pg-input" rows="3"
-                                          placeholder="Brief description for search engines">{{ old('en_meta_description', $page->en_meta_description ?? '') }}</textarea>
-                            </div>
-                            <div>
-                                <label class="pg-label">Meta Keywords</label>
-                                <input type="text" name="en_meta_keywords" id="en_meta_keywords" class="pg-input"
-                                       value="{{ old('en_meta_keywords', $page->en_meta_keywords ?? '') }}" placeholder="keyword1, keyword2, keyword3">
-                            </div>
-                        </div>
-
-                        <div class="tab-pane fade" id="ln-content" role="tabpanel">
-                            <div class="mb-4">
-                                <label class="pg-label">Page Content</label>
-                                <textarea name="nl_content" id="nl_content" class="hidden">{{ old('nl_content', $page->nl_content ?? '') }}</textarea>
-                            </div>
-                            <div class="mb-4">
-                                <label class="pg-label">Meta Title</label>
-                                <input type="text" name="ln_meta_title" id="ln_meta_title" class="pg-input"
-                                       value="{{ old('ln_meta_title', $page->ln_meta_title ?? '') }}" placeholder="SEO optimized title">
-                            </div>
-                            <div class="mb-4">
-                                <label class="pg-label">Meta Description</label>
-                                <textarea name="ln_meta_description" id="ln_meta_description" class="pg-input" rows="3"
-                                          placeholder="Brief description for search engines">{{ old('ln_meta_description', $page->ln_meta_description ?? '') }}</textarea>
-                            </div>
-                            <div>
-                                <label class="pg-label">Meta Keywords</label>
-                                <input type="text" name="ln_meta_keywords" id="ln_meta_keywords" class="pg-input"
-                                       value="{{ old('ln_meta_keywords', $page->ln_meta_keywords ?? '') }}" placeholder="keyword1, keyword2, keyword3">
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -196,6 +193,7 @@ function initializeEditor(elementId) {
     if (!element) return;
     ClassicEditor.create(element, {
         extraPlugins: [MyCustomUploadAdapterPlugin],
+        language: { ui: 'en', content: element.dataset.lang || 'en' },
         toolbar: { items: ['heading', '|', 'bold', 'italic', 'underline', '|', 'link', 'imageUpload', '|', 'bulletedList', 'numberedList', '|', 'blockQuote', 'insertTable', '|', 'undo', 'redo'] },
         image: { toolbar: ['imageTextAlternative', 'imageStyle:inline', 'imageStyle:block'] }
     }).then(editor => {
@@ -210,21 +208,20 @@ function initializeEditor(elementId) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    initializeEditor('en_content');
-    let lnEditorInitialized = false;
-    const lnTab = document.getElementById('ln-tab');
-    if (lnTab) {
-        lnTab.addEventListener('shown.bs.tab', function() {
-            if (!lnEditorInitialized) { initializeEditor('nl_content'); lnEditorInitialized = true; }
-        });
-        lnTab.addEventListener('click', function() {
+    // First language's editor right away, the others the first time their tab opens
+    document.querySelectorAll('#languageTabs [data-lang]').forEach(function(tab, index) {
+        const editorId = 'content_' + tab.dataset.lang;
+        if (index === 0) {
+            initializeEditor(editorId);
+        } else {
+            tab.addEventListener('shown.bs.tab', function() {
+                if (!editorInstances[editorId]) { initializeEditor(editorId); }
+            });
+        }
+        tab.addEventListener('click', function() {
             document.querySelectorAll('#pgPage .pg-tab').forEach(t => t.classList.remove('active'));
             this.classList.add('active');
         });
-    }
-    document.getElementById('en-tab')?.addEventListener('click', function() {
-        document.querySelectorAll('#pgPage .pg-tab').forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
     });
 
     const nameInput = document.getElementById('name');

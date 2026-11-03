@@ -4,8 +4,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Language;
 use App\Models\Page;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -23,6 +25,7 @@ class PageController extends Controller
             $query->where(function($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
                   ->orWhere('slug', 'like', '%' . $request->search . '%')
+                  ->orWhere('translations', 'like', '%' . $request->search . '%')
                   ->orWhere('en_content', 'like', '%' . $request->search . '%')
                   ->orWhere('nl_content', 'like', '%' . $request->search . '%');
             });
@@ -61,7 +64,7 @@ class PageController extends Controller
      */
     public function create()
     {
-        $languages = config('app.supported_languages', ['en' => 'English', 'nl' => 'Dutch']);
+        $languages = $this->activeLanguages();
         return view('admin.pages.create', compact('languages'));
     }
 
@@ -74,14 +77,12 @@ class PageController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:pages,slug',
             'status' => 'required|in:draft,published,private',
-            'en_content' => 'nullable|string',
-            'nl_content' => 'nullable|string',
-            'en_meta_title' => 'nullable|string|max:255',
-            'nl_meta_title' => 'nullable|string|max:255',
-            'en_meta_description' => 'nullable|string|max:500',
-            'nl_meta_description' => 'nullable|string|max:500',
-            'en_meta_keywords' => 'nullable|string|max:255',
-            'nl_meta_keywords' => 'nullable|string|max:255',
+            'translations' => 'nullable|array',
+            'translations.*.title' => 'nullable|string|max:255',
+            'translations.*.content' => 'nullable|string',
+            'translations.*.meta_title' => 'nullable|string|max:255',
+            'translations.*.meta_description' => 'nullable|string|max:500',
+            'translations.*.meta_keywords' => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer|min:0',
             'is_homepage' => 'boolean',
             'show_in_menu' => 'boolean',
@@ -111,7 +112,7 @@ class PageController extends Controller
             $validated['sort_order'] = (Page::max('sort_order') ?? 0) + 1;
         }
 
-        $page = Page::create($validated);
+        $page = Page::create($this->withTranslations($validated));
 
         return redirect()->route('admin.pages.index')
                         ->with('success', 'Page created successfully!');
@@ -130,7 +131,7 @@ class PageController extends Controller
      */
     public function edit(Page $page)
     {
-        $languages = config('app.supported_languages', ['en' => 'English', 'nl' => 'Dutch']);
+        $languages = $this->activeLanguages();
         return view('admin.pages.edit', compact('page', 'languages'));
     }
 
@@ -148,14 +149,12 @@ class PageController extends Controller
                 Rule::unique('pages')->ignore($page->id)
             ],
             'status' => 'required|in:draft,published,private',
-            'en_content' => 'nullable|string',
-            'nl_content' => 'nullable|string',
-            'en_meta_title' => 'nullable|string|max:255',
-            'nl_meta_title' => 'nullable|string|max:255',
-            'en_meta_description' => 'nullable|string|max:500',
-            'nl_meta_description' => 'nullable|string|max:500',
-            'en_meta_keywords' => 'nullable|string|max:255',
-            'nl_meta_keywords' => 'nullable|string|max:255',
+            'translations' => 'nullable|array',
+            'translations.*.title' => 'nullable|string|max:255',
+            'translations.*.content' => 'nullable|string',
+            'translations.*.meta_title' => 'nullable|string|max:255',
+            'translations.*.meta_description' => 'nullable|string|max:500',
+            'translations.*.meta_keywords' => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer|min:0',
             'is_homepage' => 'boolean',
             'show_in_menu' => 'boolean',
@@ -174,10 +173,46 @@ class PageController extends Controller
             $validated['status'] = 'published'; // Homepage must be published
         }
 
-        $page->update($validated);
+        $page->update($this->withTranslations($validated, $page));
 
         return redirect()->route('admin.pages.index')
                         ->with('success', 'Page updated successfully!');
+    }
+
+    /**
+     * Active languages for the form tabs, default language first.
+     */
+    private function activeLanguages()
+    {
+        return Language::getActive()->sortByDesc('is_default')->values();
+    }
+
+    /**
+     * Keep the posted fields of active languages (empty ones dropped). Content
+     * of languages that are switched off right now stays as it was, and en/nl
+     * are mirrored into their old columns for anything still reading them.
+     */
+    private function withTranslations(array $validated, ?Page $page = null): array
+    {
+        $active = Language::getActiveCodes();
+        $translations = Arr::except($page?->translations ?? [], $active);
+
+        foreach (Arr::only($validated['translations'] ?? [], $active) as $code => $fields) {
+            $fields = array_filter(Arr::only($fields, Page::TRANSLATABLE), 'filled');
+            if ($fields) {
+                $translations[$code] = $fields;
+            }
+        }
+
+        $validated['translations'] = $translations ?: null;
+
+        foreach (['en', 'nl'] as $code) {
+            foreach (['content', 'meta_title', 'meta_description', 'meta_keywords'] as $field) {
+                $validated["{$code}_{$field}"] = $translations[$code][$field] ?? null;
+            }
+        }
+
+        return $validated;
     }
 
     /**

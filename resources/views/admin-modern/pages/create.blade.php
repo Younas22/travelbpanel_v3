@@ -66,83 +66,7 @@
                                     @enderror
                                 </div>
 
-                                <!-- Language Tabs -->
-                                <div class="form-group">
-                                    <label class="form-label">
-                                        <i class="fas fa-language me-1"></i>Content & SEO (Multi-language)
-                                    </label>
-
-                                    <ul class="nav nav-tabs" id="languageTabs" role="tablist">
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link active" id="en-tab" data-bs-toggle="tab" data-bs-target="#en-content" type="button" role="tab">
-                                                🇬🇧 English
-                                            </button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link" id="ln-tab" data-bs-toggle="tab" data-bs-target="#ln-content" type="button" role="tab">
-                                                🇳🇱 Dutch
-                                            </button>
-                                        </li>
-                                    </ul>
-
-                                    <div class="tab-content border p-4 bg-white" id="languageTabsContent">
-                                        <!-- English Content -->
-                                        <div class="tab-pane fade show active" id="en-content" role="tabpanel">
-                                            <h5 class="mb-3">English Content</h5>
-
-                                            <div class="form-group">
-                                                <label for="en_content" class="form-label">Page Content</label>
-                                                <textarea name="en_content" id="en_content" class="form-control ckeditor d-none">{{ old('en_content') }}</textarea>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="en_meta_title" class="form-label">Meta Title</label>
-                                                <input type="text" name="en_meta_title" id="en_meta_title"
-                                                       class="form-control" value="{{ old('en_meta_title') }}" placeholder="SEO optimized title">
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="en_meta_description" class="form-label">Meta Description</label>
-                                                <textarea name="en_meta_description" id="en_meta_description"
-                                                          class="form-control" rows="3" placeholder="Brief description for search engines">{{ old('en_meta_description') }}</textarea>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="en_meta_keywords" class="form-label">Meta Keywords</label>
-                                                <input type="text" name="en_meta_keywords" id="en_meta_keywords"
-                                                       class="form-control" value="{{ old('en_meta_keywords') }}" placeholder="keyword1, keyword2, keyword3">
-                                            </div>
-                                        </div>
-
-                                        <!-- Dutch Content -->
-                                        <div class="tab-pane fade" id="ln-content" role="tabpanel">
-                                            <h5 class="mb-3">Dutch Content</h5>
-
-                                            <div class="form-group">
-                                                <label for="ln_content" class="form-label">Page Content</label>
-                                                <textarea name="ln_content" id="ln_content" class="form-control ckeditor d-none">{{ old('ln_content') }}</textarea>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="ln_meta_title" class="form-label">Meta Title</label>
-                                                <input type="text" name="ln_meta_title" id="ln_meta_title"
-                                                       class="form-control" value="{{ old('ln_meta_title') }}" placeholder="SEO optimized title">
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="ln_meta_description" class="form-label">Meta Description</label>
-                                                <textarea name="ln_meta_description" id="ln_meta_description"
-                                                          class="form-control" rows="3" placeholder="Brief description for search engines">{{ old('ln_meta_description') }}</textarea>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="ln_meta_keywords" class="form-label">Meta Keywords</label>
-                                                <input type="text" name="ln_meta_keywords" id="ln_meta_keywords"
-                                                       class="form-control" value="{{ old('ln_meta_keywords') }}" placeholder="keyword1, keyword2, keyword3">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                @include('admin.pages.partials.translations')
                             </div>
 
                             <div class="col-md-4">
@@ -334,6 +258,7 @@ function initializeEditor(elementId) {
     ClassicEditor
         .create(element, {
             extraPlugins: [MyCustomUploadAdapterPlugin],
+            language: { ui: 'en', content: element.dataset.lang || 'en' },
             toolbar: {
                 items: [
                     'heading', '|',
@@ -365,20 +290,19 @@ function initializeEditor(elementId) {
 
 // Initialize editors when tab is shown
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize English editor immediately
-    initializeEditor('en_content');
-
-    // Initialize Dutch editor when its tab is shown for the first time
-    let lnEditorInitialized = false;
-    const lnTab = document.getElementById('ln-tab');
-    if (lnTab) {
-        lnTab.addEventListener('shown.bs.tab', function() {
-            if (!lnEditorInitialized) {
-                initializeEditor('ln_content');
-                lnEditorInitialized = true;
+    // First language's editor right away, the others the first time their tab opens
+    document.querySelectorAll('#languageTabs [data-lang]').forEach(function(tab, index) {
+        const editorId = 'content_' + tab.dataset.lang;
+        if (index === 0) {
+            initializeEditor(editorId);
+            return;
+        }
+        tab.addEventListener('shown.bs.tab', function() {
+            if (!editorInstances[editorId]) {
+                initializeEditor(editorId);
             }
         });
-    }
+    });
 
     // Character counter for name
     const nameInput = document.getElementById('name');

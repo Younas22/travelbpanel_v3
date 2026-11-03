@@ -14,6 +14,7 @@ class Page extends Model
     protected $fillable = [
         'name',
         'slug',
+        'translations',
         'status',
         'en_content',
         'nl_content',
@@ -29,7 +30,13 @@ class Page extends Model
         'published_at'
     ];
 
+    /** Fields stored per language in the translations column. */
+    public const TRANSLATABLE = ['title', 'content', 'meta_title', 'meta_description', 'meta_keywords'];
+
+    private static ?string $defaultLanguage = null;
+
     protected $casts = [
+        'translations' => 'array',
         'is_homepage' => 'boolean',
         'show_in_menu' => 'boolean',
         'published_at' => 'datetime',
@@ -63,36 +70,57 @@ class Page extends Model
         });
     }
 
+    /**
+     * A field in one language (current locale by default). With $fallback the
+     * default language and then English fill in when that language is empty.
+     * Pages saved before the translations column still have en_/nl_ columns.
+     */
+    public function translation(string $field, ?string $locale = null, bool $fallback = true): string
+    {
+        $codes = [$locale ?? app()->getLocale()];
+        if ($fallback) {
+            self::$defaultLanguage ??= Language::getDefault()?->code ?? 'en';
+            array_push($codes, self::$defaultLanguage, 'en');
+        }
+
+        foreach (array_unique($codes) as $code) {
+            $value = $this->translations[$code][$field] ?? $this->attributes["{$code}_{$field}"] ?? null;
+            if (filled($value)) {
+                return $value;
+            }
+        }
+
+        return '';
+    }
+
+    // Get title for current language
+    public function getTitleAttribute()
+    {
+        return $this->translation('title') ?: $this->name;
+    }
+
     // Get content for current language
     public function getContentAttribute()
     {
-        $lang = app()->getLocale();
-        $field = "{$lang}_content";
-        return $this->attributes[$field] ?? $this->attributes['en_content'] ?? '';
+        return $this->translation('content');
     }
 
     // Get meta title for current language
     public function getMetaTitleAttribute()
     {
-        $lang = app()->getLocale();
-        $field = "{$lang}_meta_title";
-        return $this->attributes[$field] ?? $this->attributes['en_meta_title'] ?? $this->name;
+        return $this->translation('meta_title') ?: $this->name;
     }
 
     // Get meta description for current language
     public function getMetaDescriptionAttribute()
     {
-        $lang = app()->getLocale();
-        $field = "{$lang}_meta_description";
-        return $this->attributes[$field] ?? $this->attributes['en_meta_description'] ?? '';
+        return $this->translation('meta_description');
     }
 
     // Get meta keywords for current language
     public function getMetaKeywordsAttribute()
     {
-        $lang = app()->getLocale();
-        $field = "{$lang}_meta_keywords";
-        return $this->attributes[$field] ?? $this->attributes['en_meta_keywords'] ?? '';
+        return $this->translation('meta_keywords');
     }
 
     // Scopes
