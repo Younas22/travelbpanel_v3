@@ -47,9 +47,15 @@
 
 {{-- Welcome Header --}}
 <div class="agd-head">
-    <div>
-        <h1 class="agd-title">Welcome back, {{ $agentUser->first_name }}!</h1>
-        <p class="agd-subtitle">{{ $agentUser->company_name }}@if($agentUser->agent_code) &bull; {{ $agentUser->agent_code }}@endif</p>
+    {{-- same page-header pattern as the other agent pages --}}
+    <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center ap-tint-bg">
+            <i class="fas fa-gauge-high ap-accent"></i>
+        </div>
+        <div>
+            <h4 class="text-lg font-bold text-gray-800">Welcome back, {{ $agentUser->first_name }}!</h4>
+            <p class="text-xs text-gray-400">{{ $agentUser->company_name }}@if($agentUser->agent_code) &bull; {{ $agentUser->agent_code }}@endif</p>
+        </div>
     </div>
     @if($agentUser->hasPermission('wallet.view'))
         <a href="{{ route('agent.wallet.index') }}" class="agd-wallet ap-no-underline">

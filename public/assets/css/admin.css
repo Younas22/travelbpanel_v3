@@ -8878,6 +8878,19 @@ input:checked + .status-slider:before {
     color: #ffffff;
 }
 
+/* an open group header (its page is one of the sub-items): light tint,
+   so only the current page gets the solid pill */
+button.agent-nav-link.active,
+button.agent-nav-link.active:hover {
+    background-color: var(--primary-tint-10);
+    color: var(--primary-color);
+    box-shadow: none;
+}
+
+button.agent-nav-link.active i {
+    color: var(--primary-color);
+}
+
 .agent-nav-section-title {
     font-size: 0.68rem;
     font-weight: 600;
@@ -9618,6 +9631,13 @@ input:checked + .status-slider:before {
     margin-right: 6px;
 }
 
+.agd-count {
+    margin-left: 6px;
+    color: color-mix(in srgb, var(--text-color) 50%, transparent);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
 .agd-empty {
     display: flex;
     flex-direction: column;
@@ -9818,14 +9838,126 @@ input:checked + .status-slider:before {
 .hover\:bg-blue-50:hover { background-color: var(--primary-tint-10) !important; }
 .group:hover .group-hover\:bg-gray-50 { background-color: var(--body-bg) !important; }
 
+/* =====================================================
+   AGENT + CUSTOMER PANELS — website design layer
+   Both panels (agent/*, user/*) share .agent-main-content and
+   build pages from the same Tailwind patterns: an icon-tile page
+   header, white rounded "cards", gray table heads. These rules give
+   every one of those pages the website's look (card radius, border,
+   shadow, header scale) in one place instead of per page, always
+   through the theme variables so each user's colors still apply.
+   !important for the same reason as the color bridge above.
+===================================================== */
+
+/* page header: icon tile + title + subtitle (most pages) */
+.agent-main-content .w-9.h-9.rounded-lg.ap-tint-bg,
+.agent-main-content .w-10.h-10.rounded-lg.ap-tint-bg {
+    width: 44px !important;
+    height: 44px !important;
+    flex-shrink: 0;
+    border-radius: 12px !important;
+    font-size: 17px;
+}
+
+.agent-main-content h4.text-lg.font-bold,
+.agent-main-content h4.text-xl.font-bold,
+.agent-main-content > div > h4.mb-0,
+.agent-main-content > div > .flex > h4.mb-0 {
+    color: var(--text-color) !important;
+    font-size: 1.375rem !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+}
+
+.agent-main-content h4.mb-0 > i.bi {
+    margin-right: 6px;
+    color: var(--primary-color);
+}
+
+.agent-main-content h4.text-lg.font-bold + p.text-xs,
+.agent-main-content h4.text-xl.font-bold + p.text-sm {
+    margin-top: 2px;
+    font-size: 0.875rem !important;
+}
+
+/* breadcrumb row */
+.agent-main-content .flex.items-center.gap-2.text-xs.text-gray-400 {
+    font-size: 0.8125rem !important;
+}
+
+/* cards: white rounded boxes */
+.agent-main-content div.bg-white.rounded-xl,
+.agent-main-content div.bg-white.rounded-2xl,
+.agent-main-content div.bg-white.rounded-lg.shadow-sm,
+.agent-main-content div.bg-white.rounded-lg.border {
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--card-radius, 16px) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+}
+
+.agent-main-content div.bg-white.rounded-xl > .border-b:first-child,
+.agent-main-content div.bg-white.rounded-2xl > .border-b:first-child {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.agent-main-content div.bg-white.rounded-xl > .border-b:first-child :is(h5, h6),
+.agent-main-content div.bg-white.rounded-2xl > .border-b:first-child :is(h5, h6) {
+    color: var(--text-color) !important;
+    font-size: 0.9375rem !important;
+    font-weight: 700 !important;
+}
+
+/* tables */
+.agent-main-content table thead tr.bg-gray-50,
+.agent-main-content table thead.bg-gray-50 tr {
+    background-color: color-mix(in srgb, var(--primary-color) 6%, var(--card-bg)) !important;
+}
+
+.agent-main-content table thead th {
+    color: color-mix(in srgb, var(--text-color) 75%, transparent) !important;
+}
+
+/* solid primary action buttons used in page headers */
+.agent-main-content .ap-solid-accent-btn {
+    min-height: 40px;
+    border-radius: var(--btn-radius, 10px) !important;
+}
+
+.agent-main-content .ap-solid-accent-btn:hover {
+    background: color-mix(in srgb, var(--primary-color) 85%, black);
+}
+
+/* form controls written with Tailwind classes */
+.agent-main-content :is(input, select, textarea).border.rounded-lg {
+    border-radius: var(--input-radius, 10px) !important;
+}
+
+.agent-main-content :is(input, select, textarea).border.rounded-lg:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 14%, transparent) !important;
+    outline: none;
+}
+
+[dir="rtl"] .agent-main-content h4.mb-0 > i.bi {
+    margin-right: 0;
+    margin-left: 6px;
+}
+
 /* Shared top navbar (resources/views/common/navbar.blade.php) — also used
    by the public-facing site, which never loads admin.css, so this override
    only ever takes effect on the Admin/Agent panels that do. Its own colors
    in style.css are fixed (background:white; color:#003580/#0077BE) and
    never changed with the active theme. */
+/* the site navbar is a floating card (.nav-shell) on a transparent bar:
+   theme the card, not a full-width band with a line under it */
 .nav-bar {
+    background-color: transparent !important;
+    border-bottom: 0 !important;
+}
+.nav-shell {
     background-color: var(--navbar-bg) !important;
-    border-bottom: 1px solid var(--border-color) !important;
+    border-color: var(--border-color) !important;
 }
 .nav-item {
     color: var(--text-color) !important;
