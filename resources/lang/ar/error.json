@@ -18,5 +18,17 @@
     "starting_from": "ابتداءً من",
     "solution_desc": "حل متكامل لمشروع سفريات بعلامتك التجارية",
     "get_started": "ابدأ الآن",
-    "powered_by": "مدعوم من"
+    "powered_by": "مدعوم من",
+    "flight_error_code": "رمز الخطأ",
+    "flight_search_issues": "يرجى التحقق من تفاصيل البحث هذه",
+    "flight_tips_title": "نصائح البحث",
+    "flight_tip_dates": "اختر تاريخ مغادرة ابتداءً من اليوم",
+    "flight_tip_return": "في رحلة الذهاب والعودة يجب أن يكون تاريخ العودة بعد تاريخ المغادرة",
+    "flight_tip_airports": "جرّب مطارًا قريبًا أو وجهة أخرى",
+    "flight_tip_passengers": "حتى 9 مسافرين لكل حجز؛ لا يزيد عدد الرضع على البالغين",
+    "flight_new_search": "بحث جديد",
+    "flight_home": "الرئيسية",
+    "flight_need_help": "هل تحتاج إلى مساعدة؟",
+    "flight_help_text": "سيساعدك فريق الدعم في العثور على رحلة.",
+    "flight_error_time": "الوقت"
 }

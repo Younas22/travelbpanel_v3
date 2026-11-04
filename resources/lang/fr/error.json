@@ -18,5 +18,17 @@
     "starting_from": "À partir de seulement",
     "solution_desc": "Solution complète d'entreprise de voyage en marque blanche",
     "get_started": "Commencer maintenant",
-    "powered_by": "Propulsé par"
+    "powered_by": "Propulsé par",
+    "flight_error_code": "Code d’erreur",
+    "flight_search_issues": "Veuillez vérifier ces informations de recherche",
+    "flight_tips_title": "Conseils de recherche",
+    "flight_tip_dates": "Choisissez une date de départ à partir d’aujourd’hui",
+    "flight_tip_return": "Pour un aller-retour, la date de retour doit être après la date de départ",
+    "flight_tip_airports": "Essayez un aéroport proche ou une autre destination",
+    "flight_tip_passengers": "9 passagers maximum par réservation ; pas plus de bébés que d’adultes",
+    "flight_new_search": "Nouvelle recherche",
+    "flight_home": "Accueil",
+    "flight_need_help": "Besoin d’aide ?",
+    "flight_help_text": "Notre équipe d’assistance vous aidera à trouver un vol.",
+    "flight_error_time": "Heure"
 }

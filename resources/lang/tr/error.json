@@ -18,5 +18,17 @@
     "starting_from": "Sadece başlangıç",
     "solution_desc": "Eksiksiz beyaz etiket seyahat işletme çözümü",
     "get_started": "Şimdi başla",
-    "powered_by": "Tarafından desteklenmektedir"
+    "powered_by": "Tarafından desteklenmektedir",
+    "flight_error_code": "Hata Kodu",
+    "flight_search_issues": "Lütfen bu arama bilgilerini kontrol edin",
+    "flight_tips_title": "Arama ipuçları",
+    "flight_tip_dates": "Bugün veya sonrası için bir gidiş tarihi seçin",
+    "flight_tip_return": "Gidiş-dönüşte dönüş tarihi gidiş tarihinden sonra olmalıdır",
+    "flight_tip_airports": "Yakındaki bir havalimanını veya farklı bir varis noktasını deneyin",
+    "flight_tip_passengers": "Rezervasyon başına en fazla 9 yolcu; bebek sayısı yetişkinleri geçemez",
+    "flight_new_search": "Yeni Arama",
+    "flight_home": "Ana Sayfa",
+    "flight_need_help": "Yardıma mı ihtiyacınız var?",
+    "flight_help_text": "Destek ekibimiz uçuş bulmanıza yardımcı olur.",
+    "flight_error_time": "Zaman"
 }

@@ -18,5 +18,17 @@
     "starting_from": "わずか",
     "solution_desc": "完全なホワイトラベル旅行ビジネスソリューション",
     "get_started": "今すぐ始める",
-    "powered_by": "提供元"
+    "powered_by": "提供元",
+    "flight_error_code": "エラーコード",
+    "flight_search_issues": "検索内容をご確認ください",
+    "flight_tips_title": "検索のヒント",
+    "flight_tip_dates": "出発日は今日以降を選択してください",
+    "flight_tip_return": "往復の場合、復路日は出発日より後にしてください",
+    "flight_tip_airports": "近くの空港や別の目的地をお試しください",
+    "flight_tip_passengers": "1予約あたり最大9名。幼児は大人の人数を超えられません",
+    "flight_new_search": "新しく検索",
+    "flight_home": "ホーム",
+    "flight_need_help": "お困りですか？",
+    "flight_help_text": "サポートチームがフライト探しをお手伝いします。",
+    "flight_error_time": "時刻"
 }

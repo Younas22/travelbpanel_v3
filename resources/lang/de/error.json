@@ -18,5 +18,17 @@
     "starting_from": "Ab nur",
     "solution_desc": "Komplette White-Label-Reisegeschäftslösung",
     "get_started": "Jetzt loslegen",
-    "powered_by": "Unterstützt von"
+    "powered_by": "Unterstützt von",
+    "flight_error_code": "Fehlercode",
+    "flight_search_issues": "Bitte prüfen Sie diese Suchangaben",
+    "flight_tips_title": "Suchtipps",
+    "flight_tip_dates": "Wählen Sie ein Abflugdatum ab heute",
+    "flight_tip_return": "Bei Hin- und Rückflug muss das Rückflugdatum nach dem Abflugdatum liegen",
+    "flight_tip_airports": "Versuchen Sie einen nahegelegenen Flughafen oder ein anderes Ziel",
+    "flight_tip_passengers": "Maximal 9 Reisende pro Buchung; nicht mehr Babys als Erwachsene",
+    "flight_new_search": "Neue Suche",
+    "flight_home": "Startseite",
+    "flight_need_help": "Brauchen Sie Hilfe?",
+    "flight_help_text": "Unser Support-Team hilft Ihnen, einen Flug zu finden.",
+    "flight_error_time": "Zeit"
 }

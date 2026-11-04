@@ -85,7 +85,8 @@ class FlightsController extends Controller
             $validator = $this->validate_parameters($search_params);
             if ($validator->fails()) {
                 return $this->show_error('validation', [
-                    'errors' => $validator->errors(),
+                    // not "errors": the site layout reads $errors as Laravel's ViewErrorBag
+                    'search_errors' => $validator->errors(),
                     'search_params' => $search_params
                 ]);
             }

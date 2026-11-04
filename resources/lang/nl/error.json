@@ -18,5 +18,17 @@
     "starting_from": "Vanaf slechts",
     "solution_desc": "Complete white label reisbedrijfsoplossing",
     "get_started": "Begin nu",
-    "powered_by": "Aangedreven door"
+    "powered_by": "Aangedreven door",
+    "flight_error_code": "Foutcode",
+    "flight_search_issues": "Controleer deze zoekgegevens",
+    "flight_tips_title": "Zoektips",
+    "flight_tip_dates": "Kies een vertrekdatum vanaf vandaag",
+    "flight_tip_return": "Bij een retourvlucht moet de terugreisdatum na de vertrekdatum liggen",
+    "flight_tip_airports": "Probeer een luchthaven in de buurt of een andere bestemming",
+    "flight_tip_passengers": "Maximaal 9 passagiers per boeking; niet meer baby’s dan volwassenen",
+    "flight_new_search": "Nieuwe zoekopdracht",
+    "flight_home": "Home",
+    "flight_need_help": "Hulp nodig?",
+    "flight_help_text": "Ons supportteam helpt u een vlucht te vinden.",
+    "flight_error_time": "Tijd"
 }

@@ -18,5 +18,17 @@
     "starting_from": "A partire da soli",
     "solution_desc": "Soluzione completa per attività di viaggi white label",
     "get_started": "Inizia ora",
-    "powered_by": "Offerto da"
+    "powered_by": "Offerto da",
+    "flight_error_code": "Codice errore",
+    "flight_search_issues": "Controlla questi dati di ricerca",
+    "flight_tips_title": "Consigli di ricerca",
+    "flight_tip_dates": "Scegli una data di partenza da oggi in poi",
+    "flight_tip_return": "Per un andata e ritorno, la data di ritorno deve essere successiva a quella di partenza",
+    "flight_tip_airports": "Prova un aeroporto vicino o un’altra destinazione",
+    "flight_tip_passengers": "Massimo 9 passeggeri per prenotazione; non più neonati che adulti",
+    "flight_new_search": "Nuova ricerca",
+    "flight_home": "Home",
+    "flight_need_help": "Serve aiuto?",
+    "flight_help_text": "Il nostro team di assistenza ti aiuterà a trovare un volo.",
+    "flight_error_time": "Ora"
 }

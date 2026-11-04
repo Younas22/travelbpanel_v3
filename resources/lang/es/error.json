@@ -18,5 +18,17 @@
     "starting_from": "Desde solo",
     "solution_desc": "Solución completa de negocio de viajes de marca blanca",
     "get_started": "Empieza ahora",
-    "powered_by": "Desarrollado por"
+    "powered_by": "Desarrollado por",
+    "flight_error_code": "Código de error",
+    "flight_search_issues": "Revisa estos datos de búsqueda",
+    "flight_tips_title": "Consejos de búsqueda",
+    "flight_tip_dates": "Elige una fecha de salida a partir de hoy",
+    "flight_tip_return": "En un viaje de ida y vuelta, la fecha de regreso debe ser posterior a la de salida",
+    "flight_tip_airports": "Prueba un aeropuerto cercano u otro destino",
+    "flight_tip_passengers": "Máximo 9 pasajeros por reserva; no más bebés que adultos",
+    "flight_new_search": "Nueva búsqueda",
+    "flight_home": "Inicio",
+    "flight_need_help": "¿Necesitas ayuda?",
+    "flight_help_text": "Nuestro equipo de soporte te ayudará a encontrar un vuelo.",
+    "flight_error_time": "Hora"
 }

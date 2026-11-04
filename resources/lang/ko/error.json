@@ -18,5 +18,17 @@
     "starting_from": "단돈",
     "solution_desc": "완벽한 화이트 라벨 여행 비즈니스 솔루션",
     "get_started": "지금 시작하기",
-    "powered_by": "제공"
+    "powered_by": "제공",
+    "flight_error_code": "오류 코드",
+    "flight_search_issues": "검색 정보를 확인해 주세요",
+    "flight_tips_title": "검색 팁",
+    "flight_tip_dates": "오늘 이후의 출발일을 선택하세요",
+    "flight_tip_return": "왕복 여정은 귀국일이 출발일 이후여야 합니다",
+    "flight_tip_airports": "가까운 공항이나 다른 목적지를 검색해 보세요",
+    "flight_tip_passengers": "예약당 최대 9명; 유아는 성인 수를 초과할 수 없습니다",
+    "flight_new_search": "새로 검색",
+    "flight_home": "홈",
+    "flight_need_help": "도움이 필요하세요?",
+    "flight_help_text": "고객지원팀이 항공편 찾기를 도와드립니다.",
+    "flight_error_time": "시간"
 }

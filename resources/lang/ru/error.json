@@ -18,5 +18,17 @@
     "starting_from": "Начиная всего с",
     "solution_desc": "Полное white label решение для туристического бизнеса",
     "get_started": "Начать сейчас",
-    "powered_by": "Работает на"
+    "powered_by": "Работает на",
+    "flight_error_code": "Код ошибки",
+    "flight_search_issues": "Проверьте параметры поиска",
+    "flight_tips_title": "Советы по поиску",
+    "flight_tip_dates": "Выберите дату вылета не раньше сегодняшней",
+    "flight_tip_return": "Для поездки туда и обратно дата возврата должна быть позже даты вылета",
+    "flight_tip_airports": "Попробуйте ближайший аэропорт или другое направление",
+    "flight_tip_passengers": "Не более 9 пассажиров в бронировании; младенцев не больше, чем взрослых",
+    "flight_new_search": "Новый поиск",
+    "flight_home": "Главная",
+    "flight_need_help": "Нужна помощь?",
+    "flight_help_text": "Наша служба поддержки поможет найти рейс.",
+    "flight_error_time": "Время"
 }

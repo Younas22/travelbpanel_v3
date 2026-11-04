@@ -18,5 +18,17 @@
     "starting_from": "仅需",
     "solution_desc": "完整的白标旅游业务解决方案",
     "get_started": "立即开始",
-    "powered_by": "技术支持"
+    "powered_by": "技术支持",
+    "flight_error_code": "错误代码",
+    "flight_search_issues": "请检查以下搜索信息",
+    "flight_tips_title": "搜索提示",
+    "flight_tip_dates": "请选择今天或之后的出发日期",
+    "flight_tip_return": "往返行程的返程日期必须晚于出发日期",
+    "flight_tip_airports": "尝试附近的机场或其他目的地",
+    "flight_tip_passengers": "每个预订最多 9 名乘客；婴儿人数不得超过成人",
+    "flight_new_search": "重新搜索",
+    "flight_home": "首页",
+    "flight_need_help": "需要帮助？",
+    "flight_help_text": "我们的客服团队将帮您找到航班。",
+    "flight_error_time": "时间"
 }

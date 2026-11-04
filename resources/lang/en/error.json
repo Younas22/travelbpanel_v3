@@ -18,5 +18,17 @@
     "starting_from": "Starting from just",
     "solution_desc": "Complete white-label travel business solution",
     "get_started": "Get Started Now",
-    "powered_by": "Powered by"
+    "powered_by": "Powered by",
+    "flight_error_code": "Error Code",
+    "flight_search_issues": "Please check these search details",
+    "flight_tips_title": "Search tips",
+    "flight_tip_dates": "Choose a departure date that is today or later",
+    "flight_tip_return": "For a return trip, the return date must be after the departure date",
+    "flight_tip_airports": "Try a nearby airport or a different destination",
+    "flight_tip_passengers": "Up to 9 passengers per booking; infants cannot outnumber adults",
+    "flight_new_search": "New Search",
+    "flight_home": "Home",
+    "flight_need_help": "Need help?",
+    "flight_help_text": "Our support team will help you find a flight.",
+    "flight_error_time": "Time"
 }
