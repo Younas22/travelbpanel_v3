@@ -98,8 +98,9 @@
                         <input type="text" 
                                name="key" 
                                class="form-control"
-                               placeholder="e.g., new_section_title"
-                               pattern="[a-z_]+"
+                               placeholder="e.g., new_section_title or How to Book"
+                               pattern="[^.]+"
+                               title="Any text without a dot. For a footer menu item use its exact menu name."
                                required>
                     </div>
                 </div>

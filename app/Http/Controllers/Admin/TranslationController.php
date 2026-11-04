@@ -206,7 +206,9 @@ class TranslationController extends Controller
     public function addKey($group, Request $request)
     {
         $request->validate([
-            'key' => 'required|string|alpha_dash',
+            // spaces allowed: menu names such as "How to Book" are used as keys (t('footer.'.$item->name));
+            // a dot would be read as group.key, so not that
+            'key' => ['required', 'string', 'max:255', 'regex:/^[^.]+$/'],
             'translations' => 'required|array',
         ]);
 
