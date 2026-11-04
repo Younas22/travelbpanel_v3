@@ -82,6 +82,8 @@
        rounded, bordered Nova look instead of CKEditor's square default. */
     #pgPage .ck.ck-editor__main>.ck-editor__editable { border-radius: 0 0 14px 14px !important; border-color: #E5E7EB !important; }
     #pgPage .ck.ck-toolbar { border-radius: 14px 14px 0 0 !important; border-color: #E5E7EB !important; background: #F7F8FC !important; }
+    /* in CSS, not editor.style: CKEditor rewrites the editable's inline style on focus */
+    #pgPage .ck-editor__editable_inline { min-height: 300px; }
     #pgPage .ck.ck-editor__editable.ck-focused { border-color: #2563EB !important; box-shadow: none !important; }
 
     #pgPage [data-tooltip] { position: relative; }

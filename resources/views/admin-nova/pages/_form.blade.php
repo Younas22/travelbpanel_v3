@@ -21,14 +21,14 @@
                 <div class="mb-5">
                     <label class="pg-label" for="slug">URL Slug</label>
                     <div class="flex items-center gap-2">
-                        <span class="text-xs text-novamuted flex-shrink-0">{{ url('/') }}/</span>
+                        <span class="text-xs text-novamuted flex-shrink-0">{{ url('/page') }}/</span>
                         <input type="text" name="slug" id="slug" class="pg-input @error('slug') is-invalid @enderror"
                                value="{{ old('slug', $page->slug ?? '') }}" placeholder="auto-generated-from-name">
                         <button type="button" class="pg-icon-btn flex-shrink-0" onclick="generateSlug()" data-tooltip="Regenerate">
                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 1 2.64 6.36M3 12v6m0-6h6"/></svg>
                         </button>
                     </div>
-                    <p class="pg-help">Leave empty to auto-generate from page name</p>
+                    <p class="pg-help">Fills in from the page name; the page opens at this address</p>
                     @error('slug') <p class="pg-error">{{ $message }}</p> @enderror
                 </div>
 
@@ -197,7 +197,6 @@ function initializeEditor(elementId) {
         toolbar: { items: ['heading', '|', 'bold', 'italic', 'underline', '|', 'link', 'imageUpload', '|', 'bulletedList', 'numberedList', '|', 'blockQuote', 'insertTable', '|', 'undo', 'redo'] },
         image: { toolbar: ['imageTextAlternative', 'imageStyle:inline', 'imageStyle:block'] }
     }).then(editor => {
-        editor.ui.view.editable.element.style.minHeight = '300px';
         editorInstances[elementId] = editor;
         editor.model.document.on('change:data', () => { element.value = editor.getData(); });
     }).catch(error => {
@@ -224,25 +223,41 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    const nameInput = document.getElementById('name');
+    const nameField = document.getElementById('name');
     const nameCounter = document.getElementById('nameCounter');
-    if (nameInput && nameCounter) {
-        nameCounter.textContent = nameInput.value.length;
-        nameInput.addEventListener('input', function() { nameCounter.textContent = this.value.length; });
+    if (nameField && nameCounter) {
+        nameCounter.textContent = nameField.value.length;
+        nameField.addEventListener('input', function() { nameCounter.textContent = this.value.length; });
     }
 });
 
-function generateSlug() {
-    const name = document.getElementById('name').value;
-    const slug = name.toLowerCase().replace(/[^a-z0-9 -]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-    document.getElementById('slug').value = slug;
+// Same slug the server makes (Str::slug): lowercase, accents dropped, words joined by "-"
+function slugify(text) {
+    return text.normalize('NFKD').replace(/[̀-ͯ]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/[\s-]+/g, '-');
 }
 
-const nameInputEl = document.getElementById('name');
-const slugInputEl = document.getElementById('slug');
-if (nameInputEl) {
-    nameInputEl.addEventListener('input', function() { if (!slugInputEl.value) { generateSlug(); } });
+function generateSlug() {
+    document.getElementById('slug').value = slugify(document.getElementById('name').value);
 }
+
+// The slug follows the name while typing, until it is edited by hand
+// (on edit: only while it still matches the name, so a custom slug is kept)
+const nameInput = document.getElementById('name');
+const slugInput = document.getElementById('slug');
+let slugEditedByHand = slugInput.value !== '' && slugInput.value !== slugify(nameInput.value);
+
+nameInput.addEventListener('input', function() {
+    if (!slugEditedByHand) {
+        generateSlug();
+    }
+});
+slugInput.addEventListener('input', function() {
+    slugEditedByHand = this.value !== '';
+});
 
 function saveDraft() {
     document.getElementById('status').value = 'draft';

@@ -151,22 +151,18 @@ class PagesController extends Controller
         return view($pageData['view'], ['seo' => $pageData['seo']]);
     }
 
-    if (in_array($slug, ['privacy-policy', 'terms-conditions','about'])) {
-        $page = Page::where('slug', $slug)
-                    ->where('status', 'published')
-                    ->firstOrFail();
-        
-        $seo = [
-            'title' => $page->meta_title ?: $page->name,
-            'description' => $page->meta_description ?: '',
-            'keywords' => $page->meta_keywords ?: '',
-        ];
+    // pages managed in admin → Pages
+    $page = Page::where('slug', $slug)
+                ->where('status', 'published')
+                ->firstOrFail();
 
+    $seo = [
+        'title' => $page->meta_title ?: $page->name,
+        'description' => $page->meta_description ?: '',
+        'keywords' => $page->meta_keywords ?: '',
+    ];
 
-        return view('pages.global', compact('page', 'seo'));
-    }
-
-    abort(404);
+    return view('pages.global', compact('page', 'seo'));
 }
 
 

@@ -182,7 +182,7 @@ Route::get('/', [PagesController::class, 'home'])->name('home');
 Route::get('/home', [PagesController::class, 'home'])->name('home');
 Route::get('/blog', [PagesController::class, 'index'])->name('blog.index');
 Route::get('/page/{slug}', [PagesController::class, 'staticPage'])
-    ->where('slug', 'about|contact|sitemap|privacy-policy|terms-conditions');
+    ->where('slug', '[a-z0-9-]+')->name('page.show');
 Route::get('/{slug}', [PagesController::class, 'detail'])->name('blog.detail');
 
 

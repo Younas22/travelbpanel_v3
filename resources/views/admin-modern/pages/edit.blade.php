@@ -57,7 +57,7 @@
                                         <i class="fas fa-link me-1"></i>URL Slug
                                     </label>
                                     <div class="input-group">
-                                        <span class="input-group-text">{{ url('/') }}/</span>
+                                        <span class="input-group-text">{{ url('/page') }}/</span>
                                         <input type="text" name="slug" id="slug" class="form-control @error('slug') is-invalid @enderror"
                                                value="{{ old('slug', $page->slug) }}" placeholder="auto-generated-from-name">
                                         <button type="button" class="btn btn-outline-secondary" onclick="generateSlug()">
@@ -65,7 +65,7 @@
                                         </button>
                                     </div>
                                     <div class="form-text">
-                                        <small class="text-muted">Leave empty to auto-generate from page name</small>
+                                        <small class="text-muted">Fills in from the page name; the page opens at this address</small>
                                     </div>
                                     @error('slug')
                                         <span class="invalid-feedback" role="alert">
@@ -282,7 +282,6 @@ function initializeEditor(elementId) {
             }
         })
         .then(editor => {
-            editor.ui.view.editable.element.style.minHeight = '300px';
             editorInstances[elementId] = editor;
 
             editor.model.document.on('change:data', () => {
@@ -322,29 +321,33 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Slug generation
-function generateSlug() {
-    const name = document.getElementById('name').value;
-    const slug = name.toLowerCase()
-        .replace(/[^a-z0-9 -]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
-
-    document.getElementById('slug').value = slug;
+// Same slug the server makes (Str::slug): lowercase, accents dropped, words joined by "-"
+function slugify(text) {
+    return text.normalize('NFKD').replace(/[̀-ͯ]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/[\s-]+/g, '-');
 }
 
-// Auto-generate slug from name
+function generateSlug() {
+    document.getElementById('slug').value = slugify(document.getElementById('name').value);
+}
+
+// The slug follows the name while typing, until it is edited by hand
+// (on edit: only while it still matches the name, so a custom slug is kept)
 const nameInput = document.getElementById('name');
 const slugInput = document.getElementById('slug');
+let slugEditedByHand = slugInput.value !== '' && slugInput.value !== slugify(nameInput.value);
 
-if (nameInput) {
-    nameInput.addEventListener('input', function() {
-        if (!slugInput.value) {
-            generateSlug();
-        }
-    });
-}
+nameInput.addEventListener('input', function() {
+    if (!slugEditedByHand) {
+        generateSlug();
+    }
+});
+slugInput.addEventListener('input', function() {
+    slugEditedByHand = this.value !== '';
+});
 
 // Save as draft
 function saveDraft() {

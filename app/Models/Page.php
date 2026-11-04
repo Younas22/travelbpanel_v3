@@ -221,6 +221,6 @@ class Page extends Model
             return url('/');
         }
         
-        return url('/' . $this->slug);
+        return url('/page/' . $this->slug);
     }
 }

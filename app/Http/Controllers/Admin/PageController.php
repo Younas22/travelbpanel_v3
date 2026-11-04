@@ -13,6 +13,9 @@ use Illuminate\Validation\Rule;
 
 class PageController extends Controller
 {
+    /** /page/{slug} addresses that are built-in pages, not admin pages. */
+    private const RESERVED_SLUGS = ['contact', 'sitemap'];
+
     /**
      * Display a listing of the resource.
      */
@@ -75,7 +78,7 @@ class PageController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:pages,slug',
+            'slug' => ['nullable', 'string', 'max:255', Rule::notIn(self::RESERVED_SLUGS)],
             'status' => 'required|in:draft,published,private',
             'translations' => 'nullable|array',
             'translations.*.title' => 'nullable|string|max:255',
@@ -88,18 +91,7 @@ class PageController extends Controller
             'show_in_menu' => 'boolean',
         ]);
 
-        // Generate slug if not provided
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
-        }
-
-        // Ensure slug is unique
-        $originalSlug = $validated['slug'];
-        $counter = 1;
-        while (Page::where('slug', $validated['slug'])->exists()) {
-            $validated['slug'] = $originalSlug . '-' . $counter;
-            $counter++;
-        }
+        $validated['slug'] = $this->uniqueSlug($validated['slug'] ?: $validated['name']);
 
         // Handle homepage setting
         if (!empty($validated['is_homepage'])) {
@@ -142,12 +134,7 @@ class PageController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                Rule::unique('pages')->ignore($page->id)
-            ],
+            'slug' => ['nullable', 'string', 'max:255', Rule::notIn(self::RESERVED_SLUGS)],
             'status' => 'required|in:draft,published,private',
             'translations' => 'nullable|array',
             'translations.*.title' => 'nullable|string|max:255',
@@ -160,10 +147,7 @@ class PageController extends Controller
             'show_in_menu' => 'boolean',
         ]);
 
-        // Generate slug if not provided
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
-        }
+        $validated['slug'] = $this->uniqueSlug($validated['slug'] ?: $validated['name'], $page);
 
         // Handle homepage setting
         if (!empty($validated['is_homepage'])) {
@@ -177,6 +161,23 @@ class PageController extends Controller
 
         return redirect()->route('admin.pages.index')
                         ->with('success', 'Page updated successfully!');
+    }
+
+    /**
+     * URL-safe slug (same rule as the form's live preview), made unique by
+     * adding -1, -2 ... when another page or a built-in page already uses it.
+     */
+    private function uniqueSlug(string $text, ?Page $page = null): string
+    {
+        $base = Str::slug($text) ?: 'page';
+        $slug = $base;
+
+        for ($i = 1; in_array($slug, self::RESERVED_SLUGS)
+            || Page::where('slug', $slug)->when($page, fn ($q) => $q->whereKeyNot($page->id))->exists(); $i++) {
+            $slug = "{$base}-{$i}";
+        }
+
+        return $slug;
     }
 
     /**
