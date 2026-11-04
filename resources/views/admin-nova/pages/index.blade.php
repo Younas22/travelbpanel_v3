@@ -211,7 +211,7 @@
                             </button>
                         @endif
                         @unless($page->is_homepage)
-                            <button class="pg-icon-btn pg-icon-danger" onclick="deletePage({{ $page->id }})" data-tooltip="Delete">
+                            <button class="pg-icon-btn pg-icon-danger" onclick="deletePage('{{ route('admin.pages.destroy', $page) }}')" data-tooltip="Delete">
                                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/></svg>
                             </button>
                         @endunless
@@ -287,11 +287,12 @@ function changePageStatus(pageId, action) {
     }
 }
 
-function deletePage(pageId) {
+// pages are looked up by slug in the route, so the server builds the URL
+function deletePage(deleteUrl) {
     if (confirm('Are you sure you want to delete this page? This action cannot be undone.')) {
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = `{{ url('admin/pages') }}/${pageId}`;
+        form.action = deleteUrl;
         form.innerHTML = `@csrf @method('DELETE')`;
         document.body.appendChild(form);
         form.submit();

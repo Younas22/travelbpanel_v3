@@ -264,7 +264,8 @@ class PageController extends Controller
                 
             case 'delete':
                 // Prevent deletion of homepage
-                $homepageIds = $pages->where('is_homepage', true)->pluck('id');
+                // clone: a where() on $pages itself would also limit the delete below to homepages
+                $homepageIds = (clone $pages)->where('is_homepage', true)->pluck('id');
                 if ($homepageIds->isNotEmpty()) {
                     return response()->json([
                         'success' => false,

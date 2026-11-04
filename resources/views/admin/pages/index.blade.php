@@ -268,7 +268,7 @@
                                 <!-- Delete Button -->
                                 @unless($page->is_homepage)
                                     <button class="btn btn-outline-danger btn-sm" title="Delete"
-                                            onclick="deletePage({{ $page->id }})">
+                                            onclick="deletePage('{{ route('admin.pages.destroy', $page) }}')">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 @endunless
@@ -409,11 +409,12 @@ function changePageStatus(pageId, action) {
     }
 }
 
-function deletePage(pageId) {
+// pages are looked up by slug in the route, so the server builds the URL
+function deletePage(deleteUrl) {
     if (confirm('Are you sure you want to delete this page? This action cannot be undone.')) {
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = `{{ url('admin/pages') }}/${pageId}`;
+        form.action = deleteUrl;
         form.innerHTML = `
             @csrf
             @method('DELETE')
