@@ -19,58 +19,6 @@
         },
     };
 </script>
-<style>
-    #nlPage, #nlPage *, #nlPage *::before, #nlPage *::after { box-sizing: border-box; }
-    #nlPage { font-family: 'Plus Jakarta Sans', sans-serif; }
-    #nlPage h1, #nlPage h2, #nlPage h5, #nlPage p { margin: 0; padding: 0; }
-    #nlPage a { text-decoration: none; color: inherit; }
-    #nlPage button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; padding: 0; }
-    #nlPage svg { display: block; }
-    #nlPage .tt-fade-in { animation: nlFadeIn .5s ease both; }
-    @keyframes nlFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-    #nlPage .tt-row:hover { background: #F7F8FC; }
-
-    #nlPage .nl-btn-nova {
-        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-        border: 1px solid #E5E7EB; border-radius: 9999px; color: #000; background: #fff;
-        white-space: nowrap; transition: background .2s ease, border-color .2s ease;
-    }
-    #nlPage .nl-btn-nova:hover { background: #F7F8FC; }
-    #nlPage .nl-btn-primary { background: #2563EB; color: #fff; border-color: #2563EB; }
-    #nlPage .nl-btn-primary:hover { background: #1D4ED8; border-color: #1D4ED8; }
-    #nlPage .nl-btn-warning { background: #F59E0B; color: #fff; border-color: #F59E0B; }
-    #nlPage .nl-icon-btn {
-        width: 30px; height: 30px; border-radius: 9999px; border: 1px solid #E5E7EB;
-        display: inline-flex; align-items: center; justify-content: center; background: #fff;
-        transition: background .2s ease, border-color .2s ease;
-    }
-    #nlPage .nl-icon-btn:hover { background: #F7F8FC; }
-    #nlPage .nl-icon-warn:hover { background: #FFFBEB; border-color: #F59E0B; color: #F59E0B; }
-    #nlPage .nl-icon-success:hover { background: #ECFDF5; border-color: #22C55E; color: #22C55E; }
-    #nlPage .nl-icon-danger:hover { background: #FEF2F2; border-color: #EF4444; color: #EF4444; }
-
-    #nlPage .nl-bulk-bar { display: none; }
-    #nlPage .nl-bulk-bar.nl-visible { display: flex; }
-
-    #nlPage [data-tooltip] { position: relative; }
-    #nlPage [data-tooltip]::after {
-        content: attr(data-tooltip); position: absolute; bottom: calc(100% + 8px); left: 50%;
-        transform: translateX(-50%) translateY(4px); background: #1F2937; color: #fff;
-        font-size: 11px; font-weight: 600; line-height: 1; padding: 6px 10px; border-radius: 6px;
-        white-space: nowrap; box-shadow: 0 6px 16px rgba(0,0,0,.18); opacity: 0; visibility: hidden;
-        pointer-events: none; transition: opacity .15s ease, transform .15s ease, visibility .15s ease; z-index: 60;
-    }
-    #nlPage [data-tooltip]::before {
-        content: ''; position: absolute; bottom: calc(100% + 3px); left: 50%; transform: translateX(-50%);
-        border: 5px solid transparent; border-top-color: #1F2937; opacity: 0; visibility: hidden;
-        pointer-events: none; transition: opacity .15s ease, visibility .15s ease; z-index: 60;
-    }
-    #nlPage [data-tooltip]:hover::after, #nlPage [data-tooltip]:focus-visible::after { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); transition-delay: .25s; }
-    #nlPage [data-tooltip]:hover::before, #nlPage [data-tooltip]:focus-visible::before { opacity: 1; visibility: visible; transition-delay: .25s; }
-
-    #nlPage .pagination { gap: 4px; }
-    #nlPage .page-link { border-radius: 9999px !important; }
-</style>
 @endpush
 
 @section('content')

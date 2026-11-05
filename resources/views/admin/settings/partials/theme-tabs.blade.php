@@ -10,15 +10,6 @@
     </button>
 </div>
 
-@push('styles')
-<style>
-    .theme-scope-tabs { display: inline-flex; gap: 4px; padding: 4px; margin-bottom: 20px; background: #fff; border: 1px solid #E5E7EB; border-radius: 9999px; }
-    .theme-scope-tab { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border: 0; border-radius: 9999px; background: transparent; color: #374151; font-weight: 600; font-size: 13px; cursor: pointer; }
-    .theme-scope-tab:hover { background: #F3F4F6; }
-    .theme-scope-tab.active { background: var(--primary-color, #2563EB); color: #fff; }
-    [data-theme-pane][hidden] { display: none !important; }
-</style>
-@endpush
 
 @push('scripts')
 <script>

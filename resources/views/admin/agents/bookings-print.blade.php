@@ -17,26 +17,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bookings — {{ $agent->full_name }} ({{ $agent->agent_code }})</title>
-    <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; padding: 32px; font-family: -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; color: #111827; background: #fff; font-size: 12px; }
-        header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; padding-bottom: 16px; border-bottom: 2px solid #2563EB; }
-        h1 { margin: 0 0 4px; font-size: 20px; }
-        .muted { color: #64748B; }
-        .meta { text-align: right; line-height: 1.6; }
-        .filters { margin: 14px 0 0; color: #64748B; }
-        table { width: 100%; border-collapse: collapse; margin-top: 18px; }
-        th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; background: #F8FAFC; padding: 8px; border-bottom: 1px solid #E5E7EB; }
-        td { padding: 8px; border-bottom: 1px solid #F1F5F9; vertical-align: top; }
-        td small { display: block; color: #64748B; }
-        .empty { margin-top: 40px; text-align: center; color: #64748B; font-size: 14px; }
-        .toolbar { margin-bottom: 20px; display: flex; gap: 8px; }
-        .toolbar button { height: 36px; padding: 0 16px; border-radius: 8px; border: 1px solid #2563EB; background: #2563EB; color: #fff; font-weight: 600; cursor: pointer; }
-        .toolbar button.alt { background: #fff; color: #111827; border-color: #E5E7EB; }
-        @media print { body { padding: 0; } .toolbar { display: none; } tr { page-break-inside: avoid; } }
-    </style>
+    <link rel="stylesheet" href="{{ asset('public/assets/css/admin-nova.css') }}?v={{ @filemtime(public_path('assets/css/admin-nova.css')) ?: 1 }}">
 </head>
-<body>
+<body class="view-bookings-print">
     <div class="toolbar">
         <button type="button" onclick="window.print()">Save as PDF</button>
         <button type="button" class="alt" onclick="window.close()">Close</button>

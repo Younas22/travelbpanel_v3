@@ -19,27 +19,6 @@
         },
     };
 </script>
-<style>
-    #cmsPage, #cmsPage *, #cmsPage *::before, #cmsPage *::after { box-sizing: border-box; }
-    #cmsPage { font-family: 'Plus Jakarta Sans', sans-serif; }
-    #cmsPage h1, #cmsPage h2, #cmsPage h3, #cmsPage p { margin: 0; padding: 0; }
-    #cmsPage a { text-decoration: none; color: inherit; }
-    #cmsPage button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; padding: 0; }
-    #cmsPage svg { display: block; }
-    #cmsPage .tt-fade-in { animation: cmsFadeIn .5s ease both; }
-    @keyframes cmsFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-    #cmsPage .cm-btn-nova {
-        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-        border: 1px solid #E5E7EB; border-radius: 9999px; color: #000; background: #fff;
-        white-space: nowrap; transition: background .2s ease, border-color .2s ease;
-    }
-    #cmsPage .cm-btn-nova:hover { background: #F7F8FC; }
-    #cmsPage select.cm-status-select {
-        border: 1px solid #E5E7EB; border-radius: 9999px; padding: 8px 14px; font-size: 12px;
-        font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; background: #fff; color: #000;
-    }
-</style>
 @endpush
 
 @section('content')

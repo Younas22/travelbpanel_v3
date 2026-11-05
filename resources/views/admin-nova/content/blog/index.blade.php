@@ -4,13 +4,6 @@
 
 @push('styles')
 @include('admin-nova.content.blog._styles')
-<style>
-    #blPage .dropdown-menu { border-radius: 1rem; border-color: #E5E7EB; font-family: 'Plus Jakarta Sans', sans-serif; padding: 6px; }
-    #blPage .dropdown-item { border-radius: 10px; font-size: 12px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; }
-    #blPage .dropdown-item:hover { background: #F7F8FC; }
-    #blPage .dropdown-item.text-danger:hover { background: #FEF2F2; }
-    #blPage .dropdown-item.text-warning:hover { background: #FFFBEB; }
-</style>
 @endpush
 
 @section('content')

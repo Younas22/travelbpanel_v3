@@ -19,52 +19,6 @@
         },
     };
 </script>
-<style>
-    #vrPage, #vrPage *, #vrPage *::before, #vrPage *::after { box-sizing: border-box; }
-    #vrPage { font-family: var(--font-family); }
-    #vrPage h1, #vrPage h2, #vrPage p { margin: 0; padding: 0; }
-    #vrPage a { text-decoration: none; color: inherit; }
-    #vrPage button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; padding: 0; }
-    #vrPage svg { display: block; }
-
-    #vrPage .tt-fade-in { animation: vrFadeIn .5s ease both; }
-    @keyframes vrFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-    #vrPage .tt-row { transition: background .2s ease, border-color .2s ease, transform .2s ease; }
-    #vrPage .tt-row:hover { background: var(--body-bg); border-color: color-mix(in srgb, var(--primary-color) 16%, var(--card-bg)); transform: translateX(2px); }
-
-    #vrPage .vr-btn-nova {
-        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-        border: 1px solid var(--border-color); border-radius: 9999px; color: var(--text-color); background: var(--card-bg);
-        white-space: nowrap; transition: background .2s ease, border-color .2s ease;
-    }
-    #vrPage .vr-btn-nova:hover { background: var(--body-bg); }
-    #vrPage .vr-btn-primary { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
-    #vrPage .vr-btn-primary:hover { background: color-mix(in srgb, var(--primary-color) 85%, #000); border-color: color-mix(in srgb, var(--primary-color) 85%, #000); }
-    #vrPage .vr-icon-btn {
-        width: 30px; height: 30px; border-radius: 9999px; border: 1px solid var(--border-color);
-        display: inline-flex; align-items: center; justify-content: center; background: var(--card-bg);
-        transition: background .2s ease, border-color .2s ease;
-    }
-    #vrPage .vr-icon-btn.has-label { width: auto; height: 30px; padding: 0 12px; gap: 6px; font-size: 11px; font-weight: 600; }
-    #vrPage .vr-icon-btn:hover { background: var(--body-bg); }
-
-    #vrPage [data-tooltip] { position: relative; }
-    #vrPage [data-tooltip]::after {
-        content: attr(data-tooltip); position: absolute; bottom: calc(100% + 8px); left: 50%;
-        transform: translateX(-50%) translateY(4px); background: #1F2937; color: #fff;
-        font-size: 11px; font-weight: 600; line-height: 1; padding: 6px 10px; border-radius: 6px;
-        white-space: nowrap; box-shadow: 0 6px 16px rgba(0,0,0,.18); opacity: 0; visibility: hidden;
-        pointer-events: none; transition: opacity .15s ease, transform .15s ease, visibility .15s ease; z-index: 60;
-    }
-    #vrPage [data-tooltip]::before {
-        content: ''; position: absolute; bottom: calc(100% + 3px); left: 50%; transform: translateX(-50%);
-        border: 5px solid transparent; border-top-color: #1F2937; opacity: 0; visibility: hidden;
-        pointer-events: none; transition: opacity .15s ease, visibility .15s ease; z-index: 60;
-    }
-    #vrPage [data-tooltip]:hover::after, #vrPage [data-tooltip]:focus-visible::after { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); transition-delay: .25s; }
-    #vrPage [data-tooltip]:hover::before, #vrPage [data-tooltip]:focus-visible::before { opacity: 1; visibility: visible; transition-delay: .25s; }
-</style>
 @endpush
 
 @section('content')
