@@ -29,14 +29,13 @@
     {{-- Nova is a new, phased-in third design (see App\View\NovaAdminViewFinder):
          for now it only has its own Dashboard page (built in Tailwind, loaded
          per-page via @push('styles')); every other admin.* page still falls
-         back to Classic. Until Nova grows its own sidebar/header, it reuses
-         admin-modern's chrome + stylesheet as a shell (read-only includes
-         below), same as admin-modern briefly reused Classic's quick-switcher
-         partial during its own early rollout. --}}
-    <link id="admin-design-css" href="{{ asset('public/assets/css/admin-modern.css') }}?v={{ @filemtime(public_path('assets/css/admin-modern.css')) ?: 1 }}" rel="stylesheet">
+         back to Classic. Its sidebar/header/footer/scripts live in
+         admin-nova/shell (not layouts/, so NovaAdminViewFinder never swaps
+         them into Classic pages). --}}
+    <link id="admin-design-css" href="{{ asset('public/assets/css/admin-nova.css') }}?v={{ @filemtime(public_path('assets/css/admin-nova.css')) ?: 1 }}" rel="stylesheet">
 
     {{-- Nova's typography is a fixed part of its own design language (Plus
-         Jakarta Sans, see body.design-nova in admin-modern.css) rather than
+         Jakarta Sans, see body.design-nova in admin-nova.css) rather than
          the admin's per-account Theme Settings font choice — so it always
          loads its own font here instead of the conditional $__activeTheme
          ->font_family block the other designs use. --}}
@@ -58,10 +57,10 @@
         <i class="bi bi-layout-sidebar-inset"></i>
     </button>
 
-    @include('admin-modern.layouts.sidebar')
+    @include('admin-nova.shell.sidebar')
 
     <div class="main-content">
-        @include('admin-modern.layouts.header')
+        @include('admin-nova.shell.header')
 
         <div class="content-area p-4">
             @if(session('success'))
@@ -86,10 +85,10 @@
             @yield('content')
         </div>
 
-        @include('admin-modern.layouts.footer')
+        @include('admin-nova.shell.footer')
     </div>
 
-    @include('admin-modern.layouts.partials.scripts')
+    @include('admin-nova.shell.scripts')
     @include('admin-nova.partials._confirm-dialog')
     @include('admin.layouts.partials.theme-quick-switcher')
     <script>

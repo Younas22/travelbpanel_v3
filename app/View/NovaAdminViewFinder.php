@@ -10,20 +10,11 @@ use Throwable;
 
 /**
  * Transparently serves resources/views/admin-nova/* in place of
- * resources/views/admin/* when the active Design Style is "nova" — mirrors
- * ModernAdminViewFinder exactly (same scoping rules, same gate on
- * User::isAdmin()), just for the third design and its own view prefix.
+ * resources/views/admin/* when the active Design Style is "nova" (only for
+ * logged-in admins, User::isAdmin()).
  *
- * Nova is being rolled out phased, module-by-module, same as Modern was —
- * right now only admin-nova/dashboard/index.blade.php (plus its own
- * layouts/app.blade.php shell) exists. Any admin.* page with no admin-nova.*
- * equivalent yet falls through this finder to the next one in the chain
- * (ModernAdminViewFinder), which itself only swaps for design_style ===
- * "modern" — so for a Nova user that inner check is false too, and it falls
- * all the way through to the base finder, i.e. Classic. That fallback to
- * Classic (not Modern) for not-yet-built Nova pages is intentional: Nova and
- * Modern are independent, mutually exclusive designs, not a fallback chain
- * of their own.
+ * Nova is rolled out page by page: any admin.* page with no admin-nova.*
+ * equivalent yet falls through to the base finder, i.e. Classic.
  */
 class NovaAdminViewFinder implements ViewFinderInterface
 {
@@ -53,10 +44,11 @@ class NovaAdminViewFinder implements ViewFinderInterface
             return false;
         }
 
-        // Layout/partial names are never swapped, only page-level views are
-        // — see ModernAdminViewFinder::shouldTryModern() for the full
-        // rationale (same bug class, same fix, both designs hardcode their
-        // own layout tree directly and never rely on this swap for it).
+        // Layout/partial names are never swapped, only page-level views are.
+        // Nova's own pages extend 'admin-nova.layouts.app' directly, so this
+        // prefix is only hit when an unconverted Classic page's
+        // @extends('admin.layouts.app') resolves — swapping it there would
+        // wrap Classic content in Nova's chrome.
         if (str_starts_with($name, 'admin.layouts.')) {
             return false;
         }

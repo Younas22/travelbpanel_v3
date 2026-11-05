@@ -6,7 +6,6 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Support\Facades\View;
 use App\Models\Language;
-use App\View\ModernAdminViewFinder;
 use App\View\NovaAdminViewFinder;
 
 class AppServiceProvider extends ServiceProvider
@@ -16,18 +15,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Transparently serves resources/views/admin-modern/* in place of
-        // admin/* when the current admin's Design Style is "modern" — see
-        // ModernAdminViewFinder's docblock for the full scoping rules.
-        // Controllers/routes are never touched; this is the only place
-        // the swap happens. Chained with NovaAdminViewFinder below (each
-        // only ever acts on its own prefix/design_style and passes
-        // everything else straight through to the one it wraps). The agent
-        // panel has a single (Classic) design, so it needs no finder.
-        $this->app->extend('view.finder', function ($finder) {
-            return new ModernAdminViewFinder($finder);
-        });
-
+        // Transparently serves resources/views/admin-nova/* in place of
+        // admin/* when the current admin's Design Style is "nova" — see
+        // NovaAdminViewFinder's docblock. Controllers/routes are never
+        // touched; this is the only place the swap happens. The agent panel
+        // has a single (Classic) design, so it needs no finder.
         $this->app->extend('view.finder', function ($finder) {
             return new NovaAdminViewFinder($finder);
         });

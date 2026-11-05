@@ -110,22 +110,6 @@
                         </div>
                     </div>
                     <div class="col-6 col-md-4">
-                        <div class="theme-card {{ $theme->design_style === 'modern' ? 'active' : '' }}"
-                             data-design-card data-design="modern">
-                            <div class="theme-card-check"><i class="bi bi-check-circle-fill"></i></div>
-                            <div class="theme-card-preview">
-                                <span style="background:#0C6DFD"></span>
-                                <span style="background:#f7f8fa"></span>
-                                <span style="background:#FFFFFF"></span>
-                            </div>
-                            <div class="theme-card-body">
-                                <div class="theme-card-icon"><i class="bi bi-stars"></i></div>
-                                <div class="theme-card-label">Modern</div>
-                                <div class="theme-card-desc">A softer, premium SaaS-style redesign.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-4">
                         <div class="theme-card {{ $theme->design_style === 'nova' ? 'active' : '' }}"
                              data-design-card data-design="nova">
                             <div class="theme-card-check"><i class="bi bi-check-circle-fill"></i></div>
@@ -337,11 +321,9 @@
     ]),
     'design_stylesheets' => [
         'classic' => asset('public/assets/css/admin.css') . '?v=' . (@filemtime(public_path('assets/css/admin.css')) ?: 1),
-        'modern' => asset('public/assets/css/admin-modern.css') . '?v=' . (@filemtime(public_path('assets/css/admin-modern.css')) ?: 1),
-        // Nova has no dedicated stylesheet yet — it borrows admin-modern.css
-        // for its shared chrome (sidebar/header) while its own pages use
-        // Tailwind loaded per-page. See NovaAdminViewFinder.
-        'nova' => asset('public/assets/css/admin-modern.css') . '?v=' . (@filemtime(public_path('assets/css/admin-modern.css')) ?: 1),
+        // Nova's chrome (sidebar/header) is styled by admin-nova.css; its own
+        // pages use Tailwind loaded per-page. See NovaAdminViewFinder.
+        'nova' => asset('public/assets/css/admin-nova.css') . '?v=' . (@filemtime(public_path('assets/css/admin-nova.css')) ?: 1),
     ],
     'layout_options' => $layoutOptions,
     'css_vars' => $theme->toCssVariables(),

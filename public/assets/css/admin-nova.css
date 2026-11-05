@@ -1,12 +1,13 @@
 /* =====================================================
-   ADMIN MODERN — Premium SaaS design system
+   ADMIN NOVA — design system
    =====================================================
-   A second, complete visual design for the Admin Panel,
-   selectable from Theme Settings > Design Style. Same
-   HTML, same classes, same functionality as admin.css —
-   only the appearance is different. Loaded INSTEAD of
-   admin.css (never together), so this file owns every
-   selector admin.css would otherwise style.
+   The Nova design for the Admin Panel, selectable from
+   Theme Settings > Design Style. Same HTML, same classes,
+   same functionality as admin.css — only the appearance is
+   different. Loaded INSTEAD of admin.css (never together),
+   so this file owns every selector admin.css would
+   otherwise style. The Nova block near the end of the file
+   layers Nova's fixed look on top of these base rules.
 
    Every color still comes from the same CSS variables the
    Theme & Appearance system already writes per request
@@ -2566,11 +2567,9 @@ tr.table-warning, tr.table-warning td { background-color: color-mix(in srgb, var
 .message-content-text { white-space: pre-wrap; line-height: 1.8; }
 
 /* =====================================================
-   admin-modern view tree (resources/views/admin-modern) —
-   markup here is new, independent from the classic blade
-   files but deliberately reuses the same component classes
-   above wherever the component is visually identical; a few
-   classes below are genuinely new to this file tree.
+   Shell + page components (admin-nova/shell sidebar/header,
+   theme quick-switcher, image grids) — reuses the component
+   classes above where the component is visually identical.
 ===================================================== */
 .etp-img-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .etp-img-wrap { position: relative; border-radius: var(--radius-md); overflow: hidden; aspect-ratio: 1; }
@@ -2759,11 +2758,11 @@ tr.table-warning, tr.table-warning td { background-color: color-mix(in srgb, var
 .footer.bg-light .text-muted { color: color-mix(in srgb, var(--text-color) 55%, transparent) !important; font-size: 0.75rem; }
 
 /* =====================================================
-   Nova (resources/views/admin-nova) — for now Nova borrows
-   this file + admin-modern's sidebar/header/footer partials
-   as its chrome (see admin-nova/layouts/app.blade.php).
+   Nova (resources/views/admin-nova) — chrome comes from
+   admin-nova/shell (sidebar/header/footer/scripts, see
+   admin-nova/layouts/app.blade.php).
 
-   Unlike Modern, Nova is a fixed, self-contained design
+   Nova is a fixed, self-contained design
    language (premium SaaS: Plus Jakarta Sans + a specific
    blue/cyan palette + fully-rounded cards/inputs/buttons) —
    by explicit product decision it does NOT follow the admin's
