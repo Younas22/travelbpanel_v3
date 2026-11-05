@@ -43,19 +43,30 @@ class TranslationController extends Controller
         $translations = [];
         $searchResults = null;
 
+        $matchGroups = [];
+
         if ($search !== '') {
-            // Search keys and values — within the selected group, or across all groups
+            // Keys and values are searched in every group; the group list then holds
+            // only the groups with matches (with their counts). One matching group is
+            // selected by itself; with several, all their results show until one is picked.
             $needle = mb_strtolower($search);
-            $searchGroups = $selectedGroup ? [$selectedGroup] : $groups;
             $searchResults = [];
 
-            foreach ($searchGroups as $group) {
+            foreach ($groups as $group) {
                 foreach ($this->getTranslations($selectedLang, $group) as $key => $value) {
                     $text = is_string($value) ? $value : json_encode($value, JSON_UNESCAPED_UNICODE);
                     if (str_contains(mb_strtolower((string) $key), $needle) || str_contains(mb_strtolower($text), $needle)) {
                         $searchResults[] = ['group' => $group, 'key' => $key, 'value' => $value];
+                        $matchGroups[$group] = ($matchGroups[$group] ?? 0) + 1;
                     }
                 }
+            }
+
+            if (!isset($matchGroups[$selectedGroup])) {
+                $selectedGroup = count($matchGroups) === 1 ? array_key_first($matchGroups) : null;
+            }
+            if ($selectedGroup) {
+                $searchResults = array_values(array_filter($searchResults, fn ($row) => $row['group'] === $selectedGroup));
             }
         } elseif ($selectedGroup) {
             $translations = $this->getTranslations($selectedLang, $selectedGroup);
@@ -72,6 +83,7 @@ class TranslationController extends Controller
             'translations',
             'search',
             'searchResults',
+            'matchGroups',
             'groups',
             'selectedLang',
             'selectedGroup',

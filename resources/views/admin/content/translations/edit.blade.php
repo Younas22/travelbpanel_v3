@@ -12,7 +12,16 @@
                 <p class="text-muted mb-0">Edit: <strong>{{ ucfirst($group) }}</strong></p>
             </div>
             <div class="col-md-4 text-end">
-                <form action="{{ route('admin.content.translations.destroy', $group) }}" 
+                @php
+                    // back to the list (with the search the admin came from, if any)
+                    $trBack = str_starts_with(url()->previous(), route('admin.content.translations.index'))
+                        ? url()->previous()
+                        : route('admin.content.translations.index', ['group' => $group]);
+                @endphp
+                <a href="{{ $trBack }}" class="btn btn-outline-secondary me-2">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+                <form action="{{ route('admin.content.translations.destroy', $group) }}"
                       method="POST" class="d-inline"
                       onsubmit="return confirm('Delete entire group?');">
                     @csrf

@@ -24,7 +24,7 @@
         </div>
     </div>
 
-    <form method="GET" action="{{ route('admin.content.translations.index') }}" class="tbp-translations-filters">
+    <form method="GET" action="{{ route('admin.content.translations.index') }}" class="tbp-translations-filters" id="trFilters">
         <label class="tbp-translations-field"><span><i class="bi bi-globe"></i> Select Language</span>
             <select name="language" onchange="this.form.submit()">
                 @foreach($languages as $language)
@@ -34,15 +34,27 @@
         </label>
         <label class="tbp-translations-field"><span><i class="bi bi-folder2"></i> Select Translation Group</span>
             <select name="group" onchange="this.form.submit()">
-                <option value="">-- All Groups --</option>
-                @foreach($groups as $group)
-                    <option value="{{ $group }}" @selected($selectedGroup === $group)>{{ ucfirst($group) }}</option>
-                @endforeach
+                @if($searchResults !== null)
+                    {{-- while searching: only the groups that have matches --}}
+                    @if($matchGroups)
+                        <option value="">All matching groups ({{ count($matchGroups) }} · {{ array_sum($matchGroups) }} results)</option>
+                        @foreach($matchGroups as $group => $count)
+                            <option value="{{ $group }}" @selected($selectedGroup === $group)>{{ ucfirst($group) }} ({{ $count }})</option>
+                        @endforeach
+                    @else
+                        <option value="">No group has a match</option>
+                    @endif
+                @else
+                    <option value="">-- All Groups --</option>
+                    @foreach($groups as $group)
+                        <option value="{{ $group }}" @selected($selectedGroup === $group)>{{ ucfirst($group) }}</option>
+                    @endforeach
+                @endif
             </select>
         </label>
         <label class="tbp-translations-field"><span><i class="bi bi-search"></i> Search Key / Value</span>
             <div class="tbp-translations-search">
-                <input type="search" name="q" value="{{ $search }}" placeholder="Type a key or value and press Enter…" autocomplete="off">
+                <input type="search" name="q" id="trSearch" value="{{ $search }}" placeholder="Search a key or value in all groups…" autocomplete="off" @if($search !== '') autofocus @endif>
                 <button type="submit" title="Search"><i class="bi bi-search"></i></button>
             </div>
         </label>
@@ -54,9 +66,18 @@
                 <span class="tbp-translations-icon"><i class="bi bi-search"></i></span>
                 <div>
                     <h2>{{ count($searchResults) }} result{{ count($searchResults) === 1 ? '' : 's' }} for “{{ $search }}”</h2>
-                    <p>Searching {{ $selectedGroup ? ucfirst($selectedGroup) . ' group' : 'all groups' }} – {{ strtoupper($selectedLang) }}@if($currentLang) ({{ $currentLang->name }})@endif</p>
+                    <p>
+                        @if($selectedGroup && count($matchGroups) > 1)
+                            Showing the {{ ucfirst($selectedGroup) }} group — {{ count($matchGroups) }} groups have matches
+                        @elseif($matchGroups)
+                            Found in {{ implode(', ', array_map('ucfirst', array_keys($matchGroups))) }}
+                        @else
+                            Searched all groups
+                        @endif
+                        – {{ strtoupper($selectedLang) }}@if($currentLang) ({{ $currentLang->name }})@endif
+                    </p>
                 </div>
-                <a href="{{ route('admin.content.translations.index', array_filter(['language' => $selectedLang, 'group' => $selectedGroup])) }}" class="tbp-translations-btn is-small is-outline"><i class="bi bi-x-lg"></i> Clear</a>
+                <a href="{{ route('admin.content.translations.index', ['language' => $selectedLang]) }}" class="tbp-translations-btn is-small is-outline"><i class="bi bi-x-lg"></i> Clear</a>
             </header>
             @if(count($searchResults))
                 <div class="tbp-translations-table-wrap">
@@ -85,7 +106,7 @@
                 <div class="tbp-translations-empty">
                     <i class="bi bi-search"></i>
                     <h2>No matches</h2>
-                    <p>No key or value contains “{{ $search }}” for this language.</p>
+                    <p>No key or value in any group contains “{{ $search }}” for this language.</p>
                 </div>
             @endif
         </section>
@@ -133,3 +154,23 @@
     @endif
 </div>
 @endsection
+
+@push('scripts')
+<script>
+// search as you type (after a short pause); a new search starts over in all groups
+(function () {
+    const input = document.getElementById('trSearch');
+    const form = document.getElementById('trFilters');
+    let timer;
+    input.addEventListener('input', function () {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+            if (input.value.trim().length === 1) { return; }
+            form.querySelector('select[name="group"]').value = '';
+            form.submit();
+        }, 500);
+    });
+    if (input.value) { input.setSelectionRange(input.value.length, input.value.length); }
+})();
+</script>
+@endpush
