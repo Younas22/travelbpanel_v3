@@ -31,9 +31,15 @@ if (!function_exists('getRandomColor')) {
 
 if (!function_exists('get_menu_items')) {
     function get_menu_items($category = 'header', $activeOnly = true) {
-        return MenuItem::where('category', $category)
+        return MenuItem::with('page')
+            ->where('category', $category)
             ->when($activeOnly, function ($query) {
                 $query->where('is_active', true);
+            })
+            // a page's menu link shows only while the page is published
+            ->where(function ($query) {
+                $query->whereNull('page_id')
+                      ->orWhereHas('page', fn ($page) => $page->where('status', 'published'));
             })
             ->orderBy('sort_order')
             ->get();

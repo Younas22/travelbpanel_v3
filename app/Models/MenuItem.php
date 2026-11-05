@@ -5,6 +5,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 
 class MenuItem extends Model
 {
@@ -12,11 +13,13 @@ class MenuItem extends Model
 
     protected $fillable = [
         'name',
+        'translations',
         'url',
         'category',
         'sort_order',
         'is_active',
         'parent_id',
+        'page_id',
         'icon',
         'target',
         'description'
@@ -24,9 +27,45 @@ class MenuItem extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'translations' => 'array',
     ];
 
+    /**
+     * Attributes for saving a menu item from a form. Link: a page (address
+     * follows the page's slug), a custom URL, or nothing for a dropdown that
+     * only holds sub-items. Names: one per active language; names of
+     * languages switched off right now are kept.
+     */
+    public static function linkAndNameAttributes(array $validated, ?self $menu = null): array
+    {
+        $type = $validated['link_type'];
+        if ($type === 'page') {
+            $validated['url'] = '/page/' . Page::whereKey($validated['page_id'])->value('slug');
+        } else {
+            $validated['page_id'] = null;
+            if ($type === 'dropdown') {
+                $validated['url'] = null;
+            }
+        }
+
+        if (array_key_exists('translations', $validated) || !$menu) {
+            $active = Language::getActiveCodes();
+            $names = array_filter(Arr::only($validated['translations'] ?? [], $active), 'filled');
+            $names += Arr::except($menu?->translations ?? [], $active);
+            $validated['translations'] = $names ?: null;
+        }
+
+        unset($validated['link_type']);
+
+        return $validated;
+    }
+
     // Relationships
+    public function page()
+    {
+        return $this->belongsTo(Page::class);
+    }
+
     public function parent()
     {
         return $this->belongsTo(MenuItem::class, 'parent_id');
@@ -83,6 +122,11 @@ class MenuItem extends Model
     // Accessors
     public function getFullUrlAttribute()
     {
+        // linked page: always its current address, even after the slug changed
+        if ($this->page_id && $this->page) {
+            return url('/page/' . $this->page->slug);
+        }
+
         if (str_starts_with($this->url, 'http')) {
             return $this->url;
         }
@@ -92,6 +136,37 @@ class MenuItem extends Model
         }
         
         return url('/' . $this->url);
+    }
+
+    /**
+     * Text shown in the website menu for the current language: the name typed
+     * for that language in admin → Menus, else the linked page's title in
+     * that language, else the old "{group}.{name}" translation key, else the
+     * default language's name / page title, else the item name.
+     */
+    public function label(string $group): string
+    {
+        $locale = app()->getLocale();
+        $own = $this->translations ?? [];
+
+        if (filled($own[$locale] ?? null)) {
+            return $own[$locale];
+        }
+
+        $pageTitle = $this->page?->translation('title', $locale, false);
+        if (filled($pageTitle)) {
+            return $pageTitle;
+        }
+
+        $key = "{$group}.{$this->name}";
+        $text = t($key);
+        if ($text !== $key) {
+            return $text;
+        }
+
+        $default = Language::getDefault()?->code ?? 'en';
+
+        return $own[$default] ?? $this->page?->title ?? $this->name;
     }
 
     public function getCategoryLabelAttribute()

@@ -15,6 +15,7 @@ class Page extends Model
         'name',
         'slug',
         'translations',
+        'header_image',
         'status',
         'en_content',
         'nl_content',
@@ -123,6 +124,12 @@ class Page extends Model
         return $this->translation('meta_keywords');
     }
 
+    /** Website menu entries made for this page (admin → Pages, "Show in menu"). */
+    public function menuItems()
+    {
+        return $this->hasMany(MenuItem::class);
+    }
+
     // Scopes
     public function scopePublished($query)
     {
@@ -212,6 +219,16 @@ class Page extends Model
     public function getRouteKeyName()
     {
         return 'slug';
+    }
+
+    /** Website hero image of this page, or null to use the homepage cover. */
+    public function getHeaderImageUrlAttribute(): ?string
+    {
+        if ($this->header_image && file_exists(public_path('assets/images/' . $this->header_image))) {
+            return asset('public/assets/images/' . $this->header_image);
+        }
+
+        return null;
     }
 
     // URL generation

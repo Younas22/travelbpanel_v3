@@ -15,26 +15,8 @@ class MenuController extends Controller
      */
     public function index(Request $request)
     {
-        $category = $request->get('category', 'header');
-        
-        $menuItems = MenuItem::where('category', $category)
-                            ->with(['children' => function($q) {
-                                $q->orderBy('sort_order');
-                            }])
-                            ->parentItems()
-                            ->ordered()
-                            ->get();
-
-        $categories = MenuItem::getCategoryOptions();
-        
-        $stats = [
-            'total' => MenuItem::count(),
-            'active' => MenuItem::active()->count(),
-            'header' => MenuItem::header()->count(),
-            'footer_total' => MenuItem::whereIn('category', ['footer_quick_links', 'footer_services', 'footer_support'])->count(),
-        ];
-
-        return view('admin.menus.index', compact('menuItems', 'categories', 'category', 'stats'));
+        // Menus are managed in the Page & Menu Manager; old links keep working.
+        return redirect()->route('admin.page-manager.index');
     }
 
     /**
@@ -42,17 +24,7 @@ class MenuController extends Controller
      */
     public function create(Request $request)
     {
-        $category = $request->get('category', 'header');
-        $categories = MenuItem::getCategoryOptions();
-        
-        // Get potential parent items for the selected category
-        $parentItems = MenuItem::where('category', $category)
-                              ->parentItems()
-                              ->active()
-                              ->ordered()
-                              ->get();
-
-        return view('admin.menus.create', compact('categories', 'category', 'parentItems'));
+        return redirect()->route('admin.page-manager.index', ['new' => 1, 'category' => $request->get('category', 'header')]);
     }
 
     /**
@@ -60,16 +32,7 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'url' => 'nullable|string|max:500',
-            'category' => 'required|in:header,footer_quick_links,footer_services,footer_support',
-            'parent_id' => 'nullable|exists:menu_items,id',
-            'icon' => 'nullable|string|max:100',
-            'target' => 'required|in:_self,_blank',
-            'description' => 'nullable|string|max:500',
-            'is_active' => 'boolean',
-        ]);
+        $validated = $request->validate(static::menuRules());
 
         // Set sort order
         $maxSortOrder = MenuItem::where('category', $validated['category'])
@@ -78,9 +41,9 @@ class MenuController extends Controller
         
         $validated['sort_order'] = $maxSortOrder + 1;
 
-        MenuItem::create($validated);
+        $menu = MenuItem::create(MenuItem::linkAndNameAttributes($validated));
 
-        return redirect()->route('admin.menus.index', ['category' => $validated['category']])
+        return redirect()->route('admin.page-manager.index', ['menu' => $menu->id])
                         ->with('success', 'Menu item created successfully!');
     }
 
@@ -89,17 +52,7 @@ class MenuController extends Controller
      */
     public function edit(MenuItem $menu)
     {
-        $categories = MenuItem::getCategoryOptions();
-        
-        // Get potential parent items for the selected category (excluding self and descendants)
-        $parentItems = MenuItem::where('category', $menu->category)
-                              ->parentItems()
-                              ->where('id', '!=', $menu->id)
-                              ->active()
-                              ->ordered()
-                              ->get();
-
-        return view('admin.menus.edit', compact('menu', 'categories', 'parentItems'));
+        return redirect()->route('admin.page-manager.index', ['menu' => $menu->id]);
     }
 
     /**
@@ -107,21 +60,31 @@ class MenuController extends Controller
      */
     public function update(Request $request, MenuItem $menu)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(static::menuRules());
+
+        $menu->update(MenuItem::linkAndNameAttributes($validated, $menu));
+
+        return redirect()->route('admin.page-manager.index', ['menu' => $menu->id])
+                        ->with('success', 'Menu item updated successfully!');
+    }
+
+    /** Validation rules of a menu item (also used by the Page & Menu Manager). */
+    public static function menuRules(): array
+    {
+        return [
             'name' => 'required|string|max:255',
             'url' => 'nullable|string|max:500',
-            'category' => 'required|in:header,footer_quick_links,footer_services,footer_support',
+            'category' => 'required|in:' . implode(',', array_keys(MenuItem::getCategoryOptions())),
             'parent_id' => 'nullable|exists:menu_items,id',
             'icon' => 'nullable|string|max:100',
             'target' => 'required|in:_self,_blank',
             'description' => 'nullable|string|max:500',
             'is_active' => 'boolean',
-        ]);
-
-        $menu->update($validated);
-
-        return redirect()->route('admin.menus.index', ['category' => $validated['category']])
-                        ->with('success', 'Menu item updated successfully!');
+            'link_type' => 'required|in:page,url,dropdown',
+            'page_id' => 'nullable|required_if:link_type,page|exists:pages,id',
+            'translations' => 'nullable|array',
+            'translations.*' => 'nullable|string|max:100',
+        ];
     }
 
     /**
@@ -134,7 +97,7 @@ class MenuController extends Controller
         // Delete menu item and its children
         $menu->delete();
 
-        return redirect()->route('admin.menus.index', ['category' => $category])
+        return redirect()->route('admin.page-manager.index')
                         ->with('success', 'Menu item deleted successfully!');
     }
 

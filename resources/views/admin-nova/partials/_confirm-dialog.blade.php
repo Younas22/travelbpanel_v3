@@ -60,7 +60,14 @@
             } else if (ev.type === 'change' && ev.checked !== null) {
                 t.checked = ev.checked; t.dispatchEvent(new Event('change', { bubbles: true }));
             } else {
-                t.click();
+                // the click usually lands on the icon (<svg>/<path>) inside the button, and SVG
+                // elements have no .click() — replay it on the button / link itself
+                var el = (t.closest && t.closest('button, a, [onclick]')) || t;
+                if (typeof el.click === 'function') {
+                    el.click();
+                } else {
+                    el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+                }
             }
         });
         return false;

@@ -1,4 +1,4 @@
-{{-- Shared Tailwind CDN + scoped reset for every admin-nova/pages/* page. --}}
+{{-- Tailwind CDN + Nova colour config used by the Page & Menu Manager (admin-nova/page-manager). --}}
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
     tailwind.config = {

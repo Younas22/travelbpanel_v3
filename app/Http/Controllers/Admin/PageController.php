@@ -14,52 +14,14 @@ use Illuminate\Validation\Rule;
 class PageController extends Controller
 {
     /** /page/{slug} addresses that are built-in pages, not admin pages. */
-    private const RESERVED_SLUGS = ['contact', 'sitemap'];
+    protected const RESERVED_SLUGS = ['contact', 'sitemap'];
 
     /**
-     * Display a listing of the resource.
+     * Pages are managed in the Page & Menu Manager; old links keep working.
      */
     public function index(Request $request)
     {
-        $query = Page::query();
-
-        // Search functionality
-        if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('slug', 'like', '%' . $request->search . '%')
-                  ->orWhere('translations', 'like', '%' . $request->search . '%')
-                  ->orWhere('en_content', 'like', '%' . $request->search . '%')
-                  ->orWhere('nl_content', 'like', '%' . $request->search . '%');
-            });
-        }
-
-        // Status filter
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        // Order by
-        $orderBy = $request->get('order_by', 'sort_order');
-        $orderDirection = $request->get('order_direction', 'asc');
-        
-        if ($orderBy === 'sort_order') {
-            $query->orderBy('sort_order', 'asc')->orderBy('name', 'asc');
-        } else {
-            $query->orderBy($orderBy, $orderDirection);
-        }
-
-        $pages = $query->paginate(10)->withQueryString();
-
-        // Statistics
-        $stats = [
-            'total' => Page::count(),
-            'published' => Page::where('status', 'published')->count(),
-            'draft' => Page::where('status', 'draft')->count(),
-            'private' => Page::where('status', 'private')->count(),
-        ];
-
-        return view('admin.pages.index', compact('pages', 'stats'));
+        return redirect()->route('admin.page-manager.index');
     }
 
     /**
@@ -67,8 +29,7 @@ class PageController extends Controller
      */
     public function create()
     {
-        $languages = $this->activeLanguages();
-        return view('admin.pages.create', compact('languages'));
+        return redirect()->route('admin.page-manager.index', ['new' => 1]);
     }
 
     /**
@@ -76,37 +37,9 @@ class PageController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'slug' => ['nullable', 'string', 'max:255', Rule::notIn(self::RESERVED_SLUGS)],
-            'status' => 'required|in:draft,published,private',
-            'translations' => 'nullable|array',
-            'translations.*.title' => 'nullable|string|max:255',
-            'translations.*.content' => 'nullable|string',
-            'translations.*.meta_title' => 'nullable|string|max:255',
-            'translations.*.meta_description' => 'nullable|string|max:500',
-            'translations.*.meta_keywords' => 'nullable|string|max:255',
-            'sort_order' => 'nullable|integer|min:0',
-            'is_homepage' => 'boolean',
-            'show_in_menu' => 'boolean',
-        ]);
+        $page = $this->savePage($request, $request->validate($this->pageRules()));
 
-        $validated['slug'] = $this->uniqueSlug($validated['slug'] ?: $validated['name']);
-
-        // Handle homepage setting
-        if (!empty($validated['is_homepage'])) {
-            Page::where('is_homepage', true)->update(['is_homepage' => false]);
-            $validated['status'] = 'published'; // Homepage must be published
-        }
-
-        // Set sort order if not provided
-        if (empty($validated['sort_order'])) {
-            $validated['sort_order'] = (Page::max('sort_order') ?? 0) + 1;
-        }
-
-        $page = Page::create($this->withTranslations($validated));
-
-        return redirect()->route('admin.pages.index')
+        return redirect()->route('admin.page-manager.index', ['page' => $page->id])
                         ->with('success', 'Page created successfully!');
     }
 
@@ -115,7 +48,7 @@ class PageController extends Controller
      */
     public function show(Page $page)
     {
-        return view('admin.pages.show', compact('page'));
+        return redirect()->route('admin.page-manager.index', ['page' => $page->id]);
     }
 
     /**
@@ -123,8 +56,7 @@ class PageController extends Controller
      */
     public function edit(Page $page)
     {
-        $languages = $this->activeLanguages();
-        return view('admin.pages.edit', compact('page', 'languages'));
+        return redirect()->route('admin.page-manager.index', ['page' => $page->id]);
     }
 
     /**
@@ -132,7 +64,16 @@ class PageController extends Controller
      */
     public function update(Request $request, Page $page)
     {
-        $validated = $request->validate([
+        $this->savePage($request, $request->validate($this->pageRules()), $page);
+
+        return redirect()->route('admin.page-manager.index', ['page' => $page->id])
+                        ->with('success', 'Page updated successfully!');
+    }
+
+    /** Validation rules of the page form. */
+    protected function pageRules(): array
+    {
+        return [
             'name' => 'required|string|max:255',
             'slug' => ['nullable', 'string', 'max:255', Rule::notIn(self::RESERVED_SLUGS)],
             'status' => 'required|in:draft,published,private',
@@ -144,30 +85,44 @@ class PageController extends Controller
             'translations.*.meta_keywords' => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer|min:0',
             'is_homepage' => 'boolean',
-            'show_in_menu' => 'boolean',
-        ]);
+            'header_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'remove_header_image' => 'boolean',
+        ];
+    }
 
+    /**
+     * Create ($page null) or update a page from validated form data: unique
+     * slug, single homepage, header image, per-language translations.
+     */
+    protected function savePage(Request $request, array $validated, ?Page $page = null): Page
+    {
         $validated['slug'] = $this->uniqueSlug($validated['slug'] ?: $validated['name'], $page);
 
-        // Handle homepage setting
         if (!empty($validated['is_homepage'])) {
-            Page::where('id', '!=', $page->id)
-                ->where('is_homepage', true)
+            Page::where('is_homepage', true)->when($page, fn ($q) => $q->whereKeyNot($page->id))
                 ->update(['is_homepage' => false]);
             $validated['status'] = 'published'; // Homepage must be published
         }
 
-        $page->update($this->withTranslations($validated, $page));
+        if (!$page && empty($validated['sort_order'])) {
+            $validated['sort_order'] = (Page::max('sort_order') ?? 0) + 1;
+        }
 
-        return redirect()->route('admin.pages.index')
-                        ->with('success', 'Page updated successfully!');
+        $validated = $this->withHeaderImage($request, $validated, $page);
+
+        if ($page) {
+            $page->update($this->withTranslations($validated, $page));
+            return $page;
+        }
+
+        return Page::create($this->withTranslations($validated));
     }
 
     /**
      * URL-safe slug (same rule as the form's live preview), made unique by
      * adding -1, -2 ... when another page or a built-in page already uses it.
      */
-    private function uniqueSlug(string $text, ?Page $page = null): string
+    protected function uniqueSlug(string $text, ?Page $page = null): string
     {
         $base = Str::slug($text) ?: 'page';
         $slug = $base;
@@ -181,9 +136,47 @@ class PageController extends Controller
     }
 
     /**
+     * Uploaded header image → public/assets/images/pages (same place the site's
+     * other images live); "remove" clears it so the homepage cover shows.
+     * The previous file is deleted when replaced or removed.
+     */
+    protected function withHeaderImage(Request $request, array $validated, ?Page $page = null): array
+    {
+        $old = $page?->header_image;
+        unset($validated['header_image'], $validated['remove_header_image']);
+
+        if ($request->hasFile('header_image')) {
+            $file = $request->file('header_image');
+            $name = Str::slug($validated['slug'] ?? $validated['name']) . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('assets/images/pages'), $name);
+            $validated['header_image'] = 'pages/' . $name;
+        } elseif ($request->boolean('remove_header_image')) {
+            $validated['header_image'] = null;
+        }
+
+        if ($page && array_key_exists('header_image', $validated)) {
+            $this->deleteHeaderImageFile($old, $page);
+        }
+
+        return $validated;
+    }
+
+    /** Delete an uploaded header image unless another page still uses it (duplicates share it). */
+    protected function deleteHeaderImageFile(?string $path, ?Page $except = null): void
+    {
+        if (!$path || !str_starts_with($path, 'pages/')) {
+            return;
+        }
+        $inUse = Page::where('header_image', $path)->when($except, fn ($q) => $q->whereKeyNot($except->id))->exists();
+        if (!$inUse) {
+            @unlink(public_path('assets/images/' . $path));
+        }
+    }
+
+    /**
      * Active languages for the form tabs, default language first.
      */
-    private function activeLanguages()
+    protected function activeLanguages()
     {
         return Language::getActive()->sortByDesc('is_default')->values();
     }
@@ -193,7 +186,7 @@ class PageController extends Controller
      * of languages that are switched off right now stays as it was, and en/nl
      * are mirrored into their old columns for anything still reading them.
      */
-    private function withTranslations(array $validated, ?Page $page = null): array
+    protected function withTranslations(array $validated, ?Page $page = null): array
     {
         $active = Language::getActiveCodes();
         $translations = Arr::except($page?->translations ?? [], $active);
@@ -223,13 +216,15 @@ class PageController extends Controller
     {
         // Prevent deletion of homepage
         if ($page->is_homepage) {
-            return redirect()->route('admin.pages.index')
+            return redirect()->route('admin.page-manager.index', ['page' => $page->id])
                            ->with('error', 'Cannot delete the homepage. Please set another page as homepage first.');
         }
 
+        $image = $page->header_image;
         $page->delete();
+        $this->deleteHeaderImageFile($image);
 
-        return redirect()->route('admin.pages.index')
+        return redirect()->route('admin.page-manager.index')
                         ->with('success', 'Page deleted successfully!');
     }
 
@@ -273,7 +268,9 @@ class PageController extends Controller
                     ]);
                 }
                 
+                $images = (clone $pages)->whereNotNull('header_image')->pluck('header_image');
                 $pages->delete();
+                $images->unique()->each(fn ($image) => $this->deleteHeaderImageFile($image));
                 $message = 'Pages deleted successfully!';
                 break;
                 

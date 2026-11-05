@@ -23,7 +23,7 @@
             @foreach (get_menu_items('header') as $item)
                 <a href="{{ $item->full_url }}" class="nav-item {{ Request::url() == $item->full_url ? 'active' : '' }}">
                     <i class="{{ $item->icon }}"></i>
-                    <span>{{ t('header.' . $item->name) }}</span>
+                    <span>{{ $item->label('header') }}</span>
                 </a>
             @endforeach
         </div>

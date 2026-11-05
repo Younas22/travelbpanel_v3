@@ -238,17 +238,17 @@
         </a>
 
         {{-- Content --}}
-        <div class="sb-group {{ (request()->routeIs('admin.content*') && !request()->routeIs('admin.content.translations*')) || request()->routeIs('admin.pages*') || request()->routeIs('admin.menus*') ? 'sb-group-open' : '' }}">
-            <button class="sb-row {{ (request()->routeIs('admin.content*') && !request()->routeIs('admin.content.translations*')) || request()->routeIs('admin.pages*') || request()->routeIs('admin.menus*') ? 'sb-on' : '' }}"
+        <div class="sb-group {{ (request()->routeIs('admin.content*') && !request()->routeIs('admin.content.translations*')) || request()->routeIs('admin.pages*') || request()->routeIs('admin.menus*') || request()->routeIs('admin.page-manager*') ? 'sb-group-open' : '' }}">
+            <button class="sb-row {{ (request()->routeIs('admin.content*') && !request()->routeIs('admin.content.translations*')) || request()->routeIs('admin.pages*') || request()->routeIs('admin.menus*') || request()->routeIs('admin.page-manager*') ? 'sb-on' : '' }}"
                     onclick="toggleSbGroup(this)" type="button">
                 <i class="bi bi-file-earmark-text sb-ico"></i>
                 <span>Content</span>
                 <div class="sb-right"><i class="bi bi-chevron-right sb-chev"></i></div>
             </button>
             <div class="sb-kids">
-                <a href="{{ route('admin.pages.index') }}" class="sb-kid {{ request()->routeIs('admin.pages*') ? 'sb-kid-on' : '' }}"><i class="bi bi-file-earmark-richtext"></i> Pages</a>
+                {{-- pages, menus and page translations are managed together here --}}
+                <a href="{{ route('admin.page-manager.index') }}" class="sb-kid {{ request()->routeIs('admin.page-manager*') ? 'sb-kid-on' : '' }}"><i class="bi bi-diagram-3"></i> Page &amp; Menu Manager</a>
                 <a href="{{ route('admin.content.blog.index') }}" class="sb-kid {{ request()->routeIs('admin.content.blog*') ? 'sb-kid-on' : '' }}"><i class="bi bi-journal-text"></i> Blog</a>
-                <a href="{{ route('admin.menus.index') }}" class="sb-kid {{ request()->routeIs('admin.menus*') ? 'sb-kid-on' : '' }}"><i class="bi bi-menu-app"></i> Menus</a>
                 <a href="{{ route('admin.content.newsletter.subscribers') }}" class="sb-kid {{ request()->routeIs('admin.content.newsletter.subscribers*') ? 'sb-kid-on' : '' }}"><i class="bi bi-people-fill"></i> Newsletter</a>
             </div>
         </div>
@@ -289,14 +289,11 @@
         <div class="sb-sep sb-quick-sep"></div>
         <span class="sb-section-label">Quick actions</span>
 
-        <a href="{{ route('admin.pages.create') }}" class="sb-row sb-quick {{ request()->routeIs('admin.pages.create') ? 'sb-quick-on' : '' }}">
-            <i class="bi bi-plus-circle sb-ico"></i><span>Add new page</span>
+        <a href="{{ route('admin.page-manager.index', ['new' => 1]) }}" class="sb-row sb-quick {{ request()->routeIs('admin.page-manager*') && request()->boolean('new') ? 'sb-quick-on' : '' }}">
+            <i class="bi bi-plus-circle sb-ico"></i><span>Add menu &amp; page</span>
         </a>
         <a href="{{ route('admin.content.blog.create') }}" class="sb-row sb-quick {{ request()->routeIs('admin.content.blog.create') ? 'sb-quick-on' : '' }}">
             <i class="bi bi-pencil-square sb-ico"></i><span>Write new post</span>
-        </a>
-        <a href="{{ route('admin.menus.create') }}" class="sb-row sb-quick {{ request()->routeIs('admin.menus.create') ? 'sb-quick-on' : '' }}">
-            <i class="bi bi-menu-button-wide sb-ico"></i><span>Add menu item</span>
         </a>
 
     </nav>

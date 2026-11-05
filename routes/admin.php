@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\MenuController;
+use App\Http\Controllers\Admin\PageManagerController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\VisaController;
@@ -207,6 +208,16 @@ Route::prefix('modules')->name('admin.modules.')->group(function () {
 
     });
 
+
+        // Page & Menu Manager: menu structure, page content and page translations in one place
+        Route::prefix('page-manager')->name('admin.page-manager.')->group(function () {
+            Route::get('/', [PageManagerController::class, 'index'])->name('index');
+            Route::post('/menus', [PageManagerController::class, 'storeMenu'])->name('menus.store');
+            Route::put('/menus/{menu}', [PageManagerController::class, 'updateMenu'])->name('menus.update');
+            Route::post('/menus/{menu}/toggle', [PageManagerController::class, 'toggleMenu'])->name('menus.toggle');
+            Route::delete('/menus/{menu}', [PageManagerController::class, 'destroyMenu'])->name('menus.destroy');
+            Route::patch('/pages/{page}', [PageManagerController::class, 'updatePage'])->name('pages.update');
+        });
 
                    // Pages Management Routes
         Route::prefix('pages')->name('admin.pages.')->group(function () {

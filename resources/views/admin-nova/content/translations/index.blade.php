@@ -3,7 +3,14 @@
 @section('title', 'Manage Translations')
 
 @section('content')
-@php $currentLang = $languages->firstWhere('code', $selectedLang); @endphp
+@php
+    $currentLang = $languages->firstWhere('code', $selectedLang);
+    $highlight = function ($text) use ($search) {
+        $escaped = e($text);
+        if ($search === '') return $escaped;
+        return preg_replace('/' . preg_quote(e($search), '/') . '/iu', '<mark>$0</mark>', $escaped);
+    };
+@endphp
 <div class="tbp-translations-page">
 
     <div class="tbp-translations-header">
@@ -33,9 +40,56 @@
                 @endforeach
             </select>
         </label>
+        <label class="tbp-translations-field"><span><i class="bi bi-search"></i> Search Key / Value</span>
+            <div class="tbp-translations-search">
+                <input type="search" name="q" value="{{ $search }}" placeholder="Type a key or value and press Enter…" autocomplete="off">
+                <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+            </div>
+        </label>
     </form>
 
-    @if(!empty($translations))
+    @if($searchResults !== null)
+        <section class="tbp-translations-card">
+            <header class="tbp-translations-card-head">
+                <span class="tbp-translations-icon"><i class="bi bi-search"></i></span>
+                <div>
+                    <h2>{{ count($searchResults) }} result{{ count($searchResults) === 1 ? '' : 's' }} for “{{ $search }}”</h2>
+                    <p>Searching {{ $selectedGroup ? ucfirst($selectedGroup) . ' group' : 'all groups' }} – {{ strtoupper($selectedLang) }}@if($currentLang) ({{ $currentLang->name }})@endif</p>
+                </div>
+                <a href="{{ route('admin.content.translations.index', array_filter(['language' => $selectedLang, 'group' => $selectedGroup])) }}" class="tbp-translations-btn is-small is-outline"><i class="bi bi-x-lg"></i> Clear</a>
+            </header>
+            @if(count($searchResults))
+                <div class="tbp-translations-table-wrap">
+                    <table class="tbp-translations-table">
+                        <thead><tr><th>Group</th><th>Key</th><th>Value</th><th class="is-actions">Actions</th></tr></thead>
+                        <tbody>
+                            @foreach($searchResults as $row)
+                                @php $text = is_string($row['value']) ? $row['value'] : json_encode($row['value'], JSON_UNESCAPED_UNICODE); @endphp
+                                <tr>
+                                    <td><a href="{{ route('admin.content.translations.index', ['language' => $selectedLang, 'group' => $row['group']]) }}" class="tbp-translations-group-tag">{{ ucfirst($row['group']) }}</a></td>
+                                    <td><code>{!! $highlight($row['key']) !!}</code></td>
+                                    <td class="is-value" title="{{ $text }}">{!! $highlight($text) !!}</td>
+                                    <td class="is-actions">
+                                        <a href="{{ route('admin.content.translations.edit', $row['group']) }}" class="tbp-translations-edit" title="Edit group"><i class="bi bi-pencil"></i></a>
+                                        <form action="{{ route('admin.content.translations.delete-key', [$row['group'], $row['key']]) }}" method="POST" onsubmit="return confirm('Delete the key “{{ $row['key'] }}”?');">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="tbp-translations-delete" title="Delete key"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="tbp-translations-empty">
+                    <i class="bi bi-search"></i>
+                    <h2>No matches</h2>
+                    <p>No key or value contains “{{ $search }}” for this language.</p>
+                </div>
+            @endif
+        </section>
+    @elseif(!empty($translations))
         <section class="tbp-translations-card">
             <header class="tbp-translations-card-head">
                 <span class="tbp-translations-icon"><i class="bi bi-file-earmark-text"></i></span>

@@ -44,8 +44,9 @@
     <link rel="stylesheet" type="text/css" href="{{ url('public/assets/css/' . $siteCss) }}?v={{ filemtime(public_path('assets/css/' . $siteCss)) }}">
 </head>
 {{-- page_class / $pageClass scopes the page's styles in style.css; --cover-image
-     is the homepage cover from settings, used by several page backgrounds. --}}
-<body class="@yield('page_class', $pageClass ?? '')" style="--cover-image: url('{{ getSettingImage('cover_image', 'homepage') }}')">
+     is the homepage cover from settings, used by several page backgrounds; a page
+     can set its own with @section('cover_image', url) (admin → Pages header image). --}}
+<body class="@yield('page_class', $pageClass ?? '')" style="--cover-image: url('@yield('cover_image', getSettingImage('cover_image', 'homepage'))')">
     <!-- Page Loader -->
     <div id="pageLoader">
         <div style="text-align: center;">

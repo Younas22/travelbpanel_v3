@@ -54,8 +54,8 @@
                     <div class="sf-col">
                         <h4 class="sf-heading">{{ t('footer.quick_links') }}</h4>
                         <ul class="sf-links">
-                            @foreach (get_menu_items('footer_quick_links') as $item)
-                                <li><a href="{{ $item->full_url }}"><i class="fas fa-chevron-right"></i> {{ t('footer.'.$item->name) }}</a></li>
+                            @foreach (get_menu_items('footer_quick_links')->filter(fn ($i) => $i->url || $i->page_id) as $item)
+                                <li><a href="{{ $item->full_url }}"><i class="fas fa-chevron-right"></i> {{ $item->label('footer') }}</a></li>
                             @endforeach
                         </ul>
                     </div>
@@ -144,8 +144,8 @@
                 </div>
                 <div class="sf-bottom-end">
                     <nav class="sf-legal">
-                        @foreach (get_menu_items('footer_support') as $item)
-                            <a href="{{ $item->full_url }}">{{ t('footer.'.$item->name) }}</a>
+                        @foreach (get_menu_items('footer_support')->filter(fn ($i) => $i->url || $i->page_id) as $item)
+                            <a href="{{ $item->full_url }}">{{ $item->label('footer') }}</a>
                         @endforeach
                     </nav>
                 </div>

@@ -1,5 +1,8 @@
 @extends('common.layout')
 @section('page_class', 'view-static-page')
+@if($page->header_image_url)
+    @section('cover_image', $page->header_image_url)
+@endif
 @section('content')
 
 <div id="siteRedesign">

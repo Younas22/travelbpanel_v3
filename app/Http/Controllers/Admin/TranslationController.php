@@ -34,14 +34,30 @@ class TranslationController extends Controller
     {
         $selectedLang = $request->get('language', 'en');
         $selectedGroup = $request->get('group');
+        $search = trim((string) $request->get('q', ''));
 
         // Get all language files (groups)
         $groups = $this->getAvailableGroups();
-        
+
         // Get translations for selected language and group
         $translations = [];
-        
-        if ($selectedGroup) {
+        $searchResults = null;
+
+        if ($search !== '') {
+            // Search keys and values — within the selected group, or across all groups
+            $needle = mb_strtolower($search);
+            $searchGroups = $selectedGroup ? [$selectedGroup] : $groups;
+            $searchResults = [];
+
+            foreach ($searchGroups as $group) {
+                foreach ($this->getTranslations($selectedLang, $group) as $key => $value) {
+                    $text = is_string($value) ? $value : json_encode($value, JSON_UNESCAPED_UNICODE);
+                    if (str_contains(mb_strtolower((string) $key), $needle) || str_contains(mb_strtolower($text), $needle)) {
+                        $searchResults[] = ['group' => $group, 'key' => $key, 'value' => $value];
+                    }
+                }
+            }
+        } elseif ($selectedGroup) {
             $translations = $this->getTranslations($selectedLang, $selectedGroup);
         } else if (!empty($groups)) {
             // Load first group by default
@@ -54,6 +70,8 @@ class TranslationController extends Controller
 
         return view('admin.content.translations.index', compact(
             'translations',
+            'search',
+            'searchResults',
             'groups',
             'selectedLang',
             'selectedGroup',

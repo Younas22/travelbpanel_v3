@@ -4465,7 +4465,7 @@ select.tbp-language-form-input { appearance: none; background: #fff url("data:im
 .tbp-translations-page .tbp-translations-btn.is-outline .bi { color: var(--tr-blue); }
 .tbp-translations-btn.is-small { height: 42px; padding: 0 20px; font-size: 0.875rem; }
 
-.tbp-translations-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 22px 26px; background: #fff; border: 1px solid var(--tr-border); border-radius: 18px; box-shadow: 0 4px 16px rgba(15, 23, 42, .05); margin: 0; }
+.tbp-translations-filters { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 24px; padding: 22px 26px; background: #fff; border: 1px solid var(--tr-border); border-radius: 18px; box-shadow: 0 4px 16px rgba(15, 23, 42, .05); margin: 0; }
 .tbp-translations-field { display: flex; flex-direction: column; gap: 9px; margin: 0; min-width: 0; }
 .tbp-translations-field > span { display: inline-flex; align-items: center; gap: 10px; font-size: 0.875rem; font-weight: 500; }
 .tbp-translations-field select { width: 100%; height: 50px; padding: 0 44px 0 20px; border: 1px solid var(--tr-border); border-radius: 14px; appearance: none; background: #F9FAFB url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23111827' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 18px center; color: var(--tr-text); font: 400 0.9375rem 'Plus Jakarta Sans', sans-serif; outline: none; cursor: pointer; }
@@ -4490,6 +4490,16 @@ select.tbp-language-form-input { appearance: none; background: #fff url("data:im
 .tbp-translations-delete { width: 44px; height: 44px; border: 0; border-radius: 50%; background: #FEF2F2; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
 .tbp-translations-delete:hover { background: #FEE2E2; }
 .tbp-translations-page .tbp-translations-delete .bi { color: #EF4444; }
+.tbp-translations-search { position: relative; }
+.tbp-translations-search input { width: 100%; height: 50px; padding: 0 52px 0 20px; border: 1px solid var(--tr-border); border-radius: 14px; background: #F9FAFB; color: var(--tr-text); font: 400 0.9375rem 'Plus Jakarta Sans', sans-serif; outline: none; }
+.tbp-translations-search input:focus { border-color: var(--tr-blue); box-shadow: 0 0 0 3px rgba(37, 99, 235, .12); }
+.tbp-translations-search button { position: absolute; top: 5px; right: 5px; width: 40px; height: 40px; border: 0; border-radius: 10px; background: var(--tr-blue); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.tbp-translations-page .tbp-translations-search button .bi { color: #fff; }
+.tbp-translations-edit { width: 44px; height: 44px; border-radius: 50%; background: #EFF6FF; display: inline-flex; align-items: center; justify-content: center; margin-right: 6px; vertical-align: middle; }
+.tbp-translations-edit:hover { background: #DBEAFE; }
+.tbp-translations-page .tbp-translations-edit .bi { color: var(--tr-blue); }
+.tbp-translations-group-tag { display: inline-block; padding: 4px 12px; border-radius: 999px; background: #EFF6FF; color: var(--tr-blue); font-size: 0.8125rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.tbp-translations-table mark { background: #FEF08A; color: inherit; padding: 0 1px; border-radius: 3px; }
 .tbp-translations-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 48px 20px; text-align: center; }
 .tbp-translations-empty > .bi { font-size: 2.5rem; color: var(--tr-muted); }
 .tbp-translations-empty p { color: var(--tr-muted); font-size: 0.875rem; margin-bottom: 8px; }
@@ -6164,107 +6174,7 @@ body.design-nova .theme-qs-label { font-weight: 500 !important; }
 #nlPage .pagination { gap: 4px; }
 #nlPage .page-link { border-radius: 9999px !important; }
 
-/* ---------- admin-nova/menus/_styles.blade.php ---------- */
-#mnPage, #mnPage *, #mnPage *::before, #mnPage *::after { box-sizing: border-box; }
-#mnPage { font-family: 'Plus Jakarta Sans', sans-serif; }
-#mnPage h1, #mnPage h2, #mnPage h3, #mnPage p { margin: 0; padding: 0; }
-#mnPage a { text-decoration: none; color: inherit; }
-#mnPage button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; padding: 0; }
-#mnPage svg { display: block; }
-#mnPage .tt-fade-in { animation: mnFadeIn .5s ease both; }
-@keyframes mnFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-#mnPage .tt-row:hover { background: #F7F8FC; }
-
-#mnPage .mn-btn-nova {
-    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    border: 1px solid #E5E7EB; border-radius: 9999px; color: #000; background: #fff;
-    white-space: nowrap; transition: background .2s ease, border-color .2s ease;
-}
-#mnPage .mn-btn-nova:hover { background: #F7F8FC; }
-#mnPage .mn-btn-primary { background: #2563EB; color: #fff; border-color: #2563EB; }
-#mnPage .mn-btn-primary:hover { background: #1D4ED8; border-color: #1D4ED8; }
-#mnPage .mn-btn-cyan { background: #06B6D4; color: #fff; border-color: #06B6D4; }
-#mnPage .mn-icon-btn {
-    width: 30px; height: 30px; border-radius: 9999px; border: 1px solid #E5E7EB;
-    display: inline-flex; align-items: center; justify-content: center; background: #fff;
-    transition: background .2s ease, border-color .2s ease;
-}
-#mnPage .mn-icon-btn:hover { background: #F7F8FC; }
-#mnPage .mn-icon-warn:hover { background: #FFFBEB; border-color: #F59E0B; color: #F59E0B; }
-#mnPage .mn-icon-success:hover { background: #ECFDF5; border-color: #22C55E; color: #22C55E; }
-#mnPage .mn-icon-danger:hover { background: #FEF2F2; border-color: #EF4444; color: #EF4444; }
-
-#mnPage .mn-tab { border-radius: 9999px; border: 1px solid #E5E7EB; background: #fff; color: #000; }
-#mnPage .mn-tab.mn-tab-active { background: #2563EB; border-color: #2563EB; color: #fff; }
-#mnPage .mn-tab:hover:not(.mn-tab-active) { background: #F7F8FC; }
-
-#mnPage .mn-drag-handle { cursor: grab; color: #9CA3AF; }
-#mnPage .mn-item.dragging { opacity: .5; }
-#mnPage .sortable-ghost { opacity: .35; }
-#mnPage .sortable-chosen { box-shadow: 0 0 0 2px #2563EB inset; border-radius: 1rem; }
-
-#mnPage .mn-bulk-bar { display: none; }
-#mnPage .mn-bulk-bar.mn-visible { display: flex; }
-
-/* Dedicated show/hide toggle for the header bulk-action buttons —
-   NOT Tailwind's "hidden" utility. Tailwind CDN injects its generated
-   stylesheet the instant its <script> tag executes (synchronously,
-   before the browser parses this later <style> block), so this block
-   ends up AFTER Tailwind's own rules in the DOM and would silently win
-   the display:none vs display:inline-flex tie against any element that
-   also carries our own unconditional-display .mn-btn-nova class. */
-#mnPage .mn-bulk-only { display: none; }
-#mnPage .mn-bulk-only.mn-show { display: inline-flex; }
-
-#mnPage .mn-label { display: block; font-size: 11px; font-weight: 600; color: #000; margin-bottom: 6px; }
-#mnPage .mn-input, #mnPage select.mn-input, #mnPage textarea.mn-input {
-    width: 100%; border: 1px solid #E5E7EB; border-radius: 14px; padding: 10px 14px;
-    font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif; color: #000; background: #fff;
-}
-#mnPage .mn-input:focus { outline: none; border-color: #2563EB; }
-#mnPage textarea.mn-input { border-radius: 16px; resize: vertical; }
-#mnPage .mn-required { color: #EF4444; }
-#mnPage .mn-help { font-size: 11px; color: #6B7280; margin-top: 4px; }
-#mnPage .mn-error { font-size: 11px; color: #EF4444; margin-top: 4px; }
-
-#mnPage .mn-switch { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; }
-#mnPage .mn-switch input { opacity: 0; width: 0; height: 0; }
-#mnPage .mn-switch .mn-slider {
-    position: absolute; inset: 0; background: #E5E7EB; border-radius: 9999px; cursor: pointer;
-    transition: background .25s ease;
-}
-#mnPage .mn-switch .mn-slider::before {
-    content: ''; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px;
-    background: #fff; border-radius: 50%; transition: transform .25s ease; box-shadow: 0 1px 3px rgba(0,0,0,.25);
-}
-#mnPage .mn-switch input:checked + .mn-slider { background: #2563EB; }
-#mnPage .mn-switch input:checked + .mn-slider::before { transform: translateX(18px); }
-
-#mnPage [data-tooltip] { position: relative; }
-#mnPage [data-tooltip]::after {
-    content: attr(data-tooltip); position: absolute; bottom: calc(100% + 8px); left: 50%;
-    transform: translateX(-50%) translateY(4px); background: #1F2937; color: #fff;
-    font-size: 11px; font-weight: 600; line-height: 1; padding: 6px 10px; border-radius: 6px;
-    white-space: nowrap; box-shadow: 0 6px 16px rgba(0,0,0,.18); opacity: 0; visibility: hidden;
-    pointer-events: none; transition: opacity .15s ease, transform .15s ease, visibility .15s ease; z-index: 60;
-}
-#mnPage [data-tooltip]::before {
-    content: ''; position: absolute; bottom: calc(100% + 3px); left: 50%; transform: translateX(-50%);
-    border: 5px solid transparent; border-top-color: #1F2937; opacity: 0; visibility: hidden;
-    pointer-events: none; transition: opacity .15s ease, visibility .15s ease; z-index: 60;
-}
-#mnPage [data-tooltip]:hover::after, #mnPage [data-tooltip]:focus-visible::after { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); transition-delay: .25s; }
-#mnPage [data-tooltip]:hover::before, #mnPage [data-tooltip]:focus-visible::before { opacity: 1; visibility: visible; transition-delay: .25s; }
-
-/* Toast notifications used by index.blade.php's showNotification(). */
-#mnPage .mn-toast {
-    position: fixed; bottom: 20px; right: 20px; z-index: 9999; padding: 12px 18px; border-radius: 9999px;
-    font-size: 13px; font-weight: 600; color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,.15);
-    display: flex; align-items: center; gap: 8px; animation: mnToastIn .25s ease both;
-}
-@keyframes mnToastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-/* ---------- admin-nova/pages/_styles.blade.php ---------- */
+/* ---------- #pgPage: Page & Menu Manager (admin-nova/page-manager) ---------- */
 #pgPage, #pgPage *, #pgPage *::before, #pgPage *::after { box-sizing: border-box; }
 #pgPage { font-family: 'Plus Jakarta Sans', sans-serif; }
 #pgPage h1, #pgPage h2, #pgPage h3, #pgPage p { margin: 0; padding: 0; }
@@ -6869,3 +6779,93 @@ body:has(.wt-preview-wrap) { overflow-x: clip; }
    would hide the font being previewed. Icons keep their icon font. */
 .wt-preview, .wt-preview *:not(i) { font-family: var(--wt-font) !important; }
 .wt-preview .wt-ar { font-family: var(--wt-font-ar) !important; }
+
+/* =====================================================
+   PAGE & MENU MANAGER (admin-nova/page-manager) — menu tree on the
+   left, page editor / translations / menu settings on the right.
+   Shares #pgPage with the Pages styles above (pg-input, pg-tab ...).
+===================================================== */
+#pgPage .pm-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (min-width: 1200px) {
+    #pgPage .pm-layout { grid-template-columns: 340px minmax(0, 1fr); }
+    #pgPage .pm-tree { position: sticky; top: 88px; max-height: calc(100vh - 110px); overflow-y: auto; }
+}
+
+/* tree */
+#pgPage .pm-search { position: relative; margin-bottom: 10px; }
+#pgPage .pm-search i { position: absolute; top: 50%; left: 14px; transform: translateY(-50%); color: #6B7280; font-size: 13px; }
+#pgPage .pm-search .pg-input { padding-left: 36px; }
+#pgPage .pm-group { border-top: 1px solid #E5E7EB; padding: 6px 0; }
+#pgPage .pm-group:first-of-type { border-top: 0; }
+#pgPage .pm-group > summary {
+    display: flex; align-items: center; gap: 8px; padding: 8px 6px; cursor: pointer; list-style: none;
+    font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #000;
+}
+#pgPage .pm-group > summary::-webkit-details-marker { display: none; }
+#pgPage .pm-group > summary::before { content: '\F285'; font-family: 'bootstrap-icons'; font-size: 10px; transition: transform .2s ease; }
+#pgPage .pm-group[open] > summary::before { transform: rotate(90deg); }
+#pgPage .pm-count { padding: 1px 8px; border-radius: 9999px; background: #F3F4F6; font-size: 10px; }
+#pgPage .pm-add {
+    margin-left: auto; display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 9999px; border: 1px solid #E5E7EB; color: #2563EB; background: #fff;
+}
+#pgPage .pm-add:hover { border-color: #2563EB; }
+#pgPage .pm-list { list-style: none; margin: 0; padding: 0; }
+#pgPage .pm-children { margin: 2px 0 4px 18px; padding-left: 8px; border-left: 2px solid #E5E7EB; }
+#pgPage .pm-none { padding: 6px 10px; font-size: 12px; color: #6B7280; }
+#pgPage .pm-row {
+    display: flex; align-items: center; gap: 6px; margin: 2px 0; padding: 6px 6px 6px 4px;
+    border: 1px solid transparent; border-radius: 12px; color: #000;
+}
+#pgPage .pm-row:hover { background: #F7F8FC; }
+#pgPage .pm-row.is-active { background: #EFF6FF; border-color: #2563EB; }
+#pgPage .pm-row.is-off .pm-name { color: #6B7280; text-decoration: line-through; }
+#pgPage .pm-handle { cursor: grab; color: #9CA3AF; padding: 0 2px; }
+#pgPage .pm-link { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; color: inherit; }
+#pgPage .pm-ico { color: #2563EB; font-size: 13px; flex-shrink: 0; }
+#pgPage .pm-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 600; }
+#pgPage .pm-act { margin: 0; }
+#pgPage .pm-act button { width: 26px; height: 26px; border-radius: 9999px; color: #6B7280; }
+#pgPage .pm-act button:hover { background: #fff; color: #2563EB; }
+#pgPage .pm-act button.is-danger:hover { color: #EF4444; }
+#pgPage .pm-ghost { opacity: .4; }
+
+/* badges + translation status */
+#pgPage .pm-badge {
+    flex-shrink: 0; padding: 2px 8px; border-radius: 9999px; background: #F3F4F6; color: #374151;
+    font-size: 10px; font-weight: 600; white-space: nowrap;
+}
+#pgPage .pm-badge.is-published { background: #ECFDF5; color: #047857; }
+#pgPage .pm-badge.is-draft { background: #FFFBEB; color: #B45309; }
+#pgPage .pm-badge.is-private, #pgPage .pm-badge.is-off { background: #F3F4F6; color: #6B7280; }
+#pgPage .pm-dot { display: inline-block; width: 8px; height: 8px; border-radius: 9999px; margin-right: 2px; background: #D1D5DB; }
+#pgPage .pm-dot.is-complete { background: #22C55E; }
+#pgPage .pm-dot.is-partial { background: #F59E0B; }
+#pgPage .pg-tab.active .pm-dot { box-shadow: 0 0 0 2px #fff; }
+#pgPage .pm-progress { padding: 4px 10px; border-radius: 9999px; background: #EFF6FF; color: #2563EB; font-size: 11px; font-weight: 600; }
+#pgPage .pm-note { display: flex; gap: 8px; margin: 0 0 14px; padding: 10px 12px; border-radius: 12px; font-size: 12px; background: #F3F4F6; color: #374151; }
+#pgPage .pm-note.is-partial { background: #FFFBEB; color: #92400E; }
+
+/* editor */
+#pgPage .pm-bar {
+    position: sticky; top: 76px; z-index: 5; display: flex; flex-wrap: wrap; align-items: center;
+    justify-content: space-between; gap: 12px; padding: 14px 18px;
+}
+#pgPage .pm-url { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 12px; color: #2563EB; word-break: break-all; }
+#pgPage .pm-section-title { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; font-size: 14px; font-weight: 700; color: #000; }
+#pgPage .pm-section-title i { color: #2563EB; }
+#pgPage .pm-image { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; align-items: start; }
+#pgPage .pm-image img { width: 100%; height: 120px; object-fit: cover; border-radius: 12px; border: 1px solid #E5E7EB; }
+@media (min-width: 768px) { #pgPage .pm-image { grid-template-columns: 240px minmax(0, 1fr); } }
+#pgPage .pm-seo { border: 1px solid #E5E7EB; border-radius: 12px; padding: 10px 14px; }
+#pgPage .pm-seo > summary { cursor: pointer; font-size: 12px; font-weight: 600; color: #000; }
+#pgPage .pm-seo > summary i { color: #2563EB; margin-right: 4px; }
+#pgPage .pm-danger { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 0 4px; }
+#pgPage .pg-btn-nova.is-danger { color: #EF4444; border-color: #FECACA; }
+#pgPage .pg-btn-nova.is-danger:hover { background: #FEF2F2; }
+
+/* empty state */
+#pgPage .pm-empty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 56px 24px; text-align: center; }
+#pgPage .pm-empty > i { font-size: 34px; color: #2563EB; }
+#pgPage .pm-empty h2 { margin: 0; font-size: 16px; font-weight: 700; color: #000; }
+#pgPage .pm-empty p { max-width: 420px; margin: 0 0 6px; font-size: 13px; color: #6B7280; }

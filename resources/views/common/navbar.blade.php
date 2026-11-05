@@ -48,17 +48,18 @@
         });
         $navModulesActive = $navModules->contains('nav_active', true);
 
-        // Split static header items: Home comes before modules, rest (Contact) after.
-        // Home is left out of the bar — the logo already links home.
-        $allHeaderItems  = get_menu_items('header')->reject(fn($i) => $i->name === 'Home');
-        $navItemsBefore  = $allHeaderItems->filter(fn($i) => $i->sort_order <= 1);
-        $navItemsAfter   = $allHeaderItems->filter(fn($i) => $i->sort_order > 1);
-
-        // About and Blog sit after Services in the bar (and mobile menu).
-        $navPageLinks = [
-            [url('/page/about'),    'fas fa-circle-info', t('footer.About')],
-            [route('blog.index'),   'fas fa-newspaper',   t('footer.Blog')],
-        ];
+        // Header items come only from the Page & Menu Manager ("Header" location).
+        // Home is left out of the bar — the logo already links home. The contact
+        // page sits next to the currency as the Support link; every other item
+        // (pages, links, dropdowns) goes in the bar after Services, in menu order.
+        // Dropdowns with no visible sub-items and no link are skipped.
+        $allHeaderItems = get_menu_items('header')->reject(fn($i) => $i->name === 'Home');
+        $navChildren    = $allHeaderItems->whereNotNull('parent_id')->groupBy('parent_id');
+        $allHeaderItems = $allHeaderItems->whereNull('parent_id')
+            ->reject(fn ($i) => !$navChildren->has($i->id) && !$i->url && !$i->page_id);
+        $navIsSupport   = fn ($i) => !$i->page_id && in_array(trim((string) $i->url, '/'), ['page/contact', 'contact'], true);
+        $navItemsAfter  = $allHeaderItems->filter($navIsSupport);
+        $navMenuExtra   = $allHeaderItems->reject($navIsSupport)->values();
 
         // Flag for a currency option: mapped currencies via getFlagClass, others
         // via the ISO 4217 rule that the first two letters are the country (KWD → kw).
@@ -107,13 +108,6 @@
 
         <!-- Desktop Menu -->
         <div class="hidden lg:flex items-center gap-1 flex-1 justify-center">
-            {{-- Home (and any items before modules) --}}
-            @foreach ($navItemsBefore as $item)
-                <a href="{{ $item->full_url }}" class="nav-item {{ Request::url() == $item->full_url ? 'active' : '' }}">
-                    <span>{{ t('header.' . $item->name) }}</span>
-                </a>
-            @endforeach
-
             {{-- Active modules, grouped under one Services dropdown --}}
             @if($navModules->isNotEmpty())
                 <div class="relative group nav-dd">
@@ -135,12 +129,33 @@
                 </div>
             @endif
 
-            {{-- About and Blog (same pages as the footer's quick links) --}}
-            @foreach ($navPageLinks as [$linkUrl, $linkIcon, $linkLabel])
-                <a href="{{ $linkUrl }}" class="nav-item {{ Request::url() == $linkUrl ? 'active' : '' }}">
-                    <i class="{{ $linkIcon }} nav-ico"></i>
-                    <span>{{ $linkLabel }}</span>
-                </a>
+            {{-- Header items from the Page & Menu Manager: pages, links and dropdowns --}}
+            @foreach ($navMenuExtra as $item)
+                @if($navChildren->has($item->id))
+                    @php $navDdItems = $navChildren[$item->id]->sortBy('sort_order'); @endphp
+                    <div class="relative group nav-dd">
+                        <button type="button" class="nav-item {{ $navDdItems->contains(fn ($c) => Request::url() == $c->full_url) ? 'active' : '' }}" aria-haspopup="true">
+                            <i class="{{ $item->icon ?: 'fas fa-file-lines' }} nav-ico"></i>
+                            <span>{{ $item->label('header') }}</span>
+                            <i class="fas fa-chevron-down nav-ico nav-chevron"></i>
+                        </button>
+                        <div class="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-52 z-50 hidden group-hover:block group-focus-within:block">
+                            <div class="nav-dd-panel">
+                                @foreach ($navDdItems as $child)
+                                    <a href="{{ $child->full_url }}" target="{{ $child->target }}" class="nav-menu-link {{ Request::url() == $child->full_url ? 'active' : '' }}">
+                                        <i class="{{ $child->icon ?: 'fas fa-file-lines' }}"></i>
+                                        <span>{{ $child->label('header') }}</span>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <a href="{{ $item->full_url }}" target="{{ $item->target }}" class="nav-item {{ Request::url() == $item->full_url ? 'active' : '' }}">
+                        <i class="{{ $item->icon ?: 'fas fa-file-lines' }} nav-ico"></i>
+                        <span>{{ $item->label('header') }}</span>
+                    </a>
+                @endif
             @endforeach
         </div>
 
@@ -180,7 +195,7 @@
             @foreach ($navItemsAfter as $item)
                 <a href="{{ $item->full_url }}" class="nav-util-link {{ Request::url() == $item->full_url ? 'active' : '' }}">
                     @if($item->icon)<i class="{{ $item->icon }}"></i>@endif
-                    <span>{{ t('header.' . $item->name) }}</span>
+                    <span>{{ $item->label('header') }}</span>
                 </a>
             @endforeach
 
@@ -281,14 +296,6 @@
     <div class="mobile-menu lg:hidden">
         <div class="nav-mobile-card max-w-7xl mx-auto">
 
-        {{-- Home (before modules) --}}
-        @foreach ($navItemsBefore as $item)
-            <a href="{{ $item->full_url }}" class="nav-m-link {{ Request::url() == $item->full_url ? 'active' : '' }}">
-                <i class="{{ $item->icon }}"></i>
-                <span>{{ t('header.' . $item->name) }}</span>
-            </a>
-        @endforeach
-
         {{-- Active modules --}}
         @if($navModules->isNotEmpty())
             <p class="nav-m-label">{{ t('footer.our_services') }}</p>
@@ -300,18 +307,29 @@
             @endforeach
         @endif
 
-        @foreach ($navPageLinks as [$linkUrl, $linkIcon, $linkLabel])
-            <a href="{{ $linkUrl }}" class="nav-m-link {{ Request::url() == $linkUrl ? 'active' : '' }}">
-                <i class="{{ $linkIcon }}"></i>
-                <span>{{ $linkLabel }}</span>
-            </a>
+        {{-- Header items from the Page & Menu Manager: pages, links and dropdowns --}}
+        @foreach ($navMenuExtra as $item)
+            @if($navChildren->has($item->id))
+                <p class="nav-m-label">{{ $item->label('header') }}</p>
+                @foreach ($navChildren[$item->id]->sortBy('sort_order') as $child)
+                    <a href="{{ $child->full_url }}" target="{{ $child->target }}" class="nav-m-link {{ Request::url() == $child->full_url ? 'active' : '' }}">
+                        <i class="{{ $child->icon ?: 'fas fa-file-lines' }}"></i>
+                        <span>{{ $child->label('header') }}</span>
+                    </a>
+                @endforeach
+            @else
+                <a href="{{ $item->full_url }}" target="{{ $item->target }}" class="nav-m-link {{ Request::url() == $item->full_url ? 'active' : '' }}">
+                    <i class="{{ $item->icon ?: 'fas fa-file-lines' }}"></i>
+                    <span>{{ $item->label('header') }}</span>
+                </a>
+            @endif
         @endforeach
 
         {{-- Contact and remaining items --}}
         @foreach ($navItemsAfter as $item)
             <a href="{{ $item->full_url }}" class="nav-m-link {{ Request::url() == $item->full_url ? 'active' : '' }}">
                 <i class="{{ $item->icon }}"></i>
-                <span>{{ t('header.' . $item->name) }}</span>
+                <span>{{ $item->label('header') }}</span>
             </a>
         @endforeach
 
