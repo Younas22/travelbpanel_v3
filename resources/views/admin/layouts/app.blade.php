@@ -34,25 +34,16 @@
     <!-- In your head section -->
     <link rel="stylesheet" href="{{ url('public/assets/libs/toastify/toastify.min.css') }}">
     <link id="admin-design-css" href="{{ asset($__activeTheme->designStylesheet()) }}?v={{ @filemtime(public_path(str_replace('public/', '', $__activeTheme->designStylesheet()))) }}" rel="stylesheet">
-    @if($__activeTheme->design_style === 'nova')
-        {{-- Nova's typeface is fixed (see admin-nova/layouts/app.blade.php),
-             not the admin's Theme Settings font choice — this page is only
-             here because Nova hasn't converted this specific route yet and
-             fell back to Classic's own layout (see NovaAdminViewFinder), so
-             it still needs Nova's font loaded the same way Nova's own
-             layout does, instead of the conditional block below. --}}
+    {{-- Nova's typeface is fixed (see admin-nova/layouts/app.blade.php), not the
+         Theme Settings font choice; this layout serves pages Nova hasn't converted yet. --}}
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    @elseif($__activeTheme->font_family && !in_array(strtolower($__activeTheme->font_family), ['system font', 'system', 'system-ui']))
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link href="https://fonts.googleapis.com/css2?family={{ str_replace(' ', '+', $__activeTheme->font_family) }}:wght@400;500;600;700&display=swap" rel="stylesheet">
-    @endif
     <style id="theme-vars">{!! app(\App\Services\ThemeService::class)->inlineStyleTag($__activeTheme) !!}</style>
     @stack('styles')
 
 </head>
-<body class="theme-{{ $__activeTheme->theme_name }} design-{{ $__activeTheme->design_style }} {{ $__activeTheme->layoutBodyClasses() }}">
+<body class="theme-{{ $__activeTheme->theme_name }} design-nova {{ $__activeTheme->layoutBodyClasses() }}">
     <script>
         // Same collapsed-sidebar preference check as admin-nova/layouts/app
         // .blade.php — applied synchronously before the sidebar paints, so

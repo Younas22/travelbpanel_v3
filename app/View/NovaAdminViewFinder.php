@@ -2,19 +2,15 @@
 
 namespace App\View;
 
-use App\Services\ThemeService;
-use Illuminate\Contracts\Auth\Guard;
 use Illuminate\View\ViewFinderInterface;
 use InvalidArgumentException;
-use Throwable;
 
 /**
- * Transparently serves resources/views/admin-nova/* in place of
- * resources/views/admin/* when the active Design Style is "nova" (only for
- * logged-in admins, User::isAdmin()).
- *
- * Nova is rolled out page by page: any admin.* page with no admin-nova.*
- * equivalent yet falls through to the base finder, i.e. Classic.
+ * Nova is the only admin design: serves resources/views/admin-nova/* in
+ * place of resources/views/admin/* whenever a Nova version of the view
+ * exists. Pages with no admin-nova.* version yet still render from
+ * resources/views/admin/* (through admin.layouts.app, styled by
+ * admin-nova.css).
  */
 class NovaAdminViewFinder implements ViewFinderInterface
 {
@@ -53,24 +49,7 @@ class NovaAdminViewFinder implements ViewFinderInterface
             return false;
         }
 
-        try {
-            /** @var Guard $auth */
-            $auth = app('auth')->guard();
-
-            if ($name === 'admin.auth.login') {
-                return app(ThemeService::class)->active(null)->design_style === 'nova';
-            }
-
-            $user = $auth->user();
-
-            if (! $user || ! method_exists($user, 'isAdmin') || ! $user->isAdmin()) {
-                return false;
-            }
-
-            return app(ThemeService::class)->active($user->id)->design_style === 'nova';
-        } catch (Throwable) {
-            return false;
-        }
+        return true;
     }
 
     // -- Pass-through: everything below is unrelated to the swap itself,

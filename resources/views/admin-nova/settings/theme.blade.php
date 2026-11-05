@@ -164,51 +164,7 @@
         <form id="themeSettingsForm">
             @csrf
             <input type="hidden" name="preset" id="selectedPreset" value="{{ $theme->theme_name }}">
-            <input type="hidden" name="design_style" id="selectedDesignStyle" value="{{ $theme->design_style }}">
-
-            {{-- Design Style --}}
-            <div class="settings-section">
-                <div class="section-title">
-                    <div class="section-icon"><i class="bi bi-layout-text-window-reverse"></i></div>
-                    Design Style
-                </div>
-                <div class="section-description">Choose the overall visual design for the admin panel. Your colors, typography, radius and layout options below apply to either one.</div>
-
-                <div class="row g-3">
-                    <div class="col-6 col-md-4">
-                        <div class="theme-card {{ $theme->design_style === 'classic' ? 'active' : '' }}"
-                             data-design-card data-design="classic">
-                            <div class="theme-card-check"><i class="bi bi-check-circle-fill"></i></div>
-                            <div class="theme-card-preview">
-                                <span style="background:#0C6DFD"></span>
-                                <span style="background:#F8FAFC"></span>
-                                <span style="background:#FFFFFF"></span>
-                            </div>
-                            <div class="theme-card-body">
-                                <div class="theme-card-icon"><i class="bi bi-square"></i></div>
-                                <div class="theme-card-label">Classic</div>
-                                <div class="theme-card-desc">The original admin design.</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-4">
-                        <div class="theme-card {{ $theme->design_style === 'nova' ? 'active' : '' }}"
-                             data-design-card data-design="nova">
-                            <div class="theme-card-check"><i class="bi bi-check-circle-fill"></i></div>
-                            <div class="theme-card-preview">
-                                <span style="background:#0f172a"></span>
-                                <span style="background:#2563eb"></span>
-                                <span style="background:#f8fafc"></span>
-                            </div>
-                            <div class="theme-card-body">
-                                <div class="theme-card-icon"><i class="bi bi-lightning-charge"></i></div>
-                                <div class="theme-card-label">Nova</div>
-                                <div class="theme-card-desc">Ultra-modern 2026 SaaS dashboard.</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <input type="hidden" name="design_style" id="selectedDesignStyle" value="nova">
 
             {{-- Theme Style --}}
             <div class="settings-section">
@@ -403,7 +359,6 @@
         'input_focus_color', 'font_family', 'font_size', 'border_radius',
     ]),
     'design_stylesheets' => [
-        'classic' => asset('public/assets/css/admin.css') . '?v=' . (@filemtime(public_path('assets/css/admin.css')) ?: 1),
         'nova' => asset('public/assets/css/admin-nova.css') . '?v=' . (@filemtime(public_path('assets/css/admin-nova.css')) ?: 1),
     ],
     'layout_options' => $layoutOptions,

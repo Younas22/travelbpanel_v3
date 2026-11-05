@@ -120,18 +120,14 @@ class ThemeSetting extends Model
     }
 
     /**
-     * "classic" -> admin.css (the original design), "nova" -> admin-nova.css.
-     * Both consume the exact same CSS variables, so colors/fonts/radius/layout
-     * toggles apply identically to either. Nova pages that aren't converted
-     * yet render through Classic's layout (see NovaAdminViewFinder), which
-     * picks up Nova's look from this stylesheet because the sidebar markup
-     * is shared.
+     * Stylesheet of the admin panel. Nova is the only admin design; pages not
+     * converted yet render through Classic's layout (see NovaAdminViewFinder)
+     * and get Nova's look from this stylesheet because the sidebar markup is
+     * shared. The agent and customer panels load admin.css themselves.
      */
     public function designStylesheet(): string
     {
-        return $this->design_style === 'nova'
-            ? 'public/assets/css/admin-nova.css'
-            : 'public/assets/css/admin.css';
+        return 'public/assets/css/admin-nova.css';
     }
 
     /**

@@ -25,6 +25,7 @@ class ThemeSettingController extends Controller
     public function update(UpdateThemeSettingRequest $request)
     {
         $data = $request->validated();
+        $data['design_style'] = 'nova'; // the only admin design
         $data['layout_options'] = array_merge(
             ThemeSetting::defaultLayoutOptions(),
             $data['layout_options'] ?? []
@@ -61,7 +62,7 @@ class ThemeSettingController extends Controller
     public function reset(Request $request)
     {
         $theme = $this->themeService->active();
-        $theme->update(ThemeSetting::defaults());
+        $theme->update(['design_style' => 'nova'] + ThemeSetting::defaults());
         $this->themeService->forgetCache();
 
         $fresh = $theme->fresh();
