@@ -80,8 +80,9 @@ class MenuController extends Controller
             'target' => 'required|in:_self,_blank',
             'description' => 'nullable|string|max:500',
             'is_active' => 'boolean',
-            'link_type' => 'required|in:page,url,dropdown',
+            'link_type' => 'required|in:page,builtin,url,dropdown',
             'page_id' => 'nullable|required_if:link_type,page|exists:pages,id',
+            'builtin_url' => ['nullable', 'required_if:link_type,builtin', 'in:' . implode(',', array_keys(MenuItem::BUILT_IN_PAGES))],
             'translations' => 'nullable|array',
             'translations.*' => 'nullable|string|max:100',
         ];

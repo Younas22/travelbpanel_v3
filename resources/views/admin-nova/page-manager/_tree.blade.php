@@ -20,7 +20,7 @@
                 </a>
             </summary>
 
-            <ul class="pm-list" data-sortable data-parent="">
+            <ul class="pm-list" data-sortable data-parent="" data-category="{{ $categoryKey }}">
                 @forelse($pmTop as $item)
                     @include('admin-nova.page-manager._tree-item', ['item' => $item])
                 @empty

@@ -7,12 +7,14 @@
     <div class="pm-row {{ $menu && $menu->id === $item->id ? 'is-active' : '' }} {{ $item->is_active ? '' : 'is-off' }}">
         <span class="pm-handle" data-tooltip="Drag to reorder"><i class="bi bi-grip-vertical"></i></span>
         <a href="{{ route('admin.page-manager.index', ['menu' => $item->id]) }}" class="pm-link">
-            <i class="{{ $item->page_id ? 'bi bi-file-earmark-text' : ($item->url ? 'bi bi-link-45deg' : 'bi bi-menu-button-wide') }} pm-ico"></i>
+            <i class="{{ $item->page_id ? 'bi bi-file-earmark-text' : ($item->isBuiltIn() ? 'bi bi-window' : ($item->url ? 'bi bi-box-arrow-up-right' : 'bi bi-menu-button-wide')) }} pm-ico"></i>
             <span class="pm-name">{{ $item->name }}</span>
             @if($item->page)
                 <span class="pm-badge {{ $pmStatusClass[$item->page->status] ?? '' }}">{{ ucfirst($item->page->status) }}</span>
+            @elseif($item->isBuiltIn())
+                <span class="pm-badge is-builtin">Built-in</span>
             @elseif($item->url)
-                <span class="pm-badge">Link</span>
+                <span class="pm-badge">External</span>
             @else
                 <span class="pm-badge">Dropdown</span>
             @endif
@@ -35,7 +37,7 @@
     </div>
 
     @if($pmKids->isNotEmpty())
-        <ul class="pm-list pm-children" data-sortable data-parent="{{ $item->id }}">
+        <ul class="pm-list pm-children" data-sortable data-parent="{{ $item->id }}" data-category="{{ $item->category }}">
             @foreach($pmKids as $kid)
                 @include('admin-nova.page-manager._tree-item', ['item' => $kid])
             @endforeach

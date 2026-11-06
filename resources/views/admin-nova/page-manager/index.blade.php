@@ -62,7 +62,13 @@
                 <div class="tt-card bg-white rounded-2xl border border-novaborder shadow-sm p-4 sm:p-5">
                     <h2 class="text-sm font-semibold text-novatext">{{ $menu->name }}</h2>
                     <p class="pg-help">
-                        {{ $menu->url ? 'This item links to ' . $menu->url . ' — it has no page of its own.' : 'This is a dropdown: it holds sub-items and has no page of its own.' }}
+                        @if($menu->isBuiltIn())
+                            Built-in page ({{ $menu->url }}): its content comes from the website itself. Here you change only the menu name, place and order.
+                        @elseif($menu->url)
+                            Links to another website ({{ $menu->url }}).
+                        @else
+                            This is a dropdown: it holds sub-items and has no page of its own.
+                        @endif
                     </p>
                 </div>
                 @include('admin-nova.page-manager._menu-settings')

@@ -58,7 +58,7 @@ class PageManagerController extends PageController
     public function storeMenu(Request $request)
     {
         $rules = MenuController::menuRules();
-        $rules['link_type'] = 'required|in:new_page,page,url,dropdown';
+        $rules['link_type'] = 'required|in:new_page,page,builtin,url,dropdown';
         $rules['slug'] = ['nullable', 'string', 'max:255', Rule::notIn(self::RESERVED_SLUGS)];
         $validated = $request->validate($rules);
         $this->checkParent($validated);
@@ -98,8 +98,68 @@ class PageManagerController extends PageController
         $this->checkParent($validated, $menu);
 
         $menu->update(MenuItem::linkAndNameAttributes($validated, $menu));
+        // sub-items always live in their parent's location
+        $menu->children()->update(['category' => $menu->category]);
 
         return redirect()->route('admin.page-manager.index', ['menu' => $menu->id])->with('success', 'Menu settings saved.');
+    }
+
+    /**
+     * Copy an item (and its sub-items) into another menu location — what dragging an
+     * item onto another section does. The copy opens the same page (no new page);
+     * the original stays where it was.
+     */
+    public function copyMenu(Request $request, MenuItem $menu)
+    {
+        $target = $this->validateTarget($request, $menu);
+        $position = $request->integer('position'); // 1-based drop position; 0 = at the end
+
+        $copy = DB::transaction(function () use ($menu, $target, $position) {
+            $order = $this->nextSortOrder($target);
+            if ($position > 0) {
+                // renumber the target list so the copy lands where it was dropped
+                $siblings = MenuItem::where('category', $target['category'])->where('parent_id', $target['parent_id'])
+                    ->orderBy('sort_order')->orderBy('id')->pluck('id');
+                $position = min($position, $siblings->count() + 1);
+                foreach ($siblings as $i => $id) {
+                    MenuItem::whereKey($id)->update(['sort_order' => $i + 1 < $position ? $i + 1 : $i + 2]);
+                }
+                $order = $position;
+            }
+
+            $copy = $menu->replicate(['created_at', 'updated_at']);
+            $copy->fill($target + ['sort_order' => $order])->save();
+
+            foreach ($menu->children()->orderBy('sort_order')->get() as $child) {
+                $child->replicate(['created_at', 'updated_at'])
+                    ->fill(['category' => $target['category'], 'parent_id' => $copy->id])->save();
+            }
+
+            return $copy;
+        });
+
+        $where = MenuItem::getCategoryOptions()[$copy->category] . ($copy->parent ? ' › ' . $copy->parent->name : '');
+        session()->flash('success', "“{$copy->name}” now also shows in {$where}.");
+
+        return response()->json(['id' => $copy->id]);
+    }
+
+    /** Target location + optional dropdown of a copy. */
+    private function validateTarget(Request $request, MenuItem $menu): array
+    {
+        $target = $request->validate([
+            'category' => ['required', Rule::in(array_keys(MenuItem::getCategoryOptions()))],
+            'parent_id' => 'nullable|exists:menu_items,id',
+        ]);
+        $target['parent_id'] = $target['parent_id'] ?? null;
+        $this->checkParent($target, $menu);
+
+        return $target;
+    }
+
+    private function nextSortOrder(array $target): int
+    {
+        return (MenuItem::where('category', $target['category'])->where('parent_id', $target['parent_id'])->max('sort_order') ?? 0) + 1;
     }
 
     /** Show / hide an item on the website. */

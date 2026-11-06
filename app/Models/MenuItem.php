@@ -31,6 +31,30 @@ class MenuItem extends Model
     ];
 
     /**
+     * Pages that are part of the website itself (not made in the Page & Menu
+     * Manager): a menu item can link to them, their content is not edited here.
+     */
+    public const BUILT_IN_PAGES = [
+        '/home' => 'Home',
+        '/blog' => 'Blog',
+        '/page/contact' => 'Contact',
+        '/page/sitemap' => 'Sitemap',
+        '/track-ticket' => 'Track Booking',
+    ];
+
+    /** Links to a page of the website itself (any address on this site that is not a managed page). */
+    public function isBuiltIn(): bool
+    {
+        return !$this->page_id && $this->url && !preg_match('#^(https?:)?//#i', $this->url);
+    }
+
+    /** Links to another website. */
+    public function isExternal(): bool
+    {
+        return !$this->page_id && $this->url && preg_match('#^(https?:)?//#i', $this->url);
+    }
+
+    /**
      * Attributes for saving a menu item from a form. Link: a page (address
      * follows the page's slug), a custom URL, or nothing for a dropdown that
      * only holds sub-items. Names: one per active language; names of
@@ -39,6 +63,11 @@ class MenuItem extends Model
     public static function linkAndNameAttributes(array $validated, ?self $menu = null): array
     {
         $type = $validated['link_type'];
+        if ($type === 'builtin') {
+            $validated['url'] = $validated['builtin_url'];
+            $type = 'url';
+        }
+        unset($validated['builtin_url']);
         if ($type === 'page') {
             $validated['url'] = '/page/' . Page::whereKey($validated['page_id'])->value('slug');
         } else {

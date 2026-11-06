@@ -113,10 +113,10 @@
         let slugByHand = false;
         name.addEventListener('input', () => { if (!slugByHand) { slug.value = slugify(name.value); } });
         slug.addEventListener('input', () => { slugByHand = slug.value !== ''; });
-        document.getElementById('page_id').addEventListener('change', function () {
+        ['page_id', 'builtin_url_create'].forEach(id => document.getElementById(id).addEventListener('change', function () {
             const opt = this.options[this.selectedIndex];
             if (!name.value.trim() && opt.dataset.name) { name.value = opt.dataset.name; }
-        });
+        }));
     }
 
     // ---------- link type panes + parent options of the chosen location ----------
@@ -140,6 +140,32 @@
         }
     });
 
+    // ---------- tree: tooltips ----------
+    // The menu panel scrolls (overflow: auto), which cut its CSS tooltips in half; these
+    // are drawn in one fixed element on top of the page, above the hovered button.
+    const tip = document.createElement('div');
+    tip.className = 'pm-tip';
+    tip.setAttribute('role', 'tooltip');
+    document.body.appendChild(tip);
+    const showTip = el => {
+        tip.textContent = el.dataset.tooltip;
+        tip.classList.add('is-on');
+        const r = el.getBoundingClientRect();
+        const w = tip.offsetWidth, h = tip.offsetHeight;
+        const left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), window.innerWidth - w - 8);
+        tip.style.left = left + 'px';
+        tip.style.top = Math.max(8, r.top - h - 8) + 'px';
+        tip.style.setProperty('--pm-tip-arrow', (r.left + r.width / 2 - left) + 'px');
+    };
+    const hideTip = () => tip.classList.remove('is-on');
+    document.querySelectorAll('.pm-tree [data-tooltip]').forEach(el => {
+        el.addEventListener('mouseenter', () => showTip(el));
+        el.addEventListener('focus', () => showTip(el));
+        el.addEventListener('mouseleave', hideTip);
+        el.addEventListener('blur', hideTip);
+    });
+    document.querySelector('.pm-tree')?.addEventListener('scroll', hideTip);
+
     // ---------- tree: search ----------
     document.getElementById('pmSearch')?.addEventListener('input', function () {
         const q = this.value.trim().toLowerCase();
@@ -151,25 +177,46 @@
         if (q) { document.querySelectorAll('.pm-tree details').forEach(d => { d.open = true; }); }
     });
 
-    // ---------- tree: drag to reorder (within the same list), saved right away ----------
+    // ---------- tree: drag and drop ----------
+    // Within a section: reorder. Onto another section: that section gets a copy of the
+    // link (same page, no new page) and the original stays where it was.
     if (typeof Sortable !== 'undefined') {
+        const headers = { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' };
+        const saveOrder = list => fetch('{{ route("admin.menus.update-sort-order") }}', {
+            method: 'POST', headers,
+            body: JSON.stringify({ items: [...list.children].filter(li => li.dataset.id).map((li, i) => ({
+                id: li.dataset.id, sort_order: i + 1, parent_id: list.dataset.parent || null,
+            })) }),
+        }).then(r => { if (!r.ok) { throw r; } return r.json(); });
+
         document.querySelectorAll('.pm-tree [data-sortable]').forEach(list => {
             Sortable.create(list, {
+                group: { name: 'menus', pull: 'clone', put: true },
                 handle: '.pm-handle',
                 draggable: '.pm-node',
+                filter: '.pm-none',
                 animation: 150,
                 ghostClass: 'pm-ghost',
-                onEnd: () => {
-                    const items = [...list.children].filter(li => li.dataset.id).map((li, i) => ({
-                        id: li.dataset.id, sort_order: i + 1, parent_id: list.dataset.parent || null,
-                    }));
-                    fetch('{{ route("admin.menus.update-sort-order") }}', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
-                        body: JSON.stringify({ items }),
-                    }).then(r => r.json()).then(res => {
-                        if (window.Toastify) { Toastify({ text: res.success ? 'Menu order saved' : 'Order not saved', duration: 2500, gravity: 'top', position: 'right' }).showToast(); }
-                    }).catch(() => alert('The new order could not be saved.'));
+                onEnd: evt => {
+                    if (evt.to === evt.from) {
+                        if (evt.oldIndex === evt.newIndex) { return; }
+                        saveOrder(list).then(() => {
+                            if (window.Toastify) { Toastify({ text: 'Menu order saved', duration: 2500, gravity: 'top', position: 'right' }).showToast(); }
+                        }).catch(() => alert('The new order could not be saved.'));
+                        return;
+                    }
+                    // dropped on another section: copy it there, at the drop position
+                    const target = evt.to, dropped = evt.item;
+                    const position = [...target.children].filter(li => li.dataset.id).indexOf(dropped) + 1;
+                    fetch(`{{ url('admin/page-manager/menus') }}/${dropped.dataset.id}/copy`, {
+                        method: 'POST', headers,
+                        body: JSON.stringify({ category: target.dataset.category, parent_id: target.dataset.parent || null, position }),
+                    }).then(r => r.json().then(body => ({ ok: r.ok, body })))
+                      .then(({ ok, body }) => {
+                          if (!ok) { throw new Error(Object.values(body.errors || {}).flat()[0] || body.message || 'Copy failed'); }
+                          location.reload();
+                      })
+                      .catch(err => { alert(err.message || 'The link could not be added there.'); location.reload(); });
                 },
             });
         });

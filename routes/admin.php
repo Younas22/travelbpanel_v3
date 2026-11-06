@@ -215,6 +215,7 @@ Route::prefix('modules')->name('admin.modules.')->group(function () {
             Route::post('/menus', [PageManagerController::class, 'storeMenu'])->name('menus.store');
             Route::put('/menus/{menu}', [PageManagerController::class, 'updateMenu'])->name('menus.update');
             Route::post('/menus/{menu}/toggle', [PageManagerController::class, 'toggleMenu'])->name('menus.toggle');
+            Route::post('/menus/{menu}/copy', [PageManagerController::class, 'copyMenu'])->name('menus.copy');
             Route::delete('/menus/{menu}', [PageManagerController::class, 'destroyMenu'])->name('menus.destroy');
             Route::patch('/pages/{page}', [PageManagerController::class, 'updatePage'])->name('pages.update');
         });

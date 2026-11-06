@@ -6838,6 +6838,7 @@ body:has(.wt-preview-wrap) { overflow-x: clip; }
 #pgPage .pm-badge.is-published { background: #ECFDF5; color: #047857; }
 #pgPage .pm-badge.is-draft { background: #FFFBEB; color: #B45309; }
 #pgPage .pm-badge.is-private, #pgPage .pm-badge.is-off { background: #F3F4F6; color: #6B7280; }
+#pgPage .pm-badge.is-builtin { background: #EFF6FF; color: #2563EB; }
 #pgPage .pm-dot { display: inline-block; width: 8px; height: 8px; border-radius: 9999px; margin-right: 2px; background: #D1D5DB; }
 #pgPage .pm-dot.is-complete { background: #22C55E; }
 #pgPage .pm-dot.is-partial { background: #F59E0B; }
@@ -6869,3 +6870,21 @@ body:has(.wt-preview-wrap) { overflow-x: clip; }
 #pgPage .pm-empty > i { font-size: 34px; color: #2563EB; }
 #pgPage .pm-empty h2 { margin: 0; font-size: 16px; font-weight: 700; color: #000; }
 #pgPage .pm-empty p { max-width: 420px; margin: 0 0 6px; font-size: 13px; color: #6B7280; }
+
+/* Page & Menu Manager: primary "+" per section, and tooltips of the
+   scrolling menu panel drawn in one fixed element (.pm-tip) so they are never cut off */
+#pgPage .pm-add { background: #2563EB; border-color: #2563EB; color: #fff; }
+#pgPage .pm-add:hover { background: #1D4ED8; border-color: #1D4ED8; color: #fff; }
+#pgPage .pm-tree [data-tooltip]::before,
+#pgPage .pm-tree [data-tooltip]::after { display: none; }
+.pm-tip {
+    position: fixed; z-index: 2000; max-width: 240px; padding: 6px 10px; border-radius: 6px;
+    background: #1F2937; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px;
+    font-weight: 600; line-height: 1.3; pointer-events: none; opacity: 0; visibility: hidden;
+    transition: opacity .15s ease, visibility .15s ease;
+}
+.pm-tip.is-on { opacity: 1; visibility: visible; }
+.pm-tip::after {
+    content: ''; position: absolute; top: 100%; left: var(--pm-tip-arrow, 50%); transform: translateX(-50%);
+    border: 5px solid transparent; border-top-color: #1F2937;
+}

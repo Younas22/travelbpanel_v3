@@ -24,7 +24,7 @@
         <div>
             <label class="pg-label">What does it open?</label>
             <div class="flex flex-wrap gap-x-4 gap-y-2 py-2">
-                @foreach(['new_page' => 'New blank page', 'page' => 'Existing page', 'url' => 'Custom URL', 'dropdown' => 'No link (dropdown)'] as $type => $typeLabel)
+                @foreach(['new_page' => 'New blank page', 'page' => 'Existing page', 'builtin' => 'Built-in page', 'url' => 'Custom URL', 'dropdown' => 'No link (dropdown)'] as $type => $typeLabel)
                     <label class="flex items-center gap-2 text-xs font-semibold text-novatext">
                         <input type="radio" name="link_type" value="{{ $type }}" {{ $pmLink === $type ? 'checked' : '' }}> {{ $typeLabel }}
                     </label>
@@ -51,10 +51,11 @@
             </select>
             @error('page_id') <p class="pg-error">Choose a page.</p> @enderror
         </div>
+        @include('admin-nova.page-manager._builtin-select', ['pmLinkType' => $pmLink, 'pmBuiltInSelected' => null, 'pmFormKey' => 'create'])
         <div data-link-pane="url" {{ $pmLink === 'url' ? '' : 'hidden' }} class="md:col-span-2">
             <label class="pg-label" for="url">URL</label>
             <input type="text" name="url" id="url" class="pg-input @error('url') is-invalid @enderror" value="{{ old('url') }}" placeholder="/blog or https://example.com">
-            <p class="pg-help">External and system links get no page.</p>
+            <p class="pg-help">Another website (https://…) or any other address on this site. No page is made.</p>
             @error('url') <p class="pg-error">{{ $message }}</p> @enderror
         </div>
 

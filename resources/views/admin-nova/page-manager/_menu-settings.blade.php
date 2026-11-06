@@ -1,7 +1,8 @@
 {{-- Settings of the selected menu item (PageManagerController@updateMenu). Its page is
      never created or deleted from here. Expects: $menu, $categories, $topItems, $allPages, $languages. --}}
 @php
-    $pmLink = old('link_type', $menu->page_id ? 'page' : ($menu->url ? 'url' : 'dropdown'));
+    $pmBuiltIn = !$menu->page_id && isset(\App\Models\MenuItem::BUILT_IN_PAGES[$menu->url]);
+    $pmLink = old('link_type', $menu->page_id ? 'page' : ($pmBuiltIn ? 'builtin' : ($menu->url ? 'url' : 'dropdown')));
     $pmCategory = old('category', $menu->category);
     $pmHasKids = $menu->children()->exists();
 @endphp
@@ -47,7 +48,7 @@
         <div>
             <label class="pg-label">Link</label>
             <div class="flex flex-wrap gap-4 py-2">
-                @foreach(['page' => 'Page', 'url' => 'Custom URL', 'dropdown' => 'No link (dropdown)'] as $type => $typeLabel)
+                @foreach(['page' => 'Page', 'builtin' => 'Built-in page', 'url' => 'Custom URL', 'dropdown' => 'No link (dropdown)'] as $type => $typeLabel)
                     <label class="flex items-center gap-2 text-xs font-semibold text-novatext">
                         <input type="radio" name="link_type" value="{{ $type }}" {{ $pmLink === $type ? 'checked' : '' }}> {{ $typeLabel }}
                     </label>
@@ -65,9 +66,10 @@
             <p class="pg-help">Switching to another page or link keeps the current page (it moves to "Pages not in a menu").</p>
             @error('page_id') <p class="pg-error">Choose a page.</p> @enderror
         </div>
+        @include('admin-nova.page-manager._builtin-select', ['pmLinkType' => $pmLink, 'pmBuiltInSelected' => $pmBuiltIn ? $menu->url : null, 'pmFormKey' => 'menu'])
         <div data-link-pane="url" {{ $pmLink === 'url' ? '' : 'hidden' }} class="md:col-span-2">
             <label class="pg-label" for="menu_url">URL</label>
-            <input type="text" name="url" id="menu_url" class="pg-input @error('url') is-invalid @enderror" value="{{ old('url', $menu->page_id ? '' : $menu->url) }}" placeholder="/blog or https://example.com">
+            <input type="text" name="url" id="menu_url" class="pg-input @error('url') is-invalid @enderror" value="{{ old('url', $menu->page_id || $pmBuiltIn ? '' : $menu->url) }}" placeholder="/blog or https://example.com">
             @error('url') <p class="pg-error">{{ $message }}</p> @enderror
         </div>
         <div>
