@@ -163,9 +163,23 @@
                                 </div>
                             </div>
                             <div class="tbp-partner-edit-card-body">
+                                @php
+                                    // ?de=1 shows the keys decrypted (admins only, this page); without it only the
+                                    // encrypted value ever reaches the browser.
+                                    $deKeys = request()->boolean('de');
+                                @endphp
                                 <div class="tbp-partner-edit-banner">
-                                    <i class="bi bi-info-circle"></i>
-                                    <span>Credentials are stored encrypted and only the encrypted value is shown. Type a new value to replace one, then run <strong>Test Credentials</strong> before continuing.</span>
+                                    <i class="bi {{ $deKeys ? 'bi-unlock' : 'bi-info-circle' }}"></i>
+                                    <span>
+                                        @if($deKeys)
+                                            Keys are shown <strong>decrypted</strong>. Close this view when you are done.
+                                        @else
+                                            Credentials are stored encrypted and only the encrypted value is shown. Type a new value to replace one, then run <strong>Test Credentials</strong> before continuing.
+                                        @endif
+                                        <a href="{{ $deKeys ? request()->fullUrlWithoutQuery('de') : request()->fullUrlWithQuery(['de' => 1]) }}" class="tbp-partner-edit-help-link">
+                                            <i class="bi {{ $deKeys ? 'bi-eye-slash' : 'bi-eye' }}"></i> {{ $deKeys ? 'Hide keys' : 'Show decrypted keys' }}
+                                        </a>
+                                    </span>
                                 </div>
 
                                 <div class="tbp-partner-edit-cred-grid" id="credentialGrid">
@@ -179,7 +193,16 @@
                                             // Only the encrypted value is ever sent to the browser; the real
                                             // secret stays server-side. An unchanged value is never re-saved.
                                             $rawStored = $partner->getRawOriginal("api_credential_{$i}");
-                                            $credVal = old("api_credential_{$i}", $rawStored);
+                                            $shownStored = $rawStored;
+                                            $decryptFailed = false;
+                                            if ($deKeys && $rawStored !== null && $rawStored !== '') {
+                                                try {
+                                                    $shownStored = \Illuminate\Support\Facades\Crypt::decryptString($rawStored);
+                                                } catch (\Throwable $e) {
+                                                    $decryptFailed = true; // saved with another APP_KEY
+                                                }
+                                            }
+                                            $credVal = old("api_credential_{$i}", $shownStored);
                                             $hasVal = $credVal !== null && $credVal !== '';
                                         @endphp
                                         <div class="tbp-partner-edit-field tbp-partner-edit-cred-slot" data-cred-index="{{ $i }}" @unless($hasVal || $isAqc) hidden @endunless>
@@ -190,16 +213,19 @@
                                             }; @endphp
                                             <label>{{ $credLabels[$i] ?? 'API Credential '.$i }}</label>
                                             <div class="tbp-partner-edit-input-wrap">
-                                                <input type="password" name="api_credential_{{ $i }}"
+                                                <input type="{{ $deKeys && !$decryptFailed ? 'text' : 'password' }}" name="api_credential_{{ $i }}"
                                                        class="form-control tbp-partner-edit-cred-input @error('api_credential_'.$i) is-invalid @enderror"
                                                        placeholder="Enter credential"
                                                        value="{{ $credVal }}"
-                                                       data-original-value="{{ $rawStored }}"
+                                                       data-original-value="{{ $shownStored }}"
                                                        autocomplete="new-password">
                                                 <span class="tbp-partner-edit-input-action">
                                                     <button type="button" class="tbp-partner-edit-cred-toggle" title="Show / hide"><i class="bi bi-eye"></i></button>
                                                 </span>
                                             </div>
+                                            @if($decryptFailed)
+                                                <div class="invalid-feedback d-block">Can't be decrypted here: it was saved with another APP_KEY (e.g. on the live server). Type the key again to replace it.</div>
+                                            @endif
                                             @error('api_credential_'.$i)<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                         </div>
                                     @endfor
