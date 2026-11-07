@@ -176,9 +176,6 @@
                                         @else
                                             Credentials are stored encrypted and only the encrypted value is shown. Type a new value to replace one, then run <strong>Test Credentials</strong> before continuing.
                                         @endif
-                                        <a href="{{ $deKeys ? request()->fullUrlWithoutQuery('de') : request()->fullUrlWithQuery(['de' => 1]) }}" class="tbp-partner-edit-help-link">
-                                            <i class="bi {{ $deKeys ? 'bi-eye-slash' : 'bi-eye' }}"></i> {{ $deKeys ? 'Hide keys' : 'Show decrypted keys' }}
-                                        </a>
                                     </span>
                                 </div>
 
