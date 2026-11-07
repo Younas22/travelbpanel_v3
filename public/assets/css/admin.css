@@ -9427,6 +9427,17 @@ button.agent-nav-link.active i {
     .ap-modal { max-width: 100%; }
 }
 
+/* Agent dashboard: the agent's own fee on flight prices */
+.agd-fee { margin-bottom: 18px; }
+.agd-fee-body { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.agd-fee-text { flex: 1 1 260px; margin: 0; color: color-mix(in srgb, var(--text-color) 60%, transparent); font-size: 0.85rem; }
+.agd-fee-field { display: flex; align-items: center; gap: 8px; margin: 0; font-weight: 600; }
+.agd-fee-field .ap-input { width: 140px; }
+.agd-fee-state { padding: 3px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+.agd-fee-state.is-on { background: color-mix(in srgb, var(--success-color) 14%, var(--card-bg)); color: color-mix(in srgb, var(--success-color) 80%, black); }
+.agd-fee-state.is-off { background: color-mix(in srgb, var(--danger-color) 12%, var(--card-bg)); color: color-mix(in srgb, var(--danger-color) 80%, black); }
+.agd-fee-error { flex-basis: 100%; margin: 0; color: var(--danger-color); font-size: 0.8rem; }
+
 /* Agent dashboard (resources/views/agent/dashboard.blade.php): website-style
    header, stat tiles, quick actions and list cards. Theme-variable driven. */
 .agd-head {

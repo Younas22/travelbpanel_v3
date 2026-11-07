@@ -26,5 +26,11 @@
   "luggage": "수하물",
   "reset_filters": "필터 초기화",
   "cabin_bag": "기내",
-  "checked_bag": "위탁"
+  "checked_bag": "위탁",
+  "my_fee": "내 수수료",
+  "my_fee_help": "모든 가격에 추가됩니다. 본인에게만 보입니다.",
+  "fee": "수수료",
+  "your_fee": "내 수수료",
+  "no_fee": "추가된 수수료 없음",
+  "fee_saved": "저장됨"
 }

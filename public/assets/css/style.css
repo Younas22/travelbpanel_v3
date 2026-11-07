@@ -11325,6 +11325,16 @@ footer {
     text-align: right;
 }
 
+/* Flight booking, logged-in agent: the agent's own fee in the price summary */
+.td-agent-fee b,
+.td-agent-fee span { color: #15803D; }
+.td-agent-fee i { margin-right: 4px; }
+.td-agent-fee-note {
+    margin: 10px 0 0;
+    color: color-mix(in srgb, var(--site-text) 55%, transparent);
+    font-size: 11.5px;
+}
+
 .td-total {
     display: flex;
     align-items: center;
@@ -12129,6 +12139,114 @@ a.tl-page-btn:hover { border-color: var(--tl-blue); color: var(--tl-blue); }
     font-weight: 700;
     line-height: 1.25;
     white-space: nowrap;
+}
+
+/* Flight list, logged-in agent only: the agent's own fee. The sidebar input changes
+   every price live; each card's fee box is green with a fee, red without, and shows
+   the amount on hover / focus. */
+.fl-agentfee-input {
+    display: flex;
+    align-items: stretch;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--site-primary) 30%, transparent);
+    border-radius: 10px;
+    background: #FFFFFF;
+}
+
+.fl-agentfee-input button {
+    flex-shrink: 0;
+    width: 38px;
+    border: 0;
+    background: color-mix(in srgb, var(--site-primary) 8%, #FFFFFF);
+    color: var(--site-primary);
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.fl-agentfee-input button:hover {
+    background: var(--site-primary);
+    color: #FFFFFF;
+}
+
+.fl-agentfee-input input {
+    flex: 1;
+    min-width: 0;
+    height: 40px;
+    border: 0;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    outline: none;
+}
+
+.fl-agentfee-note {
+    display: block;
+    margin-top: 8px;
+    color: color-mix(in srgb, var(--site-text) 55%, transparent);
+    font-size: 11.5px;
+}
+
+.fl-fee {
+    position: relative;
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 6px;
+    padding: 3px 9px;
+    border: 1px solid;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: default;
+}
+
+.fl-fee.is-on {
+    border-color: #86EFAC;
+    background: #F0FDF4;
+    color: #15803D;
+}
+
+.fl-fee.is-off {
+    border-color: #FCA5A5;
+    background: #FEF2F2;
+    color: #B91C1C;
+}
+
+.fl-fee-tip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    z-index: 20;
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: #111827;
+    color: #FFFFFF;
+    font-size: 11.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-50%);
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+    pointer-events: none;
+}
+
+.fl-fee-tip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #111827;
+}
+
+.fl-fee:hover .fl-fee-tip,
+.fl-fee:focus .fl-fee-tip {
+    opacity: 1;
+    visibility: visible;
 }
 
 .fl-book-btn {

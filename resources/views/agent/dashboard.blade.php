@@ -78,6 +78,28 @@
     @endforeach
 </div>
 
+{{-- The agent's own fee on every flight price (only this agent sees it; also adjustable on the flight list) --}}
+@php
+    $dhFeeCurrency = activeCurrency()->currency_name;
+    $dhFee = $agentUser->agentMarkupIn($dhFeeCurrency);
+@endphp
+<form method="POST" action="{{ route('agent.markup.update') }}" class="ap-card agd-fee">
+    @csrf
+    <div class="ap-card-header">
+        <span><i class="fas fa-hand-holding-dollar ap-accent"></i> My fee on flights</span>
+        <span class="agd-fee-state {{ $dhFee > 0 ? 'is-on' : 'is-off' }}">{{ $dhFee > 0 ? 'Active' : 'Not set' }}</span>
+    </div>
+    <div class="ap-card-body agd-fee-body">
+        <p class="agd-fee-text">A fixed amount added to every flight price you see when you are logged in. Only you see it — you can also change it live in the flight results.</p>
+        <label class="agd-fee-field">
+            <span>{{ $dhFeeCurrency }}</span>
+            <input type="number" name="agent_markup" class="ap-input" min="0" step="1" value="{{ old('agent_markup', $dhFee) }}" required>
+        </label>
+        <button type="submit" class="ap-btn-primary"><i class="fas fa-check"></i> Save fee</button>
+        @error('agent_markup') <p class="agd-fee-error">{{ $message }}</p> @enderror
+    </div>
+</form>
+
 {{-- Quick Actions --}}
 @if($dhActions)
     <div class="agd-actions">

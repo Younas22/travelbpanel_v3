@@ -59,5 +59,6 @@
   "sep": "Septembre",
   "oct": "Octobre",
   "nov": "Novembre",
-  "dec": "Décembre"
+  "dec": "Décembre",
+  "agent_fee_note": "Vous payez le tarif ; les frais sont votre gain auprès du client. Vous seul les voyez."
 }

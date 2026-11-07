@@ -26,5 +26,11 @@
   "luggage": "Equipaje",
   "reset_filters": "Restablecer Filtros",
   "cabin_bag": "Cabina",
-  "checked_bag": "Facturado"
+  "checked_bag": "Facturado",
+  "my_fee": "Mi comisión",
+  "my_fee_help": "Se suma a cada precio. Solo tú la ves.",
+  "fee": "Comisión",
+  "your_fee": "Tu comisión",
+  "no_fee": "Sin comisión añadida",
+  "fee_saved": "Guardado"
 }

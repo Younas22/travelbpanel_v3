@@ -26,5 +26,11 @@
   "luggage": "Bagages",
   "reset_filters": "Réinitialiser les Filtres",
   "cabin_bag": "Cabine",
-  "checked_bag": "En soute"
+  "checked_bag": "En soute",
+  "my_fee": "Mes frais",
+  "my_fee_help": "Ajoutés à chaque prix. Vous seul les voyez.",
+  "fee": "Frais",
+  "your_fee": "Vos frais",
+  "no_fee": "Aucun frais ajouté",
+  "fee_saved": "Enregistré"
 }

@@ -46,6 +46,9 @@
     $__displayedFare = $__activeCurrency
         ? convertCurrency($first->price, $first->currency, $__activeCurrencyCode)
         : $first->price;
+    // A logged-in agent's own fee (set on the dashboard / flight list) is shown on top
+    // of the fare, only to that agent. The fare itself is what is booked and paid.
+    $__agentFee = auth()->check() && auth()->user()->isAgent() ? auth()->user()->agentMarkupIn($__activeCurrencyCode) : 0;
     $travellerNo = 0;
 @endphp
 
@@ -304,10 +307,16 @@
                 <h2 class="td-side-title">{{ t('flightbooking.price_summary') }}</h2>
                 <div class="td-row"><span>{{ t('flightbooking.base_fare') }}</span><b>{{ $__activeCurrencyCode }} {{ number_format($__displayedFare, 2) }}</b></div>
                 <div class="td-row"><span>{{ t('flightbooking.taxes_fees') }}</span><b>{{ $__activeCurrencyCode }} 0.00</b></div>
+                @if($__agentFee > 0)
+                    <div class="td-row td-agent-fee"><span><i class="fas fa-hand-holding-dollar"></i> {{ t('flightlist.your_fee') }}</span><b>+ {{ $__activeCurrencyCode }} {{ number_format($__agentFee, 2) }}</b></div>
+                @endif
                 <div class="td-total">
                     <span>{{ t('flightbooking.total') }}</span>
-                    <b>{{ $__activeCurrencyCode }} {{ number_format($__displayedFare, 2) }}</b>
+                    <b>{{ $__activeCurrencyCode }} {{ number_format($__displayedFare + $__agentFee, 2) }}</b>
                 </div>
+                @if($__agentFee > 0)
+                    <p class="td-agent-fee-note">{{ t('flightbooking.agent_fee_note') }}</p>
+                @endif
             </div>
         </aside>
     </form>

@@ -43,6 +43,8 @@ class User extends Authenticatable
         'department',
         'commission_rate',
         'commission_type',
+        'agent_markup',
+        'agent_markup_currency',
         'total_sales',
         'total_commission',
         'email_notifications',
@@ -70,6 +72,7 @@ class User extends Authenticatable
         'average_spending' => 'decimal:2',
         'commission_rate' => 'decimal:2',
         'total_commission' => 'decimal:2',
+        'agent_markup' => 'decimal:2',
         'email_notifications' => 'boolean',
         'sms_notifications' => 'boolean',
         'marketing_emails' => 'boolean',
@@ -291,6 +294,22 @@ class User extends Authenticatable
         }
 
         return $fareAmount * ((float) $this->commission_rate / 100);
+    }
+
+    /**
+     * The agent's own fee (a fixed amount added on top of every flight price),
+     * in the given currency. Stored in the currency it was entered in.
+     */
+    public function agentMarkupIn(string $currency): float
+    {
+        $amount = (float) $this->agent_markup;
+        $from = $this->agent_markup_currency ?: $currency;
+
+        if ($amount <= 0 || !$this->isAgent()) {
+            return 0.0;
+        }
+
+        return round($from === $currency ? $amount : (float) convertCurrency($amount, $from, $currency), 2);
     }
 
     public function getStatusBadgeClass()

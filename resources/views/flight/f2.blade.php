@@ -26,6 +26,11 @@
                 $from = $fromCurrency ?: $activeCurrency->currency_name;
                 return $from === $activeCurrency->currency_name ? $clean : convertCurrency($clean, $from, $activeCurrency->currency_name);
             };
+
+            // A logged-in agent sees every price with their own fee (a fixed amount) added,
+            // and can change it live in the sidebar. Nobody else sees the fee or the controls.
+            $flAgent = auth()->check() && auth()->user()->isAgent();
+            $flFee = $flAgent ? auth()->user()->agentMarkupIn($activeCurrency->currency_name) : 0;
             // Total duration comes back in whichever shape the active
             // supplier formats it in — "04h:30m" (Amadeus), "4:13" (Duffel),
             // "4h 30m" (Sabre) — so this pulls the first two digit groups
@@ -78,8 +83,8 @@
                 if (!in_array($bag, $displayed_baggage)) $displayed_baggage[] = $bag;
             }
             ksort($check_stops);
-            $minPrice = !empty($prices) ? min($prices) : 0;
-            $maxPrice = !empty($prices) ? max($prices) : 0;
+            $minPrice = !empty($prices) ? min($prices) + $flFee : 0;
+            $maxPrice = !empty($prices) ? max($prices) + $flFee : 0;
             $minDuration = !empty($durations) ? min($durations) : 0;
             $maxDuration = !empty($durations) ? max($durations) : 0;
 
@@ -129,6 +134,19 @@
                     <span><i class="fas fa-sliders"></i> {{ t('flightlist.filters') }}</span>
                     <button type="button" id="resetFiltersBtn" class="fl-reset">{{ t('flightlist.reset_filters') }}</button>
                 </div>
+
+                @if($flAgent)
+                    <!-- Agent's own fee: changes every price on the page right away and is saved -->
+                    <div class="tl-group fl-agentfee">
+                        <div class="tl-group-title"><i class="fas fa-hand-holding-dollar"></i> {{ t('flightlist.my_fee') }} ({{ $activeCurrency->currency_name }})</div>
+                        <div class="fl-agentfee-input">
+                            <button type="button" data-fee-step="-1" aria-label="−">−</button>
+                            <input type="number" id="agentFeeInput" min="0" step="1" value="{{ $flFee + 0 }}" inputmode="decimal" aria-label="{{ t('flightlist.my_fee') }}">
+                            <button type="button" data-fee-step="1" aria-label="+">+</button>
+                        </div>
+                        <small class="fl-agentfee-note" id="agentFeeNote">{{ t('flightlist.my_fee_help') }}</small>
+                    </div>
+                @endif
 
                 <!-- Stops -->
                 <div class="tl-group">
@@ -234,7 +252,8 @@
                              data-index="{{ $loop->index }}"
                              data-stops="{{ count($segment['segments'][0]) - 1 }}"
                              data-airline="{{ $first['carrier']['operating'] }}"
-                             data-price="{{ $price }}"
+                             data-base-price="{{ $price }}"
+                             data-price="{{ $price + $flFee }}"
                              data-dep-hour="{{ $first['departure']['hour'] ?? '' }}"
                              data-arr-hour="{{ end($segment['segments'][0])['arrival']['hour'] ?? '' }}"
                              data-baggage="{{ $baggageLabel($first['baggage'] ?? null) }}"
@@ -302,8 +321,14 @@
                                         <span class="fl-fare-type">{{ ucwords(str_replace('_', ' ', $first['class'])) }}</span>
                                     @endif
                                     <small>{{ t('flightlist.total_fare') }}</small>
-                                    <b>{{ $activeCurrency->currency_name }} {{ number_format($price, 2) }}</b>
+                                    <b>{{ $activeCurrency->currency_name }} <span class="fl-amount">{{ number_format($price + $flFee, 2) }}</span></b>
                                     <small>{{ $flight_search['passenger_count'] ?? 1 }} {{ ($flight_search['passenger_count'] ?? 1) == 1 ? t('flightform.passenger') : t('flightform.passengers') }}</small>
+                                    @if($flAgent)
+                                        <span class="fl-fee {{ $flFee > 0 ? 'is-on' : 'is-off' }}" tabindex="0">
+                                            <i class="fas fa-hand-holding-dollar"></i> {{ t('flightlist.fee') }}
+                                            <span class="fl-fee-tip" role="tooltip">{{ $flFee > 0 ? t('flightlist.your_fee') . ': ' . $activeCurrency->currency_name . ' ' . number_format($flFee, 2) : t('flightlist.no_fee') }}</span>
+                                        </span>
+                                    @endif
                                 </div>
                                 <form action="{{ route('flights.booking') }}" method="post">
                                     @csrf
@@ -439,9 +464,9 @@
 
         // Wires up a pair of overlapping range inputs as one dual-handle slider
         function setupDualRange(minInput, maxInput, trackFill, onChange) {
-            const rangeMin = parseFloat(minInput.min);
-            const span = (parseFloat(minInput.max) - rangeMin) || 1;
             function update() {
+                const rangeMin = parseFloat(minInput.min);
+                const span = (parseFloat(minInput.max) - rangeMin) || 1;
                 let lo = parseFloat(minInput.value), hi = parseFloat(maxInput.value);
                 if (lo > hi) { [lo, hi] = [hi, lo]; minInput.value = lo; maxInput.value = hi; }
                 const loPct = ((lo - rangeMin) / span) * 100, hiPct = ((hi - rangeMin) / span) * 100;
@@ -544,6 +569,64 @@
             document.getElementById('flightCount').textContent = visible;
             noMatch.hidden = !(flightCards.length && visible === 0);
         }
+
+        @if($flAgent)
+        // Agent's fee: every shown price = base price + fee. Changing it updates the cards,
+        // the fee boxes, the price filter and the sort right away, then saves it.
+        (function () {
+            const feeInput = document.getElementById('agentFeeInput');
+            const note = document.getElementById('agentFeeNote');
+            const currency = @json($activeCurrency->currency_name);
+            const text = { your: @json(t('flightlist.your_fee')), none: @json(t('flightlist.no_fee')), saved: @json(t('flightlist.fee_saved')), help: @json(t('flightlist.my_fee_help')) };
+            const fmt = n => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            let fee = parseFloat(feeInput.value) || 0;
+            let saveTimer;
+
+            function applyFee(next) {
+                next = Math.max(0, Math.round((parseFloat(next) || 0) * 100) / 100);
+                const delta = next - fee;
+                fee = next;
+                flightCards.forEach(card => {
+                    const total = parseFloat(card.dataset.basePrice) + fee;
+                    card.dataset.price = total;
+                    card.querySelector('.fl-amount').textContent = fmt(total);
+                    const box = card.querySelector('.fl-fee');
+                    box.classList.toggle('is-on', fee > 0);
+                    box.classList.toggle('is-off', fee <= 0);
+                    box.querySelector('.fl-fee-tip').textContent = fee > 0 ? `${text.your}: ${currency} ${fmt(fee)}` : text.none;
+                });
+                // the price filter moves with the prices
+                ['priceMinSlider', 'priceMaxSlider'].forEach(id => {
+                    const el = document.getElementById(id);
+                    const lo = parseFloat(el.min) + delta, hi = parseFloat(el.max) + delta, val = parseFloat(el.value) + delta;
+                    el.min = -1e12; el.max = 1e12; el.value = val; el.min = lo; el.max = hi;
+                });
+                document.getElementById('priceMinSlider').dispatchEvent(new Event('input'));
+                if (sortSelect.value !== 'default') { sortSelect.dispatchEvent(new Event('change')); }
+            }
+
+            function save() {
+                clearTimeout(saveTimer);
+                saveTimer = setTimeout(() => {
+                    fetch(@json(route('agent.markup.update')), {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': @json(csrf_token()) },
+                        body: JSON.stringify({ agent_markup: fee }),
+                    }).then(r => {
+                        if (!r.ok) { throw r; }
+                        note.textContent = text.saved;
+                        setTimeout(() => { note.textContent = text.help; }, 2000);
+                    }).catch(() => { note.textContent = 'Not saved — try again.'; });
+                }, 600);
+            }
+
+            feeInput.addEventListener('input', () => { applyFee(feeInput.value); save(); });
+            document.querySelectorAll('[data-fee-step]').forEach(btn => btn.addEventListener('click', () => {
+                feeInput.value = Math.max(0, (parseFloat(feeInput.value) || 0) + parseFloat(btn.dataset.feeStep));
+                feeInput.dispatchEvent(new Event('input'));
+            }));
+        })();
+        @endif
     });
 </script>
 @endif

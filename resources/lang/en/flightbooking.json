@@ -61,5 +61,6 @@
   "sep": "September",
   "oct": "October",
   "nov": "November",
-  "dec": "December"
+  "dec": "December",
+  "agent_fee_note": "You pay the fare; the fee is what you earn from your client. Only you see it."
 }

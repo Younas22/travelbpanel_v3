@@ -26,5 +26,11 @@
   "luggage": "Gepäck",
   "reset_filters": "Filter zurücksetzen",
   "cabin_bag": "Handgepäck",
-  "checked_bag": "Aufgegeben"
+  "checked_bag": "Aufgegeben",
+  "my_fee": "Meine Gebühr",
+  "my_fee_help": "Wird jedem Preis hinzugefügt. Nur Sie sehen sie.",
+  "fee": "Gebühr",
+  "your_fee": "Ihre Gebühr",
+  "no_fee": "Keine Gebühr hinzugefügt",
+  "fee_saved": "Gespeichert"
 }

@@ -59,5 +59,6 @@
   "sep": "Septiembre",
   "oct": "Octubre",
   "nov": "Noviembre",
-  "dec": "Diciembre"
+  "dec": "Diciembre",
+  "agent_fee_note": "Tú pagas la tarifa; la comisión es lo que ganas con tu cliente. Solo tú la ves."
 }

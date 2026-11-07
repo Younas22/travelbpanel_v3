@@ -26,5 +26,11 @@
   "luggage": "Bagaglio",
   "reset_filters": "Reimposta Filtri",
   "cabin_bag": "Cabina",
-  "checked_bag": "In stiva"
+  "checked_bag": "In stiva",
+  "my_fee": "La mia commissione",
+  "my_fee_help": "Aggiunta a ogni prezzo. La vedi solo tu.",
+  "fee": "Commissione",
+  "your_fee": "La tua commissione",
+  "no_fee": "Nessuna commissione aggiunta",
+  "fee_saved": "Salvato"
 }

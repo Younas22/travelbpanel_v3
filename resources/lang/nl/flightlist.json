@@ -26,5 +26,11 @@
   "luggage": "Bagage",
   "reset_filters": "Filters Resetten",
   "cabin_bag": "Cabine",
-  "checked_bag": "Ingecheckt"
+  "checked_bag": "Ingecheckt",
+  "my_fee": "Mijn toeslag",
+  "my_fee_help": "Bij elke prijs opgeteld. Alleen jij ziet dit.",
+  "fee": "Toeslag",
+  "your_fee": "Jouw toeslag",
+  "no_fee": "Geen toeslag toegevoegd",
+  "fee_saved": "Opgeslagen"
 }

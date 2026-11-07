@@ -26,5 +26,11 @@
   "luggage": "荷物",
   "reset_filters": "フィルターをリセット",
   "cabin_bag": "機内",
-  "checked_bag": "受託"
+  "checked_bag": "受託",
+  "my_fee": "手数料",
+  "my_fee_help": "すべての料金に加算されます。あなただけに表示されます。",
+  "fee": "手数料",
+  "your_fee": "あなたの手数料",
+  "no_fee": "手数料なし",
+  "fee_saved": "保存しました"
 }

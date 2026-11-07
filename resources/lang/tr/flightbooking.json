@@ -59,5 +59,6 @@
   "sep": "Eylül",
   "oct": "Ekim",
   "nov": "Kasım",
-  "dec": "Aralık"
+  "dec": "Aralık",
+  "agent_fee_note": "Bileti siz ödersiniz; ücret müşterinizden kazancınızdır. Yalnızca siz görürsünüz."
 }

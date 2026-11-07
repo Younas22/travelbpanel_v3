@@ -26,5 +26,11 @@
   "luggage": "Luggage",
   "reset_filters": "Reset Filters",
   "cabin_bag": "Cabin",
-  "checked_bag": "Checked"
+  "checked_bag": "Checked",
+  "my_fee": "My fee",
+  "my_fee_help": "Added to every price. Only you see it.",
+  "fee": "Fee",
+  "your_fee": "Your fee",
+  "no_fee": "No fee added",
+  "fee_saved": "Saved"
 }

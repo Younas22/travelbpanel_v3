@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Agent\AuthController;
 use App\Http\Controllers\Agent\DashboardController;
 use App\Http\Controllers\Agent\ProfileController;
+use App\Http\Controllers\Agent\MarkupController;
 use App\Http\Controllers\Agent\WalletController;
 use App\Http\Controllers\Agent\BookingController;
 use App\Http\Controllers\Admin\HotelController;
@@ -39,6 +40,9 @@ Route::prefix('agent')->name('agent.')->group(function () {
 
         // Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        // The agent's own fee on every flight price (dashboard form + live from the flight list)
+        Route::post('/markup', [MarkupController::class, 'update'])->name('markup.update');
 
         // Profile
         Route::prefix('profile')->name('profile.')->group(function () {

@@ -26,5 +26,11 @@
   "luggage": "Bagaj",
   "reset_filters": "Filtreleri Sıfırla",
   "cabin_bag": "Kabin",
-  "checked_bag": "Bagaj"
+  "checked_bag": "Bagaj",
+  "my_fee": "Ücretim",
+  "my_fee_help": "Her fiyata eklenir. Yalnızca siz görürsünüz.",
+  "fee": "Ücret",
+  "your_fee": "Ücretiniz",
+  "no_fee": "Ücret eklenmedi",
+  "fee_saved": "Kaydedildi"
 }
