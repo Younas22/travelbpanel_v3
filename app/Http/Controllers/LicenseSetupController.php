@@ -21,6 +21,7 @@ class LicenseSetupController extends Controller
         'license_inactive'         => 'This license is not active yet.',
         'license_expired'          => 'This license has expired.',
         'domain_not_allowed'       => 'This license is not for this domain.',
+        'no_domain_set'            => 'No domain is set on this license yet — ask your provider to add this domain.',
         'ip_not_allowed'           => 'This license is not for this server.',
         'activation_limit_reached' => 'This license is already used on its maximum number of domains.',
         'activation_revoked'       => 'This domain has been removed from the license.',

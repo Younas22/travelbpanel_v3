@@ -23,6 +23,7 @@
             'license_suspended'        => 'This license is temporarily suspended.',
             'license_inactive'         => 'This license has not been activated yet.',
             'domain_not_allowed'       => 'This domain is not authorized for this license.',
+            'no_domain_set'            => 'No domain is set on this license yet.',
             'ip_not_allowed'           => 'This server IP is not authorized for this license.',
             'activation_limit_reached' => 'Maximum activation limit has been reached.',
             'activation_revoked'       => 'This domain/IP activation slot was revoked.',
