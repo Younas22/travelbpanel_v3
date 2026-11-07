@@ -2,137 +2,87 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\LicenseGuard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Http;
 
+/**
+ * First-run license activation: the owner pastes the license key, the license
+ * server answers with a signed certificate (App\Services\LicenseGuard), and the
+ * key is saved to .env.
+ */
 class LicenseSetupController extends Controller
 {
-    // ── Show Setup Wizard ─────────────────────────────────────────────────────
+    private const MESSAGES = [
+        'license_valid'            => 'License is valid for this domain.',
+        'license_not_found'        => 'This license key does not exist.',
+        'license_revoked'          => 'This license has been revoked.',
+        'license_suspended'        => 'This license is suspended.',
+        'license_inactive'         => 'This license is not active yet.',
+        'license_expired'          => 'This license has expired.',
+        'domain_not_allowed'       => 'This license is not for this domain.',
+        'ip_not_allowed'           => 'This license is not for this server.',
+        'activation_limit_reached' => 'This license is already used on its maximum number of domains.',
+        'activation_revoked'       => 'This domain has been removed from the license.',
+        'server_unreachable'       => 'The license server could not be reached. Check the internet connection and try again.',
+    ];
 
-    public function index()
+    public function __construct(private LicenseGuard $guard)
     {
-        // If license is already valid, skip setup
-        if ($this->isLicenseActive()) {
+    }
+
+    public function index(Request $request)
+    {
+        if ($this->guard->isConfigured() && $this->guard->savedCertificate($request->getHost())) {
             return redirect('/');
         }
 
-        $current = [
-            'license_key'        => env('LICENSE_KEY', ''),
-            'license_api_key'    => env('LICENSE_API_KEY', ''),
-            'license_server_url' => env('LICENSE_SERVER_URL', 'https://travelbookingpanel.com'),
-        ];
-
-        return view('license.setup', compact('current'));
+        return view('license.setup', ['current' => ['license_key' => $this->guard->licenseKey()]]);
     }
 
-    // ── AJAX: Test connection before saving ───────────────────────────────────
-
+    /** AJAX: check a key before saving. */
     public function test(Request $request)
     {
-        $data = $request->validate([
-            'license_key'        => 'required|string',
-            'license_api_key'    => 'required|string',
-            'license_api_secret' => 'required|string',
-            'license_server_url' => 'required|url',
+        $key = $this->validatedKey($request);
+        $answer = $this->guard->activate($request->getHost(), $key, false);
+
+        return response()->json([
+            'status'  => $answer['state'] === 'valid' ? 'valid' : 'invalid',
+            'code'    => $answer['code'],
+            'message' => self::MESSAGES[$answer['code']] ?? 'License validation failed.',
+            'license' => isset($answer['license']) ? [
+                'client'     => $answer['license']['client'] ?? null,
+                'product'    => $answer['license']['product'] ?? null,
+                'expires_at' => $answer['license']['lic_exp'] ?? null,
+            ] : null,
         ]);
-
-        $result = $this->callValidateApi(
-            licenseKey: strtoupper(trim($data['license_key'])),
-            apiKey:     trim($data['license_api_key']),
-            secret:     trim($data['license_api_secret']),
-            serverUrl:  rtrim($data['license_server_url'], '/'),
-            domain:     $request->getHost(),
-            ip:         $this->getServerIp(),
-        );
-
-        return response()->json($result);
     }
-
-    // ── Save to .env and activate ─────────────────────────────────────────────
 
     public function save(Request $request)
     {
-        $data = $request->validate([
-            'license_key'        => 'required|string',
-            'license_api_key'    => 'required|string|starts_with:lak_',
-            'license_api_secret' => 'required|string|min:32',
-            'license_server_url' => 'required|url',
-        ]);
+        $key = $this->validatedKey($request);
+        $answer = $this->guard->activate($request->getHost(), $key, false);
 
-        $licenseKey = strtoupper(trim($data['license_key']));
-        $apiKey     = trim($data['license_api_key']);
-        $secret     = trim($data['license_api_secret']);
-        $serverUrl  = rtrim($data['license_server_url'], '/');
-        $domain     = $request->getHost();
-        $ip         = $this->getServerIp();
-
-        // Verify with server before saving
-        $result = $this->callValidateApi($licenseKey, $apiKey, $secret, $serverUrl, $domain, $ip);
-
-        if (($result['status'] ?? '') !== 'valid') {
-            return back()
-                ->withInput()
-                ->with('error', $result['message'] ?? 'License validation failed.')
-                ->with('error_code', $result['code'] ?? 'unknown');
+        if ($answer['state'] !== 'valid') {
+            return back()->withInput()
+                ->with('error', self::MESSAGES[$answer['code']] ?? 'License validation failed.')
+                ->with('error_code', $answer['code']);
         }
 
-        // Write to .env
-        $this->writeToEnv([
-            'LICENSE_KEY'              => $licenseKey,
-            'LICENSE_API_KEY'          => $apiKey,
-            'LICENSE_API_SECRET'       => $secret,
-            'LICENSE_SERVER_URL'       => $serverUrl,
-            'LICENSE_REVALIDATE_HOURS' => '12',
-        ]);
-
-        // Store the valid token immediately so user isn't blocked
-        $this->storeToken($result, $domain, $ip);
-
-        // Clear config cache so new .env values take effect
+        $this->writeToEnv(['LICENSE_KEY' => $key]);
+        $this->guard->save($answer['certificate']);
         Artisan::call('config:clear');
 
         return redirect('/')->with('license_activated', true);
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    private function validatedKey(Request $request): string
+    {
+        $data = $request->validate([
+            'license_key' => ['required', 'string', 'regex:/^[A-Za-z0-9]{4}(-[A-Za-z0-9]{4}){3}$/'],
+        ], ['license_key.regex' => 'The license key looks like XXXX-XXXX-XXXX-XXXX.']);
 
-    private function callValidateApi(
-        string $licenseKey,
-        string $apiKey,
-        string $secret,
-        string $serverUrl,
-        string $domain,
-        string $ip
-    ): array {
-        $timestamp = time();
-        $nonce     = bin2hex(random_bytes(16));
-        $signature = hash_hmac('sha256',
-            "{$licenseKey}|{$domain}|{$ip}|{$timestamp}|{$nonce}",
-            $secret
-        );
-
-        try {
-            $response = Http::timeout(10)
-                ->withHeaders(['Accept' => 'application/json'])
-                ->post("{$serverUrl}/api/validate-license", [
-                    'api_key'     => $apiKey,
-                    'license_key' => $licenseKey,
-                    'domain'      => $domain,
-                    'ip'          => $ip,
-                    'timestamp'   => $timestamp,
-                    'nonce'       => $nonce,
-                    'signature'   => $signature,
-                ]);
-
-            return $response->json() ?? ['status' => 'error', 'code' => 'empty_response', 'message' => 'Empty response from server'];
-        } catch (\Throwable $e) {
-            return [
-                'status'  => 'error',
-                'code'    => 'server_unreachable',
-                'message' => 'Cannot connect to license server: ' . $e->getMessage(),
-            ];
-        }
+        return strtoupper(trim($data['license_key']));
     }
 
     private function writeToEnv(array $values): void
@@ -150,44 +100,5 @@ class LicenseSetupController extends Controller
         }
 
         file_put_contents($envPath, $content);
-    }
-
-    private function storeToken(array $result, string $domain, string $ip): void
-    {
-        $tokenPath = storage_path('app/.license');
-        $expiresAt = $result['expires_at'] ?? null;
-
-        $payload = json_encode([
-            'token'      => $result['token'],
-            'domain'     => $domain,
-            'ip'         => $ip,
-            'expires_at' => $expiresAt ? strtotime($expiresAt) : (time() + 86400),
-            'stored_at'  => time(),
-            'license'    => $result['license'] ?? [],
-        ]);
-
-        file_put_contents($tokenPath, encrypt($payload));
-        @chmod($tokenPath, 0600);
-    }
-
-    private function isLicenseActive(): bool
-    {
-        $tokenPath = storage_path('app/.license');
-        if (! file_exists($tokenPath)) {
-            return false;
-        }
-        try {
-            $data = json_decode(decrypt(file_get_contents($tokenPath)), true);
-            return is_array($data)
-                && ($data['expires_at'] ?? 0) > time()
-                && ($data['domain'] ?? '') === request()->getHost();
-        } catch (\Throwable) {
-            return false;
-        }
-    }
-
-    private function getServerIp(): string
-    {
-        return gethostbyname(gethostname()) ?: '127.0.0.1';
     }
 }

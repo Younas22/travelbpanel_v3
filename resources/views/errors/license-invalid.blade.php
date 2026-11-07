@@ -26,9 +26,8 @@
             'ip_not_allowed'           => 'This server IP is not authorized for this license.',
             'activation_limit_reached' => 'Maximum activation limit has been reached.',
             'activation_revoked'       => 'This domain/IP activation slot was revoked.',
-            'missing_config'           => 'LICENSE_KEY / API credentials not set in .env file.',
-            'server_unreachable'       => 'Cannot connect to the license server.',
-            'invalid_signature'        => 'Request signature mismatch — check LICENSE_API_SECRET.',
+            'not_activated'            => 'This domain is no longer activated for the license.',
+            'server_unreachable'       => 'The license server could not be reached and the saved license has run out.',
         ];
         $msg = $messages[$reason] ?? 'An unexpected license error occurred.';
     @endphp
@@ -43,23 +42,14 @@
         <h3>Steps to fix</h3>
         <div class="step">
             <div class="n">1</div>
-            <p>Open <code>.env</code> and verify these 4 keys are set:<br>
-               <code>LICENSE_KEY</code> &nbsp; <code>LICENSE_API_KEY</code> &nbsp;
-               <code>LICENSE_API_SECRET</code> &nbsp; <code>LICENSE_SERVER_URL</code>
-            </p>
+            <p>Open <a href="{{ route('license.setup') }}">License setup</a> and enter your license key again.</p>
         </div>
         <div class="step">
             <div class="n">2</div>
-            <p>Make sure <code>LICENSE_SERVER_URL</code> points to the admin panel, e.g.:<br>
-               <code>https://travelbookingpanel.com</code>
-            </p>
+            <p>If the server could not be reached, check this server's internet connection and refresh the page.</p>
         </div>
         <div class="step">
             <div class="n">3</div>
-            <p>Delete <code>storage/app/.license</code> and refresh to force revalidation.</p>
-        </div>
-        <div class="step">
-            <div class="n">4</div>
             <p>Contact your administrator if the license should be active.</p>
         </div>
     </div>

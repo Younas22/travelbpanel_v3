@@ -169,6 +169,8 @@
                 id="license_key"
                 name="license_key"
                 placeholder="XXXX-XXXX-XXXX-XXXX"
+                maxlength="19"
+                spellcheck="false"
                 value="{{ old('license_key', $current['license_key'] ?? '') }}"
                 autocomplete="off"
                 required
@@ -178,59 +180,11 @@
             @enderror
         </div>
 
-        <div class="form-group">
-            <label for="license_api_key">API Key</label>
-            <input
-                type="text"
-                id="license_api_key"
-                name="license_api_key"
-                placeholder="lak_xxxxxxxxxxxxxxxx"
-                value="{{ old('license_api_key', $current['license_api_key'] ?? '') }}"
-                autocomplete="off"
-                required
-            >
-            <div class="field-hint">Must start with <code>lak_</code></div>
-            @error('license_api_key')
-                <div class="field-hint" style="color:#f87171">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label for="license_api_secret">API Secret</label>
-            <input
-                type="password"
-                id="license_api_secret"
-                name="license_api_secret"
-                placeholder="Min 32 characters"
-                autocomplete="off"
-                required
-            >
-            @error('license_api_secret')
-                <div class="field-hint" style="color:#f87171">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="form-group">
-            <label for="license_server_url">License Server URL</label>
-            <input
-                type="url"
-                id="license_server_url"
-                name="license_server_url"
-                placeholder="https://your-admin-panel.com"
-                value="{{ old('license_server_url', $current['license_server_url'] ?? '') }}"
-                required
-            >
-            <div class="field-hint">URL of the admin panel that validates licenses</div>
-            @error('license_server_url')
-                <div class="field-hint" style="color:#f87171">{{ $message }}</div>
-            @enderror
-        </div>
-
         <div id="testResult" class="test-result"></div>
 
         <div class="btn-row">
             <button type="button" class="btn-test" id="testBtn" onclick="testConnection()">
-                Test Connection
+                Check Key
             </button>
             <button type="submit" class="btn-save" id="saveBtn">
                 Activate License
@@ -241,35 +195,37 @@
     <hr>
 
     <ul class="info-list">
-        <li>All four fields are required to activate the license.</li>
-        <li>Use <strong>Test Connection</strong> to verify credentials before saving.</li>
-        <li>Credentials are stored in <code>.env</code> and a local encrypted token in <code>storage/app/.license</code>.</li>
-        <li>License is re-validated every 12 hours automatically.</li>
+        <li>Paste the license key you received — that is all that is needed.</li>
+        <li>The license works on the domain it was activated for (<strong>{{ request()->getHost() }}</strong>).</li>
+        <li>It is re-checked with the license server automatically; if the server can't be reached the site keeps running for up to 3 days.</li>
     </ul>
 </div>
 
 <script>
+// tidy what is typed / pasted into XXXX-XXXX-XXXX-XXXX
+document.getElementById('license_key').addEventListener('input', function () {
+    const raw = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 16);
+    this.value = raw.match(/.{1,4}/g)?.join('-') || '';
+});
+
 async function testConnection() {
     const btn    = document.getElementById('testBtn');
     const result = document.getElementById('testResult');
 
     const payload = {
-        _token:             document.querySelector('meta[name="csrf-token"]').content,
-        license_key:        document.getElementById('license_key').value.trim(),
-        license_api_key:    document.getElementById('license_api_key').value.trim(),
-        license_api_secret: document.getElementById('license_api_secret').value.trim(),
-        license_server_url: document.getElementById('license_server_url').value.trim(),
+        _token:      document.querySelector('meta[name="csrf-token"]').content,
+        license_key: document.getElementById('license_key').value.trim(),
     };
 
-    if (!payload.license_key || !payload.license_api_key || !payload.license_api_secret || !payload.license_server_url) {
+    if (!payload.license_key) {
         result.className   = 'test-result err';
         result.style.display = 'block';
-        result.textContent = 'Please fill in all fields before testing.';
+        result.textContent = 'Please enter the license key.';
         return;
     }
 
     btn.disabled    = true;
-    btn.textContent = 'Testing…';
+    btn.textContent = 'Checking…';
     result.style.display = 'none';
 
     try {
@@ -282,7 +238,7 @@ async function testConnection() {
 
         if (data.status === 'valid') {
             result.className   = 'test-result ok';
-            result.textContent = '✓ Connection successful! License is valid. You can now activate.';
+            result.textContent = '✓ ' + data.message + (data.license && data.license.client ? ' (' + data.license.client + ')' : '') + ' You can now activate.';
         } else {
             result.className   = 'test-result err';
             result.textContent = '✗ ' + (data.message || 'Validation failed') + (data.code ? ' [' + data.code + ']' : '');
@@ -294,7 +250,7 @@ async function testConnection() {
 
     result.style.display = 'block';
     btn.disabled    = false;
-    btn.textContent = 'Test Connection';
+    btn.textContent = 'Check Key';
 }
 </script>
 </body>
