@@ -30,6 +30,12 @@ class B2BGateMiddleware
         'user/register',
         'user/logout',
         'newsletter/subscribe',
+        // license pages: the license check sends visitors here; without them a
+        // blocked site bounced to the signup/landing page instead of the error
+        'license-setup',
+        'license-setup/test',
+        'license-setup/save',
+        'license-invalid',
     ];
 
     public function handle(Request $request, Closure $next): Response
