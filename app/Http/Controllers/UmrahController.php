@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Umrah;
+use App\Models\TravelPartner;
 use App\Models\UmrahInclusion;
 use App\Models\UmrahExclusion;
 use App\Models\UmrahPackageType;
@@ -19,11 +20,14 @@ class UmrahController extends Controller
     public function index()
     {
         // Fetch featured and popular umrah packages (status=1, featured first, limit to 8)
-        $umrahPackages = Umrah::with(['images', 'packageType'])
-            ->where('status', '1')
-            ->orderBy('featured', 'desc')
-            ->limit(8)
-            ->get();
+        // featured / popular list only while the umrah Manual supplier is active
+        $umrahPackages = TravelPartner::featuredEnabled('umrah')
+            ? Umrah::with(['images', 'packageType'])
+                ->where('status', '1')
+                ->orderBy('featured', 'desc')
+                ->limit(8)
+                ->get()
+            : collect();
 
         // Get all inclusions and exclusions for mapping
         $allInclusions = UmrahInclusion::pluck('name', 'id')->toArray();

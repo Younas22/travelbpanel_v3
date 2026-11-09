@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tour;
+use App\Models\TravelPartner;
 use App\Models\TourInclusion;
 use App\Models\TourExclusion;
 use App\Models\TourPackageType;
@@ -21,11 +22,14 @@ class TourController extends Controller
     public function index()
     {
         // Fetch featured and popular tours (status=1, featured first, limit to 8)
-        $tours = Tour::with(['images', 'packageType'])
-            ->where('status', '1')
-            ->orderBy('featured', 'desc')
-            ->limit(8)
-            ->get();
+        // featured / popular list only while the tours Manual supplier is active
+        $tours = TravelPartner::featuredEnabled('tours')
+            ? Tour::with(['images', 'packageType'])
+                ->where('status', '1')
+                ->orderBy('featured', 'desc')
+                ->limit(8)
+                ->get()
+            : collect();
 
         // Get all inclusions and exclusions for mapping
         $allInclusions = TourInclusion::pluck('name', 'id')->toArray();

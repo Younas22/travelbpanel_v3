@@ -156,6 +156,9 @@
             @if(session('error_code'))
                 <div class="error-code">Code: {{ session('error_code') }}</div>
             @endif
+            @if(session('error_detail'))
+                <div class="error-code">{{ session('error_detail') }}</div>
+            @endif
         </div>
     @endif
 
@@ -241,7 +244,7 @@ async function testConnection() {
             result.textContent = '✓ ' + data.message + (data.license && data.license.client ? ' (' + data.license.client + ')' : '') + ' You can now activate.';
         } else {
             result.className   = 'test-result err';
-            result.textContent = '✗ ' + (data.message || 'Validation failed') + (data.code ? ' [' + data.code + ']' : '');
+            result.textContent = '✗ ' + (data.message || 'Validation failed') + (data.code ? ' [' + data.code + ']' : '') + (data.detail ? ' — ' + data.detail : '');
         }
     } catch (e) {
         result.className   = 'test-result err';

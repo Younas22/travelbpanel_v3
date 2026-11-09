@@ -43,6 +43,8 @@
         ]])
     </section>
 
+    {{-- featured list: only while this module's Manual supplier is active --}}
+    @if($umrahPackages->isNotEmpty())
     <!-- Popular Umrah Packages Section -->
     @php [$thLead, $thAccent] = $thSplitTitle(t('umrah.featuredPackagesTitle')); @endphp
     <section class="th-section" id="featuredUmrahPackages">
@@ -103,6 +105,7 @@
             </div>
         </div>
     </section>
+    @endif
 
     <!-- What's Included Section -->
     @php [$thLead, $thAccent] = $thSplitTitle(t('umrah.whatsIncludedTitle')); @endphp

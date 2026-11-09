@@ -39,9 +39,17 @@ PEM;
     /** Ask the server "still allowed?" this often, so a revoked license stops quickly. */
     private const PING_EVERY = 30 * 60;
 
+    /** Why the last server answer could not be used (shown on the setup page). */
+    private ?string $lastError = null;
+
+    public function lastError(): ?string
+    {
+        return $this->lastError;
+    }
+
     public function licenseKey(): string
     {
-        return strtoupper(trim((string) env('LICENSE_KEY', '')));
+        return strtoupper(trim((string) config('license.key', '')));
     }
 
     public function isConfigured(): bool
@@ -112,7 +120,7 @@ PEM;
 
         $payload = $answer ? $this->verify($answer, $nonce, $licenseKey, $domain, 'certificate') : null;
         if (! $payload) {
-            return ['state' => 'unreachable', 'code' => 'server_unreachable'];
+            return ['state' => 'unreachable', 'code' => 'server_unreachable', 'detail' => $this->lastError];
         }
         if ($payload['status'] !== 'valid' || ($payload['exp'] ?? 0) < time()) {
             return ['state' => 'invalid', 'code' => $payload['code'] ?? 'license_invalid'];
@@ -240,6 +248,9 @@ PEM;
     private function verify(array $answer, ?string $nonce, string $licenseKey, string $domain, string $type): ?array
     {
         if (! isset($answer['payload'], $answer['signature']) || ! is_string($answer['payload']) || ! is_string($answer['signature'])) {
+            $this->lastError = $this->serverUrl() . ' did not send a signed license answer'
+                . (isset($answer['code']) ? ' (it said: ' . $answer['code'] . ')' : '')
+                . '. Is LICENSE_SERVER_URL right and is the license server updated?';
             return null;
         }
 
@@ -248,6 +259,7 @@ PEM;
         $key = openssl_pkey_get_public(self::PUBLIC_KEY);
 
         if (! $key || openssl_verify($json, $signature, $key, OPENSSL_ALGO_SHA256) !== 1) {
+            $this->lastError = 'The answer from ' . $this->serverUrl() . ' is signed with a different key than this site expects (wrong license server, or its signing key was changed).';
             return null;
         }
 
@@ -258,6 +270,7 @@ PEM;
             || ($payload['lic'] ?? '') !== $licenseKey
             || ($payload['dom'] ?? '') !== strtolower($domain)
             || ($nonce !== null && ! hash_equals($nonce, (string) ($payload['nonce'] ?? '')))) {
+            $this->lastError = 'The license server answered for another license / domain / request.';
             return null;
         }
 
@@ -266,19 +279,36 @@ PEM;
 
     private function post(string $path, array $body): ?array
     {
+        $this->lastError = null;
         try {
             $response = Http::timeout(10)->acceptJson()->post($this->serverUrl() . $path, $body);
             $json = $response->json();
-            return is_array($json) ? $json : null;
+            if (! is_array($json)) {
+                $this->lastError = $this->serverUrl() . $path . ' answered HTTP ' . $response->status() . ' without a license answer. Is LICENSE_SERVER_URL right?';
+                Log::warning('[License] ' . $this->lastError);
+                return null;
+            }
+            return $json;
         } catch (\Throwable $e) {
-            Log::warning('[License] Server unreachable', ['error' => $e->getMessage()]);
+            // e.g. DNS / firewall / SSL certificate problems on this server
+            $this->lastError = 'Could not connect to ' . $this->serverUrl() . ': ' . $e->getMessage();
+            Log::warning('[License] Server unreachable', ['error' => $e->getMessage(), 'server' => $this->serverUrl()]);
             return null;
         }
     }
 
     private function serverUrl(): string
     {
-        return rtrim((string) (env('LICENSE_SERVER_URL') ?: self::DEFAULT_SERVER), '/');
+        $url = rtrim((string) config('license.server_url', ''), '/');
+        // a localhost address left in .env (copied from a developer machine) is
+        // ignored on a real domain — it can never be the license server there
+        $urlHost = strtolower((string) parse_url($url, PHP_URL_HOST));
+        $siteHost = app()->runningInConsole() ? '' : request()->getHost();
+        if ($url === '' || (self::isLocalHost($urlHost) && ! self::isLocalHost($siteHost))) {
+            return self::DEFAULT_SERVER;
+        }
+
+        return $url;
     }
 
     private function serverIp(): ?string

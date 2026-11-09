@@ -29,15 +29,19 @@ class HotelController extends Controller
      */
     public function index()
     {
-        $featuredHotels = Hotel::with(['images', 'location', 'amenities'])
-            ->where('status', 1)
-            ->where('featured', '1')
-            ->limit(9)
-            ->get();
+        // featured hotels only while the hotel Manual supplier is active
+        $showFeatured = TravelPartner::featuredEnabled('hotel');
+        $featuredHotels = $showFeatured
+            ? Hotel::with(['images', 'location', 'amenities'])
+                ->where('status', 1)
+                ->where('featured', '1')
+                ->limit(9)
+                ->get()
+            : collect();
 
         $hotel_search = session('hotel_search');
 
-        return view('hotel.hotel', compact('featuredHotels', 'hotel_search'));
+        return view('hotel.hotel', compact('featuredHotels', 'hotel_search', 'showFeatured'));
     }
 
     /**

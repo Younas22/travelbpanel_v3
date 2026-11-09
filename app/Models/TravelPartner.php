@@ -112,6 +112,21 @@ class TravelPartner extends Model
         return $this->belongsTo(Module::class, 'module_id');
     }
 
+    /**
+     * Featured hotels / tours / umrah packages are shown on the website only when
+     * the module is active AND its Manual supplier (Admin → Suppliers) is active.
+     */
+    public static function featuredEnabled(string $moduleSlug): bool
+    {
+        static $known = [];
+
+        return $known[$moduleSlug] ??= (bool) getActiveModule($moduleSlug)
+            && static::where('supplier_type', 'manual')
+                ->where('status', 'active')
+                ->whereHas('module', fn ($q) => $q->where('slug', $moduleSlug))
+                ->exists();
+    }
+
 
     // Relationships
     public function creator()

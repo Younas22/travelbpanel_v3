@@ -95,6 +95,8 @@
         </div>
     </section>
 
+    {{-- featured list: only while this module's Manual supplier is active --}}
+    @if($tours->isNotEmpty())
     <!-- Find Popular Tours Section -->
     @php [$thLead, $thAccent] = $thSplitTitle(t('tour.find_popular_tours')); @endphp
     <section class="th-section" id="popularTours">
@@ -128,6 +130,7 @@
             </div>
         </div>
     </section>
+    @endif
 
     <!-- Why Choose Us Section -->
     @php [$thLead, $thAccent] = $thSplitTitle(t('tour.why_book_title')); @endphp

@@ -51,6 +51,7 @@ class LicenseSetupController extends Controller
             'status'  => $answer['state'] === 'valid' ? 'valid' : 'invalid',
             'code'    => $answer['code'],
             'message' => self::MESSAGES[$answer['code']] ?? 'License validation failed.',
+            'detail'  => $answer['detail'] ?? null,
             'license' => isset($answer['license']) ? [
                 'client'     => $answer['license']['client'] ?? null,
                 'product'    => $answer['license']['product'] ?? null,
@@ -67,7 +68,8 @@ class LicenseSetupController extends Controller
         if ($answer['state'] !== 'valid') {
             return back()->withInput()
                 ->with('error', self::MESSAGES[$answer['code']] ?? 'License validation failed.')
-                ->with('error_code', $answer['code']);
+                ->with('error_code', $answer['code'])
+                ->with('error_detail', $answer['detail'] ?? null);
         }
 
         $this->writeToEnv(['LICENSE_KEY' => $key]);

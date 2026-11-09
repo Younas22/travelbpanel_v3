@@ -45,6 +45,8 @@
         ]])
     </section>
 
+    {{-- featured list: only while this module's Manual supplier is active --}}
+    @if($showFeatured)
     <!-- Featured Hotels Section -->
     @php [$thLead, $thAccent] = $thSplitTitle(t('hotel.featuredTitle')); @endphp
     <section class="th-section" id="featuredHotels">
@@ -83,6 +85,7 @@
             </div>
         </div>
     </section>
+    @endif
 
     <!-- Why Choose Us Section -->
     @php [$thLead, $thAccent] = $thSplitTitle(t('hotel.whyBookTitle')); @endphp

@@ -283,9 +283,10 @@
     </div>
 
 @php
-    $hotelModule = getActiveModule('hotel'); // active or null
-    $toursModule = getActiveModule('tours'); // active or null
-    $umrahModule = getActiveModule('umrah'); // active or null
+    // featured sections: module active AND its Manual supplier active (Admin → Suppliers)
+    $hotelModule = \App\Models\TravelPartner::featuredEnabled('hotel');
+    $toursModule = \App\Models\TravelPartner::featuredEnabled('tours');
+    $umrahModule = \App\Models\TravelPartner::featuredEnabled('umrah');
 
     // Section titles: last word gets the brand accent colour
     $thSplitTitle = function ($text) {

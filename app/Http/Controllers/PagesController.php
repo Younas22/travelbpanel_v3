@@ -11,6 +11,7 @@ use App\Models\TourInclusion;
 use App\Models\Umrah;
 use App\Models\UmrahInclusion;
 use App\Models\FeaturedFlight;
+use App\Models\TravelPartner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -23,7 +24,7 @@ class PagesController extends Controller
         // Fetch featured tours if tours module is active
         $tours = collect();
         $toursModule = getActiveModule('tours');
-        if ($toursModule) {
+        if (TravelPartner::featuredEnabled('tours')) {
             $tours = Tour::with(['images', 'packageType'])
                 ->where('status', '1')
                 ->where('featured', '1')
@@ -60,7 +61,7 @@ class PagesController extends Controller
         // Fetch featured umrah packages if umrah module is active
         $umrahPackages = collect();
         $umrahModule = getActiveModule('umrah');
-        if ($umrahModule) {
+        if (TravelPartner::featuredEnabled('umrah')) {
             $umrahPackages = Umrah::with(['images', 'packageType'])
                 ->where('status', '1')
                 ->where('featured', '1')
@@ -104,7 +105,7 @@ class PagesController extends Controller
         // Fetch featured hotels if hotel module is active
         $featuredHotels = collect();
         $hotelModule = getActiveModule('hotel');
-        if ($hotelModule) {
+        if (TravelPartner::featuredEnabled('hotel')) {
             $featuredHotels = Hotel::with(['images', 'location', 'amenities'])
                 ->where('status', 1)
                 ->where('featured', '1')
