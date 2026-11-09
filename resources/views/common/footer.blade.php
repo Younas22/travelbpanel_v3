@@ -139,8 +139,11 @@
             <div class="sf-bottom-inner">
                 <div class="sf-copy">
                     <span>© <?= date('Y'); ?> <strong>{{ $footerBusinessName }}</strong></span>
+                    {{-- Shown unless the license server switched it off for this site (Admin > Client Packages) --}}
+                    @if(app(\App\Services\LicenseGuard::class)->showBranding(request()->getHost()))
                     <span class="sf-sep" aria-hidden="true"></span>
                     <span>{{ t('footer.made_by') }} <i class="fas fa-heart"></i> <a href="https://travelbookingpanel.com/">TravelBookingPanel</a></span>
+                    @endif
                 </div>
                 <div class="sf-bottom-end">
                     <nav class="sf-legal">

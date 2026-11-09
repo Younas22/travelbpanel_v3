@@ -121,6 +121,7 @@ PEM;
         if ($save) {
             $this->save($answer);
             $this->markPinged();
+            $this->rememberBranding($answer, $payload);
         }
 
         return ['state' => 'valid', 'code' => 'license_valid', 'license' => $payload, 'certificate' => $answer];
@@ -142,6 +143,7 @@ PEM;
         }
 
         $this->markPinged();
+        $this->rememberBranding($answer, $payload);
 
         return $payload['status'] === 'active'
             ? ['state' => 'active', 'code' => 'ok']
@@ -181,7 +183,55 @@ PEM;
         @unlink($this->certificatePath());
     }
 
+    /**
+     * Show "Made by TravelBookingPanel" in the footer?
+     *
+     * The license server decides (Admin > Client Packages) and sends the choice
+     * inside its SIGNED ping/certificate answers. The last such answer is kept
+     * with its signature and checked again here, so editing the saved file by
+     * hand doesn't hide the credit. No genuine answer yet → shown (default).
+     */
+    public function showBranding(string $domain): bool
+    {
+        static $cache = [];
+        $domain = strtolower($domain);
+        if (array_key_exists($domain, $cache)) {
+            return $cache[$domain];
+        }
+
+        $show = true;
+        $saved = json_decode((string) @file_get_contents($this->brandingPath()), true);
+        if (is_array($saved) && isset($saved['payload']) && is_string($saved['payload'])) {
+            $type = json_decode($this->b64d($saved['payload']), true)['type'] ?? '';
+            $payload = in_array($type, ['ping', 'certificate'], true)
+                ? $this->verify($saved, null, $this->licenseKey(), $domain, $type)
+                : null;
+            if ($payload && ($payload['brand'] ?? null) === 'hide') {
+                $show = false;
+            }
+        }
+
+        return $cache[$domain] = $show;
+    }
+
     // ── internals ─────────────────────────────────────────────────────────────
+
+    /** Keep a signed answer that carries the branding choice (newest wins). */
+    private function rememberBranding(array $answer, array $payload): void
+    {
+        if (! isset($payload['brand'])) {
+            return; // older license server: nothing to store, keep the last choice
+        }
+        @file_put_contents($this->brandingPath(), json_encode([
+            'payload'   => $answer['payload'],
+            'signature' => $answer['signature'],
+        ]));
+    }
+
+    private function brandingPath(): string
+    {
+        return storage_path('app/license.brand');
+    }
 
     /**
      * Payload of a signed answer, or null when the signature is wrong or it is

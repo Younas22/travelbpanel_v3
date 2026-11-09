@@ -10,6 +10,28 @@ Route::get( '/license-setup',       [\App\Http\Controllers\LicenseSetupControlle
 Route::post('/license-setup/test',  [\App\Http\Controllers\LicenseSetupController::class, 'test'])->name('license.setup.test');
 Route::post('/license-setup/save',  [\App\Http\Controllers\LicenseSetupController::class, 'save'])->name('license.setup.save');
 
+// "Made by TravelBookingPanel" footer credit — the license server calls this
+// after the credit is switched on/off. It carries no instruction: the site only
+// fetches a fresh SIGNED answer from the license server and keeps the choice
+// inside it (see LicenseGuard::showBranding), so calling it can't change anything.
+Route::post('/tbp-sync/branding', function (\Illuminate\Http\Request $request, \App\Services\LicenseGuard $guard) {
+    if (! $guard->isConfigured()) {
+        return response()->json(['ok' => false, 'code' => 'license_not_configured'], 409);
+    }
+    $host = $request->getHost();
+    $ping = $guard->ping($host);
+    if ($ping['state'] === 'unreachable') {
+        return response()->json(['ok' => false, 'code' => 'server_unreachable'], 503);
+    }
+
+    return response()->json(['ok' => true, 'brand' => $guard->showBranding($host) ? 'show' : 'hide']);
+})->withoutMiddleware([
+    \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+    \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+    \App\Http\Middleware\LicenseCheck::class,
+    \App\Http\Middleware\B2BGateMiddleware::class,
+])->middleware('throttle:10,1')->name('tbp.branding.sync');
+
 use App\Http\Controllers\FlightsController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\VisaController;
