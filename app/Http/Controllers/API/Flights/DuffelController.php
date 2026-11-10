@@ -17,6 +17,53 @@ class DuffelController extends BaseController
 {
 
     /**
+     * Admin "Test Credentials": checks the API key (access token) against a light Duffel endpoint.
+     * Failures use 401/422/502, not the default 404 the admin panel reads as "not available".
+     */
+    public function test_credentials(Request $request): JsonResponse
+    {
+        $token = trim((string) $request->input('api_credential_1'));
+        if ($token === '') {
+            return response()->json(['success' => false, 'message' => 'Enter the Duffel API key (access token) in credential 1.', 'error_type' => 'missing_credentials'], 422);
+        }
+
+        $started = microtime(true);
+        try {
+            $response = Http::timeout(15)->withHeaders([
+                'Accept'         => 'application/json',
+                'Duffel-Version' => 'v2',
+                'Authorization'  => 'Bearer ' . $token,
+            ])->get('https://api.duffel.com/air/airlines', ['limit' => 1]);
+        } catch (\Throwable $e) {
+            return response()->json(['success' => false, 'message' => 'Could not reach the Duffel API.', 'error_type' => 'connection', 'error_detail' => $e->getMessage()], 502);
+        }
+        $ms = (int) round((microtime(true) - $started) * 1000);
+
+        if ($response->successful()) {
+            $mode = str_starts_with($token, 'duffel_test_') ? 'test' : (str_starts_with($token, 'duffel_live_') ? 'live' : 'unknown');
+
+            return response()->json([
+                'success'       => true,
+                'message'       => 'Duffel API key is valid' . ($mode !== 'unknown' ? " ({$mode} mode)." : '.'),
+                'connection'    => 'Duffel API reachable',
+                'response_time' => $ms,
+                'mode'          => $mode,
+            ]);
+        }
+
+        $error = $response->json('errors.0') ?? [];
+
+        return response()->json([
+            'success'       => false,
+            'message'       => 'Duffel rejected the API key.',
+            'connection'    => 'Duffel API reachable',
+            'response_time' => $ms,
+            'error_type'    => $error['code'] ?? ('http_' . $response->status()),
+            'error_detail'  => $error['message'] ?? ('Duffel returned HTTP ' . $response->status() . '.'),
+        ], in_array($response->status(), [401, 403], true) ? 401 : 502);
+    }
+
+    /**
      * Search flights via Duffel and return a normalized response.
      *
      * Expects `sendResponse()` / `sendError()` helpers to be available
