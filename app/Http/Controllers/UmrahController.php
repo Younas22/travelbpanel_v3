@@ -11,6 +11,8 @@ use App\Models\Location;
 use App\Models\PaymentGateways;
 use App\Models\AgentWallet;
 use Illuminate\Http\Request;
+use Resend\Laravel\Facades\Resend;
+use App\Models\Setting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
@@ -335,8 +337,9 @@ class UmrahController extends Controller
             'umrah_id' => $package->id,
             'umrah_name' => $package->name,
             'price' => $package_price,
-            'child_price' => convertCurrency($package->child_price, $package->currency ?? 'USD', $active_currency->currency_name) ?? ($package_price * 0.7),
-            'infant_price' => convertCurrency($package->infant_price, $package->currency ?? 'USD', $active_currency->currency_name) ?? ($package_price * 0.1),
+            // no child / infant price set: 70% / 10% of the adult price (convertCurrency(null) would give 0)
+            'child_price' => $package->child_price !== null ? convertCurrency($package->child_price, $package->currency ?? 'USD', $active_currency->currency_name) : round($package_price * 0.7, 2),
+            'infant_price' => $package->infant_price !== null ? convertCurrency($package->infant_price, $package->currency ?? 'USD', $active_currency->currency_name) : round($package_price * 0.1, 2),
             'currency' => $active_currency->currency_name ?? 'USD',
             'duration' => $package->duration,
             'night_in_mekkah' => $package->night_in_mekkah,
@@ -501,11 +504,72 @@ class UmrahController extends Controller
         }
 
         $package = Umrah::with(['images', 'packageType'])->find($booking->umrah_id);
+        $inclusions = $package ? array_values(array_filter(array_map(fn($id) => UmrahInclusion::find($id)?->name, (array) $package->inclusions))) : [];
+        $exclusions = $package ? array_values(array_filter(array_map(fn($id) => UmrahExclusion::find($id)?->name, (array) $package->exclusions))) : [];
 
-        return view('umrah.invoice', [
-            'booking' => $booking,
-            'package' => $package,
-        ]);
+        // Pay Now only while the booking can still be paid through its own gateway
+        $gateway = strtolower((string) $booking->booking_payment_gateway);
+        $canPay = !in_array($booking->booking_status_flag, ['confirmed', 'cancelled'], true)
+            && !in_array($booking->booking_payment_state, ['paid', 'refunded'], true)
+            && $gateway !== '' && view()->exists("gateways.$gateway");
+
+        return view('umrah.invoice', compact('booking', 'package', 'inclusions', 'exclusions', 'canPay'));
+    }
+
+    /**
+     * Email the invoice link to the booking contact, through the same Resend
+     * setup the hotel and flight invoices use.
+     */
+    public function sendInvoiceEmail($bookingRef)
+    {
+        $booking = DB::table('umrah_bookings')->where('booking_code_ref', $bookingRef)->first();
+        if (!$booking) {
+            return response()->json(['success' => false, 'message' => t('hotelinvoice.emailFailed')], 404);
+        }
+
+        $contact = json_decode((string) $booking->booking_user_data, true) ?: [];
+        $email = trim((string) ($contact['email'] ?? $booking->user_email));
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json(['success' => false, 'message' => t('hotelinvoice.emailMissing')], 422);
+        }
+
+        try {
+            config(['services.resend.key' => Setting::getValue('resend_api_key', 'email')]);
+            $senderEmail = getSetting('sender_email', 'email', 'noreply@travelbookingpanel.com');
+            $senderName = getSetting('sender_name', 'email', 'Travel Booking Panel');
+            $businessName = getSetting('business_name', 'main', 'Travel Booking Panel');
+
+            $html = view('emails.booking_invoice', [
+                'title'        => t('umrahinvoice.title'),
+                'intro'        => str_replace(':business', $businessName, t('umrahinvoice.emailIntro')),
+                'contactName'  => $contact['first_name'] ?? '',
+                'businessName' => $businessName,
+                'invoiceUrl'   => route('umrah.invoice', ['booking_ref' => $booking->booking_code_ref]),
+                'rows'         => [
+                    t('hotelinvoice.invoiceNumber') => 'INV-' . $booking->booking_code_ref,
+                    t('umrahinvoice.packageDetails') => $booking->umrah_name,
+                    t('umrahinvoice.departureDate') => \Carbon\Carbon::parse(json_decode((string) $booking->search_params, true)['departure_date'] ?? $booking->created_at)->format('D, d M Y'),
+                    t('hotelinvoice.bookingStatus') => t('hotelinvoice.' . ($booking->booking_status_flag ?: 'pending')),
+                    t('hotelinvoice.paymentStatus') => t('hotelinvoice.' . ($booking->booking_payment_state ?: 'unpaid')),
+                    t('hotelinvoice.totalAmount') => $booking->booking_currency_origin . ' ' . number_format((float) $booking->total_price, 2),
+                ],
+            ])->render();
+
+            $result = Resend::emails()->send([
+                'from'    => "{$senderName} <{$senderEmail}>",
+                'to'      => [$email],
+                'subject' => t('umrahinvoice.emailSubject') . ' - ' . $booking->booking_code_ref,
+                'html'    => $html,
+            ]);
+
+            \Log::info('Umrah invoice email sent', ['booking' => $booking->booking_code_ref, 'id' => $result['id'] ?? null]);
+
+            return response()->json(['success' => true, 'message' => str_replace(':email', $email, t('hotelinvoice.emailSent'))]);
+        } catch (\Throwable $e) {
+            \Log::error('Umrah invoice email failed', ['booking' => $booking->booking_code_ref, 'error' => $e->getMessage()]);
+
+            return response()->json(['success' => false, 'message' => t('hotelinvoice.emailFailed')], 500);
+        }
     }
 
 

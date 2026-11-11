@@ -2,20 +2,17 @@
 @section('page_class', 'view-umrah-checkout')
 @section('content')
 @php
-    // Hotel checkout design (common/package-checkout); prices as before
-    $active_currency = activeCurrency();
-    $cur = $active_currency->currency_name;
-    $pkgCurrency = $package->currency ?? 'USD';
+    // Hotel checkout design (common/package-checkout). Prices are the ones
+    // storeBooking() charges ($umrah_data, already in the active currency).
+    $cur = $umrah_data['currency'];
     $adults = (int) $searchParams['adult'];
     $children = (int) $searchParams['child'];
     $infants = (int) $searchParams['infant'];
-    $adultPrice = convertCurrency($package->price, $pkgCurrency, $cur);
-    $childPrice = $package->child_price ?? ($package->price * 0.7);
-    $infantPrice = $package->infant_price ?? ($package->price * 0.1);
-    $childLinePrice = convertCurrency($childPrice, $pkgCurrency, $cur);
-    $infantLinePrice = convertCurrency($infantPrice, $pkgCurrency, $cur);
-    $totalPrice = ($package->price * $adults) + ($childPrice * $children) + ($infantPrice * $infants);
-    $money = fn($v) => $cur . ' ' . number_format($v);
+    $adultPrice = $umrah_data['price'];
+    $childLinePrice = $umrah_data['child_price'];
+    $infantLinePrice = $umrah_data['infant_price'];
+    $totalPrice = $adultPrice * $adults + $childLinePrice * $children + $infantLinePrice * $infants;
+    $money = fn($v) => $cur . ' ' . number_format($v, 2);
 
     $route = trim(($originAirport->city ?? $searchParams['origin']) . ' → ' . ($destinationAirport->city ?? $searchParams['destination']));
     $rows = [];
@@ -60,7 +57,7 @@
         'stars' => (int) $package->stars,
         'rows' => $rows,
         'prices' => $prices,
-        'total' => $money(convertCurrency($totalPrice, $pkgCurrency, $cur)),
+        'total' => $money($totalPrice),
     ],
 ])
 @endsection

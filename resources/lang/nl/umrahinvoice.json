@@ -67,5 +67,14 @@
   "info5": "Deze factuur dient als bewijs van uw boekingsbevestiging.",
   "footer": "Alle rechten voorbehouden. | Computergegenereerde factuur.",
   "support": "Ondersteuning",
-  "processingPayment": "Betaling verwerken via"
+  "processingPayment": "Betaling verwerken via",
+  "msgConfirmed": "Je Umrah-boeking is bevestigd. Hieronder vind je alle details van je boeking.",
+  "msgCreated": "Je Umrah-boeking is aangemaakt. Rond de betaling af om deze te bevestigen. Hieronder vind je alle details van je boeking.",
+  "msgPaidPending": "Je betaling is ontvangen en de Umrah-bevestiging wordt verwerkt. Hieronder vind je alle details van je boeking.",
+  "msgPayLater": "Je Umrah-boeking is aangemaakt. De betaling wordt geïnd via de gekozen betaalmethode.",
+  "stepPackage": "Umrah-boeking",
+  "exclusions": "Niet inbegrepen",
+  "emailIntro": "Bedankt voor je boeking bij :business. Hier zijn de details van je Umrah-boeking.",
+  "emailSubject": "Factuur van je Umrah-boeking",
+  "bookingPnr": "Boekings-PNR"
 }

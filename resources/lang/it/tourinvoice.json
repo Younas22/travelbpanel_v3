@@ -68,5 +68,14 @@
   "info5": "Questa fattura funge da prova della conferma della prenotazione.",
   "footer": "TravelBooX. Tutti i diritti riservati. | Fattura generata automaticamente.",
   "support": "Supporto",
-  "processingPayment": "Elaborazione pagamento tramite"
+  "processingPayment": "Elaborazione pagamento tramite",
+  "msgConfirmed": "La tua prenotazione del tour è confermata. Di seguito trovi tutti i dettagli della prenotazione.",
+  "msgCreated": "La tua prenotazione del tour è stata creata. Completa il pagamento per confermarla. Di seguito trovi tutti i dettagli della prenotazione.",
+  "msgPaidPending": "Il pagamento è stato ricevuto e la conferma del tour è in corso. Di seguito trovi tutti i dettagli della prenotazione.",
+  "msgPayLater": "La tua prenotazione del tour è stata creata. Il pagamento sarà riscosso secondo il metodo scelto.",
+  "stepPackage": "Prenotazione tour",
+  "exclusions": "Non incluso",
+  "emailIntro": "Grazie per aver prenotato con :business. Ecco i dettagli della tua prenotazione del tour.",
+  "emailSubject": "Fattura della prenotazione del tour",
+  "bookingPnr": "PNR prenotazione"
 }

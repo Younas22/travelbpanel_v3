@@ -68,5 +68,14 @@
   "info5": "この請求書は予約確認の証明として機能します。",
   "footer": "TravelBooX. 全著作権所有。| コンピュータ生成の請求書。",
   "support": "サポート",
-  "processingPayment": "支払い処理中"
+  "processingPayment": "支払い処理中",
+  "msgConfirmed": "ツアーの予約が確定しました。予約の詳細は以下のとおりです。",
+  "msgCreated": "ツアーの予約が作成されました。お支払いを完了すると確定します。予約の詳細は以下のとおりです。",
+  "msgPaidPending": "お支払いを受け付けました。ツアーの確認手続き中です。予約の詳細は以下のとおりです。",
+  "msgPayLater": "ツアーの予約が作成されました。お支払いは選択した方法で行われます。",
+  "stepPackage": "ツアー予約",
+  "exclusions": "含まれないもの",
+  "emailIntro": ":business をご利用いただきありがとうございます。ツアー予約の詳細は以下のとおりです。",
+  "emailSubject": "ツアー予約の請求書",
+  "bookingPnr": "予約 PNR"
 }

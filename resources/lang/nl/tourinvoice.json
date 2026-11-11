@@ -68,5 +68,14 @@
   "info5": "Deze factuur dient als bewijs van uw boekingsbevestiging.",
   "footer": "TravelBooX. Alle rechten voorbehouden. | Computergegenereerde factuur.",
   "support": "Ondersteuning",
-  "processingPayment": "Betaling verwerken via"
+  "processingPayment": "Betaling verwerken via",
+  "msgConfirmed": "Je tourboeking is bevestigd. Hieronder vind je alle details van je boeking.",
+  "msgCreated": "Je tourboeking is aangemaakt. Rond de betaling af om deze te bevestigen. Hieronder vind je alle details van je boeking.",
+  "msgPaidPending": "Je betaling is ontvangen en de tourbevestiging wordt verwerkt. Hieronder vind je alle details van je boeking.",
+  "msgPayLater": "Je tourboeking is aangemaakt. De betaling wordt geïnd via de gekozen betaalmethode.",
+  "stepPackage": "Tourboeking",
+  "exclusions": "Niet inbegrepen",
+  "emailIntro": "Bedankt voor je boeking bij :business. Hier zijn de details van je tourboeking.",
+  "emailSubject": "Factuur van je tourboeking",
+  "bookingPnr": "Boekings-PNR"
 }

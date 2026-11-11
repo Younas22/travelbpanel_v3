@@ -2,15 +2,15 @@
 @section('page_class', 'view-tour-checkout')
 @section('content')
 @php
-    // Hotel checkout design (common/package-checkout); prices as before
-    $active_currency = activeCurrency();
-    $cur = $active_currency->currency_name;
-    $adultPrice = convertCurrency($tour->price, $tour->currency ?? 'USD', $cur);
-    $childPrice = $tour->child_price ?? ($adultPrice * 0.7);
+    // Hotel checkout design (common/package-checkout). Prices are the ones
+    // storeBooking() charges ($tour_data, already in the active currency).
+    $cur = $tour_data['currency'];
+    $adultPrice = $tour_data['price'];
+    $childPrice = $tour_data['child_price'];
     $adults = (int) $searchParams['adult'];
     $children = (int) $searchParams['child'];
     $totalPrice = ($adultPrice * $adults) + ($childPrice * $children);
-    $money = fn($v) => $cur . ' ' . number_format($v);
+    $money = fn($v) => $cur . ' ' . number_format($v, 2);
 
     $rows = [];
     if ($tour->duration) {

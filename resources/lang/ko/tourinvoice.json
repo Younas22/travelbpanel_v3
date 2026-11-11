@@ -68,5 +68,14 @@
   "info5": "이 송장은 예약 확인 증명서입니다.",
   "footer": "TravelBooX. 모든 권리 보유. | 컴퓨터 생성 송장.",
   "support": "고객 지원",
-  "processingPayment": "결제 처리 중"
+  "processingPayment": "결제 처리 중",
+  "msgConfirmed": "투어 예약이 확정되었습니다. 아래에서 예약 세부 정보를 확인하세요.",
+  "msgCreated": "투어 예약이 생성되었습니다. 결제를 완료하면 확정됩니다. 아래에서 예약 세부 정보를 확인하세요.",
+  "msgPaidPending": "결제가 접수되었으며 투어 확인이 진행 중입니다. 아래에서 예약 세부 정보를 확인하세요.",
+  "msgPayLater": "투어 예약이 생성되었습니다. 선택한 결제 방법에 따라 결제가 진행됩니다.",
+  "stepPackage": "투어 예약",
+  "exclusions": "불포함 사항",
+  "emailIntro": ":business에서 예약해 주셔서 감사합니다. 투어 예약 세부 정보는 다음과 같습니다.",
+  "emailSubject": "투어 예약 인보이스",
+  "bookingPnr": "예약 PNR"
 }

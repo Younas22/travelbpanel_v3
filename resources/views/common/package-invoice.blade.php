@@ -275,20 +275,29 @@
                         </div>
                     </div>
                 @endforeach
-                @if($inclusions)
-                    <div class="inv-policy">
-                        <i class="fas fa-circle-check"></i>
-                        <div><b>{{ t($keys . '.inclusions') }}</b><p dir="auto">{{ implode(', ', $inclusions) }}</p></div>
-                    </div>
-                @endif
-                @if($exclusions)
-                    <div class="inv-policy">
-                        <i class="fas fa-circle-minus"></i>
-                        <div><b>{{ t($keys . '.exclusions') }}</b><p dir="auto">{{ implode(', ', $exclusions) }}</p></div>
-                    </div>
-                @endif
             </div>
         </section>
+
+        @if($inclusions || $exclusions)
+            <!-- What the package includes / leaves out -->
+            <section class="inv-card">
+                <h2 class="inv-card-title"><i class="fas fa-list-check"></i> {{ t($keys . '.inclusions') }} / {{ t($keys . '.exclusions') }}</h2>
+                <div class="inv-policies">
+                    @if($inclusions)
+                        <div class="inv-policy">
+                            <i class="fas fa-circle-check"></i>
+                            <div><b>{{ t($keys . '.inclusions') }}</b><p dir="auto">{{ implode(', ', $inclusions) }}</p></div>
+                        </div>
+                    @endif
+                    @if($exclusions)
+                        <div class="inv-policy">
+                            <i class="fas fa-circle-minus"></i>
+                            <div><b>{{ t($keys . '.exclusions') }}</b><p dir="auto">{{ implode(', ', $exclusions) }}</p></div>
+                        </div>
+                    @endif
+                </div>
+            </section>
+        @endif
     </div>
 
     <footer class="inv-foot">

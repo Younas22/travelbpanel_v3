@@ -68,5 +68,14 @@
   "info5": "Cette facture sert de preuve de confirmation de votre réservation.",
   "footer": "TravelBooX. Tous droits réservés. | Facture générée par ordinateur.",
   "support": "Assistance",
-  "processingPayment": "Traitement du paiement via"
+  "processingPayment": "Traitement du paiement via",
+  "msgConfirmed": "Votre réservation de circuit est confirmée. Voici tous les détails de votre réservation.",
+  "msgCreated": "Votre réservation de circuit a été créée. Effectuez le paiement pour la confirmer. Voici tous les détails de votre réservation.",
+  "msgPaidPending": "Votre paiement a été reçu et la confirmation du circuit est en cours. Voici tous les détails de votre réservation.",
+  "msgPayLater": "Votre réservation de circuit a été créée. Le paiement sera perçu selon le mode de paiement choisi.",
+  "stepPackage": "Réservation du circuit",
+  "exclusions": "Non inclus",
+  "emailIntro": "Merci d'avoir réservé avec :business. Voici les détails de votre réservation de circuit.",
+  "emailSubject": "Facture de votre réservation de circuit",
+  "bookingPnr": "PNR de réservation"
 }

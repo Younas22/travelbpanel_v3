@@ -68,5 +68,14 @@
   "info5": "Esta factura sirve como comprobante de confirmación de tu reserva.",
   "footer": "TravelBooX. Todos los derechos reservados. | Factura generada por computadora.",
   "support": "Soporte",
-  "processingPayment": "Procesando pago a través de"
+  "processingPayment": "Procesando pago a través de",
+  "msgConfirmed": "Tu reserva del tour está confirmada. A continuación tienes todos los detalles de tu reserva.",
+  "msgCreated": "Tu reserva del tour se ha creado. Completa el pago para confirmarla. A continuación tienes todos los detalles de tu reserva.",
+  "msgPaidPending": "Hemos recibido tu pago y la confirmación del tour está en proceso. A continuación tienes todos los detalles de tu reserva.",
+  "msgPayLater": "Tu reserva del tour se ha creado. El pago se cobrará según el método de pago elegido.",
+  "stepPackage": "Reserva del tour",
+  "exclusions": "No incluye",
+  "emailIntro": "Gracias por reservar con :business. Estos son los detalles de tu reserva del tour.",
+  "emailSubject": "Factura de tu reserva del tour",
+  "bookingPnr": "PNR de la reserva"
 }

@@ -170,6 +170,7 @@ Route::get('/umrah/{slug}/{origin}/{destination}/{departure_date}/{return_date}/
 Route::get('/umrah/booking/{slug}/{origin}/{destination}/{departure_date}/{return_date}/{adult}/{child}/{infant}/{makkah_nights}/{madina_nights}', [UmrahController::class, 'booking'])->name('umrah.booking');
 Route::post('/umrah/booking', [UmrahController::class, 'storeBooking'])->name('umrah.booking.store');
 Route::get('/umrah/invoice/{booking_ref}', [UmrahController::class, 'invoice'])->name('umrah.invoice');
+Route::post('/umrah/invoice/{booking_ref}/email', [UmrahController::class, 'sendInvoiceEmail'])->middleware('throttle:3,1')->name('umrah.invoice.email');
 Route::get('/payment/umrah/{gateway_name}/{booking_ref}',  [UmrahController::class, 'payment'])->name('payment.umrah');
 Route::get('umrah/payment/success',  [UmrahController::class, 'payment_success'])->name('payment_success');
 
@@ -180,6 +181,7 @@ Route::get('/tours/{slug}/{location}/{type}/{startDate}/{endDate}/{adult}/{child
 Route::get('/tour/booking/{slug}/{location}/{type}/{startDate}/{endDate}/{adult}/{child}', [TourController::class, 'booking'])->name('tour.booking');
 Route::post('/tour/booking', [TourController::class, 'storeBooking'])->name('tour.booking.store');
 Route::get('/tour/invoice/{booking_ref}', [TourController::class, 'invoice'])->name('tour.invoice');
+Route::post('/tour/invoice/{booking_ref}/email', [TourController::class, 'sendInvoiceEmail'])->middleware('throttle:3,1')->name('tour.invoice.email');
 Route::get('/payment/tour/{gateway_name}/{booking_ref}',  [TourController::class, 'payment'])->name('payment.tour');
 Route::get('tour/payment/success',  [TourController::class, 'payment_success'])->name('payment_success');
 

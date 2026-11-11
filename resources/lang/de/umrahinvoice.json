@@ -67,5 +67,14 @@
   "info5": "Diese Rechnung dient als Nachweis Ihrer Buchungsbestätigung.",
   "footer": "Alle Rechte vorbehalten. | Computergenerierte Rechnung.",
   "support": "Support",
-  "processingPayment": "Zahlung wird bearbeitet über"
+  "processingPayment": "Zahlung wird bearbeitet über",
+  "msgConfirmed": "Ihre Umrah-Buchung ist bestätigt. Unten finden Sie alle Details Ihrer Buchung.",
+  "msgCreated": "Ihre Umrah-Buchung wurde erstellt. Schließen Sie die Zahlung ab, um sie zu bestätigen. Unten finden Sie alle Details Ihrer Buchung.",
+  "msgPaidPending": "Ihre Zahlung ist eingegangen, die Umrah-Bestätigung wird bearbeitet. Unten finden Sie alle Details Ihrer Buchung.",
+  "msgPayLater": "Ihre Umrah-Buchung wurde erstellt. Die Zahlung erfolgt über die gewählte Zahlungsart.",
+  "stepPackage": "Umrah-Buchung",
+  "exclusions": "Nicht enthalten",
+  "emailIntro": "Vielen Dank für Ihre Buchung bei :business. Hier sind die Details Ihrer Umrah-Buchung.",
+  "emailSubject": "Ihre Rechnung zur Umrah-Buchung",
+  "bookingPnr": "Buchungs-PNR"
 }

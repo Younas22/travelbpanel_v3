@@ -69,5 +69,13 @@
   "footer": "TravelBooX. All rights reserved. | Computer-generated invoice.",
   "support": "Support",
   "processingPayment": "Processing payment via",
-  "bookingPnr": "Booking PNR"
+  "bookingPnr": "Booking PNR",
+  "msgConfirmed": "Your tour booking is confirmed. Below are the complete details of your booking.",
+  "msgCreated": "Your tour booking has been created. Complete the payment to confirm it. Below are the complete details of your booking.",
+  "msgPaidPending": "Your payment has been received and the tour confirmation is being processed. Below are the complete details of your booking.",
+  "msgPayLater": "Your tour booking has been created. Payment will be collected as per the selected payment method.",
+  "stepPackage": "Tour Booking",
+  "exclusions": "Exclusions",
+  "emailIntro": "Thank you for booking with :business. Here are the details of your tour booking.",
+  "emailSubject": "Your Tour Booking Invoice"
 }

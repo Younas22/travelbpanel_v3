@@ -11,6 +11,8 @@ use App\Models\Location;
 use App\Models\PaymentGateways;
 use App\Models\AgentWallet;
 use Illuminate\Http\Request;
+use Resend\Laravel\Facades\Resend;
+use App\Models\Setting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
@@ -344,7 +346,8 @@ class TourController extends Controller
             'tour_id' => $tour->id,
             'tour_name' => $tour->name,
             'price' => $tour_price,
-            'child_price' => convertCurrency($tour->child_price, $tour->currency ?? 'USD', $active_currency->currency_name) ?? ($tour_price * 0.7),
+            // no child price set: 70% of the adult price (convertCurrency(null) would give 0)
+            'child_price' => $tour->child_price !== null ? convertCurrency($tour->child_price, $tour->currency ?? 'USD', $active_currency->currency_name) : round($tour_price * 0.7, 2),
             'currency' => $active_currency->currency_name ?? 'USD',
             'duration' => $tour->duration,
             'days' => $tour->days,
@@ -520,7 +523,74 @@ class TourController extends Controller
             'updated_at' => \Carbon\Carbon::parse($booking->updated_at),
         ]);
 
-        return view('tour.invoice', compact('booking'));
+        // the booked tour (photo, inclusions / exclusions) as it is now
+        $tour = Tour::with(['images', 'packageType'])->find($booking->tour_id);
+        $inclusions = $tour ? array_values(array_filter(array_map(fn($id) => TourInclusion::find($id)?->name, (array) $tour->inclusions))) : [];
+        $exclusions = $tour ? array_values(array_filter(array_map(fn($id) => TourExclusion::find($id)?->name, (array) $tour->exclusions))) : [];
+
+        // Pay Now only while the booking can still be paid through its own gateway
+        $gateway = strtolower((string) $booking->booking_payment_gateway);
+        $canPay = !in_array($booking->booking_status_flag, ['confirmed', 'cancelled'], true)
+            && !in_array($booking->booking_payment_state, ['paid', 'refunded'], true)
+            && $gateway !== '' && view()->exists("gateways.$gateway");
+
+        return view('tour.invoice', compact('booking', 'tour', 'inclusions', 'exclusions', 'canPay'));
+    }
+
+    /**
+     * Email the invoice link to the booking contact, through the same Resend
+     * setup the hotel and flight invoices use.
+     */
+    public function sendInvoiceEmail($bookingRef)
+    {
+        $booking = DB::table('tours_booking')->where('booking_code_ref', $bookingRef)->first();
+        if (!$booking) {
+            return response()->json(['success' => false, 'message' => t('hotelinvoice.emailFailed')], 404);
+        }
+
+        $contact = json_decode((string) $booking->booking_user_data, true) ?: [];
+        $email = trim((string) ($contact['email'] ?? ''));
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json(['success' => false, 'message' => t('hotelinvoice.emailMissing')], 422);
+        }
+
+        try {
+            config(['services.resend.key' => Setting::getValue('resend_api_key', 'email')]);
+            $senderEmail = getSetting('sender_email', 'email', 'noreply@travelbookingpanel.com');
+            $senderName = getSetting('sender_name', 'email', 'Travel Booking Panel');
+            $businessName = getSetting('business_name', 'main', 'Travel Booking Panel');
+
+            $html = view('emails.booking_invoice', [
+                'title'        => t('tourinvoice.title'),
+                'intro'        => str_replace(':business', $businessName, t('tourinvoice.emailIntro')),
+                'contactName'  => $contact['first_name'] ?? '',
+                'businessName' => $businessName,
+                'invoiceUrl'   => route('tour.invoice', ['booking_ref' => $booking->booking_code_ref]),
+                'rows'         => [
+                    t('hotelinvoice.invoiceNumber') => 'INV-' . $booking->booking_code_ref,
+                    t('tourinvoice.packageDetails') => $booking->tour_name,
+                    t('tourinvoice.departureDate') => \Carbon\Carbon::parse($booking->departure_date)->format('D, d M Y'),
+                    t('hotelinvoice.bookingStatus') => t('hotelinvoice.' . ($booking->booking_status_flag ?: 'pending')),
+                    t('hotelinvoice.paymentStatus') => t('hotelinvoice.' . ($booking->booking_payment_state ?: 'unpaid')),
+                    t('hotelinvoice.totalAmount') => $booking->booking_currency_origin . ' ' . number_format((float) $booking->booking_total_price, 2),
+                ],
+            ])->render();
+
+            $result = Resend::emails()->send([
+                'from'    => "{$senderName} <{$senderEmail}>",
+                'to'      => [$email],
+                'subject' => t('tourinvoice.emailSubject') . ' - ' . $booking->booking_code_ref,
+                'html'    => $html,
+            ]);
+
+            \Log::info('Tour invoice email sent', ['booking' => $booking->booking_code_ref, 'id' => $result['id'] ?? null]);
+
+            return response()->json(['success' => true, 'message' => str_replace(':email', $email, t('hotelinvoice.emailSent'))]);
+        } catch (\Throwable $e) {
+            \Log::error('Tour invoice email failed', ['booking' => $booking->booking_code_ref, 'error' => $e->getMessage()]);
+
+            return response()->json(['success' => false, 'message' => t('hotelinvoice.emailFailed')], 500);
+        }
     }
 
     /**

@@ -32,5 +32,15 @@
     "price_per_person": "Kişi başı fiyat",
     "total_amount": "Toplam Tutar",
     "secure_payment": "Güvenli ve şifreli ödeme",
-    "star_package": "Yıldızlı Paket"
+    "star_package": "Yıldızlı Paket",
+    "nights": "Gece",
+    "makkah": "Mekke",
+    "madina": "Medine",
+    "infants": "Bebekler",
+    "infant": "Bebek",
+    "flight_class": "Uçuş Sınıfı",
+    "package_type": "Paket Türü",
+    "select_country": "Ülke Seçin",
+    "enter_phone": "Telefon numarasını girin",
+    "enter_email": "E-posta adresini girin"
 }

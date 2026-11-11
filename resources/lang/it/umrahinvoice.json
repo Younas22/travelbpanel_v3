@@ -67,5 +67,14 @@
   "info5": "Questa fattura serve come prova della conferma della prenotazione.",
   "footer": "Tutti i diritti riservati. | Fattura generata elettronicamente.",
   "support": "Supporto",
-  "processingPayment": "Elaborazione pagamento tramite"
+  "processingPayment": "Elaborazione pagamento tramite",
+  "msgConfirmed": "La tua prenotazione Umrah è confermata. Di seguito trovi tutti i dettagli della prenotazione.",
+  "msgCreated": "La tua prenotazione Umrah è stata creata. Completa il pagamento per confermarla. Di seguito trovi tutti i dettagli della prenotazione.",
+  "msgPaidPending": "Il pagamento è stato ricevuto e la conferma Umrah è in corso. Di seguito trovi tutti i dettagli della prenotazione.",
+  "msgPayLater": "La tua prenotazione Umrah è stata creata. Il pagamento sarà riscosso secondo il metodo scelto.",
+  "stepPackage": "Prenotazione Umrah",
+  "exclusions": "Non incluso",
+  "emailIntro": "Grazie per aver prenotato con :business. Ecco i dettagli della tua prenotazione Umrah.",
+  "emailSubject": "Fattura della prenotazione Umrah",
+  "bookingPnr": "PNR prenotazione"
 }

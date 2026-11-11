@@ -68,5 +68,14 @@
   "info5": "Bu fatura, rezervasyon onayınızın kanıtı olarak hizmet eder.",
   "footer": "TravelBooX. Tüm hakları saklıdır. | Bilgisayar tarafından oluşturulan fatura.",
   "support": "Destek",
-  "processingPayment": "Ödeme işleniyor"
+  "processingPayment": "Ödeme işleniyor",
+  "msgConfirmed": "Tur rezervasyonunuz onaylandı. Rezervasyonunuzun tüm ayrıntıları aşağıdadır.",
+  "msgCreated": "Tur rezervasyonunuz oluşturuldu. Onaylamak için ödemeyi tamamlayın. Rezervasyonunuzun tüm ayrıntıları aşağıdadır.",
+  "msgPaidPending": "Ödemeniz alındı ve tur onayı işleniyor. Rezervasyonunuzun tüm ayrıntıları aşağıdadır.",
+  "msgPayLater": "Tur rezervasyonunuz oluşturuldu. Ödeme seçilen ödeme yöntemine göre alınacak.",
+  "stepPackage": "Tur Rezervasyonu",
+  "exclusions": "Dahil olmayanlar",
+  "emailIntro": ":business ile rezervasyon yaptığınız için teşekkürler. Tur rezervasyonunuzun ayrıntıları aşağıdadır.",
+  "emailSubject": "Tur Rezervasyon Faturanız",
+  "bookingPnr": "Rezervasyon PNR"
 }
