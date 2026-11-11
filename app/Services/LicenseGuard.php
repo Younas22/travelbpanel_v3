@@ -57,6 +57,14 @@ PEM;
         return (bool) preg_match('/^[A-Z0-9]{4}(-[A-Z0-9]{4}){3}$/', $this->licenseKey());
     }
 
+    /** "WWW.Example.com" -> "example.com": a certificate for one spelling also covers the other. */
+    public static function siteDomain(string $host): string
+    {
+        $host = rtrim(strtolower(trim($host)), '.');
+
+        return str_starts_with($host, 'www.') ? substr($host, 4) : $host;
+    }
+
     /** Sites opened on this machine itself (development) are not checked. */
     public static function isLocalHost(string $host): bool
     {
@@ -75,6 +83,10 @@ PEM;
         $cert = $this->savedCertificate($domain);
 
         if ($cert) {
+            // Refresh / ping for the domain the certificate was issued to, so a visitor on the
+            // other spelling (www.example.com vs example.com) doesn't ask for a second slot.
+            $domain = (string) $cert['dom'];
+
             if (time() - $cert['iat'] >= self::REFRESH_AFTER) {
                 $answer = $this->activate($domain);
                 if ($answer['state'] === 'invalid') {
@@ -268,7 +280,7 @@ PEM;
             || ($payload['v'] ?? null) !== 2
             || ($payload['type'] ?? '') !== $type
             || ($payload['lic'] ?? '') !== $licenseKey
-            || ($payload['dom'] ?? '') !== strtolower($domain)
+            || self::siteDomain((string) ($payload['dom'] ?? '')) !== self::siteDomain($domain)
             || ($nonce !== null && ! hash_equals($nonce, (string) ($payload['nonce'] ?? '')))) {
             $this->lastError = 'The license server answered for another license / domain / request.';
             return null;

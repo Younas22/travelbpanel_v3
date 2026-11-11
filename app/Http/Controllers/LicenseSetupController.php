@@ -38,7 +38,10 @@ class LicenseSetupController extends Controller
             return redirect('/');
         }
 
-        return view('license.setup', ['current' => ['license_key' => $this->guard->licenseKey()]]);
+        // This page is public: never send the saved key to the browser — only its last 4 characters as a hint.
+        $saved = $this->guard->isConfigured() ? substr($this->guard->licenseKey(), -4) : null;
+
+        return view('license.setup', ['savedKeyHint' => $saved]);
     }
 
     /** AJAX: check a key before saving. */

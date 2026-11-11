@@ -174,10 +174,13 @@
                 placeholder="XXXX-XXXX-XXXX-XXXX"
                 maxlength="19"
                 spellcheck="false"
-                value="{{ old('license_key', $current['license_key'] ?? '') }}"
+                value="{{ old('license_key') }}"
                 autocomplete="off"
                 required
             >
+            @if(!empty($savedKeyHint))
+                <div class="field-hint">A key ending in <strong>{{ $savedKeyHint }}</strong> is saved on this site. Paste the full key again to re-activate.</div>
+            @endif
             @error('license_key')
                 <div class="field-hint" style="color:#f87171">{{ $message }}</div>
             @enderror
