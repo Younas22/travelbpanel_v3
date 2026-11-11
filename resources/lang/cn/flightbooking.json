@@ -60,5 +60,21 @@
   "oct": "十月",
   "nov": "十一月",
   "dec": "十二月",
-  "agent_fee_note": "您支付票价；服务费是您从客户处获得的收入。只有您能看到。"
+  "agent_fee_note": "您支付票价；服务费是您从客户处获得的收入。只有您能看到。",
+  "contact_desc": "我们会将预订确认和电子客票发送到这些联系方式。",
+  "travellers_desc": "请按护照上的信息准确填写每位旅客的资料。",
+  "continue_travellers": "继续填写旅客信息",
+  "back_contact": "返回个人信息",
+  "update_profile": "更新资料",
+  "time_expired": "预订时间已过期，请重新搜索。",
+  "departure_date": "出发",
+  "return_date": "返程",
+  "cabin_class": "舱位等级",
+  "one_way": "单程",
+  "round_trip": "往返",
+  "itinerary": "航班行程",
+  "layover": "在 :city 中转",
+  "terminal": "航站楼",
+  "children": "儿童",
+  "infant": "婴儿"
 }

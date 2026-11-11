@@ -42,5 +42,19 @@
     "sendEmail": "Invia Email",
     "flight": "Volo",
     "processingPayment": "Elaborazione pagamento tramite",
-    "home": "Home"
-  }
+    "home": "Home",
+    "title": "Fattura prenotazione volo",
+    "msgConfirmed": "La tua prenotazione del volo è confermata. Di seguito trovi tutti i dettagli della prenotazione.",
+    "msgCreated": "La tua prenotazione del volo è stata creata. Completa il pagamento per confermarla. Di seguito trovi tutti i dettagli della prenotazione.",
+    "msgPaidPending": "Il pagamento è stato ricevuto e la conferma della compagnia aerea è in corso. Di seguito trovi tutti i dettagli della prenotazione.",
+    "msgPayLater": "La tua prenotazione del volo è stata creata. Il pagamento sarà riscosso secondo il metodo scelto.",
+    "stepFlight": "Prenotazione volo",
+    "stepTravellers": "Dati dei viaggiatori",
+    "tripDetails": "Dettagli del viaggio",
+    "nationality": "Nazionalità",
+    "passportExpiry": "Scadenza passaporto",
+    "adult": "Adulto",
+    "child": "Bambino",
+    "infant": "Neonato",
+    "bookingpnr": "Numero PNR del volo"
+}

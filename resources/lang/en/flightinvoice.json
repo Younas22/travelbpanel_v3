@@ -43,5 +43,18 @@
     "flight": "Flight",
     "processingPayment": "Processing payment via",
     "home": "Home",
-    "bookingpnr": "Flight PNR Number"
-  }
+    "bookingpnr": "Flight PNR Number",
+    "title": "Flight Booking Invoice",
+    "msgConfirmed": "Your flight booking is confirmed. Below are the complete details of your booking.",
+    "msgCreated": "Your flight booking has been created. Complete the payment to confirm it. Below are the complete details of your booking.",
+    "msgPaidPending": "Your payment has been received and the airline confirmation is being processed. Below are the complete details of your booking.",
+    "msgPayLater": "Your flight booking has been created. Payment will be collected as per the selected payment method.",
+    "stepFlight": "Flight Booking",
+    "stepTravellers": "Traveller Details",
+    "tripDetails": "Trip Details",
+    "nationality": "Nationality",
+    "passportExpiry": "Passport Expiry",
+    "adult": "Adult",
+    "child": "Child",
+    "infant": "Infant"
+}

@@ -14544,6 +14544,147 @@ img.hb-profile-avatar {
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
 }
 
+
+/* ==========================================================================
+   Flight checkout + invoice (resources/views/flight/booking, invoice, itinerary)
+   Same look as the hotel checkout (.hb-*) and invoice (.inv-*); the booked
+   flight is listed with the flight-list segment cards (.fl-seg).
+   ========================================================================== */
+.hb-summary .fb-timer {
+    margin-bottom: 14px;
+}
+
+.hb-hotel-img.is-logo,
+.inv-summary-img.is-logo {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: #FFFFFF;
+}
+
+.hb-hotel-img.is-logo img,
+.inv-summary-img.is-logo img {
+    padding: 16px;
+    background: #FFFFFF;
+    object-fit: contain;
+}
+
+.fb-sum-arrow {
+    margin: 0 4px;
+    color: #2563EB;
+    font-size: 12px;
+}
+
+.fl-itin .fl-modal-head {
+    margin: 4px 0 8px;
+    padding-right: 0;
+}
+
+.fl-itin .fl-seg {
+    margin-bottom: 8px;
+    padding: 12px;
+}
+
+.fl-itin .fl-seg-bags {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.fl-layover {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0 0 8px;
+    padding: 6px 10px;
+    border: 1px dashed rgba(37, 99, 235, 0.35);
+    border-radius: 10px;
+    background: rgba(37, 99, 235, 0.05);
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 12px;
+    text-align: center;
+}
+
+.fl-layover i {
+    color: #2563EB;
+}
+
+.fl-layover b {
+    color: #000000;
+}
+
+.fl-itin + .hb-sum-sub {
+    margin-top: 18px;
+}
+
+/* invoice: plain colours (the PDF renderer has no color-mix) and A4 sizes */
+.view-invoice .fl-itin .fl-modal-head span {
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563EB;
+    font-size: 10px;
+}
+
+.view-invoice .fl-itin .fl-modal-head b {
+    font-size: 13px;
+}
+
+.view-invoice .fl-itin .fl-modal-head b i,
+.view-invoice .fl-seg-dur i,
+.view-invoice .inv-summary-hotel h3 i {
+    color: #2563EB;
+}
+
+.view-invoice .fl-itin .fl-modal-head small,
+.view-invoice .fl-seg-airline small,
+.view-invoice .fl-seg-route small,
+.view-invoice .fl-seg-bags span,
+.view-invoice .fl-seg-dur {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 10.5px;
+}
+
+.view-invoice .fl-itin .fl-seg {
+    padding: 9px 12px;
+    border-radius: 10px;
+}
+
+.view-invoice .fl-seg-airline {
+    margin-bottom: 7px;
+}
+
+.view-invoice .fl-seg-airline img {
+    width: 28px;
+    height: 28px;
+}
+
+.view-invoice .fl-seg-airline > div {
+    font-size: 12px;
+}
+
+.view-invoice .fl-seg-route b {
+    font-size: 13px;
+}
+
+.view-invoice .fl-layover {
+    padding: 4px 10px;
+    font-size: 11px;
+}
+
+.view-invoice .inv-summary-hotel h3 i {
+    margin: 0 3px;
+    font-size: 11px;
+}
+
+.inv-table td small {
+    display: block;
+    color: rgba(0, 0, 0, 0.55);
+    font-size: 10px;
+}
+
+/* flight checkout / invoice: right-to-left */
+.fb-sum-arrow { transform: scaleX(-1); }
+.fl-itin .fl-modal-head { padding-left: 0; }
+
 /* hotel checkout signed-in / Select2: right-to-left */
 .hb-input-wrap > .hb-input-lock { right: auto; left: 14px; }
 .hb-checkout .fb-input[readonly] { padding-right: 40px; padding-left: 36px; }

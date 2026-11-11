@@ -60,5 +60,21 @@
   "oct": "Octubre",
   "nov": "Noviembre",
   "dec": "Diciembre",
-  "agent_fee_note": "Tú pagas la tarifa; la comisión es lo que ganas con tu cliente. Solo tú la ves."
+  "agent_fee_note": "Tú pagas la tarifa; la comisión es lo que ganas con tu cliente. Solo tú la ves.",
+  "contact_desc": "Enviaremos la confirmación de la reserva y el billete electrónico a estos datos.",
+  "travellers_desc": "Introduce los datos de cada viajero tal como aparecen en su pasaporte.",
+  "continue_travellers": "Continuar a datos de los viajeros",
+  "back_contact": "Volver a información personal",
+  "update_profile": "Actualizar perfil",
+  "time_expired": "El tiempo de reserva ha expirado. Vuelve a buscar.",
+  "departure_date": "Salida",
+  "return_date": "Regreso",
+  "cabin_class": "Clase de cabina",
+  "one_way": "Solo ida",
+  "round_trip": "Ida y vuelta",
+  "itinerary": "Itinerario del vuelo",
+  "layover": "Escala en :city",
+  "terminal": "Terminal",
+  "children": "Niños",
+  "infant": "Bebé"
 }

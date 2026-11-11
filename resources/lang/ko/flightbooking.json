@@ -60,5 +60,21 @@
   "oct": "10월",
   "nov": "11월",
   "dec": "12월",
-  "agent_fee_note": "요금은 본인이 결제하며, 수수료는 고객에게서 얻는 수익입니다. 본인에게만 보입니다."
+  "agent_fee_note": "요금은 본인이 결제하며, 수수료는 고객에게서 얻는 수익입니다. 본인에게만 보입니다.",
+  "contact_desc": "예약 확인서와 전자 항공권을 이 연락처로 보내드립니다.",
+  "travellers_desc": "각 여행자의 정보를 여권에 표시된 그대로 입력하세요.",
+  "continue_travellers": "여행자 정보로 계속",
+  "back_contact": "개인 정보로 돌아가기",
+  "update_profile": "프로필 업데이트",
+  "time_expired": "예약 시간이 만료되었습니다. 다시 검색해 주세요.",
+  "departure_date": "출발",
+  "return_date": "귀국",
+  "cabin_class": "좌석 등급",
+  "one_way": "편도",
+  "round_trip": "왕복",
+  "itinerary": "항공 여정",
+  "layover": ":city 경유",
+  "terminal": "터미널",
+  "children": "어린이",
+  "infant": "유아"
 }

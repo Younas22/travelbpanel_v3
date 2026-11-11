@@ -60,5 +60,21 @@
   "oct": "Oktober",
   "nov": "November",
   "dec": "December",
-  "agent_fee_note": "Jij betaalt het tarief; de toeslag verdien je aan je klant. Alleen jij ziet dit."
+  "agent_fee_note": "Jij betaalt het tarief; de toeslag verdien je aan je klant. Alleen jij ziet dit.",
+  "contact_desc": "We sturen de boekingsbevestiging en het e-ticket naar deze gegevens.",
+  "travellers_desc": "Vul de gegevens van elke reiziger in precies zoals in het paspoort.",
+  "continue_travellers": "Verder naar reizigersgegevens",
+  "back_contact": "Terug naar persoonlijke gegevens",
+  "update_profile": "Profiel bijwerken",
+  "time_expired": "De boekingstijd is verlopen. Zoek opnieuw.",
+  "departure_date": "Vertrek",
+  "return_date": "Terugreis",
+  "cabin_class": "Cabineklasse",
+  "one_way": "Enkele reis",
+  "round_trip": "Retour",
+  "itinerary": "Vluchtschema",
+  "layover": "Overstap in :city",
+  "terminal": "Terminal",
+  "children": "Kinderen",
+  "infant": "Baby"
 }

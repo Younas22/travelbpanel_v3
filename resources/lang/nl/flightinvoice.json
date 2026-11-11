@@ -42,5 +42,19 @@
     "sendEmail": "E-mail Verzenden",
     "flight": "Vlucht",
     "processingPayment": "Betaling verwerken via",
-    "home": "Thuis"
-  }
+    "home": "Thuis",
+    "title": "Factuur vluchtboeking",
+    "msgConfirmed": "Je vluchtboeking is bevestigd. Hieronder vind je alle details van je boeking.",
+    "msgCreated": "Je vluchtboeking is aangemaakt. Rond de betaling af om deze te bevestigen. Hieronder vind je alle details van je boeking.",
+    "msgPaidPending": "Je betaling is ontvangen en de bevestiging van de luchtvaartmaatschappij wordt verwerkt. Hieronder vind je alle details van je boeking.",
+    "msgPayLater": "Je vluchtboeking is aangemaakt. De betaling wordt geïnd via de gekozen betaalmethode.",
+    "stepFlight": "Vluchtboeking",
+    "stepTravellers": "Reizigersgegevens",
+    "tripDetails": "Reisdetails",
+    "nationality": "Nationaliteit",
+    "passportExpiry": "Vervaldatum paspoort",
+    "adult": "Volwassene",
+    "child": "Kind",
+    "infant": "Baby",
+    "bookingpnr": "Vlucht-PNR-nummer"
+}

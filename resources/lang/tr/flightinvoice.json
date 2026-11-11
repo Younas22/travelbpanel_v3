@@ -42,5 +42,19 @@
     "sendEmail": "E-posta Gönder",
     "flight": "Uçuş",
     "processingPayment": "Ödeme işleniyor",
-    "home": "Ana Sayfa"
-  }
+    "home": "Ana Sayfa",
+    "title": "Uçuş Rezervasyon Faturası",
+    "msgConfirmed": "Uçuş rezervasyonunuz onaylandı. Rezervasyonunuzun tüm ayrıntıları aşağıdadır.",
+    "msgCreated": "Uçuş rezervasyonunuz oluşturuldu. Onaylamak için ödemeyi tamamlayın. Rezervasyonunuzun tüm ayrıntıları aşağıdadır.",
+    "msgPaidPending": "Ödemeniz alındı ve havayolu onayı işleniyor. Rezervasyonunuzun tüm ayrıntıları aşağıdadır.",
+    "msgPayLater": "Uçuş rezervasyonunuz oluşturuldu. Ödeme seçilen ödeme yöntemine göre alınacak.",
+    "stepFlight": "Uçuş Rezervasyonu",
+    "stepTravellers": "Yolcu Bilgileri",
+    "tripDetails": "Seyahat Ayrıntıları",
+    "nationality": "Uyruk",
+    "passportExpiry": "Pasaport Bitiş Tarihi",
+    "adult": "Yetişkin",
+    "child": "Çocuk",
+    "infant": "Bebek",
+    "bookingpnr": "Uçuş PNR Numarası"
+}

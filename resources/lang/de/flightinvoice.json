@@ -42,5 +42,19 @@
     "sendEmail": "E-Mail senden",
     "flight": "Flug",
     "processingPayment": "Zahlung wird bearbeitet über",
-    "home": "Startseite"
-  }
+    "home": "Startseite",
+    "title": "Rechnung Flugbuchung",
+    "msgConfirmed": "Ihre Flugbuchung ist bestätigt. Unten finden Sie alle Details Ihrer Buchung.",
+    "msgCreated": "Ihre Flugbuchung wurde erstellt. Schließen Sie die Zahlung ab, um sie zu bestätigen. Unten finden Sie alle Details Ihrer Buchung.",
+    "msgPaidPending": "Ihre Zahlung ist eingegangen, die Bestätigung der Airline wird bearbeitet. Unten finden Sie alle Details Ihrer Buchung.",
+    "msgPayLater": "Ihre Flugbuchung wurde erstellt. Die Zahlung erfolgt über die gewählte Zahlungsart.",
+    "stepFlight": "Flugbuchung",
+    "stepTravellers": "Reisendendaten",
+    "tripDetails": "Reisedetails",
+    "nationality": "Staatsangehörigkeit",
+    "passportExpiry": "Ablauf des Reisepasses",
+    "adult": "Erwachsener",
+    "child": "Kind",
+    "infant": "Kleinkind",
+    "bookingpnr": "Flug-PNR-Nummer"
+}

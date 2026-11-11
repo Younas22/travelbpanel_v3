@@ -42,5 +42,19 @@
     "sendEmail": "发送邮件",
     "flight": "航班",
     "processingPayment": "正在通过以下方式处理支付",
-    "home": "首页"
-  }
+    "home": "首页",
+    "title": "机票预订发票",
+    "msgConfirmed": "您的机票预订已确认。以下是您预订的完整详情。",
+    "msgCreated": "您的机票预订已创建。请完成付款以确认。以下是您预订的完整详情。",
+    "msgPaidPending": "我们已收到您的付款，正在等待航空公司确认。以下是您预订的完整详情。",
+    "msgPayLater": "您的机票预订已创建。将按照所选付款方式收款。",
+    "stepFlight": "机票预订",
+    "stepTravellers": "旅客信息",
+    "tripDetails": "行程详情",
+    "nationality": "国籍",
+    "passportExpiry": "护照有效期",
+    "adult": "成人",
+    "child": "儿童",
+    "infant": "婴儿",
+    "bookingpnr": "航班 PNR 编号"
+}

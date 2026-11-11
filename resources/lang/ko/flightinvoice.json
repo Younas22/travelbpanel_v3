@@ -42,5 +42,19 @@
     "sendEmail": "이메일 보내기",
     "flight": "항공편",
     "processingPayment": "결제 처리 중",
-    "home": "홈"
-  }
+    "home": "홈",
+    "title": "항공권 예약 인보이스",
+    "msgConfirmed": "항공권 예약이 확정되었습니다. 아래에서 예약 세부 정보를 확인하세요.",
+    "msgCreated": "항공권 예약이 생성되었습니다. 결제를 완료하면 확정됩니다. 아래에서 예약 세부 정보를 확인하세요.",
+    "msgPaidPending": "결제가 접수되었으며 항공사 확인이 진행 중입니다. 아래에서 예약 세부 정보를 확인하세요.",
+    "msgPayLater": "항공권 예약이 생성되었습니다. 선택한 결제 방법에 따라 결제가 진행됩니다.",
+    "stepFlight": "항공권 예약",
+    "stepTravellers": "여행자 정보",
+    "tripDetails": "여행 세부 정보",
+    "nationality": "국적",
+    "passportExpiry": "여권 만료일",
+    "adult": "성인",
+    "child": "어린이",
+    "infant": "유아",
+    "bookingpnr": "항공 PNR 번호"
+}

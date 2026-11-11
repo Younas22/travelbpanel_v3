@@ -60,5 +60,21 @@
   "oct": "10月",
   "nov": "11月",
   "dec": "12月",
-  "agent_fee_note": "運賃はあなたが支払い、手数料はお客様からの収益です。あなただけに表示されます。"
+  "agent_fee_note": "運賃はあなたが支払い、手数料はお客様からの収益です。あなただけに表示されます。",
+  "contact_desc": "予約確認とeチケットをこちらの連絡先に送信します。",
+  "travellers_desc": "各旅行者の情報をパスポートの記載どおりに入力してください。",
+  "continue_travellers": "旅行者情報へ進む",
+  "back_contact": "個人情報に戻る",
+  "update_profile": "プロフィールを更新",
+  "time_expired": "予約の制限時間が過ぎました。もう一度検索してください。",
+  "departure_date": "出発",
+  "return_date": "復路",
+  "cabin_class": "客室クラス",
+  "one_way": "片道",
+  "round_trip": "往復",
+  "itinerary": "フライト旅程",
+  "layover": ":city で乗り継ぎ",
+  "terminal": "ターミナル",
+  "children": "子供",
+  "infant": "幼児"
 }

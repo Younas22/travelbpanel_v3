@@ -60,5 +60,21 @@
   "oct": "Octobre",
   "nov": "Novembre",
   "dec": "Décembre",
-  "agent_fee_note": "Vous payez le tarif ; les frais sont votre gain auprès du client. Vous seul les voyez."
+  "agent_fee_note": "Vous payez le tarif ; les frais sont votre gain auprès du client. Vous seul les voyez.",
+  "contact_desc": "Nous enverrons la confirmation de réservation et le billet électronique à ces coordonnées.",
+  "travellers_desc": "Saisissez les informations de chaque voyageur exactement comme sur son passeport.",
+  "continue_travellers": "Continuer vers les voyageurs",
+  "back_contact": "Retour aux informations personnelles",
+  "update_profile": "Mettre à jour le profil",
+  "time_expired": "Le délai de réservation a expiré. Veuillez relancer la recherche.",
+  "departure_date": "Départ",
+  "return_date": "Retour",
+  "cabin_class": "Classe de cabine",
+  "one_way": "Aller simple",
+  "round_trip": "Aller-retour",
+  "itinerary": "Itinéraire du vol",
+  "layover": "Escale à :city",
+  "terminal": "Terminal",
+  "children": "Enfants",
+  "infant": "Bébé"
 }

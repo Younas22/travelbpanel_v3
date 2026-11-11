@@ -60,5 +60,21 @@
   "oct": "Ekim",
   "nov": "Kasım",
   "dec": "Aralık",
-  "agent_fee_note": "Bileti siz ödersiniz; ücret müşterinizden kazancınızdır. Yalnızca siz görürsünüz."
+  "agent_fee_note": "Bileti siz ödersiniz; ücret müşterinizden kazancınızdır. Yalnızca siz görürsünüz.",
+  "contact_desc": "Rezervasyon onayını ve e-bileti bu bilgilere göndereceğiz.",
+  "travellers_desc": "Her yolcunun bilgilerini pasaportta yazdığı şekilde girin.",
+  "continue_travellers": "Yolcu bilgilerine devam et",
+  "back_contact": "Kişisel bilgilere dön",
+  "update_profile": "Profili güncelle",
+  "time_expired": "Rezervasyon süresi doldu. Lütfen tekrar arayın.",
+  "departure_date": "Gidiş",
+  "return_date": "Dönüş",
+  "cabin_class": "Kabin sınıfı",
+  "one_way": "Tek yön",
+  "round_trip": "Gidiş-dönüş",
+  "itinerary": "Uçuş planı",
+  "layover": ":city aktarması",
+  "terminal": "Terminal",
+  "children": "Çocuklar",
+  "infant": "Bebek"
 }

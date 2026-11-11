@@ -820,7 +820,13 @@ private function toYmdFormat($date)
         ]);
     }
 
-    return view('flight.invoice', compact('booking'));
+    // Pay Now only while the booking can still be paid through its own gateway
+    $gateway = strtolower((string) $booking->booking_payment_gateway);
+    $canPay = !in_array($booking->booking_status_flag, ['confirmed', 'cancelled'], true)
+        && !in_array($booking->booking_payment_state, ['paid', 'refunded'], true)
+        && $gateway !== '' && view()->exists("gateways.$gateway");
+
+    return view('flight.invoice', compact('booking', 'canPay'));
 }
 
 

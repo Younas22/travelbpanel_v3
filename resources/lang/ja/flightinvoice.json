@@ -42,5 +42,19 @@
     "sendEmail": "メール送信",
     "flight": "フライト",
     "processingPayment": "支払い処理中",
-    "home": "ホーム"
-  }
+    "home": "ホーム",
+    "title": "航空券予約の請求書",
+    "msgConfirmed": "航空券の予約が確定しました。予約の詳細は以下のとおりです。",
+    "msgCreated": "航空券の予約が作成されました。お支払いを完了すると確定します。予約の詳細は以下のとおりです。",
+    "msgPaidPending": "お支払いを受け付けました。航空会社の確認手続き中です。予約の詳細は以下のとおりです。",
+    "msgPayLater": "航空券の予約が作成されました。お支払いは選択した方法で行われます。",
+    "stepFlight": "航空券予約",
+    "stepTravellers": "旅行者情報",
+    "tripDetails": "旅程の詳細",
+    "nationality": "国籍",
+    "passportExpiry": "パスポート有効期限",
+    "adult": "大人",
+    "child": "子供",
+    "infant": "幼児",
+    "bookingpnr": "フライト PNR 番号"
+}

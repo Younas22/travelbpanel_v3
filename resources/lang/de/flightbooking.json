@@ -60,5 +60,21 @@
   "oct": "Oktober",
   "nov": "November",
   "dec": "Dezember",
-  "agent_fee_note": "Sie zahlen den Tarif; die Gebühr verdienen Sie bei Ihrem Kunden. Nur Sie sehen sie."
+  "agent_fee_note": "Sie zahlen den Tarif; die Gebühr verdienen Sie bei Ihrem Kunden. Nur Sie sehen sie.",
+  "contact_desc": "Wir senden die Buchungsbestätigung und das E-Ticket an diese Kontaktdaten.",
+  "travellers_desc": "Geben Sie die Daten jedes Reisenden genau wie im Reisepass an.",
+  "continue_travellers": "Weiter zu den Reisendendaten",
+  "back_contact": "Zurück zu den persönlichen Daten",
+  "update_profile": "Profil aktualisieren",
+  "time_expired": "Die Buchungszeit ist abgelaufen. Bitte suchen Sie erneut.",
+  "departure_date": "Hinflug",
+  "return_date": "Rückflug",
+  "cabin_class": "Kabinenklasse",
+  "one_way": "Nur Hinflug",
+  "round_trip": "Hin- und Rückflug",
+  "itinerary": "Flugverlauf",
+  "layover": "Umstieg in :city",
+  "terminal": "Terminal",
+  "children": "Kinder",
+  "infant": "Kleinkind"
 }

@@ -42,5 +42,19 @@
     "sendEmail": "Enviar Correo",
     "flight": "Vuelo",
     "processingPayment": "Procesando pago vía",
-    "home": "Inicio"
-  }
+    "home": "Inicio",
+    "title": "Factura de reserva de vuelo",
+    "msgConfirmed": "Tu reserva de vuelo está confirmada. A continuación tienes todos los detalles de tu reserva.",
+    "msgCreated": "Tu reserva de vuelo se ha creado. Completa el pago para confirmarla. A continuación tienes todos los detalles de tu reserva.",
+    "msgPaidPending": "Hemos recibido tu pago y la confirmación de la aerolínea está en proceso. A continuación tienes todos los detalles de tu reserva.",
+    "msgPayLater": "Tu reserva de vuelo se ha creado. El pago se cobrará según el método de pago elegido.",
+    "stepFlight": "Reserva de vuelo",
+    "stepTravellers": "Datos de los viajeros",
+    "tripDetails": "Detalles del viaje",
+    "nationality": "Nacionalidad",
+    "passportExpiry": "Caducidad del pasaporte",
+    "adult": "Adulto",
+    "child": "Niño",
+    "infant": "Bebé",
+    "bookingpnr": "Número PNR del vuelo"
+}

@@ -62,5 +62,19 @@
   "oct": "October",
   "nov": "November",
   "dec": "December",
-  "agent_fee_note": "You pay the fare; the fee is what you earn from your client. Only you see it."
+  "agent_fee_note": "You pay the fare; the fee is what you earn from your client. Only you see it.",
+  "contact_desc": "We'll send the booking confirmation and e-ticket to these details.",
+  "travellers_desc": "Enter each traveller's details exactly as shown on their passport.",
+  "continue_travellers": "Continue to Travellers Information",
+  "back_contact": "Back to Personal Information",
+  "update_profile": "Update profile",
+  "time_expired": "Booking time expired. Please search again.",
+  "departure_date": "Departure",
+  "return_date": "Return",
+  "cabin_class": "Cabin class",
+  "one_way": "One way",
+  "round_trip": "Round trip",
+  "itinerary": "Flight itinerary",
+  "layover": "Layover in :city",
+  "terminal": "Terminal"
 }
