@@ -15861,17 +15861,6 @@ html:has(> body.view-invoice) {
     display: none;
 }
 
-/* html2canvas draws text in pills ~3px lower than the browser: compensate */
-.is-pdf .inv-badge,
-.is-pdf .inv-chip {
-    padding-top: 0;
-    padding-bottom: 4px;
-}
-
-.is-pdf .inv-notes li::before {
-    top: 9px;
-}
-
 @media print {
     @page {
         size: A4;

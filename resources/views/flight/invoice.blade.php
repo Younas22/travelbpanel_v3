@@ -402,10 +402,87 @@
             document.head.appendChild(s);
         });
     }
+    // html2canvas misplaces icon-font glyphs, stretches object-fit images and
+    // (with Tailwind's `img { display: block }`) draws text too low. So, for
+    // the PDF only: each icon is drawn here as the browser lays it out and
+    // given to the copy as a picture, and images become backgrounds.
+    const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    function pdfParts(sheet) {
+        const icons = [];
+        sheet.querySelectorAll('i').forEach((icon) => {
+            const box = icon.getBoundingClientRect();
+            const before = getComputedStyle(icon, '::before');
+            const glyph = (before.content || '').replace(/^["']|["']$/g, '');
+            if (!glyph || glyph === 'none' || !box.width || !box.height) return;
+            // drawn 4x, with a 1px empty edge so scaling never bleeds the glyph across
+            const k = 4, pad = 4;
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.ceil(box.width * k) + pad * 2;
+            canvas.height = Math.ceil(box.height * k) + pad * 2;
+            const ctx = canvas.getContext('2d');
+            ctx.font = `${before.fontStyle} ${before.fontWeight} ${parseFloat(before.fontSize) * k}px ${before.fontFamily}`;
+            ctx.fillStyle = before.color;
+            // same side of a wide icon box as the page (text-align / direction)
+            const cs = getComputedStyle(icon);
+            const align = { start: cs.direction === 'rtl' ? 'right' : 'left', end: cs.direction === 'rtl' ? 'left' : 'right' }[cs.textAlign] || cs.textAlign;
+            const x = align === 'left' ? pad + parseFloat(cs.paddingLeft) * k
+                : align === 'right' ? canvas.width - pad - parseFloat(cs.paddingRight) * k
+                : canvas.width / 2;
+            ctx.textAlign = ['left', 'right'].includes(align) ? align : 'center';
+            const m = ctx.measureText(glyph);
+            ctx.fillText(glyph, x, (canvas.height - m.fontBoundingBoxAscent - m.fontBoundingBoxDescent) / 2 + m.fontBoundingBoxAscent);
+            icon.dataset.pdfIcon = icons.push([canvas.toDataURL(), canvas.width / k, canvas.height / k, pad / k]) - 1;
+        });
+        const images = [];
+        sheet.querySelectorAll('img').forEach((img) => {
+            const cs = getComputedStyle(img);
+            if (!img.currentSrc || !['cover', 'contain'].includes(cs.objectFit)) return;
+            // contain: the picture's own box inside the padding (no stretching)
+            let place = null;
+            if (cs.objectFit === 'contain' && img.naturalWidth && img.naturalHeight) {
+                const box = img.getBoundingClientRect();
+                const pl = parseFloat(cs.paddingLeft), pt = parseFloat(cs.paddingTop);
+                const w = box.width - pl - parseFloat(cs.paddingRight), h = box.height - pt - parseFloat(cs.paddingBottom);
+                const scale = Math.min(w / img.naturalWidth, h / img.naturalHeight);
+                const fw = img.naturalWidth * scale, fh = img.naturalHeight * scale;
+                place = { left: img.offsetLeft + pl + (w - fw) / 2, top: img.offsetTop + pt + (h - fh) / 2, width: fw, height: fh };
+            }
+            img.dataset.pdfImage = images.push([img.currentSrc, cs.objectFit, place]) - 1;
+        });
+        return function (doc) {
+            const style = doc.createElement('style');
+            style.textContent = 'i[data-pdf-icon] > * { visibility: hidden !important; }';
+            doc.head.appendChild(style);
+            doc.querySelectorAll('[data-pdf-icon]').forEach((icon) => {
+                const [src, w, h, edge] = icons[icon.dataset.pdfIcon];
+                Object.assign(icon.style, { backgroundImage: `url(${src})`, backgroundSize: `${w}px ${h}px`, backgroundPosition: `-${edge}px -${edge}px`, backgroundRepeat: 'no-repeat' });
+            });
+            doc.querySelectorAll('[data-pdf-image]').forEach((img) => {
+                const [src, fit, place] = images[img.dataset.pdfImage];
+                if (place) {
+                    Object.assign(img.style, { inset: 'auto', left: place.left + 'px', top: place.top + 'px', width: place.width + 'px', height: place.height + 'px', padding: '0', objectFit: 'fill' });
+                    return;
+                }
+                Object.assign(img.style, { backgroundImage: `url("${src}")`, backgroundSize: fit, backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundOrigin: 'content-box', backgroundClip: 'content-box' });
+                img.src = BLANK;
+            });
+        };
+    }
     async function buildPdf() {
         await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', () => window.html2canvas);
         await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', () => window.jspdf);
-        const canvas = await html2canvas(document.getElementById('invDoc'), { scale: 2, useCORS: true, backgroundColor: '#FFFFFF', windowWidth: 1100 });
+        const sheet = document.getElementById('invDoc');
+        // html2canvas measures the text baseline on this page: let its test image sit inline
+        const baseline = document.createElement('style');
+        baseline.textContent = 'body > div[style*="hidden"] > img { display: inline !important; }';
+        document.head.appendChild(baseline);
+        let canvas;
+        try {
+            canvas = await html2canvas(sheet, { scale: 2, useCORS: true, backgroundColor: '#FFFFFF', windowWidth: 1100, onclone: pdfParts(sheet) });
+        } finally {
+            baseline.remove();
+            sheet.querySelectorAll('[data-pdf-icon], [data-pdf-image]').forEach((el) => { delete el.dataset.pdfIcon; delete el.dataset.pdfImage; });
+        }
         const pdf = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
         const pageW = 210, pageH = 297;
         const imgH = canvas.height * pageW / canvas.width;
