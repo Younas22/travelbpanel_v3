@@ -382,7 +382,7 @@
                     </div>
                     <div class="hb-hotel-info">
                         <span class="hb-badge">{{ $isRound ? t('flightbooking.round_trip') : t('flightbooking.one_way') }}</span>
-                        <h3 dir="auto">{{ $first->departure->city_name ?? $first->departure->airport }} <i class="fas {{ $isRound ? 'fa-arrow-right-arrow-left' : 'fa-arrow-right' }} fb-sum-arrow"></i> {{ $outLast['arrival']['city_name'] ?? $outLast['arrival']['airport'] }}</h3>
+                        <h3><bdi>{{ $first->departure->city_name ?? $first->departure->airport }}</bdi> <i class="fas {{ $isRound ? 'fa-arrow-right-arrow-left' : 'fa-arrow-right' }} fb-sum-arrow"></i> <bdi>{{ $outLast['arrival']['city_name'] ?? $outLast['arrival']['airport'] }}</bdi></h3>
                         <p class="hb-hotel-address">{{ $first->airline_name }}</p>
                     </div>
                 </div>

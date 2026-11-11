@@ -14681,6 +14681,32 @@ img.hb-profile-avatar {
     font-size: 10px;
 }
 
+/* flight trip details: as many equal columns as items (3 to 5) */
+.inv-stay.is-flight {
+    grid-template-columns: none;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+}
+
+@media screen and (max-width: 639px) {
+    .view-invoice:not(.is-measure) .inv-stay.is-flight {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-auto-flow: row;
+    }
+
+    .view-invoice:not(.is-measure) .inv-stay.is-flight .inv-stay-item:last-child {
+        grid-column: auto;
+    }
+
+    .view-invoice:not(.is-measure) .inv-summary-img.is-logo {
+        height: 84px;
+    }
+
+    .view-invoice:not(.is-measure) .inv-table td > span {
+        text-align: end;
+    }
+}
+
 /* flight checkout / invoice: right-to-left */
 .fb-sum-arrow { transform: scaleX(-1); }
 .fl-itin .fl-modal-head { padding-left: 0; }

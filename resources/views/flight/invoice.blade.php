@@ -195,7 +195,7 @@
             <!-- Trip at a glance -->
             <section class="inv-card">
                 <h2 class="inv-card-title"><i class="fas fa-plane-departure"></i> {{ t('flightinvoice.tripDetails') }}</h2>
-                <div class="inv-stay">
+                <div class="inv-stay is-flight">
                     <div class="inv-stay-item"><i class="fas fa-plane-departure"></i><small>{{ t('flightinvoice.departure') }}</small><b dir="ltr">{{ $first['departure']['date_convert'] ?? '—' }}</b><em dir="ltr">{{ $first['departure']['time'] ?? '' }} {{ $first['departure']['airport'] ?? '' }}</em></div>
                     @if($isRound && isset($legs[1][0]))
                         <div class="inv-stay-item"><i class="fas fa-plane-arrival"></i><small>{{ t('flightinvoice.return') }}</small><b dir="ltr">{{ $legs[1][0]['departure']['date_convert'] ?? '—' }}</b><em dir="ltr">{{ $legs[1][0]['departure']['time'] ?? '' }} {{ $legs[1][0]['departure']['airport'] ?? '' }}</em></div>
@@ -237,13 +237,13 @@
                                 <tr>
                                     <td data-label="{{ t('flightinvoice.no') }}">{{ $index + 1 }}</td>
                                     <td data-label="{{ t('flightinvoice.name') }}" dir="auto">
-                                        <b>{{ $title($guest['gender'] ?? '') }} {{ trim(($guest['first_name'] ?? '') . ' ' . ($guest['last_name'] ?? '')) ?: '—' }}</b>
-                                        <span class="inv-chip {{ $type === 'adults' ? '' : 'is-muted' }}">{{ $guestType($type) }}</span>
+                                        <span><b>{{ $title($guest['gender'] ?? '') }} {{ trim(($guest['first_name'] ?? '') . ' ' . ($guest['last_name'] ?? '')) ?: '—' }}</b>
+                                        <span class="inv-chip {{ $type === 'adults' ? '' : 'is-muted' }}">{{ $guestType($type) }}</span></span>
                                     </td>
                                     <td data-label="{{ t('flightinvoice.dateOfBirth') }}" dir="ltr">{{ $date($guest['dob_day'] ?? null, $guest['dob_month'] ?? null, $guest['dob_year'] ?? null) }}</td>
                                     <td data-label="{{ t('flightinvoice.passportNo') }}" dir="ltr">
-                                        {{ $guest['passport'] ?? '' ?: '—' }}
-                                        @if(!empty($guest['nationality']))<small>{{ t('flightinvoice.nationality') }}: {{ strtoupper($guest['nationality']) }}</small>@endif
+                                        <span>{{ $guest['passport'] ?? '' ?: '—' }}
+                                        @if(!empty($guest['nationality']))<small>{{ t('flightinvoice.nationality') }}: {{ strtoupper($guest['nationality']) }}</small>@endif</span>
                                     </td>
                                     <td data-label="{{ t('flightinvoice.passportExpiry') }}" dir="ltr">{{ $date($guest['passport_day_expiry'] ?? null, $guest['passport_month_expiry'] ?? null, $guest['passport_year_expiry'] ?? null) }}</td>
                                 </tr>
@@ -294,7 +294,7 @@
                 <div class="inv-summary-body">
                     <h2 class="inv-card-title"><i class="fas fa-bookmark"></i> {{ t('hotelinvoice.bookingSummary') }}</h2>
                     <div class="inv-summary-hotel">
-                        <h3 dir="auto">{{ $first['departure']['city_name'] ?? ($first['departure']['airport'] ?? '') }} <i class="fas {{ $isRound ? 'fa-arrow-right-arrow-left' : 'fa-arrow-right' }} fb-sum-arrow"></i> {{ $outLast['arrival']['city_name'] ?? ($outLast['arrival']['airport'] ?? '') }}</h3>
+                        <h3><bdi>{{ $first['departure']['city_name'] ?? ($first['departure']['airport'] ?? '') }}</bdi> <i class="fas {{ $isRound ? 'fa-arrow-right-arrow-left' : 'fa-arrow-right' }} fb-sum-arrow"></i> <bdi>{{ $outLast['arrival']['city_name'] ?? ($outLast['arrival']['airport'] ?? '') }}</bdi></h3>
                         <div class="inv-summary-meta">
                             <span class="inv-chip">{{ $isRound ? t('flightbooking.round_trip') : t('flightbooking.one_way') }}</span>
                             @if(!empty($first['class']))<span class="inv-chip is-muted">{{ ucwords(str_replace('_', ' ', $first['class'])) }}</span>@endif
@@ -439,6 +439,7 @@
             busy(pdfBtn, false);
         }
     });
+    window.invBuildPdf = buildPdf;
 
     // Email the invoice link to the booking contact (once at a time)
     const emailBtn = document.getElementById('invEmail');

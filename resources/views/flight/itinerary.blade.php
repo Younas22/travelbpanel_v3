@@ -20,7 +20,7 @@
         @php $leg = array_values($leg); $legLast = end($leg); $legStops = count($leg) - 1; @endphp
         <div class="fl-modal-head">
             <span>{{ $legIndex === 0 ? t('flightlist.outbound') : t('flightform.return') }}</span>
-            <b>{{ $leg[0]['departure']['airport'] ?? '' }} <i class="fas fa-arrow-right"></i> {{ $legLast['arrival']['airport'] ?? '' }}</b>
+            <b><bdi>{{ $leg[0]['departure']['airport'] ?? '' }}</bdi> <i class="fas fa-arrow-right"></i> <bdi>{{ $legLast['arrival']['airport'] ?? '' }}</bdi></b>
             <small>{{ $leg[0]['departure']['date_convert'] ?? '' }} · {{ $legStops == 0 ? t('flightlist.direct') : $legStops . ' ' . ($legStops == 1 ? t('flightlist.stop') : t('flightlist.stops')) }}</small>
         </div>
         @foreach($leg as $i => $seg)
