@@ -1987,6 +1987,13 @@
 
 @include('common.promo-float')
 
+{{-- Admin → Settings → Website → System → Custom Scripts (chat widget, tracking, any JS), as entered;
+     only real markup is printed (an old placeholder value like "1" is skipped) --}}
+@php $customScripts = trim((string) getSetting('custom_tracking_code', 'system', '')); @endphp
+@if(str_contains($customScripts, '<'))
+{!! $customScripts !!}
+@endif
+
 </body>
 </html>
 

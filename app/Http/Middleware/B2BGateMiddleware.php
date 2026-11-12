@@ -20,6 +20,7 @@ class B2BGateMiddleware
 
     private const ALLOWED_EXACT = [
         'login',
+        'login-flight',     // flight / agent login design
         'signin',           // login form POST handler
         'signin/enroll',    // first-time 2FA QR setup
         'signin/verify',    // 2FA code step

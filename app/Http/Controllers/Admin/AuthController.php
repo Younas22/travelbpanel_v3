@@ -21,7 +21,18 @@ class AuthController extends Controller
             return TwoFactor::redirectForRole(auth()->user());
         }
 
-        return view('admin.auth.login');
+        // LOGIN_PAGE=flight in .env switches to the flight / agent design
+        return view(config('app.login_page') === 'flight' ? 'admin.auth.login-flight' : 'admin.auth.login');
+    }
+
+    /** Preview of the flight / agent login design (works whichever design is active). */
+    public function showFlightLogin()
+    {
+        if (auth()->check()) {
+            return TwoFactor::redirectForRole(auth()->user());
+        }
+
+        return view('admin.auth.login-flight');
     }
 
     public function login(Request $request)

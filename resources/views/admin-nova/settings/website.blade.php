@@ -128,16 +128,27 @@
                     <section class="tbp-website-settings-card">
                         <header><i class="bi bi-gear"></i><div><h3>System Settings and Configurations</h3><p>Configure system-level settings and integrations</p></div></header>
                         <div class="tbp-website-settings-field"><span>Business Model</span>
-                            <small>Controls which signup options appear on the public website navbar{{ $bmAllowed !== 'both' ? ' — your package includes ' . ($bmAllowed === 'b2c' ? 'the B2C customer website' : 'the B2B agent portal') . ' only' : '' }}</small>
-                            <div class="tbp-website-settings-radios">
-                                @foreach($bmOptions as $val => [$title, $desc])
-                                    <label><input type="radio" name="business_model" value="{{ $val }}" @checked($bm == $val)> <strong>{{ $title }}</strong> — {{ $desc }}</label>
-                                @endforeach
-                            </div>
+                            @if($bmAllowed === 'both')
+                                <small>Controls which signup options appear on the public website navbar</small>
+                                <div class="tbp-website-settings-radios">
+                                    @foreach($bmOptions as $val => [$title, $desc])
+                                        <label><input type="radio" name="business_model" value="{{ $val }}" @checked($bm == $val)> <strong>{{ $title }}</strong> — {{ $desc }}</label>
+                                    @endforeach
+                                </div>
+                            @else
+                                {{-- package allows one model only: no choice to make, just how to get the other --}}
+                                <small>
+                                    Your package includes the {{ $bmAllowed === 'b2c' ? 'B2C Customer Website' : 'B2B Agent Portal' }}.
+                                    To activate the {{ $bmAllowed === 'b2c' ? 'B2B Agent Portal' : 'B2C Customer Website' }}, contact us:
+                                    <a href="https://travelbookingpanel.com/contact" target="_blank" rel="noopener">travelbookingpanel.com/contact</a>
+                                </small>
+                            @endif
                         </div>
-                        <label class="tbp-website-settings-field"><span>Agent Signup URL</span>
+                        @if($bmAllowed !== 'b2c')
+                        <label class="tbp-website-settings-field" id="agentSignupUrlField" data-hide-when-b2c><span>Agent Signup URL</span>
                             <small>Where every "Agent Signup" link across the site points to. Leave blank to use the built-in page (/agent/register). Enter a relative path (e.g. agent/signup) or a full URL to point somewhere else.</small>
                             <input type="text" name="agent_signup_url" value="{{ $s('system', 'agent_signup_url') }}" placeholder="e.g. agent/signup or https://example.com/agent-signup"></label>
+                        @endif
                         <label class="tbp-website-settings-field"><span>Timezone</span>
                             <small>Used to display all dates and times across the site (bookings, invoices, transactions, flight times, etc.)</small>
                             <select name="timezone">
@@ -163,9 +174,9 @@
                         <label class="tbp-website-settings-field"><span>Facebook Pixel ID</span>
                             <input type="text" name="facebook_pixel_id" value="{{ $s('system', 'facebook_pixel_id') }}" placeholder="Enter Facebook Pixel ID">
                             <small>For tracking conversions and creating custom audiences</small></label>
-                        <label class="tbp-website-settings-field"><span>Custom Tracking Code</span>
-                            <textarea name="custom_tracking_code" rows="4" placeholder="Enter custom tracking scripts">{{ $s('system', 'custom_tracking_code') }}</textarea>
-                            <small>Additional tracking codes (will be added to head section)</small></label>
+                        <label class="tbp-website-settings-field"><span>Custom Scripts (chat widget, tracking, any JS)</span>
+                            <textarea name="custom_tracking_code" rows="6" spellcheck="false" placeholder='<script src="https://chat.example.com/widget.js"></script>'>{{ $s('system', 'custom_tracking_code') }}</textarea>
+                            <small>Paste full &lt;script&gt; tags — one or more (live chat, tracking, etc.). Added to every website page, just before &lt;/body&gt;.</small></label>
                     </section>
                     <div class="tbp-website-settings-actions"><button type="submit" class="tbp-website-settings-btn tbp-website-settings-save"><i class="bi bi-check-lg"></i> <span>Save System Settings</span></button></div>
                 </form>
@@ -380,5 +391,17 @@ document.querySelectorAll('.tbp-website-settings-page input[type=file][data-prev
 $(function () {
     $('select[name="timezone"]').select2({ placeholder: 'Search and select a timezone...', allowClear: false, width: '100%' });
 });
+
+// "Agent Signup URL" means nothing on a B2C-only site — hide it while B2C Only is picked
+(function () {
+    var field = document.querySelector('[data-hide-when-b2c]');
+    if (!field) return;
+    function sync() {
+        var picked = document.querySelector('input[name="business_model"]:checked');
+        field.style.display = (picked && picked.value === 'b2c') ? 'none' : '';
+    }
+    document.querySelectorAll('input[name="business_model"]').forEach(function (r) { r.addEventListener('change', sync); });
+    sync();
+})();
 </script>
 @endpush

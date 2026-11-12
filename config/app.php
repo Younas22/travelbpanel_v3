@@ -82,6 +82,10 @@ return [
     // 'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
     // 'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
+    // Login page design: 'classic' (admin/auth/login) or 'flight' (admin/auth/login-flight).
+    // Set LOGIN_PAGE=flight in .env to switch; /login-flight always previews the flight design.
+    'login_page' => env('LOGIN_PAGE', 'classic'),
+
     'locale' => env('APP_LOCALE', 'nl'),           // default language Dutch
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'nl'),  // fallback bhi Dutch
     'faker_locale' => env('APP_FAKER_LOCALE', 'nl_NL'),     // faker data Dutch ke liye

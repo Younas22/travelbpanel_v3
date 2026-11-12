@@ -86,6 +86,7 @@ Route::prefix('user')->name('user.')->group(function () {
 // Admin Login Routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login'); // Laravel expects 'login' route
 Route::get('/admin/login', [AuthController::class, 'showLogin'])->name('admin.login'); // Keep admin.login for backward compatibility
+Route::get('/login-flight', [AuthController::class, 'showFlightLogin'])->name('login.flight'); // flight / agent login design (LOGIN_PAGE=flight makes it the default)
 Route::post('/signin', [AuthController::class, 'login'])->name('admin.signin.post');
 
 // Shared 2FA step for admin/agent/user logins — role-agnostic, see TwoFactorController.
