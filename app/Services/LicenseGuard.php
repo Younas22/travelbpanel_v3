@@ -213,39 +213,73 @@ PEM;
      */
     public function showBranding(string $domain): bool
     {
-        static $cache = [];
-        $domain = strtolower($domain);
-        if (array_key_exists($domain, $cache)) {
-            return $cache[$domain];
+        return ($this->savedPolicy($domain)['brand'] ?? null) !== 'hide';
+    }
+
+    /**
+     * Business model this site's package allows: both | b2c | b2b.
+     *
+     * Set on the license server (Admin > Client Packages: "B2C Customer Website" /
+     * "B2B Agent Portal") and read from the same SIGNED answer as the footer
+     * credit, so it can't be changed by editing files. Nothing signed yet → both.
+     */
+    public function allowedBusinessModel(string $domain): string
+    {
+        $model = $this->savedPolicy($domain)['model'] ?? 'both';
+
+        return in_array($model, ['both', 'b2c', 'b2b'], true) ? $model : 'both';
+    }
+
+    /**
+     * Business model the site actually runs with: the admin's choice in
+     * System → Business Model, limited to what the package allows.
+     */
+    public function effectiveBusinessModel(string $domain, ?string $chosen): string
+    {
+        $allowed = $this->allowedBusinessModel($domain);
+        if ($allowed !== 'both') {
+            return $allowed;
         }
 
-        $show = true;
+        return in_array($chosen, ['both', 'b2c', 'b2b'], true) ? $chosen : 'both';
+    }
+
+    // ── internals ─────────────────────────────────────────────────────────────
+
+    /** @var array<string, array> verified package settings per domain (this request) */
+    private array $policyCache = [];
+
+    /** Verified payload of the last signed answer that carried the package settings (or []). */
+    private function savedPolicy(string $domain): array
+    {
+        $domain = strtolower($domain);
+        if (array_key_exists($domain, $this->policyCache)) {
+            return $this->policyCache[$domain];
+        }
+
+        $payload = null;
         $saved = json_decode((string) @file_get_contents($this->brandingPath()), true);
         if (is_array($saved) && isset($saved['payload']) && is_string($saved['payload'])) {
             $type = json_decode($this->b64d($saved['payload']), true)['type'] ?? '';
             $payload = in_array($type, ['ping', 'certificate'], true)
                 ? $this->verify($saved, null, $this->licenseKey(), $domain, $type)
                 : null;
-            if ($payload && ($payload['brand'] ?? null) === 'hide') {
-                $show = false;
-            }
         }
 
-        return $cache[$domain] = $show;
+        return $this->policyCache[$domain] = is_array($payload) ? $payload : [];
     }
 
-    // ── internals ─────────────────────────────────────────────────────────────
-
-    /** Keep a signed answer that carries the branding choice (newest wins). */
+    /** Keep a signed answer that carries the package settings — credit / business model (newest wins). */
     private function rememberBranding(array $answer, array $payload): void
     {
-        if (! isset($payload['brand'])) {
+        if (! isset($payload['brand']) && ! isset($payload['model'])) {
             return; // older license server: nothing to store, keep the last choice
         }
         @file_put_contents($this->brandingPath(), json_encode([
             'payload'   => $answer['payload'],
             'signature' => $answer['signature'],
         ]));
+        $this->policyCache = [];
     }
 
     private function brandingPath(): string

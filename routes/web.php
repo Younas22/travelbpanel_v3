@@ -24,7 +24,11 @@ Route::post('/tbp-sync/branding', function (\Illuminate\Http\Request $request, \
         return response()->json(['ok' => false, 'code' => 'server_unreachable'], 503);
     }
 
-    return response()->json(['ok' => true, 'brand' => $guard->showBranding($host) ? 'show' : 'hide']);
+    return response()->json([
+        'ok'    => true,
+        'brand' => $guard->showBranding($host) ? 'show' : 'hide',
+        'model' => $guard->allowedBusinessModel($host),
+    ]);
 })->withoutMiddleware([
     \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
     \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,

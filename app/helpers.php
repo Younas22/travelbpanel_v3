@@ -288,3 +288,34 @@ if (!function_exists('richText')) {
         return $html;
     }
 }
+
+if (! function_exists('allowedBusinessModel')) {
+    /**
+     * Business model the site's package allows (license server → Admin > Client
+     * Packages → B2C / B2B ticks): both | b2c | b2b. Defaults to both.
+     */
+    function allowedBusinessModel(): string
+    {
+        try {
+            return app(\App\Services\LicenseGuard::class)->allowedBusinessModel(request()->getHost());
+        } catch (\Throwable $e) {
+            return 'both';
+        }
+    }
+}
+
+if (! function_exists('businessModel')) {
+    /**
+     * Business model the site runs with: System → Business Model, limited to
+     * what the package allows. Use this instead of reading the setting directly.
+     */
+    function businessModel(): string
+    {
+        $chosen = (string) (\App\Models\Setting::getValue('business_model', 'system') ?? 'both');
+        try {
+            return app(\App\Services\LicenseGuard::class)->effectiveBusinessModel(request()->getHost(), $chosen);
+        } catch (\Throwable $e) {
+            return in_array($chosen, ['both', 'b2c', 'b2b'], true) ? $chosen : 'both';
+        }
+    }
+}

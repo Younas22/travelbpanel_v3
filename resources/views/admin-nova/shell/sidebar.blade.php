@@ -190,7 +190,7 @@
         </a>
 
         {{-- Agents — hidden in B2C-only mode --}}
-        @if((\App\Models\Setting::getValue('business_model', 'system') ?? 'both') !== 'b2c')
+        @if(businessModel() !== 'b2c')
             @php $pendingAgents = \App\Models\User::agents()->where('approval_status', 'pending')->count(); @endphp
             <div class="sb-group {{ request()->routeIs('admin.agents*') || request()->routeIs('admin.topup*') ? 'sb-group-open' : '' }}">
                 <button class="sb-row {{ request()->routeIs('admin.agents*') || request()->routeIs('admin.topup*') ? 'sb-on' : '' }}"

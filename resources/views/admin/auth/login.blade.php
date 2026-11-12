@@ -62,7 +62,7 @@
             </form>
 
             @php
-                $__businessModel   = getSetting('business_model', 'system', 'both');
+                $__businessModel   = businessModel();
                 $__showUserSignup  = in_array($__businessModel, ['both', 'b2c']);
                 $__showAgentSignup = in_array($__businessModel, ['both', 'b2b']);
             @endphp

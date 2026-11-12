@@ -13,7 +13,7 @@ class AgentMiddleware
     {
         // Not logged in
         if (!auth()->check()) {
-            $businessModel = Setting::getValue('business_model', 'system') ?? 'both';
+            $businessModel = businessModel();
             if ($businessModel === 'b2b') {
                 return redirect()->route('agent.register');
             }

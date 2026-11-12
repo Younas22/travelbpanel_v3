@@ -15,7 +15,14 @@
         'contact' => ['bi-envelope', 'Contact'], 'branding' => ['bi-palette', 'Branding'], 'homepage' => ['bi-house', 'Home Page'],
         'social' => ['bi-share', 'Social Links'], 'security' => ['bi-shield-lock', 'Security'],
     ];
-    $bm = $s('system', 'business_model', 'both');
+    // Package (license server → Client Packages) decides which models are offered:
+    // both allowed → all 3 options; B2C-only / B2B-only package → just that one.
+    $bmAllowed = allowedBusinessModel();
+    $bmOptions = ['both' => ['B2B + B2C', 'Both Customer & Agent signup visible'], 'b2c' => ['B2C Only', 'Customer signup only (Agent signup hidden)'], 'b2b' => ['B2B Only', 'Agent signup only (Customer signup hidden)']];
+    if ($bmAllowed !== 'both') {
+        $bmOptions = array_intersect_key($bmOptions, [$bmAllowed => true]);
+    }
+    $bm = businessModel();
     $tf = $s('system', 'time_format', '12');
     $tz = $s('system', 'timezone', 'UTC');
     $socials = [
@@ -121,9 +128,9 @@
                     <section class="tbp-website-settings-card">
                         <header><i class="bi bi-gear"></i><div><h3>System Settings and Configurations</h3><p>Configure system-level settings and integrations</p></div></header>
                         <div class="tbp-website-settings-field"><span>Business Model</span>
-                            <small>Controls which signup options appear on the public website navbar</small>
+                            <small>Controls which signup options appear on the public website navbar{{ $bmAllowed !== 'both' ? ' — your package includes ' . ($bmAllowed === 'b2c' ? 'the B2C customer website' : 'the B2B agent portal') . ' only' : '' }}</small>
                             <div class="tbp-website-settings-radios">
-                                @foreach(['both' => ['B2B + B2C', 'Both Customer & Agent signup visible'], 'b2c' => ['B2C Only', 'Customer signup only (Agent signup hidden)'], 'b2b' => ['B2B Only', 'Agent signup only (Customer signup hidden)']] as $val => [$title, $desc])
+                                @foreach($bmOptions as $val => [$title, $desc])
                                     <label><input type="radio" name="business_model" value="{{ $val }}" @checked($bm == $val)> <strong>{{ $title }}</strong> — {{ $desc }}</label>
                                 @endforeach
                             </div>

@@ -4,7 +4,7 @@
     @php
         $currencies = allCurrencies();
         $active_currency = activeCurrency();
-        $businessModel   = getSetting('business_model', 'system', 'both');
+        $businessModel   = businessModel();
         $showUserSignup  = in_array($businessModel, ['both', 'b2c']);
         $showAgentSignup = in_array($businessModel, ['both', 'b2b']);
 

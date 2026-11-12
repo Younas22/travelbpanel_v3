@@ -141,7 +141,7 @@ private function getValidationRules($group)
             'agent_registration' => 'nullable|boolean'
         ],
         'system' => [
-            'business_model' => 'nullable|string|in:both,b2b,b2c',
+            'business_model' => 'nullable|string|in:' . (allowedBusinessModel() === 'both' ? 'both,b2b,b2c' : allowedBusinessModel()),
             'agent_signup_url' => 'nullable|string|max:255',
             'timezone' => 'nullable|string|timezone|max:100',
             'time_format' => 'nullable|string|in:12,24',

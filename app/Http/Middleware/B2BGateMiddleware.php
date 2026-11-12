@@ -40,13 +40,23 @@ class B2BGateMiddleware
 
     public function handle(Request $request, Closure $next): Response
     {
-        $businessModel = Setting::getValue('business_model', 'system') ?? 'both';
+        $path = $request->path();
+
+        // Signup the package doesn't include (license server → Client Packages) is
+        // closed even when its URL is typed directly — hiding the link isn't enough.
+        $allowed = allowedBusinessModel();
+        if ($allowed === 'b2c' && $path === 'agent/register') {
+            return redirect('/');
+        }
+        if ($allowed === 'b2b' && $path === 'user/register') {
+            return redirect()->route('agent.register');
+        }
+
+        $businessModel = businessModel();
 
         if ($businessModel !== 'b2b') {
             return $next($request);
         }
-
-        $path = $request->path();
 
         // Always allow admin/agent/auth/license paths through
         foreach (self::ALLOWED_PREFIXES as $prefix) {
