@@ -58,7 +58,6 @@ class FlightController extends Controller
                 'child'          => $searchParams['child'] ?? 0,
                 'infant'         => $searchParams['infant'] ?? 0,
                 'currency'       => $currency->currency_name,
-                'env'            => 'dev',
             ];
 
             $all_flights = [];
@@ -68,6 +67,7 @@ class FlightController extends Controller
                 try {
                     $response = Http::post($endpoint, array_merge($payload, [
                         'endpoint'         => $endpoint,
+                        'env'              => $supplier->apiEnv(),
                         'api_credential_1' => $supplier->api_credential_1,
                         'api_credential_2' => $supplier->api_credential_2,
                         'api_credential_3' => $supplier->api_credential_3,

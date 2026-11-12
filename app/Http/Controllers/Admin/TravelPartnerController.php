@@ -487,7 +487,9 @@ class TravelPartnerController extends Controller
             'api_credential_4' => 'nullable|string|max:500',
             'api_credential_5' => 'nullable|string|max:500',
             'api_credential_6' => 'nullable|string|max:500',
+            'development_mode' => 'nullable|boolean',
         ]);
+        unset($overrides['development_mode']);
 
         $payload = [];
         for ($i = 1; $i <= 6; $i++) {
@@ -505,7 +507,10 @@ class TravelPartnerController extends Controller
         }
 
         // Environment for suppliers that have separate test/live hosts (e.g. AQC): Development mode = test API.
-        $payload['env'] = $partner->development_mode ? 'dev' : 'pro';
+        // (the form's current switch when sent, so a test before saving uses the selected mode)
+        $payload['env'] = $request->has('development_mode')
+            ? ($request->boolean('development_mode') ? 'dev' : 'pro')
+            : $partner->apiEnv();
 
         // API route slug: the name without a display suffix, e.g. "amadeus_quick_connect _(AQC)" → "amadeus_quick_connect"
         $supplierSlug = strtolower(trim(preg_replace('/[\s_]*\(.*\)\s*$/', '', $partner->company_name)));

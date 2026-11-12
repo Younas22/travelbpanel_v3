@@ -107,7 +107,13 @@ class TravelPartner extends Model
         'db_password', // Hide database credentials
     ];
 
-        public function module()
+        /** API environment sent to the supplier controllers: Development mode on → "dev" (test API), off → "pro" (live API). */
+    public function apiEnv(): string
+    {
+        return $this->development_mode ? 'dev' : 'pro';
+    }
+
+    public function module()
     {
         return $this->belongsTo(Module::class, 'module_id');
     }

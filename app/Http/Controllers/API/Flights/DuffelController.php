@@ -15,6 +15,35 @@ use Illuminate\Support\Facades\Validator;
 
 class DuffelController extends BaseController
 {
+    /**
+     * Duffel uses one host for both environments; the access token decides the mode
+     * (duffel_test_… = test, duffel_live_… = live). env "dev" / "pro" picks the endpoint
+     * and must match the key, so a live key is never used from development mode (or vice versa).
+     */
+    private const ENDPOINTS = [
+        'dev' => 'https://api.duffel.com',
+        'pro' => 'https://api.duffel.com',
+    ];
+
+    private function endpoint(?string $env, string $path): string
+    {
+        return (self::ENDPOINTS[$env] ?? self::ENDPOINTS['dev']) . $path;
+    }
+
+    /** Error message when the key doesn't belong to the requested environment, else null. */
+    private function keyEnvMismatch(string $token, ?string $env): ?string
+    {
+        $env = $env === 'pro' ? 'pro' : 'dev';
+        if ($env === 'dev' && str_starts_with($token, 'duffel_live_')) {
+            return 'This is a live Duffel key (duffel_live_…) but the supplier is in Development mode. Turn Development mode off to use the live API, or enter a test key (duffel_test_…).';
+        }
+        if ($env === 'pro' && str_starts_with($token, 'duffel_test_')) {
+            return 'This is a test Duffel key (duffel_test_…) but the supplier is in live mode. Turn Development mode on, or enter a live key (duffel_live_…).';
+        }
+
+        return null;
+    }
+
 
     /**
      * Admin "Test Credentials": checks the API key (access token) against a light Duffel endpoint.
@@ -27,13 +56,17 @@ class DuffelController extends BaseController
             return response()->json(['success' => false, 'message' => 'Enter the Duffel API key (access token) in credential 1.', 'error_type' => 'missing_credentials'], 422);
         }
 
+        if ($mismatch = $this->keyEnvMismatch($token, $request->input('env'))) {
+            return response()->json(['success' => false, 'message' => $mismatch, 'error_type' => 'environment_mismatch', 'error_detail' => $mismatch], 422);
+        }
+
         $started = microtime(true);
         try {
             $response = Http::timeout(15)->withHeaders([
                 'Accept'         => 'application/json',
                 'Duffel-Version' => 'v2',
                 'Authorization'  => 'Bearer ' . $token,
-            ])->get('https://api.duffel.com/air/airlines', ['limit' => 1]);
+            ])->get($this->endpoint($request->input('env'), '/air/airlines'), ['limit' => 1]);
         } catch (\Throwable $e) {
             return response()->json(['success' => false, 'message' => 'Could not reach the Duffel API.', 'error_type' => 'connection', 'error_detail' => $e->getMessage()], 502);
         }
@@ -94,6 +127,10 @@ class DuffelController extends BaseController
                 return $this->sendError('Validation Error.', $validator->errors());
             }
 
+            if ($mismatch = $this->keyEnvMismatch((string) $input['api_credential_1'], $input['env'])) {
+                return $this->sendError($mismatch, ['msg' => 'environment_mismatch'], 422);
+            }
+
             $formattedResults = $this->route_data($input);
 
             if (!empty($formattedResults)) {
@@ -118,7 +155,7 @@ class DuffelController extends BaseController
                 'booking_data'     => 'required',
                 'user_data'        => 'required',
                 'guest'            => 'required',
-                'env'              => 'required',
+                'env'              => 'required|in:dev,pro',
                 'api_credential_1' => 'required',
             ]);
 
@@ -132,6 +169,9 @@ class DuffelController extends BaseController
             $userData    = json_decode($input['user_data']);
             $guestInfo   = json_decode($input['guest']) ?: [];
             $apiCredential = $input['api_credential_1'];
+            if ($mismatch = $this->keyEnvMismatch((string) $apiCredential, $input['env'])) {
+                return $this->sendError($mismatch, ['msg' => 'environment_mismatch'], 422);
+            }
 
 
             $pit = !empty($input['pit_id'])
@@ -162,7 +202,7 @@ class DuffelController extends BaseController
                 'Content-Type'   => 'application/json',
                 'Duffel-Version' => 'v2',
                 'Authorization'  => 'Bearer ' . $apiCredential,
-            ])->post('https://api.duffel.com/air/orders', $payload);
+            ])->post($this->endpoint($input['env'] ?? null, '/air/orders'), $payload);
 
             $bookingRes = $response->body();
 
@@ -255,7 +295,7 @@ class DuffelController extends BaseController
             'Content-Type' => 'application/json',
             'Duffel-Version' => 'v2',
             'Authorization' => 'Bearer ' . $input['api_credential_1'],
-        ])->post('https://api.duffel.com/air/offer_requests', $payload);
+        ])->post($this->endpoint($input['env'] ?? null, '/air/offer_requests'), $payload);
 
         if ($response->failed()) {
             return [];

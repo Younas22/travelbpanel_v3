@@ -95,10 +95,6 @@ class FlightsController extends Controller
             $session_data = $this->prepare_session_data($search_params);
             session(['flight_search' => $session_data]);
 
-            // Determine environment mode
-            $env = 'dev';
-
-
             $api_creds = TravelPartner::where('status', 'active')->where('supplier_type', 'flight')->get();
 
             if ($api_creds->isEmpty()) {
@@ -123,7 +119,7 @@ class FlightsController extends Controller
                     'api_credential_6' => '',
                     'commission' => $api_cred->commission_rate,
                     'discount'   => $api_cred->discount_rate,
-                    'env' => $env,
+                    'env' => $api_cred->apiEnv(),
                     'origin' => $origin ? strtoupper($origin) : "",
                     'destination' => $destination ? strtoupper($destination) : "",
                     'type' => $trip,
@@ -1030,8 +1026,8 @@ private function toYmdFormat($date)
             $api_cred = TravelPartner::where('status', 'active')->where("company_name",$booking->booking_supplier_name)->first();
 
 
-            // Determine environment mode
-            $env = 'dev';
+            // Development mode on the supplier → test API, off → live API
+            $env = $api_cred->apiEnv();
 
             $params = [
                 'api_credential_1'=> $api_cred->api_credential_1,

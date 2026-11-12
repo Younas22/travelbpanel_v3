@@ -718,6 +718,9 @@
                     const input = document.querySelector(`input[name="api_credential_${i}"]`);
                     if (input && credChanged(input)) payload[`api_credential_${i}`] = input.value.trim();
                 }
+                // Test against the environment currently selected on the form (saved or not)
+                const devSwitch = document.getElementById('developmentModeSwitch');
+                if (devSwitch) payload.development_mode = devSwitch.checked ? 1 : 0;
                 credentialTestInFlight = true;
                 testCredentialsBtn.disabled = true;
                 appendTerminalLine(`$ test-credentials --supplier=${supplierSlug}`, 'muted');
