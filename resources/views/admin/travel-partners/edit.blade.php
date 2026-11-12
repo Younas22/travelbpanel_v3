@@ -206,6 +206,7 @@
                                             @php $credLabels = match (true) {
                                                 $supplierSlug === 'webbeds' => [1 => 'Username', 2 => 'Password', 3 => 'ID'],
                                                 $isAqc => [1 => 'API Key', 2 => 'API Secret'],
+                                                $supplierSlug === 'duffel' => [1 => 'Token'],
                                                 default => [],
                                             }; @endphp
                                             <label>{{ $credLabels[$i] ?? 'API Credential '.$i }}</label>
