@@ -21998,7 +21998,7 @@ body.view-login-flight .lf-page {
     min-height: 100vh;
     display: flex;
     align-items: stretch;
-    background: #1e3a8a url("../images/login-flight-bg.jpg?v=4") center / cover no-repeat;
+    background: #1e3a8a url("../images/login-flight-bg.jpg?v=5") center / cover no-repeat;
     color: #fff;
 }
 body.view-login-flight .lf-shade { position: absolute; inset: 0; background: rgba(15, 23, 42, .38); }
@@ -22017,7 +22017,7 @@ body.view-login-flight .lf-inner {
 
 /* left: intro */
 body.view-login-flight .lf-intro { display: flex; flex-direction: column; justify-content: space-between; min-height: calc(100vh - 64px); }
-body.view-login-flight .lf-logo img { max-height: 46px; width: auto; }
+body.view-login-flight .lf-logo img { max-height: 72px; max-width: 280px; width: auto; }
 body.view-login-flight .lf-intro-body { max-width: 520px; padding: 32px 0; }
 body.view-login-flight .lf-eyebrow {
     display: inline-flex; align-items: center; gap: 8px;
