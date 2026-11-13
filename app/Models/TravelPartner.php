@@ -37,6 +37,8 @@ class TravelPartner extends Model
         'api_credential_4',
         'api_credential_5',
         'api_credential_6',
+        'payment_card',
+        'sandbox_card',
         'db_host',
         'db_port',
         'db_database',
@@ -92,6 +94,8 @@ class TravelPartner extends Model
         'api_credential_4' => SafeEncrypted::class,
         'api_credential_5' => SafeEncrypted::class,
         'api_credential_6' => SafeEncrypted::class,
+        'payment_card' => SafeEncrypted::class,
+        'sandbox_card' => SafeEncrypted::class,
         'db_password' => SafeEncrypted::class,
         'last_api_test_at' => 'datetime',
         'last_db_test_at' => 'datetime',
@@ -104,10 +108,43 @@ class TravelPartner extends Model
         'api_credential_4',
         'api_credential_5',
         'api_credential_6',
+        'payment_card',
+        'sandbox_card',
         'db_password', // Hide database credentials
     ];
 
-        /** API environment sent to the supplier controllers: Development mode on → "dev" (test API), off → "pro" (live API). */
+        /**
+     * Saved payment card (WebBeds live bookings): ['cardName', 'cardNumber', 'expiryMonth', 'expiryYear', 'securityCode']
+     * in the shape rezpayments_tokenize() takes, or null when none is saved / it can't be decrypted.
+     */
+    public function paymentCard(): ?array
+    {
+        $card = json_decode((string) $this->payment_card, true);
+
+        return is_array($card) && !empty($card['cardNumber']) ? $card : null;
+    }
+
+    /** Card for WebBeds sandbox bookings, as saved in admin (Payment Details), or null when none. */
+    public function sandboxCard(): ?array
+    {
+        $card = json_decode((string) $this->sandbox_card, true);
+
+        return is_array($card) && !empty($card['cardNumber']) ? $card : null;
+    }
+
+    /** Safe summary for the admin UI — never the full number or the security code. */
+    public function paymentCardSummary(): ?array
+    {
+        $card = $this->paymentCard();
+
+        return $card ? [
+            'name'   => $card['cardName'] ?? '',
+            'last4'  => substr((string) $card['cardNumber'], -4),
+            'expiry' => sprintf('%02d/%s', (int) ($card['expiryMonth'] ?? 0), $card['expiryYear'] ?? ''),
+        ] : null;
+    }
+
+    /** API environment sent to the supplier controllers: Development mode on → "dev" (test API), off → "pro" (live API). */
     public function apiEnv(): string
     {
         return $this->development_mode ? 'dev' : 'pro';

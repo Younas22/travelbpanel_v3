@@ -272,6 +272,53 @@ class TravelPartnerController extends Controller
         };
     }
 
+    /** Shown when WebBeds is switched to Live mode without a payment card. */
+    private const WEBBEDS_CARD_REQUIRED = 'Card details are required to activate WebBeds Live Mode. Please add your payment card details in the Payment Details tab to proceed. This is a mandatory WebBeds requirement.';
+
+    private function isWebbeds(TravelPartner $partner): bool
+    {
+        return strtolower(trim($partner->company_name)) === 'webbeds';
+    }
+
+    /**
+     * Card from the WebBeds "Payment Details" step, in the shape rezpayments_tokenize() takes,
+     * or null when those fields were left empty. Partly filled → validation error.
+     * $prefix "card_" = live card, "sandbox_card_" = sandbox card.
+     */
+    private function validatedPaymentCard(Request $request, string $prefix = 'card_'): ?array
+    {
+        $fields = ['name', 'number', 'expiry_month', 'expiry_year', 'cvv'];
+        $request->merge([$prefix . 'number' => preg_replace('/\D/', '', (string) $request->input($prefix . 'number'))]);
+        if (collect($fields)->every(fn($f) => !$request->filled($prefix . $f))) {
+            return null;
+        }
+
+        $year = (int) now()->format('Y');
+        $label = $prefix === 'card_' ? '' : 'sandbox ';
+        $data = $request->validate([
+            $prefix . 'name'         => 'required|string|max:100',
+            $prefix . 'number'       => 'required|digits_between:12,19',
+            $prefix . 'expiry_month' => 'required|integer|between:1,12',
+            $prefix . 'expiry_year'  => "required|integer|between:{$year}," . ($year + 20),
+            $prefix . 'cvv'          => 'required|digits_between:3,4',
+        ], [], [
+            $prefix . 'name' => "{$label}cardholder name", $prefix . 'number' => "{$label}card number",
+            $prefix . 'expiry_month' => "{$label}expiry month", $prefix . 'expiry_year' => "{$label}expiry year",
+            $prefix . 'cvv' => "{$label}security code (CVV)",
+        ]);
+        if ((int) $data[$prefix . 'expiry_year'] === $year && (int) $data[$prefix . 'expiry_month'] < (int) now()->format('n')) {
+            throw \Illuminate\Validation\ValidationException::withMessages([$prefix . 'expiry_month' => 'This card has expired.']);
+        }
+
+        return [
+            'cardName'     => trim($data[$prefix . 'name']),
+            'cardNumber'   => $data[$prefix . 'number'],
+            'expiryMonth'  => sprintf('%02d', (int) $data[$prefix . 'expiry_month']),
+            'expiryYear'   => (string) $data[$prefix . 'expiry_year'],
+            'securityCode' => (string) $data[$prefix . 'cvv'],
+        ];
+    }
+
     /**
      * Update partner
      */
@@ -321,6 +368,23 @@ class TravelPartnerController extends Controller
 
         // Handle boolean conversions
         $validated['development_mode'] = $request->input('development_mode', 0) == 1 ? 1 : 0;
+
+        // WebBeds Payment Details: a newly entered card replaces the saved one; Live mode needs a card
+        if ($this->isWebbeds($partner)) {
+            $card = $this->validatedPaymentCard($request);
+            if ($card) {
+                $validated['payment_card'] = json_encode($card);
+            }
+            // Sandbox card: the admin's own test card, used for Development mode bookings
+            if ($sandbox = $this->validatedPaymentCard($request, 'sandbox_card_')) {
+                $validated['sandbox_card'] = json_encode($sandbox);
+            }
+            if (!$validated['development_mode'] && !$card && !$partner->paymentCard()) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'development_mode' => self::WEBBEDS_CARD_REQUIRED,
+                ]);
+            }
+        }
         $validated['currency_support'] = $request->input('currency_support', 0) == 1 ? 1 : 0;
         $validated['payment_integration'] = $request->input('payment_integration', 0) == 1 ? 1 : 0;
         $validated['custom_pnr_format'] = $request->input('custom_pnr_format', 0) == 1 ? 1 : 0;

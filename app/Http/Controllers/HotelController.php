@@ -100,6 +100,7 @@ class HotelController extends Controller
 
                 $supplier_payload = array_merge($payload, [
                     'endpoint' => $endpoint,
+                    'env' => $supplier->apiEnv(),
                     'api_credential_1' => $supplier->api_credential_1,
                     'api_credential_2' => $supplier->api_credential_2,
                     'api_credential_3' => $supplier->api_credential_3,
@@ -436,7 +437,7 @@ class HotelController extends Controller
                 'api_credential_5' => $supplier->api_credential_5,
                 'api_credential_6' => $supplier->api_credential_6,
                 'commission'=> $supplier->commission_rate,
-                'env' => "dev",
+                'env' => $supplier->apiEnv(),
                 'supplier_name' => $supplier_name,
             ];
 
@@ -1051,7 +1052,7 @@ class HotelController extends Controller
                 'api_credential_1'     => $supplier->api_credential_1,
                 'api_credential_2'     => $supplier->api_credential_2,
                 'api_credential_3'     => $supplier->api_credential_3,
-                'env'                  => 'dev',
+                'env'                  => $supplier->apiEnv(),
             ]);
 
             $blockData = $blockResponse->json();
@@ -1352,8 +1353,8 @@ class HotelController extends Controller
                 return redirect($invoice_url);
             }else {
                 $api_cred = TravelPartner::where('status', 'active')->where("company_name",strtolower($booking->booking_supplier_name))->first();
-                // Determine environment mode
-                $env = 'dev';
+                // Development mode on the supplier → test API + sandbox card, off → live API + saved card
+                $env = $api_cred->apiEnv();
 
                 $params = [
                     'api_credential_1' => $api_cred->api_credential_1,
@@ -1363,6 +1364,7 @@ class HotelController extends Controller
                     'api_credential_5' => '',
                     'api_credential_6' => '',
                     'env' => $env,
+                    'payment_card' => $env === 'pro' ? $api_cred->paymentCard() : $api_cred->sandboxCard(),
                     'booking_data' => $booking->booking_data,
                     'guest' => $booking->booking_guest,
                     'user_data' => $booking->booking_user_data,

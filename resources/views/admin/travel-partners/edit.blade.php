@@ -34,6 +34,10 @@
             $stepList = ['basic' => ['icon' => 'bi-building', 'title' => 'Basic Information', 'desc' => 'Company & services']];
             if (!$isManual) $stepList['credentials'] = ['icon' => 'bi-link-45deg', 'title' => 'API Credentials', 'desc' => 'Enter API keys'];
             $stepList['financial'] = ['icon' => 'bi-database', 'title' => 'Financial Information', 'desc' => 'Commission & markups'];
+            // WebBeds only: card used to pay live bookings (sandbox card in Development mode)
+            $isWebbeds = $supplierSlug === 'webbeds';
+            $savedCard = $isWebbeds ? $partner->paymentCardSummary() : null;
+            if ($isWebbeds) $stepList['payment'] = ['icon' => 'bi-credit-card', 'title' => 'Payment Details', 'desc' => 'Card for live bookings'];
             if (!$isManual) $stepList['devmode'] = ['icon' => 'bi-code-slash', 'title' => 'Development Mode', 'desc' => 'Test / Sandbox settings'];
             if ($showImportTab) $stepList['import'] = ['icon' => 'bi-cloud-arrow-up', 'title' => 'Import Data', 'desc' => 'Review & import'];
             $stepList['review'] = ['icon' => 'bi-check-circle-fill', 'title' => 'Review & Save', 'desc' => 'Confirm configuration'];
@@ -49,6 +53,7 @@
                     str_starts_with($key, 'api_credential_') => 'credentials',
                     in_array($key, ['commission_rate', 'commission_type', 'discount_rate', 'discount_type', 'b2b_markup', 'b2b_markup_type', 'b2c_markup', 'b2c_markup_type']) => 'financial',
                     $key === 'development_mode' => 'devmode',
+                    str_starts_with($key, 'card_'), str_starts_with($key, 'sandbox_card_') => 'payment',
                     default => 'basic',
                 };
                 break;
@@ -302,6 +307,112 @@
                         </div>
                     </section>
 
+                    @if($isWebbeds)
+                    <!-- ===== STEP: PAYMENT DETAILS (WebBeds only) ===== -->
+                    @php
+                        $sandboxCard = $partner->sandboxCard() ?? ['cardName' => '', 'cardNumber' => '', 'expiryMonth' => '', 'expiryYear' => '', 'securityCode' => ''];
+                        $devOn = (bool) old('development_mode', $partner->development_mode);
+                    @endphp
+                    <section class="tbp-partner-edit-step-content tbp-partner-edit-payment" data-step-panel="payment" role="tabpanel">
+                        <div class="tbp-partner-edit-card">
+                            <div class="tbp-partner-edit-card-head">
+                                <div class="tbp-partner-edit-card-badge">{{ $stepList['payment']['num'] }}</div>
+                                <div class="tbp-partner-edit-card-icon"><i class="bi bi-credit-card"></i></div>
+                                <div>
+                                    <div class="tbp-partner-edit-card-title">Payment Details</div>
+                                    <div class="tbp-partner-edit-card-desc">Card WebBeds charges for live bookings (tokenised through Rezpayments). Required for Live mode.</div>
+                                </div>
+                            </div>
+                            <div class="tbp-partner-edit-card-body">
+                                {{-- Sandbox: the admin's WebBeds test card, filled in from what is saved --}}
+                                <div id="paymentSandbox" @unless($devOn) hidden @endunless>
+                                    <div class="tbp-partner-edit-banner">
+                                        <i class="bi bi-info-circle"></i>
+                                        <span><strong>Sandbox mode</strong> — bookings use this WebBeds test card. Add your real card before switching to Live mode.</span>
+                                    </div>
+                                    <div class="tbp-partner-edit-grid tbp-partner-edit-grid-2">
+                                        <div class="tbp-partner-edit-field">
+                                            <label for="sandbox_card_name">Cardholder name</label>
+                                            <input type="text" name="sandbox_card_name" id="sandbox_card_name" class="form-control tbp-partner-edit-sandbox-input @error('sandbox_card_name') is-invalid @enderror" value="{{ old('sandbox_card_name', $sandboxCard['cardName']) }}" maxlength="100" data-card-field="cardName" @disabled(!$devOn)>
+                                            @error('sandbox_card_name')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                        </div>
+                                        <div class="tbp-partner-edit-field">
+                                            <label for="sandbox_card_number">Card number</label>
+                                            <input type="text" name="sandbox_card_number" id="sandbox_card_number" class="form-control tbp-partner-edit-sandbox-input @error('sandbox_card_number') is-invalid @enderror" value="{{ old('sandbox_card_number', $sandboxCard['cardNumber'] !== '' ? trim(chunk_split($sandboxCard['cardNumber'], 4, ' ')) : '') }}" inputmode="numeric" maxlength="23" pattern="[0-9 ]{12,23}" data-card-field="cardNumber" @disabled(!$devOn)>
+                                            @error('sandbox_card_number')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                        </div>
+                                        <div class="tbp-partner-edit-field">
+                                            <label>Expiry (MM / YYYY)</label>
+                                            <div class="tbp-partner-edit-card-expiry">
+                                                <select name="sandbox_card_expiry_month" class="form-select tbp-partner-edit-sandbox-input @error('sandbox_card_expiry_month') is-invalid @enderror" data-card-field="expiryMonth" @disabled(!$devOn)>
+                                                    <option value="">MM</option>
+                                                    @for($m = 1; $m <= 12; $m++)<option value="{{ $m }}" @selected((int) old('sandbox_card_expiry_month', $sandboxCard['expiryMonth']) === $m)>{{ sprintf('%02d', $m) }}</option>@endfor
+                                                </select>
+                                                <select name="sandbox_card_expiry_year" class="form-select tbp-partner-edit-sandbox-input @error('sandbox_card_expiry_year') is-invalid @enderror" data-card-field="expiryYear" @disabled(!$devOn)>
+                                                    @php $sbYear = (int) old('sandbox_card_expiry_year', $sandboxCard['expiryYear']); @endphp
+                                                    <option value="">YYYY</option>
+                                                    @for($y = min((int) date('Y'), $sbYear ?: (int) date('Y')); $y <= (int) date('Y') + 15; $y++)<option value="{{ $y }}" @selected($sbYear === $y)>{{ $y }}</option>@endfor
+                                                </select>
+                                            </div>
+                                            @error('sandbox_card_expiry_month')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                            @error('sandbox_card_expiry_year')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                        </div>
+                                        <div class="tbp-partner-edit-field">
+                                            <label for="sandbox_card_cvv">Security code (CVV)</label>
+                                            <input type="text" name="sandbox_card_cvv" id="sandbox_card_cvv" class="form-control tbp-partner-edit-sandbox-input @error('sandbox_card_cvv') is-invalid @enderror" value="{{ old('sandbox_card_cvv', $sandboxCard['securityCode']) }}" inputmode="numeric" maxlength="4" pattern="[0-9]{3,4}" data-card-field="securityCode" @disabled(!$devOn)>
+                                            @error('sandbox_card_cvv')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Live: the admin's own card (only a masked summary of a saved card reaches the browser) --}}
+                                <div id="paymentLive" @if($devOn) hidden @endif>
+                                    @if($savedCard)
+                                        <div class="tbp-partner-edit-banner tbp-partner-edit-card-saved">
+                                            <i class="bi bi-credit-card-2-front"></i>
+                                            <span>Saved card: <strong>{{ $savedCard['name'] }}</strong> · •••• {{ $savedCard['last4'] }} · expires {{ $savedCard['expiry'] }}. Fill in the fields below only to replace it.</span>
+                                        </div>
+                                    @endif
+                                    <div class="tbp-partner-edit-grid tbp-partner-edit-grid-2">
+                                        <div class="tbp-partner-edit-field">
+                                            <label for="card_name">Cardholder name</label>
+                                            <input type="text" name="card_name" id="card_name" class="form-control tbp-partner-edit-card-input @error('card_name') is-invalid @enderror" value="{{ old('card_name') }}" maxlength="100" autocomplete="cc-name" placeholder="Name on card" @disabled($devOn)>
+                                            @error('card_name')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                        </div>
+                                        <div class="tbp-partner-edit-field">
+                                            <label for="card_number">Card number</label>
+                                            <input type="text" name="card_number" id="card_number" class="form-control tbp-partner-edit-card-input @error('card_number') is-invalid @enderror" inputmode="numeric" maxlength="23" pattern="[0-9 ]{12,23}" autocomplete="cc-number" placeholder="{{ $savedCard ? '•••• •••• •••• ' . $savedCard['last4'] : '1234 5678 9012 3456' }}" @disabled($devOn)>
+                                            @error('card_number')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                        </div>
+                                        <div class="tbp-partner-edit-field">
+                                            <label>Expiry (MM / YYYY)</label>
+                                            <div class="tbp-partner-edit-card-expiry">
+                                                <select name="card_expiry_month" class="form-select tbp-partner-edit-card-input @error('card_expiry_month') is-invalid @enderror" autocomplete="cc-exp-month" @disabled($devOn)>
+                                                    <option value="">MM</option>
+                                                    @for($m = 1; $m <= 12; $m++)<option value="{{ $m }}" @selected((int) old('card_expiry_month') === $m)>{{ sprintf('%02d', $m) }}</option>@endfor
+                                                </select>
+                                                <select name="card_expiry_year" class="form-select tbp-partner-edit-card-input @error('card_expiry_year') is-invalid @enderror" autocomplete="cc-exp-year" @disabled($devOn)>
+                                                    <option value="">YYYY</option>
+                                                    @for($y = (int) date('Y'); $y <= (int) date('Y') + 15; $y++)<option value="{{ $y }}" @selected((int) old('card_expiry_year') === $y)>{{ $y }}</option>@endfor
+                                                </select>
+                                            </div>
+                                            @error('card_expiry_month')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                            @error('card_expiry_year')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                        </div>
+                                        <div class="tbp-partner-edit-field">
+                                            <label for="card_cvv">Security code (CVV)</label>
+                                            <input type="password" name="card_cvv" id="card_cvv" class="form-control tbp-partner-edit-card-input @error('card_cvv') is-invalid @enderror" inputmode="numeric" maxlength="4" pattern="[0-9]{3,4}" autocomplete="cc-csc" placeholder="•••" @disabled($devOn)>
+                                            @error('card_cvv')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                        </div>
+                                    </div>
+                                    <p class="tbp-partner-edit-card-help"><i class="bi bi-shield-lock"></i> Stored encrypted. Only the last 4 digits are ever shown again.</p>
+                                </div>
+                                <div class="tbp-partner-edit-step-error" data-step-error="payment"></div>
+                            </div>
+                        </div>
+                    </section>
+                    @endif
+
                     @if(!$isManual)
                     <!-- ===== STEP: DEVELOPMENT MODE ===== -->
                     <section class="tbp-partner-edit-step-content tbp-partner-edit-development-mode" data-step-panel="devmode" role="tabpanel">
@@ -332,8 +443,19 @@
                                         <span id="devModeSummaryBadge" class="tbp-partner-edit-devmode-summary-badge {{ old('development_mode', $partner->development_mode) ? 'is-on' : 'is-off' }}">
                                             {{ old('development_mode', $partner->development_mode) ? 'Sandbox enabled' : 'Sandbox disabled' }}
                                         </span>
+                                        @if($isWebbeds)
+                                            <i class="bi bi-info-circle tbp-partner-edit-live-tip" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top"
+                                               title="Card details are required to activate WebBeds Live Mode. Please add your payment card details in the Payment Details tab to proceed. This is a mandatory WebBeds requirement."></i>
+                                        @endif
                                     </div>
                                 </div>
+                                @if($isWebbeds)
+                                    <div class="tbp-partner-edit-live-warning" id="liveCardWarning" role="alert" @unless($errors->has('development_mode')) hidden @endunless>
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        <span>Card details are required to activate WebBeds Live Mode. Please add your payment card details in the
+                                            <a href="#" data-goto-step="payment">Payment Details</a> tab to proceed. This is a mandatory WebBeds requirement.</span>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </section>
@@ -772,7 +894,37 @@
             // ===== DEVELOPMENT MODE =====
             const devModeSwitch = document.getElementById('developmentModeSwitch');
             const devBadge = document.getElementById('devModeSummaryBadge');
+
+            // WebBeds: Live mode needs a payment card (saved, or fully entered in Payment Details)
+            const IS_WEBBEDS = @json($isWebbeds);
+            const HAS_SAVED_CARD = @json((bool) $savedCard);
+            const liveCardWarning = document.getElementById('liveCardWarning');
+            const cardInputs = Array.from(document.querySelectorAll('.tbp-partner-edit-card-input'));
+            const cardEntered = () => cardInputs.length > 0 && cardInputs.every(el => el.value.trim() !== '');
+            const canGoLive = () => !IS_WEBBEDS || HAS_SAVED_CARD || cardEntered();
+            const sandboxInputs = Array.from(document.querySelectorAll('.tbp-partner-edit-sandbox-input'));
+            function syncPaymentMode(sandbox) {
+                if (!IS_WEBBEDS) return;
+                document.getElementById('paymentSandbox').hidden = !sandbox;
+                document.getElementById('paymentLive').hidden = sandbox;
+                cardInputs.forEach(el => { el.disabled = sandbox; });
+                sandboxInputs.forEach(el => { el.disabled = !sandbox; });
+            }
+            document.querySelectorAll('[data-goto-step]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); setActiveStep(a.dataset.gotoStep); }));
+            cardInputs.forEach(el => el.addEventListener('input', () => { if (liveCardWarning && canGoLive()) liveCardWarning.hidden = true; }));
+            if (IS_WEBBEDS && window.bootstrap?.Tooltip) document.querySelectorAll('.tbp-partner-edit-live-tip').forEach(el => new bootstrap.Tooltip(el));
+
             devModeSwitch?.addEventListener('change', () => {
+                if (!devModeSwitch.checked && !canGoLive()) {
+                    // Stay in Sandbox until a card is added
+                    devModeSwitch.checked = true;
+                    liveCardWarning.hidden = false;
+                    syncPaymentMode(false); // open the card fields so it can be added
+                    cardInputs.forEach(el => { el.disabled = false; });
+                    return;
+                }
+                if (liveCardWarning) liveCardWarning.hidden = true;
+                syncPaymentMode(devModeSwitch.checked);
                 const on = devModeSwitch.checked;
                 devBadge.textContent = on ? 'Sandbox enabled' : 'Sandbox disabled';
                 devBadge.classList.toggle('is-on', on);

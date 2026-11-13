@@ -12,7 +12,12 @@ use Illuminate\Support\Facades\DB;
 
 class WebbedsController extends BaseController
 {
-    private const API_ENDPOINT      = 'https://xmldev.dotwconnect.com/gatewayV4.dotw';
+
+    // WebBeds (DOTW) V4 gateway per environment: env "dev" = sandbox, "pro" = live
+    private const API_ENDPOINTS     = [
+        'dev' => 'https://xmldev.dotwconnect.com/gatewayV4.dotw',
+        'pro' => 'https://us.dotwconnect.com/gatewayV4.dotw',
+    ];
     private const CURL_TIMEOUT_LIST  = 120;
     private const CURL_TIMEOUT_PRICE = 60;
     private const HOTEL_BATCH_SIZE   = 50;
@@ -516,6 +521,13 @@ class WebbedsController extends BaseController
                 'booking_data'     => 'required',
                 'device_payload'   => 'nullable|string',
                 'env'              => 'nullable|in:dev,pro',
+                // Card the admin saved on the supplier (Payment Details): live card in pro, sandbox card in dev
+                'payment_card'                => 'nullable|array',
+                'payment_card.cardName'       => 'required_with:payment_card|string|max:100',
+                'payment_card.cardNumber'     => 'required_with:payment_card|digits_between:12,19',
+                'payment_card.expiryMonth'    => 'required_with:payment_card|integer|between:1,12',
+                'payment_card.expiryYear'     => 'required_with:payment_card|digits:4',
+                'payment_card.securityCode'   => 'required_with:payment_card|digits_between:3,4',
             ]);
 
             if ($validator->fails()) {
@@ -523,6 +535,13 @@ class WebbedsController extends BaseController
             }
 
             $v = $validator->validated();
+
+            // Card to pay with: always the one the admin saved (no built-in card)
+            $paymentCard = $v['payment_card'] ?? null;
+            if (!$paymentCard) {
+                $mode = ($v['env'] ?? 'dev') === 'pro' ? 'Live' : 'Sandbox';
+                return response()->json(['success' => false, 'booking_pnr' => null, 'step' => 'payment_card', 'message' => "Card details are required for WebBeds {$mode} mode. Add the {$mode} card in admin → Suppliers → WebBeds → Payment Details."], 422);
+            }
 
             $salutationMap = [
                 'male' => self::SALUTATION_MR,  'female' => self::SALUTATION_MRS,
@@ -797,11 +816,11 @@ class WebbedsController extends BaseController
 
             // ── Step 3: Rezpayments tokenize ─────────────────────────────────
             $tokenResult = $this->rezpayments_tokenize([
-                'cardName'     => 'Usama Malik',
-                'cardNumber'   => '4444333322221111',
-                'expiryYear'   => '2026',
-                'expiryMonth'  => '12',
-                'securityCode' => '123',
+                'cardName'     => $paymentCard['cardName'],
+                'cardNumber'   => $paymentCard['cardNumber'],
+                'expiryYear'   => (string) $paymentCard['expiryYear'],
+                'expiryMonth'  => sprintf('%02d', (int) $paymentCard['expiryMonth']),
+                'securityCode' => (string) $paymentCard['securityCode'],
                 'env'          => $v['env'] ?? 'dev',
             ]);
 
@@ -1286,11 +1305,19 @@ XMLREQ;
     // PRIVATE — HTTP
     // -------------------------------------------------------------------------
 
+    /** Gateway for $env, or for the "env" of the current request (default sandbox). */
+    private function apiEndpoint(?string $env = null): string
+    {
+        $env ??= request()->input('env');
+
+        return self::API_ENDPOINTS[$env === 'pro' ? 'pro' : 'dev'];
+    }
+
     private function make_curl_request(string $xml, int $timeout = 60): array
     {
         $ch = curl_init();
         curl_setopt_array($ch, [
-            CURLOPT_URL            => self::API_ENDPOINT,
+            CURLOPT_URL            => $this->apiEndpoint(),
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => $xml,
             CURLOPT_RETURNTRANSFER => true,
@@ -2202,7 +2229,7 @@ XML;
             $username = trim($v['api_credential_1']);
             $password = md5(trim($v['api_credential_2']));
             $id       = trim($v['api_credential_3']);
-            $endpoint = !empty($v['endpoint']) ? $v['endpoint'] : self::API_ENDPOINT;
+            $endpoint = !empty($v['endpoint']) ? $v['endpoint'] : $this->apiEndpoint($request->input('env'));
             $devMode  = !empty($v['developer_mode']);
 
             // Static lookup with no hotel/date dependency: it succeeds whenever the
