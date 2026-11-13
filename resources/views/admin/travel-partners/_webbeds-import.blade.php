@@ -50,7 +50,13 @@
     </div>
 
     <div class="tbp-webbeds-import-cron">
-        <div class="tbp-webbeds-import-cron-title"><i class="bi bi-clock-history"></i> Monthly auto-import (cron job)</div>
+        <div class="tbp-webbeds-import-cron-title"><i class="bi bi-clock-history"></i> Monthly auto-import (cron job)
+            <span class="tbp-webbeds-cron-badge" id="wbCronBadge" data-state="never">Checking…</span></div>
+        {{-- Live cron health: filled from stats.cron (heartbeat written by every cron / console run) --}}
+        <div class="tbp-webbeds-cron-status" id="wbCronStatus" hidden>
+            <div id="wbCronInfo"></div>
+            <div class="tbp-webbeds-cron-error" id="wbCronError" hidden><i class="bi bi-exclamation-octagon"></i> <span></span></div>
+        </div>
         <p class="tbp-partner-edit-hint">Add this link to your server's cron. Each call imports cities for ~50 seconds. When every city has been imported for the month it does nothing, and on the 1st of every month all cities are re-imported with the latest data.</p>
         <label class="tbp-webbeds-import-label">Cron URL</label>
         <div class="tbp-webbeds-import-copy">
@@ -128,7 +134,35 @@
         renderLive(stats);
         const lr = stats.last_run;
         $('wbLastRun').textContent = lr ? `Last run (${lr.trigger}): ${lr.finished_at} — ${lr.message}` : 'Last run: never';
+        renderCron(stats.cron || {});
         return stats;
+    }
+
+    // Cron health (server cron job) for the admin
+    function renderCron(c) {
+        const labels = { active: 'Running', error: 'Error', stopped: 'Not running', never: 'Not detected' };
+        const badge = $('wbCronBadge');
+        badge.dataset.state = c.state || 'never';
+        badge.textContent = labels[c.state] || labels.never;
+
+        const ago = m => m == null ? '' : (m < 1 ? 'just now' : (m < 60 ? `${m} min ago` : (m < 1440 ? `${Math.floor(m / 60)} h ago` : `${Math.floor(m / 1440)} day(s) ago`)));
+        const how = c.trigger === 'console' ? 'php artisan command' : 'cron URL';
+        let info;
+        if (c.state === 'never') info = 'No cron call has been received yet. Add one of the cron lines below in cPanel → Cron Jobs (every minute).';
+        else if (c.state === 'stopped') info = `The cron job is not running — last call ${ago(c.minutes_ago)} (${utcToLocal(c.last_at)}, via ${how}). Check the cron job in cPanel.`;
+        else info = `Last call ${ago(c.minutes_ago)} via ${how}${c.message ? ' — ' + c.message : ''}`;
+        $('wbCronInfo').textContent = info;
+
+        // Current error, else the most recent one (with when it happened); also an old/wrong cron link
+        let err = '';
+        if (c.bad_token_at) err = `The cron job is calling an old cron link (${utcToLocal(c.bad_token_at)}) — it was rejected. Copy the Cron URL below into cPanel again.`;
+        else if (c.state === 'error' && c.error) err = `Last cron run failed: ${c.error}`;
+        else if (c.last_error && c.last_error_at && c.state !== 'never') err = `Last cron error (${utcToLocal(c.last_error_at)}): ${c.last_error}`;
+        const box = $('wbCronError');
+        box.hidden = !err;
+        box.classList.toggle('is-old', !c.bad_token_at && c.state !== 'error');
+        box.querySelector('span').textContent = err;
+        $('wbCronStatus').hidden = false;
     }
 
     let pollTimer = null;

@@ -60,7 +60,10 @@ class WebbedsCityImportController extends Controller
     /** Public cron endpoint — protected by the secret token in the URL. */
     public function cron(string $token)
     {
-        abort_unless(hash_equals($this->importer->cronToken(), $token), 403);
+        if (!hash_equals($this->importer->cronToken(), $token)) {
+            $this->importer->recordCronBadToken(); // shown in admin: the cron job uses an old link
+            abort(403);
+        }
         @set_time_limit(400);
         ignore_user_abort(true);
         return response()->json($this->importer->runBatch(50, 'cron'));

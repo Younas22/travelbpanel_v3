@@ -31,6 +31,8 @@ class WebbedsCityImporter
     private const LOCK_KEY = 'webbeds-city-import';
     private const PROGRESS_KEY = 'webbeds-city-import-progress';
     private const FAILED_RETRY_HOURS = 6;
+    private const CRON_KEY = 'city_import_cron';      // Setting (group "webbeds"): last cron/console run
+    private const CRON_ACTIVE_MINUTES = 10;           // no cron call for longer → "not running"
     private const HOTEL_FIELDS = [
         'hotelName', 'address', 'rating', 'hotelImages', 'fullAddress', 'description1',
         'description2', 'location2', 'location3', 'cityName', 'cityCode', 'hotelPhone',
@@ -85,6 +87,7 @@ class WebbedsCityImporter
             'month_label'    => now()->format('F Y'),
             'last_run'       => json_decode((string) Setting::getValue('city_import_last_run', 'webbeds'), true),
             'running'        => !Cache::lock(self::LOCK_KEY, 1)->get(fn () => true),
+            'cron'           => $this->cronStatus(),
             'current'        => Cache::get(self::PROGRESS_KEY),
         ];
     }
@@ -157,12 +160,15 @@ class WebbedsCityImporter
     {
         $lock = Cache::lock(self::LOCK_KEY, $seconds + 180);
         if (!$lock->get()) {
-            return ['success' => false, 'running' => true, 'message' => 'An import batch is already running.'];
+            $busy = ['success' => false, 'running' => true, 'message' => 'An import batch is already running.'];
+            $this->recordCron($trigger, ['success' => true, 'message' => 'Called while a batch was already running — skipped.']);
+            return $busy;
         }
 
         $start = microtime(true);
         $done = $failed = $hotels = 0;
         $last = null;
+        $lastError = null;
         try {
             $creds = $this->credentials();
             while (microtime(true) - $start < $seconds) {
@@ -171,6 +177,7 @@ class WebbedsCityImporter
                 $this->reportProgress($trigger, $start, $code, $done, $failed, $hotels, $last);
                 $res = $this->importCityWith($creds, $code);
                 $res['success'] ? $done++ : $failed++;
+                if (!$res['success']) $lastError = ($res['city'] ?? $code) . ': ' . ($res['message'] ?? 'failed');
                 $hotels += $res['hotels_saved'] ?? 0;
                 $last = $res;
             }
@@ -186,6 +193,7 @@ class WebbedsCityImporter
                 'seconds' => round(microtime(true) - $start, 1),
                 'finished_at' => now()->toDateTimeString(),
                 'last_city' => $last['city'] ?? null,
+                'last_error' => $lastError,
                 'message' => $remaining === 0
                     ? 'All cities are imported for ' . now()->format('F Y') . '.'
                     : "Imported {$done} cities ({$hotels} hotels), {$failed} failed, {$remaining} remaining this month.",
@@ -198,7 +206,74 @@ class WebbedsCityImporter
         }
 
         Setting::setValue('city_import_last_run', json_encode($summary), 'webbeds');
+        $this->recordCron($trigger, $summary);
         return $summary;
+    }
+
+    /** Heartbeat for runs started by the server cron (URL or `php artisan webbeds:import-cities`). */
+    public function recordCron(string $trigger, array $result): void
+    {
+        if (!in_array($trigger, ['cron', 'console'], true)) return;
+
+        $prev = $this->cronState();
+        // A run whose cities all failed (e.g. wrong WebBeds login) counts as an error too
+        $error = !($result['success'] ?? false)
+            ? ($result['message'] ?? 'Unknown error')
+            : ((($result['cities_failed'] ?? 0) > 0 && ($result['cities_imported'] ?? 0) === 0) ? ($result['last_error'] ?? 'Every city in this run failed.') : null);
+        $now = gmdate('Y-m-d H:i:s');
+
+        Setting::setValue(self::CRON_KEY, json_encode([
+            'last_at'         => $now,
+            'trigger'         => $trigger,
+            'ok'              => $error === null,
+            'message'         => $result['message'] ?? null,
+            'error'           => $error,
+            'last_ok_at'      => $error === null ? $now : ($prev['last_ok_at'] ?? null),
+            'last_error_at'   => $error !== null ? $now : ($prev['last_error_at'] ?? null),
+            'last_error'      => $error ?? ($prev['last_error'] ?? null),
+            'bad_token_at'    => $prev['bad_token_at'] ?? null,
+        ]), 'webbeds');
+    }
+
+    /** The cron link was called with an old/wrong token (the cron job needs the current link). */
+    public function recordCronBadToken(): void
+    {
+        $state = $this->cronState();
+        $state['bad_token_at'] = gmdate('Y-m-d H:i:s');
+        Setting::setValue(self::CRON_KEY, json_encode($state), 'webbeds');
+    }
+
+    private function cronState(): array
+    {
+        return json_decode((string) Setting::getValue(self::CRON_KEY, 'webbeds'), true) ?: [];
+    }
+
+    /**
+     * For the admin: state "active" (called within CRON_ACTIVE_MINUTES), "error" (active but the last run failed),
+     * "stopped" (was running, no call since), or "never". Times are UTC.
+     */
+    public function cronStatus(): array
+    {
+        $c = $this->cronState();
+        $last = !empty($c['last_at']) ? strtotime($c['last_at'] . ' UTC') : null;
+        $minutes = $last ? (int) floor((time() - $last) / 60) : null;
+        $recent = $last && $minutes <= self::CRON_ACTIVE_MINUTES;
+        $badToken = !empty($c['bad_token_at']) && strtotime($c['bad_token_at'] . ' UTC') > time() - self::CRON_ACTIVE_MINUTES * 60
+            && (!$last || strtotime($c['bad_token_at'] . ' UTC') > $last);
+
+        return [
+            'state'          => !$last ? 'never' : (!$recent ? 'stopped' : (($c['ok'] ?? true) ? 'active' : 'error')),
+            'last_at'        => $c['last_at'] ?? null,
+            'minutes_ago'    => $minutes,
+            'trigger'        => $c['trigger'] ?? null,
+            'message'        => $c['message'] ?? null,
+            'error'          => $c['error'] ?? null,
+            'last_error'     => $c['last_error'] ?? null,
+            'last_error_at'  => $c['last_error_at'] ?? null,
+            'last_ok_at'     => $c['last_ok_at'] ?? null,
+            'bad_token_at'   => $badToken ? $c['bad_token_at'] : null,
+            'active_minutes' => self::CRON_ACTIVE_MINUTES,
+        ];
     }
 
     public function importCity(string $code): array
