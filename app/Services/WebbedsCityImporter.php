@@ -23,7 +23,11 @@ use Throwable;
  */
 class WebbedsCityImporter
 {
-    private const ENDPOINT = 'https://xmldev.dotwconnect.com/gatewayV4.dotw';
+    // Same gateways as WebbedsController: WebBeds' Development mode → sandbox, off → live
+    private const ENDPOINTS = [
+        'dev' => 'https://xmldev.dotwconnect.com/gatewayV4.dotw',
+        'pro' => 'https://us.dotwconnect.com/gatewayV4.dotw',
+    ];
     private const LOCK_KEY = 'webbeds-city-import';
     private const PROGRESS_KEY = 'webbeds-city-import-progress';
     private const FAILED_RETRY_HOURS = 6;
@@ -33,6 +37,7 @@ class WebbedsCityImporter
     ];
 
     private ?PDO $pdo = null;
+    private string $endpoint = self::ENDPOINTS['dev'];
 
     public function pdo(): PDO
     {
@@ -248,6 +253,7 @@ class WebbedsCityImporter
         if ($u === '' || $p === '' || $id === '') {
             throw new RuntimeException('WebBeds username, password and ID must be saved on the WebBeds partner first.');
         }
+        $this->endpoint = self::ENDPOINTS[$partner->apiEnv()];
         return ['username' => $u, 'password' => md5($p), 'id' => $id];
     }
 
@@ -311,7 +317,7 @@ XML;
 
     private function post(string $xml): string
     {
-        $ch = curl_init(self::ENDPOINT);
+        $ch = curl_init($this->endpoint);
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true, CURLOPT_POST => true, CURLOPT_POSTFIELDS => $xml,
             CURLOPT_HTTPHEADER => ['Content-Type: text/xml; charset=UTF-8'],
