@@ -8,6 +8,8 @@
      data-stats-url="{{ route('admin.travel-partners.webbeds-cities.stats', $partner) }}"
      data-cities-url="{{ route('admin.travel-partners.webbeds-cities.index', $partner) }}"
      data-batch-url="{{ route('admin.travel-partners.webbeds-cities.run-batch', $partner) }}"
+     data-start-url="{{ route('admin.travel-partners.webbeds-cities.start', $partner) }}"
+     data-stop-url="{{ route('admin.travel-partners.webbeds-cities.stop', $partner) }}"
      data-token-url="{{ route('admin.travel-partners.webbeds-cities.regenerate-token', $partner) }}"
      data-import-url="{{ url('admin/travel-partners/'.$partner->id.'/webbeds-cities') }}">
 
@@ -31,7 +33,7 @@
     <div class="tbp-webbeds-import-actions">
         <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-primary" id="wbStartBtn"><i class="bi bi-play-fill"></i> <span>Start import</span></button>
         <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline" id="wbStopBtn" hidden><i class="bi bi-stop-fill"></i> Stop</button>
-        <span class="tbp-partner-edit-hint" id="wbRunStatus">Imports run in batches. You can leave this page — the cron job continues automatically.</span>
+        <span class="tbp-partner-edit-hint" id="wbRunStatus">Start runs the import on the server through the cron job — you can leave this page. Stop pauses the cron import.</span>
     </div>
 
     <div class="tbp-webbeds-import-live" id="wbLive" hidden>
@@ -140,7 +142,7 @@
 
     // Cron health (server cron job) for the admin
     function renderCron(c) {
-        const labels = { active: 'Running', error: 'Error', stopped: 'Not running', never: 'Not detected' };
+        const labels = { active: 'Running', error: 'Error', stopped: 'Not running', never: 'Not detected', paused: 'Stopped' };
         const badge = $('wbCronBadge');
         badge.dataset.state = c.state || 'never';
         badge.textContent = labels[c.state] || labels.never;
@@ -149,6 +151,7 @@
         const how = c.trigger === 'console' ? 'php artisan command' : 'cron URL';
         let info;
         if (c.state === 'never') info = 'No cron call has been received yet. Add one of the cron lines below in cPanel → Cron Jobs (every minute).';
+        else if (c.state === 'paused') info = `Import is stopped by admin — the cron job is still calling (last call ${ago(c.minutes_ago)}) but imports nothing. Click "Start import" to resume.`;
         else if (c.state === 'stopped') info = `The cron job is not running — last call ${ago(c.minutes_ago)} (${utcToLocal(c.last_at)}, via ${how}). Check the cron job in cPanel.`;
         else info = `Last call ${ago(c.minutes_ago)} via ${how}${c.message ? ' — ' + c.message : ''}`;
         $('wbCronInfo').textContent = info;
@@ -174,14 +177,13 @@
 
     function renderLive(stats) {
         const cur = stats.current;
-        const active = stats.running || state.running;
-        const otherRun = stats.running && !state.running;
-        $('wbStartBtn').disabled = otherRun;
-        $('wbStartBtn').title = otherRun ? 'An import is already running (cron job)' : '';
+        const active = stats.running;
+        setRunning(!!stats.enabled);
         $('wbLive').hidden = !active;
         $('wbBar').classList.toggle('is-running', active);
-        if (!active) { if (!state.running) stopPolling(); return; }
+        if (!active && !stats.enabled) { stopPolling(); return; }
         startPolling();
+        if (!active) return;
         if (!cur) { $('wbLiveCity').textContent = 'next city…'; return; }
         $('wbLiveCity').textContent = cur.city;
         $('wbLiveCountry').textContent = cur.country ? '— ' + cur.country + ' (' + cur.code + ')' : '';
@@ -191,7 +193,7 @@
         $('wbLiveFailed').textContent = fmt(cur.cities_failed);
         $('wbLiveElapsed').textContent = cur.elapsed;
         $('wbLiveLast').textContent = cur.last ? `Last finished: ${cur.last.city} — ${cur.last.success ? fmt(cur.last.hotels_saved) + ' hotels' : 'failed'}` : '';
-        if (state.running) $('wbRunStatus').textContent = 'Import is running — counts and the city list update live.';
+        $('wbRunStatus').textContent = 'Import is running on the server — counts and the city list update live.';
     }
 
     const badge = {
@@ -242,34 +244,30 @@
         await Promise.all([loadStats(), loadCities()]);
     });
 
+    // Start/Stop reflect the server switch (stats.enabled), not this page
     function setRunning(on) {
         state.running = on;
         $('wbStartBtn').hidden = on;
         $('wbStopBtn').hidden = !on;
-        if (on) { $('wbLive').hidden = false; $('wbBar').classList.add('is-running'); startPolling(); }
     }
 
-    $('wbStartBtn').addEventListener('click', async () => {
-        setRunning(true);
-        while (state.running) {
-            $('wbRunStatus').innerHTML = '<i class="bi bi-arrow-repeat tbp-partner-edit-spin"></i> Importing next batch…';
-            let d;
-            try {
-                const r = await fetch(root.dataset.batchUrl, { method: 'POST', headers });
-                d = await r.json();
-            } catch (err) {
-                $('wbRunStatus').textContent = 'Batch failed: ' + err.message;
-                break;
-            }
+    async function toggleImport(url, btn) {
+        btn.disabled = true;
+        try {
+            const r = await fetch(url, { method: 'POST', headers });
+            const d = await r.json();
             $('wbRunStatus').textContent = d.message || '';
-            await Promise.all([loadStats(), loadCities()]);
-            if (d.complete || (!d.success && !d.running)) break;
-            if (d.running) await new Promise(res => setTimeout(res, 10000));
+            setRunning(!!d.enabled);
+            startPolling();
+        } catch (err) {
+            $('wbRunStatus').textContent = 'Request failed: ' + err.message;
+        } finally {
+            btn.disabled = false;
+            setTimeout(() => { loadStats(); loadCities(); }, 1500);
         }
-        setRunning(false);
-        loadStats();
-    });
-    $('wbStopBtn').addEventListener('click', () => { state.running = false; $('wbRunStatus').textContent = 'Stopping after the current batch…'; });
+    }
+    $('wbStartBtn').addEventListener('click', e => toggleImport(root.dataset.startUrl, e.currentTarget));
+    $('wbStopBtn').addEventListener('click', e => toggleImport(root.dataset.stopUrl, e.currentTarget));
 
     root.querySelectorAll('[data-copy]').forEach(btn => btn.addEventListener('click', async () => {
         const input = root.querySelector(btn.dataset.copy);

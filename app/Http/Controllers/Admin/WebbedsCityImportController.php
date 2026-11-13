@@ -43,6 +43,34 @@ class WebbedsCityImportController extends Controller
         return response()->json($this->importer->importCity($code));
     }
 
+    /**
+     * "Start import": switches the cron import on and starts a batch on the server right after this
+     * response, so it keeps going with the page closed; the cPanel cron continues it every minute.
+     */
+    public function start(TravelPartner $partner)
+    {
+        $this->guard($partner);
+        $this->importer->setEnabled(true);
+
+        $importer = $this->importer;
+        app()->terminating(function () use ($importer) {
+            @set_time_limit(300);
+            ignore_user_abort(true);
+            $importer->runBatch(50, 'admin');
+        });
+
+        return response()->json(['success' => true, 'enabled' => true, 'message' => 'Import started — it continues on the server through the cron job.']);
+    }
+
+    /** "Stop": the current batch finishes; later cron calls do nothing until Start. */
+    public function stop(TravelPartner $partner)
+    {
+        $this->guard($partner);
+        $this->importer->setEnabled(false);
+
+        return response()->json(['success' => true, 'enabled' => false, 'message' => 'Import stopped. The current batch finishes, then the cron job pauses.']);
+    }
+
     public function runBatch(TravelPartner $partner)
     {
         $this->guard($partner);

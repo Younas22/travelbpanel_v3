@@ -33,6 +33,7 @@ class WebbedsCityImporter
     private const FAILED_RETRY_HOURS = 6;
     private const CRON_KEY = 'city_import_cron';      // Setting (group "webbeds"): last cron/console run
     private const CRON_ACTIVE_MINUTES = 10;           // no cron call for longer → "not running"
+    private const ENABLED_KEY = 'city_import_enabled'; // Setting: admin Start ("1") / Stop ("0"); unset = on
     private const HOTEL_FIELDS = [
         'hotelName', 'address', 'rating', 'hotelImages', 'fullAddress', 'description1',
         'description2', 'location2', 'location3', 'cityName', 'cityCode', 'hotelPhone',
@@ -88,6 +89,7 @@ class WebbedsCityImporter
             'last_run'       => json_decode((string) Setting::getValue('city_import_last_run', 'webbeds'), true),
             'running'        => !Cache::lock(self::LOCK_KEY, 1)->get(fn () => true),
             'cron'           => $this->cronStatus(),
+            'enabled'        => $this->isEnabled(),
             'current'        => Cache::get(self::PROGRESS_KEY),
         ];
     }
@@ -155,9 +157,27 @@ class WebbedsCityImporter
         ];
     }
 
+    /** Admin "Start import" / "Stop": whether the server cron imports at all. */
+    public function isEnabled(): bool
+    {
+        return Setting::getValue(self::ENABLED_KEY, 'webbeds', '1') !== '0';
+    }
+
+    public function setEnabled(bool $on): void
+    {
+        Setting::setValue(self::ENABLED_KEY, $on ? '1' : '0', 'webbeds');
+    }
+
     /** Runs due cities until the time budget is used up. Never overlaps with itself. */
     public function runBatch(int $seconds = 50, string $trigger = 'cron'): array
     {
+        // Stopped by the admin: the cron keeps calling but imports nothing until "Start import"
+        if (in_array($trigger, ['cron', 'console'], true) && !$this->isEnabled()) {
+            $paused = ['success' => true, 'paused' => true, 'message' => 'Import is stopped — click "Start import" in admin to resume.'];
+            $this->recordCron($trigger, $paused);
+            return $paused;
+        }
+
         $lock = Cache::lock(self::LOCK_KEY, $seconds + 180);
         if (!$lock->get()) {
             $busy = ['success' => false, 'running' => true, 'message' => 'An import batch is already running.'];
@@ -262,7 +282,7 @@ class WebbedsCityImporter
             && (!$last || strtotime($c['bad_token_at'] . ' UTC') > $last);
 
         return [
-            'state'          => !$last ? 'never' : (!$recent ? 'stopped' : (($c['ok'] ?? true) ? 'active' : 'error')),
+            'state'          => !$last ? 'never' : (!$recent ? 'stopped' : (!$this->isEnabled() ? 'paused' : (($c['ok'] ?? true) ? 'active' : 'error'))),
             'last_at'        => $c['last_at'] ?? null,
             'minutes_ago'    => $minutes,
             'trigger'        => $c['trigger'] ?? null,
