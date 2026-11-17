@@ -13,27 +13,31 @@
      data-token-url="{{ route('admin.travel-partners.webbeds-cities.regenerate-token', $partner) }}"
      data-import-url="{{ url('admin/travel-partners/'.$partner->id.'/webbeds-cities') }}">
 
+    {{-- KPI cards --}}
     <div class="tbp-webbeds-import-stats">
-        <div class="tbp-webbeds-import-stat"><span>Total cities</span><strong data-wb="total_cities">—</strong></div>
-        <div class="tbp-webbeds-import-stat is-green"><span>Imported (<span data-wb="month_label">this month</span>)</span><strong data-wb="imported_month">—</strong></div>
-        <div class="tbp-webbeds-import-stat is-amber"><span>Pending</span><strong data-wb="pending_month">—</strong></div>
-        <div class="tbp-webbeds-import-stat is-red"><span>Failed</span><strong data-wb="failed_month">—</strong></div>
-        <div class="tbp-webbeds-import-stat"><span>Hotels in database</span><strong data-wb="total_hotels">—</strong></div>
+        <div class="tbp-webbeds-import-stat"><span class="tbp-webbeds-kpi-icon"><i class="bi bi-buildings"></i></span><div><span>Total Cities</span><strong data-wb="total_cities">—</strong></div></div>
+        <div class="tbp-webbeds-import-stat is-green"><span class="tbp-webbeds-kpi-icon"><i class="bi bi-database-check"></i></span><div><span>Imported (<span data-wb="month_label">this month</span>)</span><strong data-wb="imported_month">—</strong></div></div>
+        <div class="tbp-webbeds-import-stat is-blue"><span class="tbp-webbeds-kpi-icon"><i class="bi bi-arrow-repeat"></i></span><div><span>Pending</span><strong data-wb="pending_month">—</strong></div></div>
+        <div class="tbp-webbeds-import-stat is-red"><span class="tbp-webbeds-kpi-icon"><i class="bi bi-exclamation-triangle"></i></span><div><span>Failed</span><strong data-wb="failed_month">—</strong></div></div>
+        <div class="tbp-webbeds-import-stat"><span class="tbp-webbeds-kpi-icon"><i class="bi bi-hospital"></i></span><div><span>Hotels in Database</span><strong data-wb="total_hotels">—</strong></div></div>
     </div>
 
-    <div class="tbp-webbeds-import-progress">
-        <div class="tbp-webbeds-import-progress-head">
-            <span>Monthly import progress</span>
-            <strong><span data-wb="progress">0</span>%</strong>
+    {{-- Progress + Start/Stop --}}
+    <div class="tbp-webbeds-import-row">
+        <div class="tbp-webbeds-panel tbp-webbeds-import-progress">
+            <div class="tbp-webbeds-import-progress-head">
+                <span class="tbp-webbeds-panel-title"><i class="bi bi-file-earmark-arrow-up"></i> Monthly Import Progress</span>
+                <strong><span data-wb="progress">0</span>%</strong>
+            </div>
+            <div class="tbp-webbeds-import-bar"><div class="tbp-webbeds-import-bar-fill" id="wbBar"></div></div>
+            <div class="tbp-partner-edit-hint" id="wbLastRun">Last run: —</div>
         </div>
-        <div class="tbp-webbeds-import-bar"><div class="tbp-webbeds-import-bar-fill" id="wbBar" style="width:0%"></div></div>
-        <div class="tbp-partner-edit-hint" id="wbLastRun">Last run: —</div>
-    </div>
-
-    <div class="tbp-webbeds-import-actions">
-        <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-primary" id="wbStartBtn"><i class="bi bi-play-fill"></i> <span>Start import</span></button>
-        <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline" id="wbStopBtn" hidden><i class="bi bi-stop-fill"></i> Stop</button>
-        <span class="tbp-partner-edit-hint" id="wbRunStatus">Start runs the import on the server through the cron job — you can leave this page. Stop pauses the cron import.</span>
+        <div class="tbp-webbeds-panel tbp-webbeds-import-actions">
+            <span class="tbp-webbeds-run-pill" id="wbRunPill" data-state="stopped"><i></i>Stopped</span>
+            <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-primary" id="wbStartBtn"><i class="bi bi-play-fill"></i> <span>Start import</span></button>
+            <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-primary" id="wbStopBtn" hidden><i class="bi bi-stop-fill"></i> Stop</button>
+            <span class="tbp-partner-edit-hint" id="wbRunStatus">Start runs the import on the server through the cron job — you can leave this page. Stop pauses the cron import.</span>
+        </div>
     </div>
 
     <div class="tbp-webbeds-import-live" id="wbLive" hidden>
@@ -51,58 +55,69 @@
         <div class="tbp-partner-edit-hint" id="wbLiveLast"></div>
     </div>
 
-    <div class="tbp-webbeds-import-cron">
-        <div class="tbp-webbeds-import-cron-title"><i class="bi bi-clock-history"></i> Monthly auto-import (cron job)
-            <span class="tbp-webbeds-cron-badge" id="wbCronBadge" data-state="never">Checking…</span></div>
-        {{-- Live cron health: filled from stats.cron (heartbeat written by every cron / console run) --}}
-        <div class="tbp-webbeds-cron-status" id="wbCronStatus" hidden>
-            <div id="wbCronInfo"></div>
-            <div class="tbp-webbeds-cron-error" id="wbCronError" hidden><i class="bi bi-exclamation-octagon"></i> <span></span></div>
+    {{-- Cron job --}}
+    <div class="tbp-webbeds-panel tbp-webbeds-import-cron">
+        <div class="tbp-webbeds-cron-head">
+            <span class="tbp-webbeds-kpi-icon"><i class="bi bi-calendar3"></i></span>
+            <div class="tbp-webbeds-cron-head-text">
+                <div class="tbp-webbeds-panel-title">Monthly Auto-Import (Cron Job)</div>
+                {{-- Live cron health: filled from stats.cron (heartbeat written by every cron / console run) --}}
+                <div class="tbp-webbeds-cron-status" id="wbCronStatus" hidden>
+                    <div id="wbCronInfo"></div>
+                    <div class="tbp-webbeds-cron-error" id="wbCronError" hidden><i class="bi bi-exclamation-octagon"></i> <span></span></div>
+                </div>
+                <p class="tbp-partner-edit-hint">Add this link to your server's cron. Each call imports cities for ~50 seconds. When every city has been imported for the month it does nothing, and on the 1st of every month all cities are re-imported with the latest data.</p>
+            </div>
+            <span class="tbp-webbeds-cron-badge" id="wbCronBadge" data-state="never">Checking…</span>
         </div>
-        <p class="tbp-partner-edit-hint">Add this link to your server's cron. Each call imports cities for ~50 seconds. When every city has been imported for the month it does nothing, and on the 1st of every month all cities are re-imported with the latest data.</p>
-        <label class="tbp-webbeds-import-label">Cron URL</label>
-        <div class="tbp-webbeds-import-copy">
-            <input type="text" readonly id="wbCronUrl" value="{{ $wbCronUrl }}" class="form-control">
-            <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline" data-copy="#wbCronUrl"><i class="bi bi-clipboard"></i> Copy</button>
-            <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline" id="wbRegenBtn" title="Create a new secret link (the old one stops working)"><i class="bi bi-arrow-repeat"></i></button>
-        </div>
-        <label class="tbp-webbeds-import-label">Crontab line (every minute — recommended)</label>
-        <div class="tbp-webbeds-import-copy">
-            <input type="text" readonly id="wbCronLine" value='* * * * * curl -s --max-time 300 "{{ $wbCronUrl }}" > /dev/null 2>&1' class="form-control">
-            <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline" data-copy="#wbCronLine"><i class="bi bi-clipboard"></i> Copy</button>
-        </div>
-        <label class="tbp-webbeds-import-label">Or, without a URL (server shell access)</label>
-        <div class="tbp-webbeds-import-copy">
-            <input type="text" readonly id="wbCronCli" value='* * * * * cd {{ base_path() }} && php artisan webbeds:import-cities > /dev/null 2>&1' class="form-control">
-            <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline" data-copy="#wbCronCli"><i class="bi bi-clipboard"></i> Copy</button>
+        <div class="tbp-webbeds-cron-rows">
+            <label class="tbp-webbeds-import-label" for="wbCronUrl">Cron URL</label>
+            <div class="tbp-webbeds-import-copy">
+                <input type="text" readonly id="wbCronUrl" value="{{ $wbCronUrl }}" class="form-control">
+                <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline" data-copy="#wbCronUrl"><i class="bi bi-clipboard"></i> Copy</button>
+                <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline" id="wbRegenBtn" title="Create a new secret link (the old one stops working)"><i class="bi bi-arrow-repeat"></i></button>
+            </div>
+            <label class="tbp-webbeds-import-label" for="wbCronLine">Crontab line (every minute — recommended)</label>
+            <div class="tbp-webbeds-import-copy">
+                <input type="text" readonly id="wbCronLine" value='* * * * * curl -s --max-time 300 "{{ $wbCronUrl }}" > /dev/null 2>&1' class="form-control">
+                <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline" data-copy="#wbCronLine"><i class="bi bi-clipboard"></i> Copy</button>
+            </div>
+            <label class="tbp-webbeds-import-label" for="wbCronCli">Or, without a URL (server shell access)</label>
+            <div class="tbp-webbeds-import-copy">
+                <input type="text" readonly id="wbCronCli" value='* * * * * cd {{ base_path() }} && php artisan webbeds:import-cities > /dev/null 2>&1' class="form-control">
+                <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline" data-copy="#wbCronCli"><i class="bi bi-clipboard"></i> Copy</button>
+            </div>
         </div>
     </div>
 
-    <div class="tbp-partner-edit-import-list-header">
-        <h6>Cities</h6>
-        <span class="tbp-partner-edit-hint">Green = imported this month. Outdated = imported in an earlier month, will be refreshed.</span>
-    </div>
-    <div class="tbp-webbeds-import-filters">
-        <input type="search" id="wbSearch" class="form-control" placeholder="Search city, country or code…">
-        <select id="wbStatus" class="form-select">
-            <option value="all">All cities</option>
-            <option value="imported">Imported this month</option>
-            <option value="pending">Never imported</option>
-            <option value="outdated">Outdated</option>
-            <option value="failed">Failed</option>
-        </select>
-    </div>
-    <div class="tbp-partner-edit-import-table-wrap">
-        <table class="tbp-partner-edit-import-table">
-            <thead><tr><th>City</th><th>Country</th><th>Code</th><th>Status</th><th>Hotels</th><th>Imported</th><th></th></tr></thead>
-            <tbody id="wbCitiesBody"><tr><td colspan="7" class="tbp-partner-edit-import-empty">Loading…</td></tr></tbody>
-        </table>
-    </div>
-    <div class="tbp-webbeds-import-pager">
-        <span class="tbp-partner-edit-hint" id="wbPagerInfo"></span>
-        <div>
-            <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline" id="wbPrev"><i class="bi bi-chevron-left"></i></button>
-            <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline" id="wbNext"><i class="bi bi-chevron-right"></i></button>
+    {{-- Cities --}}
+    <div class="tbp-webbeds-panel">
+        <div class="tbp-webbeds-panel-head">
+            <span class="tbp-webbeds-panel-title"><i class="bi bi-buildings"></i> Cities</span>
+            <span class="tbp-partner-edit-hint">Green = imported this month. Outdated = imported in an earlier month, will be refreshed.</span>
+        </div>
+        <div class="tbp-webbeds-import-filters">
+            <div class="tbp-webbeds-search"><i class="bi bi-search"></i><input type="search" id="wbSearch" class="form-control" placeholder="Search city, country or code…"></div>
+            <select id="wbStatus" class="form-select">
+                <option value="all">All cities</option>
+                <option value="imported">Imported this month</option>
+                <option value="pending">Never imported</option>
+                <option value="outdated">Outdated</option>
+                <option value="failed">Failed</option>
+            </select>
+        </div>
+        <div class="tbp-partner-edit-import-table-wrap tbp-webbeds-table-wrap">
+            <table class="tbp-partner-edit-import-table tbp-webbeds-table">
+                <thead><tr><th>City</th><th>Country</th><th>Code</th><th>Status</th><th>Hotels</th><th>Imported</th><th class="text-end">Actions</th></tr></thead>
+                <tbody id="wbCitiesBody"><tr><td colspan="7" class="tbp-partner-edit-import-empty">Loading…</td></tr></tbody>
+            </table>
+        </div>
+        <div class="tbp-webbeds-import-pager">
+            <span class="tbp-partner-edit-hint" id="wbPagerInfo"></span>
+            <div>
+                <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline" id="wbPrev"><i class="bi bi-chevron-left"></i></button>
+                <button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline" id="wbNext"><i class="bi bi-chevron-right"></i></button>
+            </div>
         </div>
     </div>
 </div>
@@ -216,7 +231,7 @@
                 <td title="${esc(c.message || '')}">${badge[c.state] || esc(c.state)}</td>
                 <td>${c.hotels_saved === null ? '—' : fmt(c.hotels_saved)}</td>
                 <td>${utcToLocal(c.fetched_at)}</td>
-                <td><button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline tbp-webbeds-import-city-btn" data-code="${esc(c.code)}">${c.state === 'pending' ? 'Import' : 'Re-import'}</button></td>
+                <td class="text-end"><button type="button" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline tbp-webbeds-import-city-btn" data-code="${esc(c.code)}"><i class="bi bi-arrow-clockwise"></i> ${c.state === 'pending' ? 'Import' : 'Re-import'}</button></td>
             </tr>`).join('') : '<tr><td colspan="7" class="tbp-partner-edit-import-empty">No cities match.</td></tr>';
         $('wbPagerInfo').textContent = `${fmt(d.total)} cities · page ${d.page} of ${fmt(d.pages)}`;
         $('wbPrev').disabled = d.page <= 1;
@@ -249,6 +264,8 @@
         state.running = on;
         $('wbStartBtn').hidden = on;
         $('wbStopBtn').hidden = !on;
+        $('wbRunPill').dataset.state = on ? 'running' : 'stopped';
+        $('wbRunPill').lastChild.textContent = on ? 'Running' : 'Stopped';
     }
 
     async function toggleImport(url, btn) {

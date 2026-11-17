@@ -1332,10 +1332,24 @@ XMLREQ;
             CURLOPT_ENCODING       => 'gzip, deflate',
         ]);
 
+        $started   = microtime(true);
         $body      = curl_exec($ch);
         $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
         curl_close($ch);
+
+        // WebBeds logs (admin → WebBeds → Logs): raw XML request + response of this call
+        $command = preg_match('#<command>\s*([^<\s]+)#', $xml, $m) ? $m[1] : 'request';
+        $error   = $curlError ? "cURL error: {$curlError}" : ($httpCode !== 200 ? "HTTP error: {$httpCode}" : null);
+        if (!$error && is_string($body) && preg_match('#<successful>\s*FALSE\s*</successful>#i', $body)) {
+            $error = preg_match('#<details>\s*(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?\s*</details>#s', $body, $d) ? 'WebBeds: ' . trim($d[1]) : 'WebBeds returned successful=FALSE';
+        }
+        \App\Services\WebbedsLogger::write(
+            $this->logStep(),
+            "XML {$command} ({$this->apiEndpoint()})",
+            ['HTTP' => $httpCode . ' in ' . round(microtime(true) - $started, 2) . 's', 'Request XML' => $xml, 'Response XML' => (string) $body],
+            $error
+        );
 
         if ($curlError) {
             return ['success' => false, 'message' => "cURL error: {$curlError}"];
@@ -1344,6 +1358,15 @@ XMLREQ;
             return ['success' => false, 'message' => "HTTP error: {$httpCode}"];
         }
         return ['success' => true, 'body' => $body];
+    }
+
+    /** Log step (search/details/block/booking/cancel) of the current endpoint. */
+    private function logStep(): string
+    {
+        return [
+            'hotel_search' => 'search', 'hotel_details' => 'details', 'hotel_getrooms_block' => 'block',
+            'hotel_booking' => 'booking', 'cancel_booking' => 'cancel', 'test_credentials' => 'test',
+        ][basename(request()->path())] ?? 'other';
     }
 
     // -------------------------------------------------------------------------
@@ -2142,6 +2165,13 @@ XML;
         $httpCode  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
         curl_close($ch);
+
+        $tokenError = $curlError ? 'Rezpayments cURL error: ' . $curlError : ($httpCode !== 200 ? "Rezpayments HTTP {$httpCode}" : null);
+        \App\Services\WebbedsLogger::write('booking', "Rezpayments tokenize ({$endpoint})", [
+            'Card'     => ['cardName' => $params['cardName'], 'cardNumber' => $params['cardNumber'], 'expiry' => $params['expiryMonth'] . '/' . $params['expiryYear']],
+            'HTTP'     => (string) $httpCode,
+            'Response' => (string) $body,
+        ], $tokenError);
 
         if ($curlError) return ['success' => false, 'token' => '', 'message' => 'Rezpayments cURL error: ' . $curlError];
         if ($httpCode !== 200) {

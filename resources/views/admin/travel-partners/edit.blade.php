@@ -39,7 +39,7 @@
             $savedCard = $isWebbeds ? $partner->paymentCardSummary() : null;
             if ($isWebbeds) $stepList['payment'] = ['icon' => 'bi-credit-card', 'title' => 'Payment Details', 'desc' => 'Card for live bookings'];
             if (!$isManual) $stepList['devmode'] = ['icon' => 'bi-code-slash', 'title' => 'Development Mode', 'desc' => 'Test / Sandbox settings'];
-            if ($showImportTab) $stepList['import'] = ['icon' => 'bi-cloud-arrow-up', 'title' => 'Import Data', 'desc' => 'Review & import'];
+            if ($showImportTab && !$isWebbeds) $stepList['import'] = ['icon' => 'bi-cloud-arrow-up', 'title' => 'Import Data', 'desc' => 'Review & import'];
             $stepList['review'] = ['icon' => 'bi-check-circle-fill', 'title' => 'Review & Save', 'desc' => 'Confirm configuration'];
             $n = 1;
             foreach ($stepList as $k => $s) $stepList[$k]['num'] = $n++;
@@ -76,6 +76,12 @@
                 <span class="tbp-partner-edit-badge">@if($partnerLogo)<img src="{{ $partnerLogo }}" alt="" class="tbp-partner-edit-badge-logo">@else<i class="bi bi-building"></i>@endif {{ $partner->company_name }}</span>
             </div>
             <p class="tbp-partner-edit-subtitle">Update partner information, configure API credentials and activate services.</p>
+            @if($isWebbeds)
+            <div class="tbp-partner-edit-header-actions">
+                <a href="{{ route('admin.travel-partners.webbeds.import', $partner) }}" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline"><i class="bi bi-cloud-arrow-up"></i> Import Data</a>
+                <a href="{{ route('admin.travel-partners.webbeds.logs', $partner) }}" class="tbp-partner-edit-btn tbp-partner-edit-btn-outline"><i class="bi bi-journal-text"></i> Logs</a>
+            </div>
+            @endif
         </div>
 
         <!-- ===== STEPPER ===== -->
@@ -461,7 +467,7 @@
                     </section>
                     @endif
 
-                    @if($showImportTab)
+                    @if($showImportTab && !$isWebbeds)
                     <!-- ===== STEP: IMPORT DATA ===== -->
                     <section class="tbp-partner-edit-step-content tbp-partner-edit-import" data-step-panel="import" role="tabpanel">
                         <div class="tbp-partner-edit-card">
@@ -576,7 +582,7 @@
                                             <div class="tbp-partner-edit-review-row"><span>{{ $item['label'] }}</span><span data-sync-finance="{{ $item['field'] }}">{{ $v !== null && $v !== '' ? number_format((float) $v, 2) : 'Not configured' }}</span></div>
                                         @endforeach
                                     </div>
-                                    @if($showImportTab)
+                                    @if($showImportTab && !$isWebbeds)
                                     <div class="tbp-partner-edit-review-block">
                                         <div class="tbp-partner-edit-review-block-title">Import Data</div>
                                         <div class="tbp-partner-edit-review-row"><span>Files imported</span><span>{{ $imports->where('status', 'imported')->count() }}</span></div>

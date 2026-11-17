@@ -137,6 +137,12 @@ Route::prefix('travel-partners')->name('admin.travel-partners.')->group(function
     Route::post('/{partner}/webbeds-cities/run-batch', [\App\Http\Controllers\Admin\WebbedsCityImportController::class, 'runBatch'])->name('webbeds-cities.run-batch');
     Route::post('/{partner}/webbeds-cities/start', [\App\Http\Controllers\Admin\WebbedsCityImportController::class, 'start'])->name('webbeds-cities.start');
     Route::post('/{partner}/webbeds-cities/stop', [\App\Http\Controllers\Admin\WebbedsCityImportController::class, 'stop'])->name('webbeds-cities.stop');
+    Route::get('/{partner}/webbeds/import', [\App\Http\Controllers\Admin\WebbedsCityImportController::class, 'page'])->name('webbeds.import');
+    Route::get('/{partner}/webbeds/logs', [\App\Http\Controllers\Admin\WebbedsLogController::class, 'page'])->name('webbeds.logs');
+    Route::get('/{partner}/webbeds-logs', [\App\Http\Controllers\Admin\WebbedsLogController::class, 'index'])->name('webbeds-logs.index');
+    Route::delete('/{partner}/webbeds-logs', [\App\Http\Controllers\Admin\WebbedsLogController::class, 'destroyAll'])->name('webbeds-logs.destroy-all');
+    Route::get('/{partner}/webbeds-logs/{trace}/download', [\App\Http\Controllers\Admin\WebbedsLogController::class, 'download'])->name('webbeds-logs.download');
+    Route::delete('/{partner}/webbeds-logs/{trace}', [\App\Http\Controllers\Admin\WebbedsLogController::class, 'destroy'])->name('webbeds-logs.destroy');
     Route::post('/{partner}/webbeds-cities/regenerate-token', [\App\Http\Controllers\Admin\WebbedsCityImportController::class, 'regenerateToken'])->name('webbeds-cities.regenerate-token');
     Route::post('/{partner}/webbeds-cities/{code}/import', [\App\Http\Controllers\Admin\WebbedsCityImportController::class, 'importCity'])->name('webbeds-cities.import');
 });

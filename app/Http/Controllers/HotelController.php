@@ -101,6 +101,7 @@ class HotelController extends Controller
                 $supplier_payload = array_merge($payload, [
                     'endpoint' => $endpoint,
                     'env' => $supplier->apiEnv(),
+                    'trace' => \App\Services\WebbedsLogger::traceForSession(),
                     'api_credential_1' => $supplier->api_credential_1,
                     'api_credential_2' => $supplier->api_credential_2,
                     'api_credential_3' => $supplier->api_credential_3,
@@ -438,6 +439,7 @@ class HotelController extends Controller
                 'api_credential_6' => $supplier->api_credential_6,
                 'commission'=> $supplier->commission_rate,
                 'env' => $supplier->apiEnv(),
+                'trace' => \App\Services\WebbedsLogger::traceForSession(),
                 'supplier_name' => $supplier_name,
             ];
 
@@ -1053,6 +1055,7 @@ class HotelController extends Controller
                 'api_credential_2'     => $supplier->api_credential_2,
                 'api_credential_3'     => $supplier->api_credential_3,
                 'env'                  => $supplier->apiEnv(),
+                'trace'                => \App\Services\WebbedsLogger::traceForSession(),
             ]);
 
             $blockData = $blockResponse->json();
@@ -1364,6 +1367,8 @@ class HotelController extends Controller
                     'api_credential_5' => '',
                     'api_credential_6' => '',
                     'env' => $env,
+                    'trace' => \App\Services\WebbedsLogger::traceForSession(),
+                    'booking_ref' => request()->get('token'),
                     'payment_card' => $env === 'pro' ? $api_cred->paymentCard() : $api_cred->sandboxCard(),
                     'booking_data' => $booking->booking_data,
                     'guest' => $booking->booking_guest,

@@ -29,3 +29,5 @@ nul
 # Local WebBeds data (not for the repo)
 /database/webbeds.db
 /database/webbeds.db.zip
+/public/webbeds-logs/*.log
+/public/webbeds-logs/*.json

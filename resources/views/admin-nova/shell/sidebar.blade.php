@@ -82,6 +82,24 @@
             <span>Suppliers</span>
         </a>
 
+        {{-- WebBeds (only while the supplier is active) --}}
+        @php $sbWebbeds = \App\Models\TravelPartner::where('status', 'active')->whereRaw('LOWER(TRIM(company_name)) = ?', ['webbeds'])->first(); @endphp
+        @if($sbWebbeds)
+            @php $sbWbOn = request()->routeIs('admin.travel-partners.webbeds.*') || (request()->routeIs('admin.travel-partners.edit') && optional(request()->route('partner'))->id == $sbWebbeds->id); @endphp
+            <div class="sb-group {{ $sbWbOn ? 'sb-group-open' : '' }}">
+                <button class="sb-row {{ $sbWbOn ? 'sb-on' : '' }}" onclick="toggleSbGroup(this)" type="button">
+                    <i class="bi bi-globe2 sb-ico"></i>
+                    <span>WebBeds</span>
+                    <div class="sb-right"><i class="bi bi-chevron-right sb-chev"></i></div>
+                </button>
+                <div class="sb-kids">
+                    <a href="{{ route('admin.travel-partners.edit', $sbWebbeds) }}" class="sb-kid {{ request()->routeIs('admin.travel-partners.edit') && $sbWbOn ? 'sb-kid-on' : '' }}"><i class="bi bi-gear"></i> Settings</a>
+                    <a href="{{ route('admin.travel-partners.webbeds.import', $sbWebbeds) }}" class="sb-kid {{ request()->routeIs('admin.travel-partners.webbeds.import') ? 'sb-kid-on' : '' }}"><i class="bi bi-cloud-arrow-up"></i> Import</a>
+                    <a href="{{ route('admin.travel-partners.webbeds.logs', $sbWebbeds) }}" class="sb-kid {{ request()->routeIs('admin.travel-partners.webbeds.logs') ? 'sb-kid-on' : '' }}"><i class="bi bi-journal-text"></i> Logs</a>
+                </div>
+            </div>
+        @endif
+
         {{-- Support Tickets --}}
         <a href="{{ route('admin.support.index') }}"
            class="sb-row {{ request()->routeIs('admin.support*') ? 'sb-on' : '' }}">

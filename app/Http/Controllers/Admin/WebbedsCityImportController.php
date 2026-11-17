@@ -16,6 +16,13 @@ class WebbedsCityImportController extends Controller
         abort_unless(strtolower(trim($partner->company_name)) === 'webbeds', 404);
     }
 
+    /** Separate admin page (sidebar: WebBeds → Import). */
+    public function page(TravelPartner $partner)
+    {
+        $this->guard($partner);
+        return view('admin.travel-partners.webbeds-page', ['partner' => $partner, 'section' => 'import']);
+    }
+
     public function stats(TravelPartner $partner)
     {
         $this->guard($partner);
