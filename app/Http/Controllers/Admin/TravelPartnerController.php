@@ -298,7 +298,7 @@ class TravelPartnerController extends Controller
         $data = $request->validate([
             $prefix . 'name'         => 'required|string|max:100',
             $prefix . 'number'       => 'required|digits_between:12,19',
-            $prefix . 'expiry_month' => 'required|integer|between:1,12',
+            $prefix . 'expiry_month' => ['required', 'regex:/^(0?[1-9]|1[0-2])$/'],
             $prefix . 'expiry_year'  => "required|integer|between:{$year}," . ($year + 20),
             $prefix . 'cvv'          => 'required|digits_between:3,4',
         ], [], [

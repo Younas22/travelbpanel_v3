@@ -525,7 +525,7 @@ class WebbedsController extends BaseController
                 'payment_card'                => 'nullable|array',
                 'payment_card.cardName'       => 'required_with:payment_card|string|max:100',
                 'payment_card.cardNumber'     => 'required_with:payment_card|digits_between:12,19',
-                'payment_card.expiryMonth'    => 'required_with:payment_card|integer|between:1,12',
+                'payment_card.expiryMonth'    => ['required_with:payment_card', 'regex:/^(0?[1-9]|1[0-2])$/'], // 1-12, "09" allowed (integer rule rejects leading zeros)
                 'payment_card.expiryYear'     => 'required_with:payment_card|digits:4',
                 'payment_card.securityCode'   => 'required_with:payment_card|digits_between:3,4',
             ]);
