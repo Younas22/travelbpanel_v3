@@ -16,7 +16,6 @@
                 }
             @endphp
             <h1 class="hero-title">{{ $heading }}</h1>
-            <p class="hero-subtitle"><i class="fas fa-calendar"></i> Last Updated: {{ date('F j, Y', strtotime($page->updated_at)) }}</p>
         </div>
     </section>
 

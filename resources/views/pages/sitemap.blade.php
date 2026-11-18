@@ -13,16 +13,6 @@
                 </div>
                 <h1 class="legal-hero-title">Sitemap</h1>
                 <!-- <p class="legal-hero-subtitle">Your privacy matters to us. Learn how we collect, use, and protect your personal information.</p> -->
-                <div class="legal-meta">
-                    <div class="legal-meta-item">
-                        <i class="fas fa-calendar"></i>
-                        <span>Last Updated: <?= date('F j, Y'); ?></span>
-                    </div>
-                    <!-- <div class="legal-meta-item">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>GDPR Compliant</span>
-                    </div> -->
-                </div>
             </div>
         </div>
     </section>
