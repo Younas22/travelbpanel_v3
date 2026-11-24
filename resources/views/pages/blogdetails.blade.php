@@ -46,11 +46,13 @@
                     {!! processImages($post->content) !!}
                 </div>
 
-                @if($post->tags)
+                {{-- tags is a relation (BlogTag models), not a comma string --}}
+                @php $postTags = $post->tags->pluck('name')->map(fn ($n) => trim((string) $n))->filter()->unique(); @endphp
+                @if($postTags->isNotEmpty())
                     <div class="pg-tags">
                         <b>{{ t('blog.tags') }}:</b>
-                        @foreach(explode(',', $post->tags) as $tag)
-                            @if(trim($tag) !== '')<span class="tl-pill">#{{ trim($tag) }}</span>@endif
+                        @foreach($postTags as $tag)
+                            <span class="tl-pill">#{{ $tag }}</span>
                         @endforeach
                     </div>
                 @endif
